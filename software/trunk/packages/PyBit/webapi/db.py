@@ -86,6 +86,6 @@ class db:
 		return res
 
 	def get_job_status(self,id):
-		self.cur.execute("SELECT job.id, status.name FROM job,status WHERE job.id=%s AND job.status_id = status.id",(id,))
+		self.cur.execute("SELECT job.id, status.name FROM job, status WHERE job.id=%s AND job.status_id = status.id",(id,))
 		res = self.cur.fetchall()
 		return res
