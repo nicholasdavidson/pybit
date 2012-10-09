@@ -16,12 +16,11 @@ def get_all_packages():
 @route('/package', method='PUT')
 def put_package():
 	# Add a new package. TODO: TESTME
-	id = request.forms.get('id')
 	version = request.forms.get('version')
 	name = request.forms.get('name')
 
-	if id and version and name:
-		myDb.put_package(id,version,name)
+	if version and name:
+		myDb.put_package(version,name)
 	else:
 		response.status = "400 - Required fields missing."
 	return

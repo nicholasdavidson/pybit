@@ -16,11 +16,10 @@ def get_arch():
 @route('/arch', method='PUT')
 def put_arch():
 	# Add a new arch. TODO: TESTME
-	id = request.forms.get('id')
 	name = request.forms.get('name')
 
-	if id and name:
-		myDb.put_arch(id,name)
+	if name:
+		myDb.put_arch(name)
 	else:
 		response.status = "400 - Required fields missing."
 	return
@@ -35,11 +34,10 @@ def get_statuses():
 @route('/status', method='PUT')
 def put_status():
 	# Add a new status. TODO: TESTME
-	id = request.forms.get('id')
 	name = request.forms.get('name')
 
-	if id and name:
-		myDb.put_status(id,name)
+	if name:
+		myDb.put_status(name)
 	else:
 		response.status = "400 - Required fields missing."
 	return
@@ -54,11 +52,10 @@ def get_dists():
 @route('/dist', method='PUT')
 def put_dist():
 	# Add a new dist. TODO: TESTME
-	id = request.forms.get('id')
 	name = request.forms.get('name')
 
-	if id and name:
-		myDb.put_dist(id,name)
+	if name:
+		myDb.put_dist(name)
 	else:
 		response.status = "400 - Required fields missing."
 	return
@@ -73,11 +70,10 @@ def get_formats():
 @route('/format', method='PUT')
 def put_format():
 	# Add a new format. TODO: TESTME
-	id = request.forms.get('id')
 	name = request.forms.get('name')
 
-	if id and name:
-		myDb.put_format(id,name)
+	if name:
+		myDb.put_format(name)
 	else:
 		response.status = "400 - Required fields missing."
 	return
@@ -92,11 +88,10 @@ def get_suites():
 @route('/suite', method='PUT')
 def put_suite():
 	# Add a new suite. TODO: TESTME
-	id = request.forms.get('id')
 	name = request.forms.get('name')
 
-	if id and name:
-		myDb.put_suite(id,name)
+	if name:
+		myDb.put_suite(name)
 	else:
 		response.status = "400 - Required fields missing."
 	return

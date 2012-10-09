@@ -31,8 +31,6 @@ def index():
 def buildd_form():
 	return '''<form method="POST" action="/buildd">
 				<h4>Add a Buildbox</h4>
-				<label for="id">ID</label>
-				<input name="id" type="text" />
 				<label for="name">Name</label>
 				<input name="name" type="text" />
 				<input type="submit" />
@@ -43,8 +41,6 @@ def job_form():
 	# TODO: make id fields combo boxey lookups.
 	return '''<form method="POST" action="/job">
 				<h4>Submit a Job</h4>
-				<label for="id">ID</label>
-				<input name="id" type="text" />
 				<label for="packageinstance_id">packageinstance_id</label>
 				<input name="packageinstance_id" type="text" />
 				<label for="buildclient_id">buildclient_id</label>
@@ -56,8 +52,6 @@ def job_form():
 def package_form():
 	return '''<form method="POST" action="/job">
 				<h4>Add a Package</h4>
-				<label for="id">ID</label>
-				<input name="id" type="text" />
 				<label for="name">name</label>
 				<input name="name" type="text" />
 				<label for="version">version</label>
@@ -71,8 +65,6 @@ def package_form():
 def arch_form():
 	return '''<form method="POST" action="/arch">
 				<h4>Add Package Architectures</h4>
-				<label for="id">ID</label>
-				<input name="id" type="text" />
 				<label for="name">Name</label>
 				<input name="name" type="text" />
 				<input type="submit" />
@@ -82,8 +74,6 @@ def arch_form():
 def status_form():
 	return '''<form method="POST" action="/status">
 				<h4>Add Job Statuses</h4>
-				<label for="id">ID</label>
-				<input name="id" type="text" />
 				<label for="name">Name</label>
 				<input name="name" type="text" />
 				<input type="submit" />
@@ -93,8 +83,6 @@ def status_form():
 def dist_form():
 	return '''<form method="POST" action="/dist">
 				<h4>Add Software Distributions</h4>
-				<label for="id">ID</label>
-				<input name="id" type="text" />
 				<label for="name">Name</label>
 				<input name="name" type="text" />
 				<input type="submit" />
@@ -104,8 +92,6 @@ def dist_form():
 def format_form():
 	return '''<form method="POST" action="/format">
 				<h4>Add Package Formats</h4>
-				<label for="id">ID</label>
-				<input name="id" type="text" />
 				<label for="name">Name</label>
 				<input name="name" type="text" />
 				<input type="submit" />
@@ -115,8 +101,6 @@ def format_form():
 def suite_form():
 	return '''<form method="POST" action="/suite">
 				<h4>Add Software Suites</h4>
-				<label for="id">ID</label>
-				<input name="id" type="text" />
 				<label for="name">Name</label>
 				<input name="name" type="text" />
 				<input type="submit" />

@@ -16,12 +16,11 @@ def get_jobs():
 @route('/job', method='PUT')
 def put_job():
 	# Add a new job. TODO: TESTME
-	id = request.forms.get('id')
 	packageinstance_id = request.forms.get('packageinstance_id')
 	buildclient_id =  request.forms.get('buildclient_id')
 
-	if id and packageinstance_id and buildclient_id:
-		myDb.put_job(id,packageinstance_id,buildclient_id)
+	if  packageinstance_id and buildclient_id:
+		myDb.put_job(packageinstance_id,buildclient_id)
 	else:
 		response.status = "400 - Required fields missing."
 	return

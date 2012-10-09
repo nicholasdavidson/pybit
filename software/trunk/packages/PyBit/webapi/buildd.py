@@ -16,11 +16,10 @@ def get_buildd():
 @route('/buildd', method='PUT')
 def put_buildd():
 	# Register a new BuildD. TODO: TESTME
-	id = request.forms.get('id')
 	name = request.forms.get('name')
 
-	if id and name:
-		myDb.put_buildclient(id,name)
+	if name:
+		myDb.put_buildclient(name)
 	else:
 		response.status = "400 - Required fields missing."
 	return

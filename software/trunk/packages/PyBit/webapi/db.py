@@ -38,8 +38,8 @@ class db:
 		res = self.cur.fetchall()
 		return res
 
-	def put_arch(self,id,name):
-		self.cur.execute("INSERT into arch(id,name) VALUES (%s, %s)",(id,name))
+	def put_arch(self,name):
+		self.cur.execute("INSERT into arch(name) VALUES (%s)",(name,))
 		res = self.conn.commit()
 		return res
 
@@ -48,8 +48,8 @@ class db:
 		res = self.cur.fetchall()
 		return res
 
-	def put_dist(self,id,name):
-		self.cur.execute("INSERT into distribution(id,name) VALUES (%s, %s)",(id,name))
+	def put_dist(self,name):
+		self.cur.execute("INSERT into distribution(name) VALUES (%s)",(name,))
 		res = self.conn.commit()
 		return res
 
@@ -58,8 +58,8 @@ class db:
 		res = self.cur.fetchall()
 		return res
 
-	def put_format(self,id,name):
-		self.cur.execute("INSERT into format(id,name) VALUES (%s, %s)",(id,name))
+	def put_format(self,name):
+		self.cur.execute("INSERT into format(name) VALUES (%s)",(name,))
 		res = self.conn.commit()
 		return res
 
@@ -68,8 +68,8 @@ class db:
 		res = self.cur.fetchall()
 		return res
 
-	def put_status(self,id,name):
-		self.cur.execute("INSERT into status(id,name) VALUES (%s, %s)",(id,name))
+	def put_status(self,name):
+		self.cur.execute("INSERT into status(name) VALUES (%s)",(name,))
 		res = self.conn.commit()
 		return res
 
@@ -78,8 +78,8 @@ class db:
 		res = self.cur.fetchall()
 		return res
 
-	def put_suite(self,id,name):
-		self.cur.execute("INSERT into suite(id,name) VALUES (%s, %s)",(id,name))
+	def put_suite(self,name):
+		self.cur.execute("INSERT into suite(name) VALUES (%s)",(name,))
 		res = self.conn.commit()
 		return res
 
@@ -95,8 +95,8 @@ class db:
 		res = self.cur.fetchall()
 		return res
 
-	def put_buildclient(self,id,name):
-		self.cur.execute("INSERT into buildclients(id,name) VALUES (%s, %s)",(id,name))
+	def put_buildclient(self,name):
+		self.cur.execute("INSERT into buildclients(name) VALUES (%s)",(name,))
 		res = self.conn.commit()
 		return res
 
@@ -134,9 +134,9 @@ class db:
 		res = self.conn.commit()
 		return res
 
-	def put_job(self,id,packageinstance_id,buildclient_id):
+	def put_job(self,packageinstance_id,buildclient_id):
 		#TODO: work in progress
-		self.cur.execute("INSERT INTO job (id,packageinstance_id,buildclient_id) VALUES (%s, %s, %s)",(id,packageinstance_id,buildclient_id))
+		self.cur.execute("INSERT INTO job (packageinstance_id,buildclient_id) VALUES (%s, %s)",(packageinstance_id,buildclient_id))
 		res = self.conn.commit()
 		return res
 
@@ -147,8 +147,8 @@ class db:
 		res = self.cur.fetchall()
 		return res
 
-	def put_package(self,id,version,name):
-		self.cur.execute("INSERT into package(id,version,name) VALUES (%s, %s, %s)",(id,name))
+	def put_package(self,version,name):
+		self.cur.execute("INSERT into package(version,name) VALUES (%s, %s)",(version,name))
 		res = self.conn.commit()
 		return res
 
