@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect
+from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import db
 
@@ -12,6 +12,7 @@ def get_all_packages():
 	# Returning list of all packages
 	return jsonpickle.encode(myDb.get_packages());
 
+@route('/package', method='POST')
 @route('/package', method='PUT')
 def put_package():
 	# Add a new package. TODO: TESTME

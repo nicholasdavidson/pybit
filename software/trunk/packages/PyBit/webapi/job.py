@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect
+from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import db
 
@@ -12,6 +12,7 @@ def get_jobs():
 	#return list of jobs"
 	return jsonpickle.encode(myDb.get_jobs());
 
+@route('/job', method='POST')
 @route('/job', method='PUT')
 def put_job():
 	# Add a new job. TODO: TESTME

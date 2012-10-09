@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect
+from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import db
 
@@ -12,6 +12,7 @@ def get_buildd():
 	# Return list of BuildDs
 	return jsonpickle.encode(myDb.get_buildclients());
 
+@route('/buildd', method='POST')
 @route('/buildd', method='PUT')
 def put_buildd():
 	# Register a new BuildD. TODO: TESTME

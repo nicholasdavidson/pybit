@@ -1,6 +1,8 @@
 To Run:
 Run web_api.py to run it.
 
+packagedata.sql under /db contains the SQL CREATE script. The connection string is in db.py under /webapi.
+
 Deps:
     * python-jsonpickle http://packages.qa.debian.org/j/jsonpickle.html
            o http://jsonpickle.github.com/
@@ -12,6 +14,11 @@ Bottle, althogh in the debian repos as python-bottle, does not depend on any ext
 
 Status:
 This code is currently unfinished, but right now it shows how to work the py-postgres functions, and Bottle.py, with regards to routes, setting content types, and returning HTTP status codes.
+
+Things can be added to the database via web forms speakinf to the API, and output in json. Use /forms/[asset] to access the forms.
+
+Notes:
+You can see we proxy POST to PUT, this is as HTML forms in most browsers can only do GET and POST (JQuery can do more).
 
 Commands:
 

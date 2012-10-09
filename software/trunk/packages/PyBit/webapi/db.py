@@ -2,6 +2,8 @@
 
 import psycopg2
 
+#TODO: make more robust.
+
 class db:
 
 	conn = None
@@ -38,7 +40,7 @@ class db:
 
 	def put_arch(self,id,name):
 		self.cur.execute("INSERT into arch(id,name) VALUES (%s, %s)",(id,name))
-		res = self.cur.fetchall()
+		res = self.conn.commit()
 		return res
 
 	def get_dists(self):
@@ -48,7 +50,7 @@ class db:
 
 	def put_dist(self,id,name):
 		self.cur.execute("INSERT into distribution(id,name) VALUES (%s, %s)",(id,name))
-		res = self.cur.fetchall()
+		res = self.conn.commit()
 		return res
 
 	def get_formats(self):
@@ -58,7 +60,7 @@ class db:
 
 	def put_format(self,id,name):
 		self.cur.execute("INSERT into format(id,name) VALUES (%s, %s)",(id,name))
-		res = self.cur.fetchall()
+		res = self.conn.commit()
 		return res
 
 	def get_statuses(self):
@@ -68,7 +70,7 @@ class db:
 
 	def put_status(self,id,name):
 		self.cur.execute("INSERT into status(id,name) VALUES (%s, %s)",(id,name))
-		res = self.cur.fetchall()
+		res = self.conn.commit()
 		return res
 
 	def get_suites(self):
@@ -78,7 +80,7 @@ class db:
 
 	def put_suite(self,id,name):
 		self.cur.execute("INSERT into suite(id,name) VALUES (%s, %s)",(id,name))
-		res = self.cur.fetchall()
+		res = self.conn.commit()
 		return res
 
 	#<<<<<<<< BuildD related database functions >>>>>>>>
@@ -95,7 +97,7 @@ class db:
 
 	def put_buildclient(self,id,name):
 		self.cur.execute("INSERT into buildclients(id,name) VALUES (%s, %s)",(id,name))
-		res = self.cur.fetchall()
+		res = self.conn.commit()
 		return res
 
 	def delete_buildclient(self,id):
@@ -122,7 +124,8 @@ class db:
 		return res
 
 	def get_job_status(self,id):
-		self.cur.execute("SELECT job.id, status.name FROM job, status WHERE job.id=%s AND job.status_id = status.id",(id,))
+		#TODO: work in progress
+		self.cur.execute("SELECT job.id, status.name FROM job, jobstatus, status WHERE job.id=%s AND job.id = jobstatus.job_id AND job.status_id = status.id",(id,))
 		res = self.cur.fetchall()
 		return res
 
@@ -133,7 +136,7 @@ class db:
 
 	def put_job(self,id,packageinstance_id,buildclient_id):
 		#TODO: work in progress
-		self.cur.execute("INSERT INTO job (id,packageinstance_id,buildclient_id) VALUES (%s, %s, %s)",(id,packageinstance_id,buildclient_id,status_id))
+		self.cur.execute("INSERT INTO job (id,packageinstance_id,buildclient_id) VALUES (%s, %s, %s)",(id,packageinstance_id,buildclient_id))
 		res = self.conn.commit()
 		return res
 
@@ -146,7 +149,7 @@ class db:
 
 	def put_package(self,id,version,name):
 		self.cur.execute("INSERT into package(id,version,name) VALUES (%s, %s, %s)",(id,name))
-		res = self.cur.fetchall()
+		res = self.conn.commit()
 		return res
 
 	def delete_package(self,id):

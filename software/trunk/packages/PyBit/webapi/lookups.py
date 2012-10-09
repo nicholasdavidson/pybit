@@ -1,12 +1,10 @@
 #!/usr/bin/python
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect
+from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import db
 
 myDb = db()
-
-# TODO: PUT methods
 
 @route('/arch', method='GET')
 def get_arch():
@@ -14,6 +12,7 @@ def get_arch():
 	#return list of arches
 	return jsonpickle.encode(myDb.get_arches());
 
+@route('/arch', method='POST')
 @route('/arch', method='PUT')
 def put_arch():
 	# Add a new arch. TODO: TESTME
@@ -32,6 +31,7 @@ def get_statuses():
 	#return list of statuses
 	return jsonpickle.encode(myDb.get_statuses());
 
+@route('/status', method='POST')
 @route('/status', method='PUT')
 def put_status():
 	# Add a new status. TODO: TESTME
@@ -50,6 +50,7 @@ def get_dists():
 	#return list of distributions
 	return jsonpickle.encode(myDb.get_dists());
 
+@route('/dist', method='POST')
 @route('/dist', method='PUT')
 def put_dist():
 	# Add a new dist. TODO: TESTME
@@ -68,6 +69,7 @@ def get_formats():
 	#return list of package formats
 	return jsonpickle.encode(myDb.get_formats());
 
+@route('/format', method='POST')
 @route('/format', method='PUT')
 def put_format():
 	# Add a new format. TODO: TESTME
@@ -86,6 +88,7 @@ def get_suites():
 	#return list of suites
 	return jsonpickle.encode(myDb.get_suites());
 
+@route('/suite', method='POST')
 @route('/suite', method='PUT')
 def put_suite():
 	# Add a new suite. TODO: TESTME
