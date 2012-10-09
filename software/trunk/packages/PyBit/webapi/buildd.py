@@ -12,6 +12,18 @@ def get_buildd():
 	# Return list of BuildDs
 	return jsonpickle.encode(myDb.get_buildclients());
 
+@route('/buildd', method='PUT')
+def put_buildd():
+	# Register a new BuildD. TODO: TESTME
+	id = request.forms.get('id')
+	name = request.forms.get('name')
+
+	if id and name:
+		myDb.put_buildclient(id,name)
+	else:
+		response.status = "400 - Required fields missing."
+	return
+
 @route('/buildd/<id:int>', method='GET')
 def get_buildd_id(id):
 	response.content_type = "application/json"
@@ -24,6 +36,14 @@ def get_buildd_id(id):
 	else:
 		response.status = "404 - No buildd found with this ID."
 		return
+
+@route('/buildd/<id:int>', method='DELETE')
+def delete_buildd_id(id):
+	# Deletes a specific buildd
+	# TODO: validation,security
+	response.status = "202 - DELETE request recieved"
+	res = myDb.delete_buildclient(id)
+	return
 
 @route('/buildd/<id:int>/status', method='GET')
 def get_buildd_status(id):
@@ -44,8 +64,6 @@ def get_buildd_jobs(id):
 	else:
 		response.status = "404 - No buildd found with this ID."
 		return
-
-	return template("Returning jobs for buildd: {{id}}",id=id)
 
 @route('/buildd/<id:int>/:command', method='POST')
 def post_command(id,command):

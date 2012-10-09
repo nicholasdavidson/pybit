@@ -14,8 +14,15 @@ def get_jobs():
 
 @route('/job', method='PUT')
 def put_job():
-	response.status = "201 - PUT a job."
-	#TODO: work in progress
+	# Add a new job. TODO: TESTME
+	id = request.forms.get('id')
+	packageinstance_id = request.forms.get('packageinstance_id')
+	buildclient_id =  request.forms.get('buildclient_id')
+
+	if id and packageinstance_id and buildclient_id:
+		myDb.put_job(id,packageinstance_id,buildclient_id)
+	else:
+		response.status = "400 - Required fields missing."
 	return
 
 @route('/job/<jobid:int>', method='GET')
@@ -33,6 +40,7 @@ def get_jobid(jobid):
 
 @route('/job/<jobid:int>', method='DELETE')
 def del_jobid(jobid):
+	# Deletes a specific job
 	# TODO: validation,security
 	response.status = "202 - DELETE request recieved"
 	myDb.delete_job(jobid)

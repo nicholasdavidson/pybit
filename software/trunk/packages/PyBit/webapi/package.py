@@ -12,6 +12,27 @@ def get_all_packages():
 	# Returning list of all packages
 	return jsonpickle.encode(myDb.get_packages());
 
+@route('/package', method='PUT')
+def put_package():
+	# Add a new package. TODO: TESTME
+	id = request.forms.get('id')
+	version = request.forms.get('version')
+	name = request.forms.get('name')
+
+	if id and version and name:
+		myDb.put_package(id,version,name)
+	else:
+		response.status = "400 - Required fields missing."
+	return
+
+@route('/package/<id:int>', method='DELETE')
+def delete_package(id):
+	# Deletes a specific buildd
+	# TODO: validation,security
+	response.status = "202 - DELETE request recieved"
+	res = myDb.delete_package(id)
+	return
+
 @route('/package/list', method='GET') # TODO, filter by paramater (request.query.[x])
 def get_packages_filtered():
 	response.content_type = "application/json"
