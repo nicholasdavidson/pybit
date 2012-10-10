@@ -77,3 +77,22 @@ class package(object):
 		self.id = id
 		self.version = version
 		self.name = name
+		
+class packageinstance(object):
+	
+	id = None
+	suite = None
+	package = None
+	version = None
+	arch  = None
+	format  = None
+	distribution  = None
+	
+	def __init__(self, id, suite, package, version, arch, format, distribution) :
+		self.id = id
+		self.suite = suite
+		self.version = version
+		self.arch = arch
+		self.format = format
+		self.distribution = distribution
+	

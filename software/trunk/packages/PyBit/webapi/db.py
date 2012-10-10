@@ -2,7 +2,7 @@
 
 import psycopg2
 import psycopg2.extras
-from models import arch,dist,format,status,suite,buildd,job,package
+from models import arch,dist,format,status,suite,buildd,job,package,packageinstance
 
 #TODO: make more robust.
 
@@ -206,3 +206,13 @@ class db:
 		for i in res:
 			packages.append(package(i['id'],i['version'],i['name']))
 		return packages
+	#<<<<<<<<< Report Queries >>>>>>>
+	def get_report_package_instance(self):
+		self.cur.execute("SELECT packageinstance.id, suite.name AS suite, package.name AS package, package.version AS version, arch.name AS arch, format.name AS format, distribution.name AS dist FROM packageinstance LEFT JOIN arch ON arch.id=arch_id LEFT JOIN suite ON suite.id=suite_id LEFT JOIN distribution ON distribution.id=dist_id LEFT JOIN package ON package_id=package.id LEFT JOIN format ON format_id=format.id")
+		res = self.cur.fetchall()
+		
+		package_instances = []
+		for i in res :
+			print i
+			package_instances.append(packageinstance(i['id'], i['suite'], i['package'], i['version'], i['arch'], i['format'], i['dist']))
+		return package_instances

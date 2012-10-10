@@ -4,7 +4,7 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import db
 
-import buildd,forms,job,lookups,package
+import buildd,forms,job,lookups,package, reports
 
 myDb = db()
 
@@ -13,9 +13,9 @@ def error404(error):
     return 'HTTP Error 404 - Not Found.'
 
 # Remove this to get more debug.
-@error(500)
-def error404(error):
-    return 'HTTP Error 500 - Internal Server Error.'
+#@error(500)
+#def error404(error):
+#    return 'HTTP Error 500 - Internal Server Error.'
 
 @route('/', method='GET')
 def index():
