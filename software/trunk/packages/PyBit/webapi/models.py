@@ -1,85 +1,95 @@
 #!/usr/bin/python
 
-# TODO: Change DB methods and associated HTTP  GEThandlers to work on these JSON objects, rather than returning the raw resultsets themselves, which are a pain to deserialise.
+# TODO: Change DB methods and associated HTTP GEThandlers to work on these JSON objects, rather than returning the raw resultsets themselves, which are a pain to deserialise.
 
-class arch(object):
-	
+import jsonpickle
+
+# new
+class model(object):
+	def toJson(self):
+		return jsonpickle.encode(self)
+	def fromJson(self,jsonstring):
+		self = jsonpickle.decode(jsonstring)
+		return self
+
+class arch(model):
+
 	id = None
 	name = None
-	
+
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
-class dist(object):
-	
+class dist(model):
+
 	id = None
 	name = None
-	
+
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
-class format(object):
-	
+class format(model):
+
 	id = None
 	name = None
-	
+
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
-class status(object):
-	
+class status(model):
+
 	id = None
 	name = None
-	
+
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
-class suite(object):
-	
+class suite(model):
+
 	id = None
 	name = None
-	
+
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
-class buildd(object):
-	
+class buildd(model):
+
 	id = None
 	name = None
-	
+
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
-class job(object):
-	
+class job(model):
+
 	id = None
 	packageinstance = None
 	buildclient_id = None
-	
+
 	def __init__(self,id,packageinstance,buildclient_id):
 		self.id = id
 		self.packageinstance = packageinstance
 		self.buildclient_id = buildclient_id
 
-class package(object):
-	
+class package(model):
+
 	id = None
 	version = None
 	name = None
-	
+
 	def __init__(self,id,version,name):
 		self.id = id
 		self.version = version
 		self.name = name
-		
-class packageinstance(object):
-	
+
+class packageinstance(model):
+
 	id = None
 	suite = None
 	package = None
@@ -87,7 +97,7 @@ class packageinstance(object):
 	arch  = None
 	format  = None
 	distribution  = None
-	
+
 	def __init__(self, id, suite, package, version, arch, format, distribution) :
 		self.id = id
 		self.suite = suite
@@ -95,4 +105,3 @@ class packageinstance(object):
 		self.arch = arch
 		self.format = format
 		self.distribution = distribution
-	
