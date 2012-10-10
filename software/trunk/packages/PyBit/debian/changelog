@@ -1,3 +1,15 @@
+pybit (0.0.5) development; urgency=low
+
+  * Rename the pybit-client for use in /usr/bin/
+
+ -- Neil Williams <neilw@toby-churchill.com>  Wed, 10 Oct 2012 12:53:21 +0100
+
+pybit (0.0.4) development; urgency=low
+
+  * Package the SQL schema
+
+ -- Neil Williams <neilw@toby-churchill.com>  Wed, 10 Oct 2012 12:53:09 +0100
+
 pybit (0.0.3) development; urgency=low
 
   * Add more content to the package descriptions

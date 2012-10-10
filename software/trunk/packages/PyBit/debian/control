@@ -44,7 +44,8 @@ Description: buildd client support for pybit
 
 Package: pybit-web
 Architecture: all
-Depends: pybit-common, ${misc:Depends}
+Depends: python-jsonpickle, python-bottle, python-psycopg2,
+ pybit-common, ${misc:Depends}
 Description: pybit web frontend
  This package provides a reporting and custom-build
  request interface for the data managed by pybit-controller.

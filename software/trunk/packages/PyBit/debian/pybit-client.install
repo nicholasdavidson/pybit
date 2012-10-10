@@ -1,1 +1,2 @@
 client/client.conf ./etc/pybit/client/
+client/pybit-client ./usr/bin/
