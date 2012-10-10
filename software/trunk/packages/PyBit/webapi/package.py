@@ -10,7 +10,9 @@ myDb = db()
 def get_all_packages():
 	response.content_type = "application/json"
 	# Returning list of all packages
-	return jsonpickle.encode(myDb.get_packages());
+	packages = myDb.get_packages()
+	encoded = jsonpickle.encode(packages)
+	return encoded
 
 @route('/package', method='POST')
 @route('/package', method='PUT')

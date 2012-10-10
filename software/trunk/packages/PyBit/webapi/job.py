@@ -3,6 +3,7 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import db
+from models import job
 
 myDb = db()
 
@@ -33,7 +34,8 @@ def get_jobid(jobid):
 
 	# check results returned
 	if len(res) > 0:
-		return jsonpickle.encode(res)
+		encoded = jsonpickle.encode(res)
+		return encoded
 	else:
 		response.status = "404 - No job found with this ID."
 		return
@@ -54,7 +56,8 @@ def get_jobstatus(jobid):
 
 	# check results returned
 	if len(res) > 0:
-		return jsonpickle.encode(res)
+		encoded = jsonpickle.encode(res)
+		return encoded
 	else:
 		response.status = "404 - No statuses found for job with this ID."
 		return

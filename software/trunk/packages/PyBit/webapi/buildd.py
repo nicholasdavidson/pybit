@@ -3,6 +3,7 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import db
+from models import buildd
 
 myDb = db()
 
@@ -10,7 +11,9 @@ myDb = db()
 def get_buildd():
 	response.content_type = "application/json"
 	# Return list of BuildDs
-	return jsonpickle.encode(myDb.get_buildclients());
+	buildds = myDb.get_buildclients()
+	encoded = jsonpickle.encode(buildds)
+	return encoded
 
 @route('/buildd', method='POST')
 @route('/buildd', method='PUT')
@@ -32,7 +35,8 @@ def get_buildd_id(id):
 
 	# check results returned
 	if len(res) > 0:
-		return jsonpickle.encode(res)
+		encoded = jsonpickle.encode(res)
+		return encoded
 	else:
 		response.status = "404 - No buildd found with this ID."
 		return
@@ -60,7 +64,8 @@ def get_buildd_jobs(id):
 
 	# check results returned
 	if len(res) > 0:
-		return jsonpickle.encode(res)
+		encoded =  jsonpickle.encode(res)
+		return encoded
 	else:
 		response.status = "404 - No buildd found with this ID."
 		return

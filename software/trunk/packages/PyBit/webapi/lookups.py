@@ -3,14 +3,16 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import db
-
+from models import arch,dist,format,status,suite
 myDb = db()
 
 @route('/arch', method='GET')
 def get_arch():
 	response.content_type = "application/json"
 	#return list of arches
-	return jsonpickle.encode(myDb.get_arches());
+	arches = myDb.get_arches()
+	encoded = jsonpickle.encode(arches)
+	return encoded
 
 @route('/arch', method='POST')
 @route('/arch', method='PUT')
@@ -28,7 +30,9 @@ def put_arch():
 def get_statuses():
 	response.content_type = "application/json"
 	#return list of statuses
-	return jsonpickle.encode(myDb.get_statuses());
+	statuses = myDb.get_statuses()
+	encoded = jsonpickle.encode(statuses)
+	return encoded
 
 @route('/status', method='POST')
 @route('/status', method='PUT')
@@ -46,7 +50,9 @@ def put_status():
 def get_dists():
 	response.content_type = "application/json"
 	#return list of distributions
-	return jsonpickle.encode(myDb.get_dists());
+	dists = myDb.get_dists()
+	encoded = jsonpickle.encode(dists)
+	return encoded
 
 @route('/dist', method='POST')
 @route('/dist', method='PUT')
@@ -64,7 +70,9 @@ def put_dist():
 def get_formats():
 	response.content_type = "application/json"
 	#return list of package formats
-	return jsonpickle.encode(myDb.get_formats());
+	formats = myDb.get_formats()
+	encoded = jsonpickle.encode(formats)
+	return encoded
 
 @route('/format', method='POST')
 @route('/format', method='PUT')
@@ -82,7 +90,9 @@ def put_format():
 def get_suites():
 	response.content_type = "application/json"
 	#return list of suites
-	return jsonpickle.encode(myDb.get_suites());
+	suites = myDb.get_suites()
+	encoded = jsonpickle.encode(suites)
+	return encoded
 
 @route('/suite', method='POST')
 @route('/suite', method='PUT')

@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 import psycopg2
+import psycopg2.extras
+from models import arch,dist,format,status,suite,buildd,job,package
 
 #TODO: make more robust.
 
@@ -21,8 +23,8 @@ class db:
 
 	#Connects to DB. Hardcoding the connection string in here is probably a bad idea...
 	def connect(self):
-		self.conn = psycopg2.connect(database="pybit", user="postgres", host="catbells", port="5432");
-		self.cur = self.conn.cursor()
+		self.conn = psycopg2.connect(database="pybit", user="postgres", host="catbells", port="5432")
+		self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 	#When to call this? - Does python have deconstructors?
 	def disconnect(self):
@@ -36,7 +38,11 @@ class db:
 	def get_arches(self):
 		self.cur.execute("SELECT id,name FROM arch ORDER BY name")
 		res = self.cur.fetchall()
-		return res
+		
+		arches = []
+		for i in res:
+			arches.append(arch(i['id'],i['name']))
+		return arches
 
 	def put_arch(self,name):
 		self.cur.execute("INSERT into arch(name) VALUES (%s)",(name,))
@@ -46,7 +52,11 @@ class db:
 	def get_dists(self):
 		self.cur.execute("SELECT id,name FROM distribution ORDER BY name")
 		res = self.cur.fetchall()
-		return res
+		
+		dists = []
+		for i in res:
+			dists.append(dist(i['id'],i['name']))
+		return dists
 
 	def put_dist(self,name):
 		self.cur.execute("INSERT into distribution(name) VALUES (%s)",(name,))
@@ -56,7 +66,11 @@ class db:
 	def get_formats(self):
 		self.cur.execute("SELECT id,name FROM format ORDER BY name")
 		res = self.cur.fetchall()
-		return res
+		
+		formats = []
+		for i in res:
+			formats.append(format(i['id'],i['name']))
+		return formats
 
 	def put_format(self,name):
 		self.cur.execute("INSERT into format(name) VALUES (%s)",(name,))
@@ -66,7 +80,11 @@ class db:
 	def get_statuses(self):
 		self.cur.execute("SELECT id,name FROM status ORDER BY name")
 		res = self.cur.fetchall()
-		return res
+		
+		statuses = []
+		for i in res:
+			statuses.append(status(i['id'],i['name']))
+		return statuses
 
 	def put_status(self,name):
 		self.cur.execute("INSERT into status(name) VALUES (%s)",(name,))
@@ -76,7 +94,11 @@ class db:
 	def get_suites(self):
 		self.cur.execute("SELECT id,name FROM suite ORDER BY name")
 		res = self.cur.fetchall()
-		return res
+		
+		suites = []
+		for i in res:
+			suites.append(suite(i['id'],i['name']))
+		return suites
 
 	def put_suite(self,name):
 		self.cur.execute("INSERT into suite(name) VALUES (%s)",(name,))
@@ -88,12 +110,20 @@ class db:
 	def get_buildclients(self):
 		self.cur.execute("SELECT id,name FROM buildclients ORDER BY name")
 		res = self.cur.fetchall()
-		return res
+
+		buildds = []
+		for i in res:
+			buildds.append(buildd(i['id'],i['name']))
+		return buildds
 
 	def get_buildd_id(self,id):
 		self.cur.execute("SELECT id,name FROM buildclients WHERE id=%s",(id,))
 		res = self.cur.fetchall()
-		return res
+
+		buildds = []
+		for i in res:
+			buildds.append(buildd(i['id'],i['name']))
+		return buildds
 
 	def put_buildclient(self,name):
 		self.cur.execute("INSERT into buildclients(name) VALUES (%s)",(name,))
@@ -116,12 +146,20 @@ class db:
 	def get_jobs(self):
 		self.cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job ORDER BY id")
 		res = self.cur.fetchall()
-		return res
+
+		jobs = []
+		for i in res:
+			jobs.append(job(i['id'],i['packageinstance'],i['buildclient_id']))
+		return jobs
 
 	def get_job(self,id):
 		self.cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job WHERE id=%s",(id,))
 		res = self.cur.fetchall()
-		return res
+
+		jobs = []
+		for i in res:
+			jobs.append(job(i['id'],i['packageinstance'],i['buildclient_id']))
+		return jobs
 
 	def get_job_status(self,id):
 		#TODO: work in progress
@@ -145,14 +183,26 @@ class db:
 	def get_packages(self):
 		self.cur.execute("SELECT id,version,name FROM package ORDER BY name")
 		res = self.cur.fetchall()
-		return res
+
+		packages = []
+		for i in res:
+			packages.append(package(i['id'],i['version'],i['name']))
+		return packages
 
 	def put_package(self,version,name):
 		self.cur.execute("INSERT into package(version,name) VALUES (%s, %s)",(version,name))
 		res = self.conn.commit()
-		return res
+
+		packages = []
+		for i in res:
+			packages.append(package(i['id'],i['version'],i['name']))
+		return packages
 
 	def delete_package(self,id):
 		self.cur.execute("DELETE FROM package WHERE id=%s",(id,))
 		res = self.conn.commit()
-		return res
+
+		packages = []
+		for i in res:
+			packages.append(package(i['id'],i['version'],i['name']))
+		return packages
