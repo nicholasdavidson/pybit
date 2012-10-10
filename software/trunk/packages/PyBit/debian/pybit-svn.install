@@ -1,0 +1,1 @@
+hook/svn-postcommit ./usr/share/pybit/svn/

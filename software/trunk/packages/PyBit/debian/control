@@ -1,0 +1,46 @@
+Source: pybit
+Section: devel
+Priority: extra
+Maintainer: TCL Build System user <rnd@toby-churchill.com>
+Uploaders: Nick Davidson <nickd@toby-churchill.com>,
+ Simon Haswell <simonh@toby-churchill.com>,
+ Neil Williams <neilw@toby-churchill.com>,
+ Nick Bane <nick@cecomputing.co.uk>,
+ James Bennet <James.Bennet@toby-churchill.com>
+Build-Depends: debhelper (>= 7.0.50~), python-support
+Standards-Version: 3.9.3
+
+Package: pybit-svn
+Architecture: all
+Depends: curl, ${misc:Depends}
+Description: subversion post commit hook for pybit
+ Subversion post commit hook to check for interesting
+ changes in the repository and post a directory back to
+ the controller using curl.
+
+Package: pybit-controller
+Architecture: all
+Depends: pybit-common,
+ ${python:Depends}, ${misc:Depends}
+Description: buildd controller for pybit
+
+Package: pybit-client
+Architecture: all
+Depends: python-amqplib, python-debian, sbuild,
+ pybit-common,
+ ${python:Depends}, ${misc:Depends}
+Description: buildd client support for pybit
+ This package provides the python client for pybit
+ to build packages using sbuild.
+
+Package: pybit-web
+Architecture: all
+Depends: ${misc:Depends}
+Description: pybit web frontend
+
+Package: pybit-common
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}
+Description: Common objects for pybit
+ Contains object definitions to common
+ python objects between pybit services.
