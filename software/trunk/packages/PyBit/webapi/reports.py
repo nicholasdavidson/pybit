@@ -10,7 +10,7 @@ myDb = db()
 @route('/report', method='GET')
 def index():
 	return '''
-		<h1>These are available reports:<h1>
+		<h4><a href='/report'>These are available reports:</a></h4>
 		<ul>
 			<li><a href='/report/arch'>Package Architectures</a></li>
 			<li><a href='/report/status'>Job Statuses</a></li>

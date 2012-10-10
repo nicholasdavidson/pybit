@@ -8,8 +8,7 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 def index():
 	# menu, probably what we want
 	return '''
-				<h1>PyBit - python Buildd Integration Toolkit.</h1>
-				<h4>Data entry forms for lookup tables</h4>
+				<h4><a href='/forms'>Data entry forms for lookup tables</a></h4>
 				<ul>
 				<li><a href='/forms/arch'>Package Architectures</a></li>
 				<li><a href='/forms/status'>Job Statuses</a></li>
@@ -17,7 +16,7 @@ def index():
 				<li><a href='/forms/format'>Package Formats</a></li>
 				<li><a href='/forms/suite'>Software Suites</a></li>
 				</ul>
-				<h4>Data entry forms for core tables</h4>
+				<h4><a href='/forms'>Data entry forms for core tables</a></h4>
 				<ul>
 				<li><a href='/forms/buildd'>Build Boxes</a></li>
 				<li><a href='/forms/package'>Packages</a></li>
