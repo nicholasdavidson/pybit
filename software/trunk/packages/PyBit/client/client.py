@@ -61,13 +61,19 @@ pass_opt = options["password"]
 vhost_opt = options["virtual_host"]
 insist_opt = True if options["insist"] == "True" else False
 addr_opt = host_opt + ":" + port_opt
+dput_opt = options["dput"]
+buildd_id = options["idstring"]
 
 ########## No configuration beyond this stage ##############
 
-# PyBit setup variables
+# PyBit setup variables - package content
 queue_name = "rabbit"
 report_name = "controller"
 listening_name = "buildd"
+dput_cfg = "/etc/pybit/dput.cf"
+
+# variables to retrieve from the job object later
+dput_dest = "tcl"
 
 conn = amqp.Connection(host=addr_opt, userid=userid_opt, password=pass_opt, virtual_host=vhost_opt, insist=insist_opt)
 chan = conn.channel()
@@ -131,6 +137,17 @@ def run_cmd (cmd, fail_msg, report, simulate):
 def recv_callback(msg):
 	pkg = deb_package (msg.body)
 	if not pkg:
+		print "could not parse message"
+		return
+	if not dput_dest or dput_dest == "":
+		print "refusing to upload to default dput destination (Debian ftpmaster)"
+		pkg.msgtype = "failed"
+		send_message (chan, pkg, report_name)
+		return
+	if not buildd_id or buildd_id == "default":
+		print "refusing to build without a default or empty idstring"
+		pkg.msgtype = "failed"
+		send_message (chan, pkg, report_name)
 		return
 	srcdir= buildroot + "/" + pkg.suite + "/svn"
 	builddir= buildroot + "/tmpbuilds/" + pkg.suite
@@ -145,8 +162,9 @@ def recv_callback(msg):
 	command = "schroot -u root -c " + name + "-- apt-get update > /dev/null 2>&1"
 	if run_cmd (command, "failed", report_name, options["dry_run"]):
 		return
+	# May need more sanity checking here
 	pkg.architecture = host_arch
-	# May need more error checking here
+	pkg.buildd = buildd_id
 	pkg.msgtype = "building"
 	send_message (chan, pkg, report_name)
 	if role == "master" :
@@ -162,6 +180,11 @@ def recv_callback(msg):
 		command = "sbuild -A -s -d " + pkg.suite + srcdir + "/" + pkg.source + "_" + pkg.version + ".dsc";
 		if run_cmd (command, "failed", report_name, options["dry_run"]):
 			return
+		changes = builddir + "/" + pkg.package + "_" + pkg.version + "_" + pkg.architecture + ".changes"
+		if not os.path.isfile (changes) :
+			pkg.msgtype = "failed"
+			send_message (chan, pkg, report_name)
+			return
 	else :
 		if role == "slave":
 			command = "sbuild -d " + pkg.suite + " " + pkg.source + "_" + pkg.version;
@@ -172,7 +195,11 @@ def recv_callback(msg):
 				pkg.msgtype = "failed"
 				send_message (chan, pkg, report_name)
 				return
+	command = "dput -c " + dput_cfg + " " + dput_opt + " " dput_dest + " " changes
+	if run_cmd (command, "failed", report_name, options["dry_run"]):
+		return
 	pkg.msgtype = "uploaded"
+	send_message (chan, pkg, report_name)
 
 while True:
 	chan.wait()
