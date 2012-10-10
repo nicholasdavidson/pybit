@@ -12,35 +12,51 @@ Standards-Version: 3.9.3
 
 Package: pybit-svn
 Architecture: all
-Depends: curl, ${misc:Depends}
+Depends: subversion, curl, ${misc:Depends}
 Description: subversion post commit hook for pybit
  Subversion post commit hook to check for interesting
  changes in the repository and post a directory back to
  the controller using curl.
+ .
+ Currently, only subversion is supported. The svn hook
+ does not depend on the rest of pybit or on python.
 
 Package: pybit-controller
 Architecture: all
 Depends: pybit-common,
  ${python:Depends}, ${misc:Depends}
 Description: buildd controller for pybit
+ This package provides the controller agent which accepts build
+ requests from VCS hooks and the web API to pybit-client
+ installations and maintains the status database for PyBit.
 
 Package: pybit-client
 Architecture: all
-Depends: python-amqplib, python-debian, sbuild,
- pybit-common,
+Depends: sbuild, dput, dpkg-dev, pybit-common,
  ${python:Depends}, ${misc:Depends}
 Description: buildd client support for pybit
  This package provides the python client for pybit
  to build packages using sbuild.
+ .
+ Each PyBit buildd client needs to install and
+ configure this package to give each client a unique
+ identifier per pybit-controller.
 
 Package: pybit-web
 Architecture: all
-Depends: ${misc:Depends}
+Depends: pybit-common, ${misc:Depends}
 Description: pybit web frontend
+ This package provides a reporting and custom-build
+ request interface for the data managed by pybit-controller.
+ .
+ The web API does not need to be installed on the same machine
+ as the controller.
 
 Package: pybit-common
 Architecture: all
-Depends: ${python:Depends}, ${misc:Depends}
+Depends: python-amqplib, python-debian,
+ ${python:Depends}, ${misc:Depends}
 Description: Common objects for pybit
  Contains object definitions to common
- python objects between pybit services.
+ python objects between pybit services
+ and the Postgres database schema for PyBit.
