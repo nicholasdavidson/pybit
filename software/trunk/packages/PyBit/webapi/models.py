@@ -64,10 +64,11 @@ class package(model):
 		
 class transport(model) :
 
-	def __init__(self,id,method,uri):
+	def __init__(self,id,method,uri,vcs_id):
 		self.id = id
 		self.method = method
 		self.uri = uri
+		self.vcs_id = vcs_id
 
 class packageinstance(model):
 
