@@ -14,17 +14,11 @@ class model(object):
 
 class arch(model):
 
-	id = None
-	name = None
-
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
 class dist(model):
-
-	id = None
-	name = None
 
 	def __init__(self,id,name):
 		self.id = id
@@ -32,17 +26,11 @@ class dist(model):
 
 class format(model):
 
-	id = None
-	name = None
-
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
 class status(model):
-
-	id = None
-	name = None
 
 	def __init__(self,id,name):
 		self.id = id
@@ -50,27 +38,17 @@ class status(model):
 
 class suite(model):
 
-	id = None
-	name = None
-
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
 class buildd(model):
 
-	id = None
-	name = None
-
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
 class job(model):
-
-	id = None
-	packageinstance = None
-	buildclient_id = None
 
 	def __init__(self,id,packageinstance,buildclient_id):
 		self.id = id
@@ -79,24 +57,19 @@ class job(model):
 
 class package(model):
 
-	id = None
-	version = None
-	name = None
-
 	def __init__(self,id,version,name):
 		self.id = id
 		self.version = version
 		self.name = name
+		
+class transport(model) :
+
+	def __init__(self,id,method,uri):
+		self.id = id
+		self.method = method
+		self.uri = uri
 
 class packageinstance(model):
-
-	id = None
-	suite = None
-	package = None
-	version = None
-	arch  = None
-	format  = None
-	distribution  = None
 
 	def __init__(self, id, suite, package, version, arch, format, distribution) :
 		self.id = id
