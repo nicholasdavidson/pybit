@@ -22,16 +22,14 @@
 
 import os
 import json
-#import pybitclient
-from common import run_cmd, send_message, get_settings, deb_package
-#from pybitclient.common import get_settings
+import pybitclient
 
 # Specific buildd options
 # FIXME: decide how this is managed and packaged
 if os.path.isfile ("client.conf"):
-	options =  get_settings("client.conf")
+	options =  pybitclient.get_settings("client.conf")
 else :
-	options = get_settings("/etc/pybit/client/client.conf")
+	options = pybitclient.get_settings("/etc/pybit/client/client.conf")
 dput_opt = options["dput"]
 buildroot = options["buildroot"]
 
