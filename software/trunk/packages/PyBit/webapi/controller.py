@@ -22,10 +22,9 @@ from db import db
 class controller:
 	
 	def __init__(self):
-		options =  get_settings("controller.conf")
 		myDb = db()
-		conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
-		chan = conn.channel()
+		#conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
+		#chan = conn.channel()
 
 	@route('/create_job', method='POST')
 	def createJob():
@@ -38,14 +37,10 @@ class controller:
 		package = request.forms.get('package')
 		suite = request.forms.get('suite')
 		format = request.forms.get('format')
-		
-		print "test"
-		
-
 		transport = transport(method, uri, vcs_id)
 
 		supported_architectures = myDb.supportedArchitectures(suite)
-		
+
 		if (len(supported_architectures) == 0):
 			response.status = "404 - no supported architectures for this suite."
 			return
