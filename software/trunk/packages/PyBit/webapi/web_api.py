@@ -3,12 +3,12 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import db
-from controller import Controller
+from controller import controller
 
 import buildd,forms,job,lookups,package, reports
 
 myDb = db()
-#buildController = controller()
+buildController = controller()
 
 @error(404)
 def error404(error):
