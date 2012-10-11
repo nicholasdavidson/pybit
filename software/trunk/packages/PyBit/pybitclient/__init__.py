@@ -1,7 +1,4 @@
 
-#import common
-#import debian
-
 import re
 import os
 import json
@@ -22,25 +19,38 @@ def get_settings(path):
 		return
 
 class deb_package:
-
 	def __init__(self,msg_body=''):
 		if msg_body:
 			self = jsonpickle.decode (msg_body)
 
-def send_message (chan, pkg, key):
-	msg.amqp.Message(jsonpickle.encode(pkg))
-	msg.properties["delivery_mode"] = 2
-	chan.basic_publish(msg,exchange=pkg.architecture,routing_key=key)
+class buildClient(object):
 
-def run_cmd (cmd, fail_msg, report, simulate):
-	if simulate :
-		print cmd
+	def send_message (chan, pkg, key):
+		msg.amqp.Message(jsonpickle.encode(pkg))
+		msg.properties["delivery_mode"] = 2
+		chan.basic_publish(msg,exchange=pkg.architecture,routing_key=key)
+
+	def run_cmd (cmd, fail_msg, report, simulate):
+		if simulate :
+			print cmd
+			return True
+		else:
+			if os.system (command) :
+				pkg.msgtype = fail_msg
+				msg.amqp.Message(jsonpickle.encode(pkg))
+				msg.properties["delivery_mode"] = 2
+				chan.basic_publish(msg,exchange=pkg.architecture,routing_key=report)
+				return False
 		return True
-	else:
-		if os.system (command) :
-			pkg.msgtype = fail_msg
-			msg.amqp.Message(jsonpickle.encode(pkg))
-			msg.properties["delivery_mode"] = 2
-			chan.basic_publish(msg,exchange=pkg.architecture,routing_key=report)
-			return False
-	return True
+
+	def build_master (buildroot):
+		pass
+
+	def build_slave (buildroot):
+		pass
+
+	def update_environment () :
+		pass
+
+	def upload () :
+		pass

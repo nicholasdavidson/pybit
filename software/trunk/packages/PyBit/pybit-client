@@ -2,7 +2,7 @@
 
 # -*- coding: utf-8 -*-
 #
-#       client.py
+#       pybit-client
 #
 #       Copyright 2012 Neil Williams <codehelp@debian.org>
 #
@@ -31,9 +31,6 @@ import pybitclient
 supported_distributions = [ "debian" ]
 supported_formats = [ "deb" ]
 
-# Specific buildd options
-
-# FIXME: decide how this is managed and packaged
 if os.path.isfile ("client.conf"):
 	options = pybitclient.get_settings("./client.conf")
 else :
@@ -41,6 +38,7 @@ else :
 
 host_arch = options["host_arch"] # i386
 use_lvm = options["use_lvm"] # true
+# FIXME: role is part of the Job.
 role = options["role"] # master - builds Architecture: all packages.
 buildroot = options["buildroot"]
 host_opt = options["host"]
@@ -52,8 +50,6 @@ insist_opt = True if options["insist"] == "True" else False
 addr_opt = host_opt + ":" + port_opt
 dput_opt = options["dput"]
 buildd_id = options["idstring"]
-
-########## No configuration beyond this stage ##############
 
 # PyBit setup variables - package content
 queue_name = "rabbit"
@@ -73,48 +69,42 @@ chan.queue_bind(queue=queue_name, exchange=host_arch, routing_key=listening_name
 def recv_callback(msg):
 	pkg = deb_package (msg.body)
 	if not pkg:
-		print "could not parse message"
+		print "E: Misconfiguration - could not parse message."
 		return
 	if not supported_formats[pkg.format]:
-		print "not for us"
+		print "E: Misconfiguration - format is not for us."
 		return
 	if not supported_distributions[pkg.distribution]:
-		print "not for us"
-		return
-	if not dput_dest or dput_dest == "":
-		print "refusing to upload to default dput destination (Debian ftpmaster)"
-		pkg.msgtype = "failed"
-		send_message (chan, pkg, report_name)
+		print "E: Misconfiguration - distribution is not for us."
 		return
 	if not buildd_id or buildd_id == "default":
-		print "refusing to build without a default or empty idstring"
-		pkg.msgtype = "failed"
-		send_message (chan, pkg, report_name)
+		print "E: Misconfiguration - refusing to build with a default or empty idstring."
 		return
-	srcdir= buildroot + "/" + pkg.suite + "/svn"
-	builddir= buildroot + "/tmpbuilds/" + pkg.suite
-	# FIXME: allow to support cross once the routing_key check is proven.
-	if pkg.buildd == host_arch + "-" + "buildd":
+	if pkg.format == "deb" and pkg.distribution.lower() == "debian":
+		client = debianBuildClient ()
+	else:
+		print "W: shouldn't get here"
 		return
+	if not dput_dest or dput_dest == "":
+		print "E: Misconfiguration - refusing to upload to default dput destination (Debian ftpmaster)."
+		return
+	srcdir = "%s/%s/svn" % (buildroot, pkg.suite)
+	builddir = "%s/tmpbuilds/%s" % (buildroot, pkg.suite)
 	# FIXME: use same naming convention in schroot setup whether lvm is used or not.
 	if use_lvm :
 		name = pkg.suite + "-source"
 	else:
 		name = pkg.suite
-	command = "schroot -u root -c " + name + "-- apt-get update > /dev/null 2>&1"
-	if run_cmd (command, "failed", report_name, options["dry_run"]):
-		return
+	client.update_environment ()
 	# May need more sanity checking here
 	pkg.architecture = host_arch
 	pkg.buildd = buildd_id
 	pkg.msgtype = "building"
 	send_message (chan, pkg, report_name)
 	if role == "master" :
-		if pkg.format == "deb" and pkg.distribution == "debian":
-			debian_build_master (srcdir, pkg)
+		client.build_master (srcdir, pkg)
 	elif role == "slave":
-		if pkg.format == "deb" and pkg.distribution == "debian":
-			debian_build_slave (srcdir, pkg)
+		client.build_slave (srcdir, pkg)
 
 while True:
 	chan.wait()
