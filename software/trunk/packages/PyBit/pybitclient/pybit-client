@@ -26,9 +26,8 @@ import re
 import json
 import os.path
 import time
-#import pybitclient
-from common.common import get_settings, deb_package, send_message
-from debian.debian import debian_build_master, debian_build_slave
+from common import get_settings, deb_package, send_message
+from debian import debian_build_master, debian_build_slave
 
 supported_distributions = [ "debian" ]
 supported_formats = [ "deb" ]

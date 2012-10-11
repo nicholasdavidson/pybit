@@ -27,7 +27,7 @@ setup(name='pybit-client',
 	version='__CHANGELOG_VERSION__',
 	description='PyBit client related modules',
 	url='http://www.toby-churchill.co.uk',
-	packages=['pybitclient.common', 'pybitclient.debian'],
+	packages=['pybitclient'],
 	maintainer='TCL Build System user',
 	maintainer_email='rnd@toby-churchill.com',
 	)

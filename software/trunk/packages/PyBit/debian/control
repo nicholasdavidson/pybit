@@ -7,16 +7,17 @@ Uploaders: Nick Davidson <nickd@toby-churchill.com>,
  Neil Williams <neilw@toby-churchill.com>,
  Nick Bane <nick@cecomputing.co.uk>,
  James Bennet <James.Bennet@toby-churchill.com>
-Build-Depends: debhelper (>= 7.0.50~), python-support
+Build-Depends: debhelper (>= 7.0.50~),
+ python, python-support
 Standards-Version: 3.9.3
 
 Package: pybit-svn
 Architecture: all
 Depends: subversion, curl, ${misc:Depends}
 Description: subversion post commit hook for pybit
- Subversion post commit hook to check for interesting
- changes in the repository and post a directory back to
- the controller using curl.
+ Provides a subversion post commit hook to check for
+ interesting changes in the repository and post a directory back
+ to the controller using curl.
  .
  Currently, only subversion is supported. The svn hook
  does not depend on the rest of pybit or on python.

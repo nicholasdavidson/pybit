@@ -20,5 +20,5 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-from pybitclient.common import get_settings, deb_package, send_message
-from pybitclient.debian import build_master, build_slave
+from common import *
+from debian import *

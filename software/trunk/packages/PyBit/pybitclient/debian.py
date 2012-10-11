@@ -23,21 +23,8 @@
 import os
 import json
 #import pybitclient.common
-#from common import run_cmd, send_message, get_settings, deb_package
+from common import run_cmd, send_message, get_settings, deb_package
 #from pybitclient.common import get_settings
-
-# FIXME: work out how to do common
-def get_settings(path):
-	try:
-		fh = open(path,"r")
-		file_contents = fh.read();
-		return json.loads(file_contents)
-	except IOError:
-		raise IOError,"Cannot load settings file."
-		return
-	except Exception:
-		raise Exception,"Unhandled JSON error"
-		return
 
 # Specific buildd options
 # FIXME: decide how this is managed and packaged

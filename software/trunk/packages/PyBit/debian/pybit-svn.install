@@ -1,1 +1,1 @@
-hook/svn-postcommit ./usr/share/pybit/svn/
+hook/svn-postcommit-debian ./usr/share/pybit/svn/
