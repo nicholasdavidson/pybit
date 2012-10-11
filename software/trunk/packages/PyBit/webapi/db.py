@@ -44,6 +44,15 @@ class db:
 			arches.append(arch(i['id'],i['name']))
 		return arches
 
+	def get_arch_byname(self,name):
+		self.cur.execute("SELECT id,name FROM arch WHERE name=%s",(name,))
+		res = self.cur.fetchall()
+
+		arches = []
+		for i in res:
+			arches.append(arch(i['id'],i['name']))
+		return arches
+
 	def put_arch(self,name):
 		self.cur.execute("INSERT into arch(name) VALUES (%s)",(name,))
 		res = self.conn.commit()
@@ -58,6 +67,15 @@ class db:
 			dists.append(dist(i['id'],i['name']))
 		return dists
 
+	def get_dist_byname(self,name):
+		self.cur.execute("SELECT id,name FROM distribution WHERE name=%s",(name,))
+		res = self.cur.fetchall()
+
+		dists = []
+		for i in res:
+			dists.append(dist(i['id'],i['name']))
+		return dists
+
 	def put_dist(self,name):
 		self.cur.execute("INSERT into distribution(name) VALUES (%s)",(name,))
 		res = self.conn.commit()
@@ -67,6 +85,15 @@ class db:
 		self.cur.execute("SELECT id,name FROM format ORDER BY name")
 		res = self.cur.fetchall()
 		
+		formats = []
+		for i in res:
+			formats.append(format(i['id'],i['name']))
+		return formats
+
+	def get_format_byname(self,name):
+		self.cur.execute("SELECT id,name FROM format WHERE name=%s",(name,))
+		res = self.cur.fetchall()
+
 		formats = []
 		for i in res:
 			formats.append(format(i['id'],i['name']))
@@ -94,7 +121,16 @@ class db:
 	def get_suites(self):
 		self.cur.execute("SELECT id,name FROM suite ORDER BY name")
 		res = self.cur.fetchall()
-		
+
+		suites = []
+		for i in res:
+			suites.append(suite(i['id'],i['name']))
+		return suites
+
+	def get_suite_byname(self,name):
+		self.cur.execute("SELECT id,name FROM suite WHERE name=%s",(name,))
+		res = self.cur.fetchall()
+
 		suites = []
 		for i in res:
 			suites.append(suite(i['id'],i['name']))
@@ -189,6 +225,15 @@ class db:
 			packages.append(package(i['id'],i['version'],i['name']))
 		return packages
 
+	def get_package_byvalues(self,name,version):
+		self.cur.execute("SELECT id,name,version FROM package WHERE name=%s AND version=%s",(name,version))
+		res = self.cur.fetchall()
+
+		packages = []
+		for i in res:
+			packages.append(package(i['id'],i['version'],i['name']))
+		return packages
+
 	def put_package(self,version,name):
 		self.cur.execute("INSERT into package(version,name) VALUES (%s, %s)",(version,name))
 		res = self.conn.commit()
@@ -206,8 +251,38 @@ class db:
 		for i in res:
 			packages.append(package(i['id'],i['version'],i['name']))
 		return packages
+
+	#<<<<<<<<< Packageinstance related Queries >>>>>>>
+	# <<<<< TODO: This is a work in progress!!! >>>>>
+	def check_specific_packageinstance_exists(self,arch,distribution,format,packagename,packageversion,suite):
+
+		if arch and distribution and format and packagename and packageversion and suite:
+			archidID =  self.get_arch_byname(arch)
+			distributionID = self.get_dist_byname(distribution)
+			formatID =  self.get_format_byname(format)
+			packageID =  self.get_package_byvalues(packagename,packageversion)
+			suiteID = self.get_suite_byname(suite)
+		else:
+			#Error finding specific package instance
+			return False
+
+		if archidID and distributionID and formatID and packageID and suiteID:
+			self.cur.execute("SELECT id FROM packageinstance WHERE arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(archidID[0].id,distributionID[0].id,formatID[0].id,packageID[0].id,suiteID[0].id))
+			res = self.cur.fetchall()
+			if len(res) > 0:
+				#Found specific package instance
+				return True
+			else:
+				# doesnt exist
+				#Cannot find specific package instance
+				return False
+		else:
+			#Error finding specific package instance
+			return False
+
 	#<<<<<<<<< Report Queries >>>>>>>
 	def get_report_package_instance(self):
+
 		self.cur.execute("SELECT packageinstance.id, suite.name AS suite, package.name AS package, package.version AS version, arch.name AS arch, format.name AS format, distribution.name AS dist FROM packageinstance LEFT JOIN arch ON arch.id=arch_id LEFT JOIN suite ON suite.id=suite_id LEFT JOIN distribution ON distribution.id=dist_id LEFT JOIN package ON package_id=package.id LEFT JOIN format ON format_id=format.id")
 		res = self.cur.fetchall()
 		

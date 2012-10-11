@@ -50,9 +50,9 @@ class buildd(model):
 
 class job(model):
 
-	def __init__(self,id,packageinstance,buildclient_id):
+	def __init__(self,id,packageinstance_id,buildclient_id):
 		self.id = id
-		self.packageinstance = packageinstance
+		self.packageinstance_id = packageinstance_id
 		self.buildclient_id = buildclient_id
 
 class package(model):
