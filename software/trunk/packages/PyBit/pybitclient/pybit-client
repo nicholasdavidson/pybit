@@ -26,8 +26,7 @@ import re
 import json
 import os.path
 import time
-from common import get_settings, deb_package, send_message
-from debian import debian_build_master, debian_build_slave
+from pybitclient import common, debian
 
 supported_distributions = [ "debian" ]
 supported_formats = [ "deb" ]
@@ -36,9 +35,9 @@ supported_formats = [ "deb" ]
 
 # FIXME: decide how this is managed and packaged
 if os.path.isfile ("client.conf"):
-	options =  get_settings("./client.conf")
+	options = common.get_settings("./client.conf")
 else :
-	options = get_settings("/etc/pybit/client/client.conf")
+	options = common.get_settings("/etc/pybit/client/client.conf")
 
 host_arch = options["host_arch"] # i386
 use_lvm = options["use_lvm"] # true

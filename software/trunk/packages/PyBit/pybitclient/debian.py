@@ -22,7 +22,7 @@
 
 import os
 import json
-#import pybitclient.common
+#import pybitclient
 from common import run_cmd, send_message, get_settings, deb_package
 #from pybitclient.common import get_settings
 
