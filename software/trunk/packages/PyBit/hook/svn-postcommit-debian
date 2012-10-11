@@ -1,7 +1,8 @@
 #!/bin/sh
 
 set -e
-#       svn-postcommit.sh
+
+#       svn-postcommit-debian - Debian-based SVN postcommit hook
 #
 #       Copyright 2012 Neil Williams <codehelp@debian.org>
 #
@@ -19,6 +20,19 @@ set -e
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
+
+######## Configuration ############
+
+# Network location of the pybit-web server
+PYBIT_HTTP="http://pybit:3000/"
+
+# Anonymous SVN URI stub
+ANON_SVN="http://svn.tcl.office/svn/lwdev"
+
+# Distribution
+DISTRO_NAME="Debian"
+
+####### End Configuration #########
 
 # POST-COMMIT HOOK
 #
@@ -65,7 +79,7 @@ set -e
 
 REPOS="$1"
 REV="$2"
-
+METHOD="svn"
 RES=`svnlook changed ${REPOS} --revision ${REV}|grep "debian/changelog" || true`
 PKG=`echo "${RES}" | grep packages | cut -d' ' -f4- || true`
 if [ ! "${RES}" ]; then
@@ -76,4 +90,24 @@ if [ ! "${PKG}" ]; then
 fi
 DEBDIR=`dirname $PKG`
 PKGDIR=`dirname $DEBDIR`
-curl -X POST http://pybit:3000/svn/ --data "directory=$PKGDIR"
+PKG=`basename $PKGDIR`
+CHGLG=`echo ${RES} | sed -e 's/^. //'`
+TMPFILE=`mktemp`
+svn cat file://${REPOS}/${CHGLG} > ${TMPFILE}
+VERSION=`dpkg-parsechangelog -l${TMPFILE} | grep Version | sed -e 's/^.*: //'`
+SUITE=`dpkg-parsechangelog -l${TMPFILE} | grep Distribution | sed -e 's/^.*: //'`
+PKG=`dpkg-parsechangelog -l${TMPFILE} | grep Source |sed -e 's/^.*: //'`
+rm ${TMPFILE}
+CTRL=`echo ${CHGLG} | sed -e 's/changelog$/control/'`
+LIST=`svn cat file://${REPOS}/${CTRL} | grep Architecture| cut -d':' -f2|sort -u|tr '\n' ','|sed -e 's/ //g'| sed -e 's/,$//'`
+DATASTR="uri=${ANON_SVN}"
+DATASTR="${DATASTR}&directory=${PKGDIR}"
+DATASTR="${DATASTR}&method=svn"
+DATASTR="${DATASTR}&distribution=${DISTRO_NAME}"
+DATASTR="${DATASTR}&vcs_id=${REV}"
+DATASTR="${DATASTR}&architecture_list=${LIST}"
+DATASTR="${DATASTR}&package_version=${VERSION}"
+DATASTR="${DATASTR}&package=${PKG}"
+DATASTR="${DATASTR}&suite=${DISTRIBUTION}"
+DATASTR="${DATASTR}&format=deb"
+echo /usr/bin/curl -X POST ${PYBIT_HTTP}/svn/ --data ${DATASTR}
