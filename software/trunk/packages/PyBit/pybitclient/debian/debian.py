@@ -22,12 +22,12 @@
 
 import os
 import json
+#import pybitclient.common
 #from common import run_cmd, send_message, get_settings, deb_package
+#from pybitclient.common import get_settings
 
 # FIXME: work out how to do common
 def get_settings(path):
-	# dumps() serializes a python object to a JSON formatted string.
-	# loads() deserializes a JSON formatted string to a python object.
 	try:
 		fh = open(path,"r")
 		file_contents = fh.read();
@@ -57,7 +57,7 @@ def update_environment (name):
 	if run_cmd (command, "failed", report_name, options["dry_run"]):
 		return
 
-def build_master (srcdir, pkg):
+def debian_build_master (srcdir, pkg):
 	package_dir = srcdir + "/" + pkg.package
 	builddir= buildroot + "/tmpbuilds/" + pkg.suite
 	if os.path.isdir(package_dir) :
@@ -76,10 +76,10 @@ def build_master (srcdir, pkg):
 		pkg.msgtype = "failed"
 		send_message (chan, pkg, report_name)
 		return
-	upload (changes)
+	debian_upload (changes)
 
 
-def upload (changes):
+def debian_upload (changes):
 	builddir= buildroot + "/tmpbuilds/" + pkg.suite
 	command = "dput -c " + dput_cfg + " " + dput_opt + " " + dput_dest + " " + changes
 	if run_cmd (command, "failed", report_name, options["dry_run"]):
@@ -88,7 +88,7 @@ def upload (changes):
 	send_message (chan, pkg, report_name)
 
 
-def build_slave (srcdir, pkg):
+def debian_build_slave (srcdir, pkg):
 	command = "sbuild -d " + pkg.suite + " " + pkg.source + "_" + pkg.version;
 	if run_cmd (command, "failed", report_name, options["dry_run"]):
 		return
@@ -97,4 +97,4 @@ def build_slave (srcdir, pkg):
 		pkg.msgtype = "failed"
 		send_message (chan, pkg, report_name)
 		return
-	upload (changes)
+	debian_upload (changes)

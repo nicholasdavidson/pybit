@@ -23,6 +23,7 @@
 import re
 import os
 import json
+import jsonpickle
 
 def get_settings(path):
 	# dumps() serializes a python object to a JSON formatted string.
@@ -40,41 +41,12 @@ def get_settings(path):
 
 class deb_package:
 
-	#fields
-	package = ""
-	version = ""
-	architecture = ""
-	suite = ""
-	buildd = ""
-	msgtype = ""
-	source = ""
-
 	def __init__(self,msg_body=''):
 		if msg_body:
-			match = re.match ("(.*):(.*):(.*):(.*):(.*):(.*)", msg_body)
-
-			if not match:
-				raise Exception,"Regex error. Invalid format?"
-				return
-			else:
-				self.package = match.group(1)
-				self.version = match.group(2)
-				self.architecture = match.group(3)
-				self.suite = match.group(4)
-				self.buildd = match.group(5)
-				self.msgtype = match.group(6)
-
-	def __str__(self):
-		return self.package + ":" + self.version + ":" + self.architecture + ":" + self.suite + ":" + self.buildd + ":" + self.msgtype
-
-	def __repr__(self):
-		return self.package + ":" + self.version + ":" + self.architecture + ":" + self.suite + ":" + self.buildd + ":" + self.msgtype
-
-	def __unicode__(self):
-		return self.package + ":" + self.version + ":" + self.architecture + ":" + self.suite + ":" + self.buildd + ":" + self.msgtype
+			self = jsonpickle.decode (msg_body)
 
 def send_message (chan, pkg, key):
-	msg.amqp.Message(str(pkg))
+	msg.amqp.Message(jsonpickle.encode(pkg))
 	msg.properties["delivery_mode"] = 2
 	chan.basic_publish(msg,exchange=pkg.architecture,routing_key=key)
 
@@ -85,7 +57,7 @@ def run_cmd (cmd, fail_msg, report, simulate):
 	else:
 		if os.system (command) :
 			pkg.msgtype = fail_msg
-			msg.amqp.Message(str(pkg))
+			msg.amqp.Message(jsonpickle.encode(pkg))
 			msg.properties["delivery_mode"] = 2
 			chan.basic_publish(msg,exchange=pkg.architecture,routing_key=report)
 			return False

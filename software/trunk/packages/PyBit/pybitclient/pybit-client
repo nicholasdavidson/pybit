@@ -28,7 +28,10 @@ import os.path
 import time
 #import pybitclient
 from common.common import get_settings, deb_package, send_message
-from debian.debian import build_master, build_slave
+from debian.debian import debian_build_master, debian_build_slave
+
+supported_distributions = [ "debian" ]
+supported_formats = [ "deb" ]
 
 # Specific buildd options
 
@@ -74,6 +77,12 @@ def recv_callback(msg):
 	if not pkg:
 		print "could not parse message"
 		return
+	if not supported_formats[pkg.format]:
+		print "not for us"
+		return
+	if not supported_distributions[pkg.distribution]:
+		print "not for us"
+		return
 	if not dput_dest or dput_dest == "":
 		print "refusing to upload to default dput destination (Debian ftpmaster)"
 		pkg.msgtype = "failed"
@@ -103,9 +112,11 @@ def recv_callback(msg):
 	pkg.msgtype = "building"
 	send_message (chan, pkg, report_name)
 	if role == "master" :
-		build_master (srcdir, pkg)
+		if pkg.format == "deb" and pkg.distribution == "debian":
+			debian_build_master (srcdir, pkg)
 	elif role == "slave":
-		build_slave (srcdir, pkg)
+		if pkg.format == "deb" and pkg.distribution == "debian":
+			debian_build_slave (srcdir, pkg)
 
 while True:
 	chan.wait()
