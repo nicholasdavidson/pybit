@@ -9,6 +9,7 @@ Uploaders: Nick Davidson <nickd@toby-churchill.com>,
  James Bennet <James.Bennet@toby-churchill.com>
 Build-Depends: debhelper (>= 7.0.50~),
  python, python-support
+XS-Python-Version: 2.6
 Standards-Version: 3.9.3
 
 Package: pybit-svn
