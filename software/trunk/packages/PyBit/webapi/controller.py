@@ -39,7 +39,7 @@ class controller:
 #		else : 
 #			print uri, method, dist, vcs_id, architectures, version, package, suite, format
 
-		architectures = myDb.supportedArchitectures(suite)
+		supported_arches = myDb.supportedArchitectures(suite)
 
 		if (len(supported_arches) == 0):
 			response.status = "404 - no supported architectures for this suite."
