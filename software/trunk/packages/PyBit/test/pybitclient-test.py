@@ -24,15 +24,14 @@ import unittest
 import pybitclient
 from pybitclient.debian import DebianBuildClient
 from pybitclient.subversion import SubversionClient
-#from pybitclient.buildclient import BuildClient
 
 class TestClient(unittest.TestCase) :
 	def setUp (self):
 		return
 
 	def test_build_client (self) :
-#		client = BuildClient()
 		deb_client = DebianBuildClient()
+		svn_client = SubversionClient()
 
 if __name__ == '__main__':
 	unittest.main()
