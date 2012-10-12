@@ -30,4 +30,5 @@ setup(name='pybit-client',
 	packages=['pybitclient'],
 	maintainer='TCL Build System user',
 	maintainer_email='rnd@toby-churchill.com',
+	test_suite='tests'
 	)

@@ -21,6 +21,9 @@ VERSION := $(shell dpkg-parsechangelog | grep '^Version: ' | awk '{print $$2}')
 %.py: %.py.in
 	sed -e 's/__CHANGELOG_VERSION__/$(VERSION)/' < $< > $@
 
+PYTHON2:=$(shell pyversions -r)
+pyalldo=set -e; $(foreach py, $(PYTHON2) $(PYTHON3), $(py) $(1);)
+
 configure: configure-stamp
 configure-stamp: setup.py
 	dh_testdir
@@ -32,6 +35,7 @@ build-indep: build-stamp
 build-stamp: configure-stamp
 	dh_testdir
 	python setup.py build
+	$(call pyalldo, test/*.py)
 	touch $@
 
 clean:
