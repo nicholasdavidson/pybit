@@ -291,3 +291,8 @@ class db:
 			print i
 			package_instances.append(packageinstance(i['id'], i['suite'], i['package'], i['version'], i['arch'], i['format'], i['dist']))
 		return package_instances
+		
+	def supportedArchitectures(self,suite) :
+		arch_list = []
+		arch_list.append("i386")
+		return arch_list

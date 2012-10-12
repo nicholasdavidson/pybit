@@ -2,59 +2,57 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 from amqplib import client_0_8 as amqp
+from models import transport, packageinstance, job
 import jsonpickle
 import os.path
 from db import db
 
-#example CURL command....
-#/usr/bin/curl -X POST http://pybit:3000//svn/ --data 
-#uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget
-#&method=svn
-#&distribution=Debian
-#&vcs_id=20961
-#&architecture_list=all,any
-#&package_version=0.6.33chickpea47
-#&package=appbarwidget
-#&suite=
-#&format=deb
+# example CURL command....
+# /usr/bin/curl -X POST http://localhost:8080/create_job/ --data uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=&format=deb
 
+myDb = db()
 
 class controller:
 	
 	def __init__(self):
-		myDb = db()
 		#conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
 		#chan = conn.channel()
+		print "controller init"
 
 	@route('/create_job', method='POST')
 	def createJob():
+		print "create job"
 		uri = request.forms.get('uri')
 		method = request.forms.get('method')
 		dist = request.forms.get('distribution')
 		vcs_id = request.forms.get('vcs_id')
-		architectures = request.forms.get('architectures')
+		architectures = request.forms.get('architecture_list')
 		version = request.forms.get('package_version')
 		package = request.forms.get('package')
 		suite = request.forms.get('suite')
 		format = request.forms.get('format')
-		transport = transport(method, uri, vcs_id)
+		trans = transport(None, method, uri, vcs_id)
 
-		supported_architectures = myDb.supportedArchitectures(suite)
+		if not uri and method and dist and vcs_id and architectures and version and package and suite and format :
+			response.status = "400 - Required fields missing."
+			return
 
-		if (len(supported_architectures) == 0):
+		supported_arches = myDb.supportedArchitectures(suite)
+
+		if (len(supported_arches) == 0):
 			response.status = "404 - no supported architectures for this suite."
 			return
 
-		if len(architectures) == 1 and architectures[0] == "all":
-			instance = packageinstance(suite, package, version, supported_architectures[0], format, dist, transport)
+		if (architectures and len(architectures) == 1 and architectures[0] == "all"):
+			instance = packageinstance(suite, package, version, supported_arches[0], format, dist, trans)
 		else :
-			for arch in supported_architectures:
-				instance = packageinstance(suite, package, version, arch, format, dist, transport)
-				if not (myDb.contains(package_instance)):
-					job = job(package_instance)
-					#check if database contains a package where status = building, version < package_version, suite = suite 
+			for arch in supported_arches:
+				if not myDb.check_specific_packageinstance_exists(arch, dist, format, package, version, suite) :
+					instance = packageinstance(suite, package, version, arch, format, dist, trans)
+					myJob = job(None,instance,None)
+					# check if database contains a package where status = building, version < package_version, suite = suite 
 					# cancel 
-					myDb.add(job)
+					myDb.add(myJob)
 			# cancel any job older jobs matching this package on queue
 		return
 
