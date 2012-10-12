@@ -8,15 +8,23 @@ import os.path
 from common.db import db
 from common.models import transport, packageinstance, job
 # example CURL command....
-# /usr/bin/curl -X POST http://localhost:8080/add/ --data uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=&format=deb
+# /usr/bin/curl -X POST http://localhost:8080/add --data uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpeaformat=deb
 
 myDb = db()
+
+# PyBit setup variables - package content
+queue_name = "rabbit"
+report_name = "controller"
+listening_name = "buildd"
+dput_cfg = "/etc/pybit/client/dput.cf"
+
+conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
+chan = conn.channel()
 
 class controller:
 
 	def __init__(self):
-		#conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
-		#chan = conn.channel()
+		#self.myDb = database
 		print "controller init"
 
 	@route('/add', method='POST')
@@ -36,8 +44,8 @@ class controller:
 		if not uri and method and dist and vcs_id and architectures and version and package and suite and format :
 			response.status = "400 - Required fields missing."
 			return
-#		else :
-#			print uri, method, dist, vcs_id, architectures, version, package, suite, format
+		else :
+			print uri, method, dist, vcs_id, architectures, version, package, suite, format
 
 		supported_arches = myDb.supportedArchitectures(suite)
 
@@ -54,6 +62,11 @@ class controller:
 					myJob = job(None,instance,None)
 					# check if database contains a package where status = building, version < package_version, suite = suite
 					# myDb.add(myJob)
+					print "DDDDDDDDDDDDDDDDDDDDDDD"
+					msg = amqp.Message(jsonpickle.encode(instance))
+					msg.properties["delivery_mode"] = 2
+					chan.basic_publish(msg,exchange="i386",routing_key="buildd")
+
 			# cancel any job older jobs matching this package on queue
 		return
 
@@ -63,6 +76,7 @@ class controller:
 
 	@route('/cancel_package', method='POST')
 	def cancelPackage():
+		
 		return
 
 	@route('/cancel_package_instance', method='POST')
