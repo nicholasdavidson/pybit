@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
+from lib.bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from common.db import db
 
@@ -13,6 +13,20 @@ def get_all_packages():
 	packages = myDb.get_packages()
 	encoded = jsonpickle.encode(packages)
 	return encoded
+
+@route('/package/<id:int>', method='GET')
+def get_package_id(id):
+	response.content_type = "application/json"
+	# Returns all information about a specific package
+	res = myDb.get_package_id(id)
+
+	# check results returned
+	if len(res) > 0:
+		encoded = jsonpickle.encode(res)
+		return encoded
+	else:
+		response.status = "404 - No package found with this ID."
+		return
 
 @route('/package', method='POST')
 @route('/package', method='PUT')

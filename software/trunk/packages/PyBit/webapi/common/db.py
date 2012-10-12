@@ -56,6 +56,19 @@ class db:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
+	def get_arch_id(self,id):
+		try:
+			self.cur.execute("SELECT id,name FROM arch WHERE id=%s",(id,))
+			res = self.cur.fetchall()
+
+			arches = []
+			for i in res:
+				arches.append(arch(i['id'],i['name']))
+			return arches
+		except Exception as e:
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
 	def get_arch_byname(self,name):
 		try:
 			self.cur.execute("SELECT id,name FROM arch WHERE name=%s",(name,))
@@ -81,6 +94,19 @@ class db:
 	def get_dists(self):
 		try:
 			self.cur.execute("SELECT id,name FROM distribution ORDER BY name")
+			res = self.cur.fetchall()
+
+			dists = []
+			for i in res:
+				dists.append(dist(i['id'],i['name']))
+			return dists
+		except Exception as e:
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
+	def get_dist_id(self,id):
+		try:
+			self.cur.execute("SELECT id,name FROM distribution WHERE id=%s",(id,))
 			res = self.cur.fetchall()
 
 			dists = []
@@ -126,6 +152,19 @@ class db:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
+	def get_format_id(self,id):
+		try:
+			self.cur.execute("SELECT id,name FROM format WHERE id=%s",(id,))
+			res = self.cur.fetchall()
+
+			formats = []
+			for i in res:
+				formats.append(format(i['id'],i['name']))
+			return formats
+		except Exception as e:
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
 	def get_format_byname(self,name):
 		try:
 			self.cur.execute("SELECT id,name FROM format WHERE name=%s",(name,))
@@ -161,6 +200,19 @@ class db:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
+	def get_status_id(self,id):
+		try:
+			self.cur.execute("SELECT id,name FROM status WHERE id=%s",(id,))
+			res = self.cur.fetchall()
+
+			statuses = []
+			for i in res:
+				statuses.append(status(i['id'],i['name']))
+			return statuses
+		except Exception as e:
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
 	def put_status(self,name):
 		try:
 			self.cur.execute("INSERT into status(name) VALUES (%s)",(name,))
@@ -173,6 +225,19 @@ class db:
 	def get_suites(self):
 		try:
 			self.cur.execute("SELECT id,name FROM suite ORDER BY name")
+			res = self.cur.fetchall()
+
+			suites = []
+			for i in res:
+				suites.append(suite(i['id'],i['name']))
+			return suites
+		except Exception as e:
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
+	def get_suite_id(self,id):
+		try:
+			self.cur.execute("SELECT id,name FROM suite WHERE id=%s",(id,))
 			res = self.cur.fetchall()
 
 			suites = []
@@ -333,6 +398,19 @@ class db:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
+	def get_package_id(self,id):
+		try:
+			self.cur.execute("SELECT id,version,name FROM package WHERE id=%s",(id,))
+			res = self.cur.fetchall()
+
+			packages = []
+			for i in res:
+				packages.append(package(i['id'],i['version'],i['name']))
+			return packages
+		except Exception as e:
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
 	def get_package_byvalues(self,name,version):
 		try:
 			self.cur.execute("SELECT id,name,version FROM package WHERE name=%s AND version=%s",(name,version))
@@ -416,7 +494,7 @@ class db:
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
-		
+
 	def supportedArchitectures(self,suite) :
 		arch_list = []
 		arch_list.append("i386")

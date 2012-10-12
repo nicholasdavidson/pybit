@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect
+from lib.bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect
 
 #TODO: Package instances
 
