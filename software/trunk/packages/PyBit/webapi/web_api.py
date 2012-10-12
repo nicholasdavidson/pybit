@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
-from lib.bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
+from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 
 from common.db import db
-from routes import buildd,forms,job,lookups,package, reports
+from routes import buildd,forms,job,lookups,package,reports
 from routes.controller import controller
 
 myDb = db()

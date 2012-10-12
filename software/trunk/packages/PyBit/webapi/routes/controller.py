@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from lib.bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
+from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 from amqplib import client_0_8 as amqp
 import jsonpickle
 import os.path
@@ -13,7 +13,7 @@ from common.models import transport, packageinstance, job
 myDb = db()
 
 class controller:
-	
+
 	def __init__(self):
 		#conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
 		#chan = conn.channel()
@@ -36,7 +36,7 @@ class controller:
 		if not uri and method and dist and vcs_id and architectures and version and package and suite and format :
 			response.status = "400 - Required fields missing."
 			return
-#		else : 
+#		else :
 #			print uri, method, dist, vcs_id, architectures, version, package, suite, format
 
 		supported_arches = myDb.supportedArchitectures(suite)
@@ -52,7 +52,7 @@ class controller:
 				if not myDb.check_specific_packageinstance_exists(arch, dist, format, package, version, suite) :
 					instance = packageinstance(suite, package, version, arch, format, dist, trans)
 					myJob = job(None,instance,None)
-					# check if database contains a package where status = building, version < package_version, suite = suite 
+					# check if database contains a package where status = building, version < package_version, suite = suite
 					# myDb.add(myJob)
 			# cancel any job older jobs matching this package on queue
 		return
