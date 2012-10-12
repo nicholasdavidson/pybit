@@ -28,6 +28,8 @@ DROP TABLE IF EXISTS Status CASCADE
 ;
 DROP TABLE IF EXISTS Suite CASCADE
 ;
+DROP TABLE IF EXISTS Suite_Arches CASCADE
+;
 
 --  Create Tables 
 CREATE TABLE Arch ( 
@@ -111,6 +113,12 @@ CREATE TABLE Suite (
 )
 ;
 
+CREATE TABLE SuiteArches (
+	id SERIAL PRIMARY KEY,
+	Suite_id bigint,
+	Arch_id bigint
+)
+;
 
 --  Create Indexes 
 ALTER TABLE Arch
@@ -142,6 +150,10 @@ ALTER TABLE Status
 ;
 ALTER TABLE Suite
 	ADD CONSTRAINT UQ_Suite_id UNIQUE (id)
+;
+
+ALTER TABLE SuiteArches 
+	ADD CONSTRAINT UQ_Stuite_Arches_id UNIQUE (id)
 ;
 
 --  Create Foreign Key Constraints 
@@ -179,4 +191,12 @@ ALTER TABLE PackageInstance ADD CONSTRAINT FK_PackageInstance_Package
 
 ALTER TABLE PackageInstance ADD CONSTRAINT FK_PackageInstance_Suite 
 	FOREIGN KEY (Suite_id) REFERENCES Suite (id)
+;
+
+ALTER TABLE SuiteArches ADD CONSTRAINT FK_SuiteArches_Suite
+	FOREIGN KEY (Suite_id) REFERENCES Suite (id)
+;
+
+ALTER TABLE SuiteArches ADD CONSTRAINT FK_SuiteArches_Arch
+	FOREIGN KEY (Arch_id) REFERENCES Arch (id)
 ;

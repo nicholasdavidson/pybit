@@ -1,3 +1,10 @@
+pybit (0.0.6) development; urgency=low
+
+  * Added the concept of suite-arches so we can enable or disable
+    architectures on a per suite basis.
+
+ -- Nick Davidson <nickd@toby-churchill.com>  Fri, 12 Oct 2012 09:30:26 +0100
+
 pybit (0.0.5) development; urgency=low
 
   * Rename the pybit-client for use in /usr/bin/

@@ -45,6 +45,26 @@ INSERT INTO packageinstance(package_id, arch_id, suite_id, dist_id, format_id) V
 	(SELECT id FROM distribution WHERE name='Debian'),
 	(SELECT id FROM format WHERE name='deb'));
 
+INSERT INTO suitearches(suite_id, arch_id) VALUES (
+	(SELECT id FROM suite WHERE name='development'),
+	(SELECT id FROM arch WHERE name='armel')
+);
+
+INSERT INTO suitearches(suite_id, arch_id) VALUES (
+	(SELECT id FROM suite WHERE name='development'),
+	(SELECT id FROM arch WHERE name='i386')
+);
+
+INSERT INTO suitearches(suite_id, arch_id) VALUES (
+	(SELECT id FROM suite WHERE name='chickpea'),
+	(SELECT id FROM arch WHERE name='armel')
+);
+
+INSERT INTO suitearches(suite_id, arch_id) VALUES (
+	(SELECT id FROM suite WHERE name='chickpea'),
+	(SELECT id FROM arch WHERE name='i386')
+);
+
 INSERT INTO buildclients(name) VALUES 
 	('arm01'),
 	('arm02'),
