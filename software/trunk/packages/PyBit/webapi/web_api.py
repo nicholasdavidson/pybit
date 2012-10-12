@@ -24,5 +24,8 @@ def index():
 	#main index page for the whole API, composed of forms and reports pages
 	return '''<h1>PyBit - python Buildd Integration Toolkit.</h1>''', forms.index() , reports.index()
 
-debug(True)
-run(host='localhost', port=8080, reloader=True)
+try:
+	debug(True)
+	run(host='localhost', port=8080, reloader=True)
+except Exception as e:
+		raise Exception('Error starting web server: ' + str(e))

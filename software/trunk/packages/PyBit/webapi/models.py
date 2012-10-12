@@ -7,10 +7,18 @@ import jsonpickle
 # new
 class model(object):
 	def toJson(self):
-		return jsonpickle.encode(self)
+		try:
+			return jsonpickle.encode(self)
+		except Exception as e:
+			raise Exception('Error in toJson(): ' + str(e))
+			return None
 	def fromJson(self,jsonstring):
-		self = jsonpickle.decode(jsonstring)
-		return self
+		try:
+			self = jsonpickle.decode(jsonstring)
+			return self
+		except Exception as e:
+			raise Exception('Error in fromJson(): ' + str(e))
+			return None
 
 class arch(model):
 
