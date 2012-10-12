@@ -8,7 +8,7 @@ import os.path
 from common.db import db
 from common.models import transport, packageinstance, job
 # example CURL command....
-# /usr/bin/curl -X POST http://localhost:8080/add --data uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpeaformat=deb
+# /usr/bin/curl -X POST http://localhost:8080/add --data "uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpea&format=deb"
 
 myDb = db()
 
@@ -24,12 +24,10 @@ chan = conn.channel()
 class controller:
 
 	def __init__(self):
-		#self.myDb = database
 		print "controller init"
 
 	@route('/add', method='POST')
 	def add():
-		print "create job"
 		uri = request.forms.get('uri')
 		method = request.forms.get('method')
 		dist = request.forms.get('distribution')
@@ -39,13 +37,12 @@ class controller:
 		package = request.forms.get('package')
 		suite = request.forms.get('suite')
 		format = request.forms.get('format')
+		
 		trans = transport(None, method, uri, vcs_id)
 
 		if not uri and method and dist and vcs_id and architectures and version and package and suite and format :
 			response.status = "400 - Required fields missing."
 			return
-		else :
-			print uri, method, dist, vcs_id, architectures, version, package, suite, format
 
 		supported_arches = myDb.supportedArchitectures(suite)
 
@@ -62,7 +59,7 @@ class controller:
 					myJob = job(None,instance,None)
 					# check if database contains a package where status = building, version < package_version, suite = suite
 					# myDb.add(myJob)
-					print "DDDDDDDDDDDDDDDDDDDDDDD"
+					print "adding job:", package, version, suite, arch
 					msg = amqp.Message(jsonpickle.encode(instance))
 					msg.properties["delivery_mode"] = 2
 					chan.basic_publish(msg,exchange="i386",routing_key="buildd")

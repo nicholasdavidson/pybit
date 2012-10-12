@@ -498,4 +498,5 @@ class db:
 	def supportedArchitectures(self,suite) :
 		arch_list = []
 		arch_list.append("i386")
+		arch_list.append("armel")
 		return arch_list
