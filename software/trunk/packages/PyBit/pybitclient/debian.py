@@ -23,10 +23,11 @@
 import os
 import json
 import pybitclient
+from buildclient import BuildClient
 
-class debianBuildClient(buildClient):
+class DebianBuildClient(BuildClient):
 
-	def update_environment:
+	def update_environment():
 		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
 		if run_cmd (command, "failed", report_name, options["dry_run"]):
 			return

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       client-common.py
+#       subversion.py
 #
 #       Copyright 2012 Neil Williams <codehelp@debian.org>
 #
@@ -20,3 +20,37 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os
+import pybitclient
+from buildclient import BuildClient
+
+class SubversionClient(BuildClient):
+
+	workdir = ""
+
+	def fetch_source():
+		if pkg.method_type != "svn":
+			return
+		workdir = os.path.join (buildroot, pkg.suite, "svn")
+		mkdir_p (workdir)
+		if os.path.isdir(workdir) :
+			os.chdir (workdir)
+		else:
+			return
+		if (pkg.vcs_id):
+			command = "svn export %s@%s" % (pkg.method_uri, pkg.vcs_id)
+		else:
+			command = "svn export %s" % (pkg.method_uri)
+		if run_cmd (command, "failed", report_name, options["dry_run"]):
+			return
+		return
+
+	def get_srcdir ():
+		return workdir
+
+	def __init__(self):
+		if os.path.isfile ("client.conf"):
+			options =  pybitclient.get_settings("client.conf")
+		else :
+			options = pybitclient.get_settings("/etc/pybit/client/client.conf")
+		buildroot = options["buildroot"]

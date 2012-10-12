@@ -1,3 +1,9 @@
+pybit (0.0.7) development; urgency=low
+
+  * Add a subversion build client class to fetch the source code.
+
+ -- Neil Williams <neilw@toby-churchill.com>  Fri, 12 Oct 2012 10:35:24 +0100
+
 pybit (0.0.6) development; urgency=low
 
   * Added the concept of suite-arches so we can enable or disable

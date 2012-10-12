@@ -27,6 +27,8 @@ import json
 import os.path
 import time
 import pybitclient
+from pybitclient.debian import DebianBuildClient
+from pybitclient.subversion import SubversionClient
 
 supported_distributions = [ "debian" ]
 supported_formats = [ "deb" ]
@@ -81,14 +83,20 @@ def recv_callback(msg):
 		print "E: Misconfiguration - refusing to build with a default or empty idstring."
 		return
 	if pkg.format == "deb" and pkg.distribution.lower() == "debian":
-		client = debianBuildClient ()
+		client = DebianBuildClient ()
 	else:
 		print "W: shouldn't get here"
 		return
 	if not dput_dest or dput_dest == "":
 		print "E: Misconfiguration - refusing to upload to default dput destination (Debian ftpmaster)."
 		return
-	srcdir = "%s/%s/svn" % (buildroot, pkg.suite)
+	if pkg.method_type == "svn":
+		vcs = SubversionClient ()
+	else :
+		print "%s method not supported." % (pkg.method_type)
+		return
+	vcs.fetch_source()
+	srcdir = vcs.get_srcdir()
 	builddir = "%s/tmpbuilds/%s" % (buildroot, pkg.suite)
 	# FIXME: use same naming convention in schroot setup whether lvm is used or not.
 	if use_lvm :

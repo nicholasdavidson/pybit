@@ -1,6 +1,7 @@
 
 import re
 import os
+import errno
 import json
 import jsonpickle
 
@@ -18,39 +19,15 @@ def get_settings(path):
 		raise Exception,"Unhandled JSON error"
 		return
 
+def mkdir_p(path):
+	try:
+		os.makedirs(path)
+	except OSError as exc: # Python >2.5
+		if exc.errno == errno.EEXIST:
+			pass
+		else: raise
+
 class deb_package:
 	def __init__(self,msg_body=''):
 		if msg_body:
 			self = jsonpickle.decode (msg_body)
-
-class buildClient(object):
-
-	def send_message (chan, pkg, key):
-		msg.amqp.Message(jsonpickle.encode(pkg))
-		msg.properties["delivery_mode"] = 2
-		chan.basic_publish(msg,exchange=pkg.architecture,routing_key=key)
-
-	def run_cmd (cmd, fail_msg, report, simulate):
-		if simulate :
-			print cmd
-			return True
-		else:
-			if os.system (command) :
-				pkg.msgtype = fail_msg
-				msg.amqp.Message(jsonpickle.encode(pkg))
-				msg.properties["delivery_mode"] = 2
-				chan.basic_publish(msg,exchange=pkg.architecture,routing_key=report)
-				return False
-		return True
-
-	def build_master (buildroot):
-		pass
-
-	def build_slave (buildroot):
-		pass
-
-	def update_environment () :
-		pass
-
-	def upload () :
-		pass
