@@ -2,10 +2,10 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-from db import db
-from controller import controller
 
-import buildd,forms,job,lookups,package, reports
+from common.db import db
+from routes import buildd,forms,job,lookups,package, reports
+from routes.controller import controller
 
 myDb = db()
 buildController = controller()

@@ -2,11 +2,11 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 from amqplib import client_0_8 as amqp
-from models import transport, packageinstance, job
 import jsonpickle
 import os.path
-from db import db
 
+from common.db import db
+from common.models import transport, packageinstance, job
 # example CURL command....
 # /usr/bin/curl -X POST http://localhost:8080/add/ --data uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=&format=deb
 

@@ -2,8 +2,8 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-from db import db
-from models import arch,dist,format,status,suite
+from common.db import db
+from common.models import arch,dist,format,status,suite
 myDb = db()
 
 @route('/arch', method='GET')

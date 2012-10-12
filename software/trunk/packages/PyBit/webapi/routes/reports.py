@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect
-from db import db
+from common.db import db
 import jsonpickle
 
 
