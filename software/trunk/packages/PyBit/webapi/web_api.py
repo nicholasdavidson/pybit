@@ -26,6 +26,6 @@ def index():
 
 try:
 	debug(True)
-	run(host='localhost', port=8080, reloader=True)
+	run(host='localhost', port=8080, reloader=False)
 except Exception as e:
 		raise Exception('Error starting web server: ' + str(e))

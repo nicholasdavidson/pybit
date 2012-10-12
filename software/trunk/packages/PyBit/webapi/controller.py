@@ -8,7 +8,7 @@ import os.path
 from db import db
 
 # example CURL command....
-# /usr/bin/curl -X POST http://localhost:8080/create_job/ --data uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=&format=deb
+# /usr/bin/curl -X POST http://localhost:8080/add/ --data uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=&format=deb
 
 myDb = db()
 
@@ -19,8 +19,8 @@ class controller:
 		#chan = conn.channel()
 		print "controller init"
 
-	@route('/create_job', method='POST')
-	def createJob():
+	@route('/add', method='POST')
+	def add():
 		print "create job"
 		uri = request.forms.get('uri')
 		method = request.forms.get('method')
@@ -36,8 +36,10 @@ class controller:
 		if not uri and method and dist and vcs_id and architectures and version and package and suite and format :
 			response.status = "400 - Required fields missing."
 			return
+#		else : 
+#			print uri, method, dist, vcs_id, architectures, version, package, suite, format
 
-		supported_arches = myDb.supportedArchitectures(suite)
+		architectures = myDb.supportedArchitectures(suite)
 
 		if (len(supported_arches) == 0):
 			response.status = "404 - no supported architectures for this suite."
@@ -51,8 +53,7 @@ class controller:
 					instance = packageinstance(suite, package, version, arch, format, dist, trans)
 					myJob = job(None,instance,None)
 					# check if database contains a package where status = building, version < package_version, suite = suite 
-					# cancel 
-					myDb.add(myJob)
+					# myDb.add(myJob)
 			# cancel any job older jobs matching this package on queue
 		return
 
