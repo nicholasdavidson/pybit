@@ -4,7 +4,7 @@ import psycopg2
 import psycopg2.extras
 from models import arch,dist,format,status,suite,buildd,job,package,packageinstance
 
-#TODO: make more robust.
+#TODO: make more robust, more DELETEs?
 
 class db:
 
@@ -84,9 +84,11 @@ class db:
 
 	def put_arch(self,name):
 		try:
-			self.cur.execute("INSERT into arch(name) VALUES (%s)",(name,))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("INSERT into arch(name) VALUES (%s) RETURNING id",(name,))
+			self.conn.commit()
+			res = self.cur.fetchall()
+			tmp = arch(res[0]['id'],name)
+			return tmp
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
@@ -132,9 +134,11 @@ class db:
 
 	def put_dist(self,name):
 		try:
-			self.cur.execute("INSERT into distribution(name) VALUES (%s)",(name,))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("INSERT into distribution(name) VALUES (%s)  RETURNING id",(name,))
+			self.conn.commit()
+			res = self.cur.fetchall()
+			tmp = dist(res[0]['id'],name)
+			return tmp
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
@@ -180,9 +184,11 @@ class db:
 
 	def put_format(self,name):
 		try:
-			self.cur.execute("INSERT into format(name) VALUES (%s)",(name,))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("INSERT into format(name) VALUES (%s)  RETURNING id",(name,))
+			self.conn.commit()
+			res = self.cur.fetchall()
+			tmp = format(res[0]['id'],name)
+			return tmp
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
@@ -215,9 +221,11 @@ class db:
 
 	def put_status(self,name):
 		try:
-			self.cur.execute("INSERT into status(name) VALUES (%s)",(name,))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("INSERT into status(name) VALUES (%s)  RETURNING id",(name,))
+			self.conn.commit()
+			res = self.cur.fetchall()
+			tmp = status(res[0]['id'],name)
+			return tmp
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
@@ -263,9 +271,11 @@ class db:
 
 	def put_suite(self,name):
 		try:
-			self.cur.execute("INSERT into suite(name) VALUES (%s)",(name,))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("INSERT into suite(name) VALUES (%s)  RETURNING id",(name,))
+			self.conn.commit()
+			res = self.cur.fetchall()
+			tmp = suite(res[0]['id'],name)
+			return tmp
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
@@ -300,18 +310,25 @@ class db:
 
 	def put_buildclient(self,name):
 		try:
-			self.cur.execute("INSERT into buildclients(name) VALUES (%s)",(name,))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("INSERT into buildclients(name) VALUES (%s)  RETURNING id",(name,))
+			self.conn.commit()
+			res = self.cur.fetchall()
+			tmp = buildd(res[0]['id'],name)
+			return tmp
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def delete_buildclient(self,id):
 		try:
-			self.cur.execute("DELETE FROM buildclients WHERE id=%s",(id,))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("DELETE FROM buildclients WHERE id=%s RETURNING id",(id,))
+			self.conn.commit()
+			res = self.cur.fetchall() # TODO: check
+
+			if res[0]['id'] == id:
+				return True
+			else:
+				return False
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
@@ -366,9 +383,13 @@ class db:
 
 	def delete_job(self,id):
 		try:
-			self.cur.execute("DELETE FROM job WHERE id=%s",(id,))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("DELETE FROM job WHERE id=%s  RETURNING id",(id,))
+			self.conn.commit()
+			res = self.cur.fetchall() # TODO: check
+			if res[0]['id'] == id:
+				return True
+			else:
+				return False
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
@@ -376,9 +397,11 @@ class db:
 	def put_job(self,packageinstance_id,buildclient_id):
 		try:
 			#TODO: work in progress
-			self.cur.execute("INSERT INTO job (packageinstance_id,buildclient_id) VALUES (%s, %s)",(packageinstance_id,buildclient_id))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("INSERT INTO job (packageinstance_id,buildclient_id) VALUES (%s, %s)  RETURNING id",(packageinstance_id,buildclient_id))
+			self.conn.commit()
+			res = self.cur.fetchall()
+			tmp = job(res[0]['id'],packageinstance_id,buildclient_id)
+			return tmp
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
@@ -426,18 +449,24 @@ class db:
 
 	def put_package(self,version,name):
 		try:
-			self.cur.execute("INSERT into package(version,name) VALUES (%s, %s)",(version,name))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("INSERT into package(version,name) VALUES (%s, %s)  RETURNING id",(version,name))
+			self.conn.commit()
+			res = self.cur.fetchall()
+			tmp = package(res[0]['id'],version,name)
+			return tmp
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def delete_package(self,id):
 		try:
-			self.cur.execute("DELETE FROM package WHERE id=%s",(id,))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("DELETE FROM package WHERE id=%s  RETURNING id",(id,))
+			self.conn.commit()
+			res = self.cur.fetchall() # TODO: check
+			if res[0]['id'] == id:
+				return True
+			else:
+				return False
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
@@ -485,18 +514,24 @@ class db:
 
 	def put_packageinstance(self,package_id,arch_id,suite_id,dist_id,format_id,master):
 		try:
-			self.cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)",(self,package_id,arch_id,suite_id,dist_id,format_id,master))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)  RETURNING id",(self,package_id,arch_id,suite_id,dist_id,format_id,master))
+			self.conn.commit()
+			res = self.cur.fetchall()
+			tmp = packageinstance(res[0]['id'],package_id,arch_id,suite_id,dist_id,format_id,master)
+			return tmp
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def delete_packageinstance(self,id):
 		try:
-			self.cur.execute("DELETE FROM packageinstance WHERE id=%s",(id,))
-			res = self.conn.commit()
-			return res
+			self.cur.execute("DELETE FROM packageinstance WHERE id=%s RETURNING id",(id,))
+			self.conn.commit()
+			res = self.cur.fetchall() # TODO: check
+			if res[0]['id'] == id:
+				return True
+			else:
+				return False
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
