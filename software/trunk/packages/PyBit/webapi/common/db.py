@@ -457,6 +457,19 @@ class db:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
+	def get_packageinstance_byvalues(self,package_id,arch_id,suite_id,dist_id,format_id):
+		try:
+			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package_id,arch_id,suite_id,dist_id,format_id))
+			res = self.cur.fetchall()
+
+			packageinstances = []
+			for i in res:
+				packageinstances.append(packageinstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
+			return packageinstances
+		except Exception as e:
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
 	def get_packageinstance_id(self,id):
 		try:
 			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance  WHERE id=%s",(id,))
@@ -546,5 +559,4 @@ class db:
 				return False
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
-			return None	
-		
+			return None

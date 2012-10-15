@@ -7,17 +7,6 @@ from common.db import db
 
 myDb = db()
 
-class Test:
-	def testmethod(self,id):
-		try:
-			return str(id)
-		except Exception as e:
-			raise Exception('Error rendering page: ' + str(e))
-			return None
-
-myTest = Test()
-route('/test/<id:int>',method='GET')(myTest.testmethod)
-
 @route('/forms', method='GET')
 def index():
 	try:
