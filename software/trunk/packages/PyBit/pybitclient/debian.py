@@ -25,16 +25,21 @@ import json
 import pybitclient
 from buildclient import BuildClient
 
+report_name = "controller"
+
 class DebianBuildClient(BuildClient):
 
 	options = {}
 
 	def update_environment(self,name):
 		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
-		if run_cmd (command, "failed", report_name, self.options["dry_run"]):
+		if self.run_cmd (command, "failed", report_name, self.options["dry_run"]):
 			return
 
-	def build_master (srcdir, pkg):
+	def build_master (self, srcdir, pkg):
+		if (not hasattr(pkg, 'package')):
+			print "E: not able to identify package name."
+			return
 		package_dir = "%s/%s" % (srcdir, pkg.package)
 		builddir= "%s/tmpbuilds/%s" % (buildroot, pkg.suite)
 		if os.path.isdir(package_dir) :
@@ -64,7 +69,7 @@ class DebianBuildClient(BuildClient):
 		send_message (chan, pkg, report_name)
 
 
-	def build_slave (srcdir, pkg):
+	def build_slave (self, srcdir, pkg):
 		command = "sbuild -d %s %s_%s" % (pkg.suite, pkg.source, pkg.version)
 		if run_cmd (command, "failed", report_name, self.options["dry_run"]):
 			return

@@ -22,6 +22,7 @@
 
 from amqplib import client_0_8 as amqp
 import os
+import jsonpickle
 import subprocess
 import shlex
 import pybitclient
@@ -33,12 +34,12 @@ class BuildClient(object):
 	def __init__(self):
 		return
 
-	def send_message (chan, pkg, key):
-		msg.amqp.Message(jsonpickle.encode(pkg))
+	def send_message (self, chan, pkg, key):
+		msg = amqp.Message(jsonpickle.encode(pkg))
 		msg.properties["delivery_mode"] = 2
 		chan.basic_publish(msg,exchange=pkg.architecture,routing_key=key)
 
-	def run_cmd (cmd, fail_msg, report, simulate):
+	def run_cmd (self, cmd, fail_msg, report, simulate):
 		if simulate :
 			print cmd
 			return True

@@ -1,3 +1,10 @@
+pybit (0.0.15) development; urgency=low
+
+  * Handle scoping issues after the message has been decoded and handle
+    some missing attributes.
+
+ -- Neil Williams <neilw@toby-churchill.com>  Mon, 15 Oct 2012 17:01:57 +0100
+
 pybit (0.0.14) development; urgency=low
 
   * Add a runtime check on the format attribute

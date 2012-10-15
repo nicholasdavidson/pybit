@@ -77,6 +77,8 @@ def signal_handler(signal, frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
+print "Hit Ctrl-C to quit."
+
 def recv_callback(msg):
 	pkg = pybitclient.deb_package (msg.body)
 	if not pkg:
@@ -134,9 +136,9 @@ def recv_callback(msg):
 		wait(self)
 	pkg.buildd = buildd_id
 	pkg.msgtype = "building"
-	send_message (chan, pkg, report_name)
-	vcs.fetch_source()
-	srcdir = vcs.get_srcdir(pkg)
+	client.send_message (chan, pkg, report_name)
+	vcs.fetch_source(pkg)
+	srcdir = vcs.get_srcdir()
 	if role == "master" :
 		client.build_master (srcdir, pkg)
 		while client.is_building() :

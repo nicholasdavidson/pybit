@@ -29,19 +29,22 @@ class SubversionClient(BuildClient):
 	workdir = ""
 	options = {}
 
-	def fetch_source(pkg):
+	def fetch_source(self, pkg):
 		if pkg.method_type != "svn":
 			return
 		self.workdir = os.path.join (self.options["buildroot"], pkg.suite, pkg.method_type)
-		mkdir_p (workdir)
-		if os.path.isdir(workdir) :
-			os.chdir (workdir)
+		pybitclient.mkdir_p (self.workdir)
+		if os.path.isdir(self.workdir) :
+			os.chdir (self.workdir)
 		else:
 			return
-		if (pkg.vcs_id):
+		if (hasattr(pkg, 'vcs_id')):
 			command = "svn export %s@%s" % (pkg.method_uri, pkg.vcs_id)
-		else:
+		elif (hasattr(pkg, 'method_uri')):
 			command = "svn export %s" % (pkg.method_uri)
+		else:
+			print "Could not fetch source, no method URI found"
+			return
 		if run_cmd (command, "failed", report_name, self.options["dry_run"]):
 			return
 		return

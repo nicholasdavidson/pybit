@@ -28,8 +28,6 @@ def get_settings(path):
 		return
 
 def mkdir_p(path):
-	if (type(path) != str):
-		raise Exception,"Need a string to make directories by path"
 	try:
 		os.makedirs(path)
 	except OSError as exc: # Python >2.5
