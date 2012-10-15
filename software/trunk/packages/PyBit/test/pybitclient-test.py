@@ -20,7 +20,12 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os
+import logging
+import sys
+import json
 import unittest
+# needs PYTHONPATH=.:..
 import pybitclient
 from pybitclient.debian import DebianBuildClient
 from pybitclient.subversion import SubversionClient
@@ -29,9 +34,41 @@ class TestClient(unittest.TestCase) :
 	def setUp (self):
 		return
 
-	def test_build_client (self) :
+	options = {}
+
+	def test_01_client_config (self) :
+		log= logging.getLogger( "testCase" )
+		log.debug("\n")
+		conffile = "%s/pybitclient/client.conf" % (os.getcwd());
+		if os.path.isfile (conffile):
+			log.debug("I: reading %s" % (os.path.relpath(conffile, os.getcwd())))
+			self.options = pybitclient.get_settings(conffile)
+		elif os.path.isfile ("/etc/pybit/client/client.conf") :
+			conffile = "/etc/pybit/client/client.conf";
+			log.debug("I: reading %s" % (conffile))
+			self.options = pybitclient.get_settings(conffile)
+		else :
+			log.debug("I: unable to find config file.")
+		if not "dry_run" in self.options :
+			msg = "I: dry_run not set in options"
+			log.debug (msg)
+			self.options["dry_run"] = True
+		else :
+			msg = "I: dry_run already set."
+			log.debug(msg)
+
+	def test_02_build_client (self) :
+		log= logging.getLogger( "testCase" )
+		log.debug("\n")
 		deb_client = DebianBuildClient()
 		svn_client = SubversionClient()
+		msg = "I: srcdir = %s" % (svn_client.get_srcdir())
+		log.debug(msg)
 
 if __name__ == '__main__':
-	unittest.main()
+	FORMAT = '%(msg)s'
+	logging.basicConfig(format=FORMAT)
+	logging.basicConfig( stream=sys.stderr )
+	logging.getLogger( "testCase" ).setLevel( logging.DEBUG )
+	suite = unittest.TestLoader().loadTestsFromTestCase(TestClient)
+	unittest.TextTestRunner(verbosity=2).run(suite)

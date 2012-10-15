@@ -47,7 +47,7 @@ class BuildClient(object):
 				return False
 		return True
 
-	def fetch_source ():
+	def fetch_source (self):
 		pass
 
 	def build_master (buildroot):
@@ -56,8 +56,8 @@ class BuildClient(object):
 	def build_slave (buildroot):
 		pass
 
-	def update_environment () :
+	def update_environment (self) :
 		pass
 
-	def upload () :
+	def upload (self) :
 		pass

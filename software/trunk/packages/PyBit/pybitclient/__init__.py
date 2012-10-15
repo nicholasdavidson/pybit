@@ -6,8 +6,6 @@ import json
 import jsonpickle
 
 def get_settings(path):
-	# dumps() serializes a python object to a JSON formatted string.
-	# loads() deserializes a JSON formatted string to a python object.
 	try:
 		fh = open(path,"r")
 		file_contents = fh.read();

@@ -27,9 +27,11 @@ from buildclient import BuildClient
 
 class DebianBuildClient(BuildClient):
 
+	options = {}
+
 	def update_environment():
 		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
-		if run_cmd (command, "failed", report_name, options["dry_run"]):
+		if run_cmd (command, "failed", report_name, self.options["dry_run"]):
 			return
 
 	def build_master (srcdir, pkg):
@@ -38,13 +40,13 @@ class DebianBuildClient(BuildClient):
 		if os.path.isdir(package_dir) :
 			os.chdir (package_dir)
 			command = "dpkg-checkbuilddeps"
-			if run_cmd (command, "build-dep-wait", report_name, options["dry_run"]):
+			if run_cmd (command, "build-dep-wait", report_name, self.options["dry_run"]):
 				return
 		command = "dpkg-buildpackage -S -d > /dev/null 2>&1"
-		if run_cmd (command, "failed", report_name, options["dry_run"]):
+		if run_cmd (command, "failed", report_name, self.options["dry_run"]):
 			return
 		command = "sbuild -A -s -d %s%s/%s_%s.dsc" % (pkg.suite, srcdir, pkg.source, pkg.version)
-		if run_cmd (command, "failed", report_name, options["dry_run"]):
+		if run_cmd (command, "failed", report_name, self.options["dry_run"]):
 			return
 		changes = "%s/%s_%s_%s.changes" % (builddir, pkg.package, pkg.version, pkg.architecture)
 		if not os.path.isfile (changes) :
@@ -56,7 +58,7 @@ class DebianBuildClient(BuildClient):
 	def upload (changes):
 		builddir= buildroot + "/tmpbuilds/" + pkg.suite
 		command = "dput -c %s %s %s %s" % (dput_cfg, dput_opt, dput_dest, changes)
-		if run_cmd (command, "failed", report_name, options["dry_run"]):
+		if run_cmd (command, "failed", report_name, self.options["dry_run"]):
 			return
 		pkg.msgtype = "uploaded"
 		send_message (chan, pkg, report_name)
@@ -64,7 +66,7 @@ class DebianBuildClient(BuildClient):
 
 	def build_slave (srcdir, pkg):
 		command = "sbuild -d %s %s_%s" % (pkg.suite, pkg.source, pkg.version)
-		if run_cmd (command, "failed", report_name, options["dry_run"]):
+		if run_cmd (command, "failed", report_name, self.options["dry_run"]):
 			return
 		changes = "%s/%s_%s_%s.changes" % (builddir, pkg.package, pkg.version, pkg.architecture)
 		if not os.path.isfile (changes) :
@@ -77,11 +79,14 @@ class DebianBuildClient(BuildClient):
 		# Specific buildd options
 		# FIXME: decide how this is managed and packaged
 		if os.path.isfile ("client.conf"):
-			options =  pybitclient.get_settings("client.conf")
+			self.options =  pybitclient.get_settings("client.conf")
+		elif os.path.isfile ("/etc/pybit/client/client.conf") :
+			self.options = pybitclient.get_settings("/etc/pybit/client/client.conf")
+		if len(self.options) > 0 :
+			dput_opt = self.options["dput"]
+			buildroot = self.options["buildroot"]
 		else :
-			options = pybitclient.get_settings("/etc/pybit/client/client.conf")
-		dput_opt = options["dput"]
-		buildroot = options["buildroot"]
+			self.options["dry_run"] = True
 		# variables to retrieve from the job object later
 		#dput_dest = "tcl"
 		dput_cfg = "/etc/pybit/dput.cf"
