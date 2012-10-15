@@ -29,7 +29,7 @@ class DebianBuildClient(BuildClient):
 
 	options = {}
 
-	def update_environment(self):
+	def update_environment(self,name):
 		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
 		if run_cmd (command, "failed", report_name, self.options["dry_run"]):
 			return
