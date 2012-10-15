@@ -91,9 +91,13 @@ class packageinstance(model):
 		self.master = master
 
 class deb_package(model):
-	def __init__(self,format,distribution,method_type,architecture,suite):
+	def __init__(self,name,version,format,distribution,method_type,uri,vcs_id,architecture,suite):
+		self.name = name
+		self.version = version
 		self.format = format
 		self.distribution = distribution
 		self.method_type = method_type
+		self.uri = uri
+		self.vcs_id = vcs_id
 		self.architecture = architecture
 		self.suite = suite

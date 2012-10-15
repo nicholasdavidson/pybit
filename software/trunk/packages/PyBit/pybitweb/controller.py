@@ -94,7 +94,8 @@ class controller:
 							new_job = self.job_db.put_job(new_packageinstance.id, None)
 							if new_job.id :
 								print "ADDED Job:", new_job.id, "PackageInstance:", new_packageinstance.id, "for", arch
-								jobToSend = deb_package(format,dist,method,arch,suite)
+								#TODO: tidy in model so deb_package inherits from package & transport
+								jobToSend = deb_package(package.name,package.version,format,dist,transport.method,transport.uri,transport.vcs_id,arch,suite)
 								pickled = jsonpickle.encode(jobToSend)
 								print "Sending " ,pickled
 								msg = amqp.Message(pickled)
