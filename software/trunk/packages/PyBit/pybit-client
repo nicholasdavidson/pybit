@@ -85,6 +85,18 @@ def recv_callback(msg):
 	if not hasattr(pkg, 'format'):
 		print "E: Invalid message, could not find a format"
 		return
+	if not hasattr(pkg, 'distribution'):
+		print "E: Invalid message, could not find a distribution"
+		return
+	if not hasattr(pkg, 'method_type') :
+		print "E: Invalid message, could not find a method_type"
+		return
+	if not hasattr(pkg, 'architecture') :
+		print "E: Invalid message, could not find the architecture"
+		return
+	if not hasattr(pkg, 'suite') :
+		print "E: Invalid message, could not find the sutie"
+		return
 	if not supported_formats[pkg.format]:
 		print "E: Misconfiguration - format is not for us."
 		return
