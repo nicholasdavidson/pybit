@@ -1,3 +1,9 @@
+pybit (0.0.11) development; urgency=low
+
+  * Added back in support for packageinstance reports.
+
+ -- Nick Davidson <nickd@toby-churchill.com>  Mon, 15 Oct 2012 11:01:25 +0100
+
 pybit (0.0.10) development; urgency=low
 
   * Remove attempt to import packageinstance from report.
