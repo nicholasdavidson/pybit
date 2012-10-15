@@ -49,8 +49,8 @@ def put_packageinstance():
 		dist_id = request.forms.get('dist_id')
 		format_id =  request.forms.get('format_id')
 
-		if version and name:
-			myDb.put_packageinstance(package_id,arch_id,suite_id,dist_id,format_id,0) # TODO: master setting
+		if package_id and arch_id  and suite_id  and dist_id and format_id:
+			myDb.put_packageinstance(package_id,arch_id,suite_id,dist_id,format_id,False) # TODO: master setting
 		else:
 			response.status = "400 - Required fields missing."
 		return

@@ -514,7 +514,7 @@ class db:
 
 	def put_packageinstance(self,package_id,arch_id,suite_id,dist_id,format_id,master):
 		try:
-			self.cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)  RETURNING id",(self,package_id,arch_id,suite_id,dist_id,format_id,master))
+			self.cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)  RETURNING id",(package_id,arch_id,suite_id,dist_id,format_id,master))
 			self.conn.commit()
 			res = self.cur.fetchall()
 			tmp = packageinstance(res[0]['id'],package_id,arch_id,suite_id,dist_id,format_id,master)
