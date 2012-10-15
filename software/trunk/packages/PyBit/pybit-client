@@ -97,10 +97,10 @@ def recv_callback(msg):
 	if not hasattr(pkg, 'suite') :
 		print "E: Invalid message, could not find the sutie"
 		return
-	if not supported_formats[pkg.format]:
+	if not pkg.format.lower() in supported_formats:
 		print "E: Misconfiguration - format is not for us."
 		return
-	if not supported_distributions[pkg.distribution]:
+	if not pkg.distribution.lower() in supported_distributions:
 		print "E: Misconfiguration - distribution is not for us."
 		return
 	if not buildd_id or buildd_id == "default":
@@ -129,7 +129,7 @@ def recv_callback(msg):
 		name = pkg.suite + "-source"
 	else:
 		name = pkg.suite
-	client.update_environment ()
+	client.update_environment (name)
 	while client.is_building() :
 		wait(self)
 	pkg.buildd = buildd_id
