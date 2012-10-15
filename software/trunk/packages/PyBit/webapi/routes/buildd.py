@@ -23,7 +23,7 @@ def get_buildd():
 @route('/buildd', method='PUT')
 def put_buildd():
 	try:
-		# Register a new BuildD. TODO: TESTME
+		# Register a new BuildD.
 		name = request.forms.get('name')
 
 		if name:
@@ -85,7 +85,7 @@ def get_buildd_jobs(id):
 		# check results returned
 		if len(res) > 0:
 			encoded =  jsonpickle.encode(res)
-#			response.content_type = "application/json"
+			response.content_type = "application/json"
 			return encoded
 		else:
 			response.status = "404 - No buildd found with this ID."
@@ -97,7 +97,7 @@ def get_buildd_jobs(id):
 @route('/buildd/<id:int>/:command', method='POST')
 def post_command(id,command):
 	try:
-		response.status = "202 - Command recieved"
+		response.status = "202 - Command sent"
 		#TODO - CODEME
 		return template("POSTed command '{{command}}' to buildd: {{id}}",id=id, command=command)
 	except Exception as e:

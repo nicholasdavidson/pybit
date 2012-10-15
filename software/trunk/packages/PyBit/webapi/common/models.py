@@ -69,7 +69,7 @@ class package(model):
 		self.id = id
 		self.version = version
 		self.name = name
-		
+
 class transport(model) :
 
 	def __init__(self,id,method,uri,vcs_id):
@@ -78,12 +78,14 @@ class transport(model) :
 		self.uri = uri
 		self.vcs_id = vcs_id
 
+# TODO: needs fixing, report model != db model
 class packageinstance(model):
 
-	def __init__(self, id, suite, package, version, arch, format, distribution) :
+	def __init__(self, id, package, arch, suite, distribution, format, master) :
 		self.id = id
-		self.suite = suite
-		self.version = version
+		self.package = package
 		self.arch = arch
-		self.format = format
+		self.suite = suite
 		self.distribution = distribution
+		self.format = format
+		self.master = master

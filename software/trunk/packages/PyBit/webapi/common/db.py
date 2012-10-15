@@ -335,7 +335,7 @@ class db:
 
 			jobs = []
 			for i in res:
-				jobs.append(job(i['id'],i['packageinstance'],i['buildclient_id']))
+				jobs.append(job(i['id'],i['packageinstance_id'],i['buildclient_id']))
 			return jobs
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
@@ -348,7 +348,7 @@ class db:
 
 			jobs = []
 			for i in res:
-				jobs.append(job(i['id'],i['packageinstance'],i['buildclient_id']))
+				jobs.append(job(i['id'],i['packageinstance_id'],i['buildclient_id']))
 			return jobs
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
@@ -428,11 +428,7 @@ class db:
 		try:
 			self.cur.execute("INSERT into package(version,name) VALUES (%s, %s)",(version,name))
 			res = self.conn.commit()
-
-			packages = []
-			for i in res:
-				packages.append(package(i['id'],i['version'],i['name']))
-			return packages
+			return res
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
@@ -441,16 +437,57 @@ class db:
 		try:
 			self.cur.execute("DELETE FROM package WHERE id=%s",(id,))
 			res = self.conn.commit()
-
-			packages = []
-			for i in res:
-				packages.append(package(i['id'],i['version'],i['name']))
-			return packages
+			return res
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	#<<<<<<<<< Packageinstance related Queries >>>>>>>
+	# TODO: TEST
+	def get_packageinstances(self):
+		try:
+			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY package_id, id")
+			res = self.cur.fetchall()
+
+			packageinstances = []
+			for i in res:
+				packageinstances.append(packageinstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
+			return packageinstances
+		except Exception as e:
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
+	def get_packageinstance_id(self,id):
+		try:
+			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance  WHERE id=%s",(id,))
+			res = self.cur.fetchall()
+
+			packageinstances = []
+			for i in res:
+				packageinstances.append(packageinstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
+			return packageinstances
+		except Exception as e:
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
+	def put_packageinstance(self,package_id,arch_id,suite_id,dist_id,format_id,master):
+		try:
+			self.cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)",(self,package_id,arch_id,suite_id,dist_id,format_id,master))
+			res = self.conn.commit()
+			return res
+		except Exception as e:
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
+	def delete_packageinstance(self,id):
+		try:
+			self.cur.execute("DELETE FROM packageinstance WHERE id=%s",(id,))
+			res = self.conn.commit()
+			return res
+		except Exception as e:
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
 	# <<<<< TODO: This is a work in progress!!! >>>>>
 	def check_specific_packageinstance_exists(self,arch,distribution,format,packagename,packageversion,suite):
 		try:
@@ -481,15 +518,16 @@ class db:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 	#<<<<<<<<< Report Queries >>>>>>>
+
 	def get_report_package_instance(self):
 		try:
-			self.cur.execute("SELECT packageinstance.id, suite.name AS suite, package.name AS package, package.version AS version, arch.name AS arch, format.name AS format, distribution.name AS dist FROM packageinstance LEFT JOIN arch ON arch.id=arch_id LEFT JOIN suite ON suite.id=suite_id LEFT JOIN distribution ON distribution.id=dist_id LEFT JOIN package ON package_id=package.id LEFT JOIN format ON format_id=format.id")
+			self.cur.execute("SELECT packageinstance.id, suite.name AS suite, package.name AS package, package.version AS version, arch.name AS arch, format.name AS format, distribution.name AS dist, packageinstance.master AS master FROM packageinstance LEFT JOIN arch ON arch.id=arch_id LEFT JOIN suite ON suite.id=suite_id LEFT JOIN distribution ON distribution.id=dist_id LEFT JOIN package ON package_id=package.id LEFT JOIN format ON format_id=format.id")
 			res = self.cur.fetchall()
 
 			package_instances = []
 			for i in res :
 				print i
-				package_instances.append(packageinstance(i['id'], i['suite'], i['package'], i['version'], i['arch'], i['format'], i['dist']))
+				package_instances.append(packageinstance(i['id'], i['package'], i['arch'], i['suite'], i['dist'], i['format'], i['master']))
 			return package_instances
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))

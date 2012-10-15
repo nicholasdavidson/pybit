@@ -2,7 +2,10 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect
 
+from common.db import db
 #TODO: Package instances
+
+myDb = db()
 
 @route('/forms', method='GET')
 def index():
@@ -21,6 +24,7 @@ def index():
 					<ul>
 					<li><a href='/forms/buildd'>Build Boxes</a></li>
 					<li><a href='/forms/package'>Packages</a></li>
+					<li><a href='/forms/packageinstance'>Package Instances</a></li>
 					<li><a href='/forms/job'>Build Jobs</a></li>
 					</ul>
 					'''
@@ -43,18 +47,79 @@ def buildd_form():
 		raise Exception('Error rendering page: ' + str(e))
 		return None
 
+@route('/forms/packageinstance', method='GET')
+def package_instance_form():
+	try:
+
+		packages = myDb.get_packages()
+		arches = myDb.get_arches()
+		suites = myDb.get_suites()
+		dists = myDb.get_dists()
+		formats = myDb.get_formats()
+
+		# TODO: NEW. master???
+
+		markup = '''<form method="POST" action="/packageinstance">
+					<h4>Create a package instance</h4>
+					<label for="package_id">package_id</label>
+					<select name="package_id">'''
+
+		for i in packages:
+			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + " " + str(i.version) + "</option>"
+		markup = markup + '''</select><br/><label for="arch_id">arch_id</label><select name="arch_id">'''
+
+		for i in arches:
+			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + "</option>"
+		markup = markup + '''</select><br/><label for="suite_id">suite_id</label><select name="suite_id">'''
+
+		for i in suites:
+			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + "</option>"
+		markup = markup + '''</select><br/><label for="dist_id">dist_id</label><select name="dist_id">'''
+
+		for i in dists:
+			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + "</option>"
+		markup = markup + '''</select><br/><label for="format_id">format_id</label><select name="format_id">'''
+
+		for i in formats:
+			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + "</option>"
+		markup = markup + '''</select>'''
+
+		markup = markup + "	<br/><input type='submit' /></form>"
+
+		return markup
+	except Exception as e:
+		raise Exception('Error rendering page: ' + str(e))
+		return None
+
 @route('/forms/job', method='GET')
 def job_form():
-	# TODO: make id fields combo boxey lookups.
 	try:
-		return '''<form method="POST" action="/job">
+
+		instances = myDb.get_packageinstances()
+		clients = myDb.get_buildclients()
+
+		markup = '''<form method="POST" action="/job">
 					<h4>Submit a Job</h4>
 					<label for="packageinstance_id">packageinstance_id</label>
-					<input name="packageinstance_id" type="text" />
+					<select name="packageinstance_id">'''
+
+		for i in instances:
+			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.id) + "</option>"
+
+		markup = markup + '''</select><br/>
 					<label for="buildclient_id">buildclient_id</label>
-					<input name="buildclient_id" type="text" />
+
+					<select name="buildclient_id">'''
+
+		for i in clients:
+			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + "</option>"
+
+		markup = markup + '''</select><br/>
+
 					<input type="submit" />
 					</form>'''
+
+		return markup
 	except Exception as e:
 		raise Exception('Error rendering page: ' + str(e))
 		return None
