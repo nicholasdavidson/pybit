@@ -22,6 +22,8 @@
 #       MA 02110-1301, USA.
 
 from amqplib import client_0_8 as amqp
+import signal
+import sys
 import re
 import json
 import os.path
@@ -68,6 +70,12 @@ chan = conn.channel()
 chan.queue_declare(queue=queue_name, durable=True, exclusive=False, auto_delete=False)
 chan.exchange_declare(exchange=host_arch, type="direct", durable=True, auto_delete=False,)
 chan.queue_bind(queue=queue_name, exchange=host_arch, routing_key=listening_name)
+
+def signal_handler(signal, frame):
+	print '\nClosing %s' % os.path.basename(__file__)
+	os._exit (os.EX_OK)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 def recv_callback(msg):
 	pkg = deb_package (msg.body)
