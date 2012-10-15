@@ -37,20 +37,14 @@ class TestClient(unittest.TestCase) :
 	options = {}
 
 	def test_01_client_config (self) :
-		log= logging.getLogger( "testCase" )
+		log = logging.getLogger( "testCase" )
 		log.debug("\n")
 		conffile = "%s/pybitclient/client.conf" % (os.getcwd());
-		if os.path.isfile (conffile):
-			log.debug("I: reading %s" % (os.path.relpath(conffile, os.getcwd())))
-			self.options = pybitclient.get_settings(conffile)
-		elif os.path.isfile ("/etc/pybit/client/client.conf") :
-			conffile = "/etc/pybit/client/client.conf";
-			log.debug("I: reading %s" % (conffile))
-			self.options = pybitclient.get_settings(conffile)
-		else :
-			log.debug("I: unable to find config file.")
+		self.assertTrue (os.path.isfile(conffile), "could not find %s" % conffile)
+		log.debug("I: reading %s" % (os.path.relpath(conffile, os.getcwd())))
+		self.options = pybitclient.get_settings(conffile)
 		if not "dry_run" in self.options :
-			msg = "I: dry_run not set in options"
+			msg = "I: asserting dry_run for test cases"
 			log.debug (msg)
 			self.options["dry_run"] = True
 		else :
@@ -58,12 +52,12 @@ class TestClient(unittest.TestCase) :
 			log.debug(msg)
 
 	def test_02_build_client (self) :
-		log= logging.getLogger( "testCase" )
+		log = logging.getLogger( "testCase" )
 		log.debug("\n")
 		deb_client = DebianBuildClient()
+		self.assertTrue (deb_client)
 		svn_client = SubversionClient()
-		msg = "I: srcdir = %s" % (svn_client.get_srcdir())
-		log.debug(msg)
+		self.assertTrue (svn_client)
 
 if __name__ == '__main__':
 	FORMAT = '%(msg)s'
