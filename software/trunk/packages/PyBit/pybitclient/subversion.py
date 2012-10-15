@@ -24,6 +24,8 @@ import os
 import pybitclient
 from buildclient import BuildClient
 
+report_name = "controller"
+
 class SubversionClient(BuildClient):
 
 	workdir = ""
@@ -45,7 +47,7 @@ class SubversionClient(BuildClient):
 		else:
 			print "Could not fetch source, no method URI found"
 			return
-		if run_cmd (command, "failed", report_name, self.options["dry_run"]):
+		if self.run_cmd (command, "failed", report_name, self.options["dry_run"]):
 			return
 		return
 

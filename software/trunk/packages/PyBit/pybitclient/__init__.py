@@ -38,10 +38,13 @@ def mkdir_p(path):
 class deb_package:
 	def __init__(self,msg_body=''):
 		if msg_body:
+			print msg_body
 			tmp = json.loads(msg_body)
 			self.format = tmp['format']
 			self.distribution = tmp['distribution']
 			self.method_type = tmp['method_type']
 			self.architecture = tmp['architecture']
+			self.method_uri = tmp['uri']
+			self.vcs_id = tmp['vcs_id']
 			self.suite = tmp['suite']
 			#self = jsonpickle.decode (msg_body) # TODO: broken :(
