@@ -22,9 +22,13 @@
 
 from amqplib import client_0_8 as amqp
 import os
+import subprocess
+import shlex
 import pybitclient
 
 class BuildClient(object):
+
+	build_process = None
 
 	def __init__(self):
 		return
@@ -38,6 +42,8 @@ class BuildClient(object):
 		if simulate :
 			print cmd
 			return True
+		elif not self.build_process :
+			self.build_process = subprocess.Popen(shlex.split(command))
 		else:
 			if os.system (command) :
 				pkg.msgtype = fail_msg
@@ -68,3 +74,16 @@ class BuildClient(object):
 
 	def upload (self) :
 		pass
+
+	def is_building (self) :
+		if not self.build_process :
+			return False
+		if self.build_process.poll() == None :
+			return False
+		return True
+
+	def cancel (self) :
+		if not self.build_process :
+			return
+		if self.build_process.poll() == None : # None if still running
+			self.build_process.terminate()

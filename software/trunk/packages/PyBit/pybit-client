@@ -78,9 +78,12 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 def recv_callback(msg):
-	pkg = deb_package (msg.body)
+	pkg = pybitclient.deb_package (msg.body)
 	if not pkg:
 		print "E: Misconfiguration - could not parse message."
+		return
+	if not hasattr(pkg, 'format'):
+		print "E: Invalid message, could not find a format"
 		return
 	if not supported_formats[pkg.format]:
 		print "E: Misconfiguration - format is not for us."
@@ -115,6 +118,8 @@ def recv_callback(msg):
 	else:
 		name = pkg.suite
 	client.update_environment ()
+	while client.is_building() :
+		wait(self)
 	pkg.buildd = buildd_id
 	pkg.msgtype = "building"
 	send_message (chan, pkg, report_name)
@@ -122,8 +127,12 @@ def recv_callback(msg):
 	srcdir = vcs.get_srcdir(pkg)
 	if role == "master" :
 		client.build_master (srcdir, pkg)
+		while client.is_building() :
+			wait(self)
 	elif role == "slave":
 		client.build_slave (srcdir, pkg)
+		while client.is_building() :
+			wait(self)
 
 # register the callback to the relevant queue
 chan.basic_consume(queue='rabbit', no_ack=True, callback=recv_callback, consumer_tag="build_callback")

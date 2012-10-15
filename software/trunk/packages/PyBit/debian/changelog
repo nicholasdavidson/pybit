@@ -1,3 +1,9 @@
+pybit (0.0.14) development; urgency=low
+
+  * Add a runtime check on the format attribute
+
+ -- Neil Williams <neilw@toby-churchill.com>  Mon, 15 Oct 2012 15:16:26 +0100
+
 pybit (0.0.13) development; urgency=low
 
   * Move location of the client.conf file to the base class and allow
