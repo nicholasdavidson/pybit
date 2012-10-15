@@ -47,6 +47,13 @@ class BuildClient(object):
 				return False
 		return True
 
+	def is_dry_run (self):
+		if (not hasattr(self, 'options')) :
+			return False
+		if (not "dry_run" in self.options) :
+			return False
+		return self.options["dry_run"]
+
 	def fetch_source (self):
 		pass
 

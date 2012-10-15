@@ -33,10 +33,11 @@ from pybitclient.subversion import SubversionClient
 supported_distributions = [ "debian" ]
 supported_formats = [ "deb" ]
 
-if os.path.isfile ("client.conf"):
-	options = pybitclient.get_settings("./client.conf")
+conffile = "%s/pybitclient/client.conf" % (os.getcwd());
+if os.path.isfile (conffile):
+	options = pybitclient.get_settings(conffile)
 else :
-	options = pybitclient.get_settings("/etc/pybit/client/client.conf")
+	options = pybitclient.get_settings(self)
 
 host_arch = options["host_arch"] # i386
 use_lvm = options["use_lvm"] # true
@@ -99,8 +100,6 @@ def recv_callback(msg):
 	else :
 		print "E: %s method not supported." % (pkg.method_type)
 		return
-	vcs.fetch_source()
-	srcdir = vcs.get_srcdir()
 	# FIXME: use same naming convention in schroot setup whether lvm is used or not.
 	if use_lvm :
 		name = pkg.suite + "-source"
@@ -110,6 +109,8 @@ def recv_callback(msg):
 	pkg.buildd = buildd_id
 	pkg.msgtype = "building"
 	send_message (chan, pkg, report_name)
+	vcs.fetch_source()
+	srcdir = vcs.get_srcdir(pkg)
 	if role == "master" :
 		client.build_master (srcdir, pkg)
 	elif role == "slave":

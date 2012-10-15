@@ -29,10 +29,10 @@ class SubversionClient(BuildClient):
 	workdir = ""
 	options = {}
 
-	def fetch_source(self):
+	def fetch_source(pkg):
 		if pkg.method_type != "svn":
 			return
-		self.workdir = os.path.join (buildroot, pkg.suite, "svn")
+		self.workdir = os.path.join (self.options["buildroot"], pkg.suite, pkg.method_type)
 		mkdir_p (workdir)
 		if os.path.isdir(workdir) :
 			os.chdir (workdir)
@@ -50,11 +50,7 @@ class SubversionClient(BuildClient):
 		return self.workdir
 
 	def __init__(self):
-		if os.path.isfile ("client.conf"):
-			self.options =  pybitclient.get_settings("client.conf")
-		elif os.path.isfile ("/etc/pybit/client/client.conf") :
-			options = pybitclient.get_settings("/etc/pybit/client/client.conf")
-		if len(self.options) > 0 :
-			buildroot = self.options["buildroot"]
-		else :
+		self.options =  pybitclient.get_settings(self)
+		if len(self.options) == 0 :
 			self.options["dry_run"] = True
+			self.options["buildroot"] = "/tmp/buildd"

@@ -29,7 +29,7 @@ class DebianBuildClient(BuildClient):
 
 	options = {}
 
-	def update_environment():
+	def update_environment(self):
 		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
 		if run_cmd (command, "failed", report_name, self.options["dry_run"]):
 			return
@@ -78,10 +78,7 @@ class DebianBuildClient(BuildClient):
 	def __init__(self):
 		# Specific buildd options
 		# FIXME: decide how this is managed and packaged
-		if os.path.isfile ("client.conf"):
-			self.options =  pybitclient.get_settings("client.conf")
-		elif os.path.isfile ("/etc/pybit/client/client.conf") :
-			self.options = pybitclient.get_settings("/etc/pybit/client/client.conf")
+		self.options =  pybitclient.get_settings(self)
 		if len(self.options) > 0 :
 			dput_opt = self.options["dput"]
 			buildroot = self.options["buildroot"]

@@ -27,6 +27,7 @@ import json
 import unittest
 # needs PYTHONPATH=.:..
 import pybitclient
+from pybitclient.buildclient import BuildClient
 from pybitclient.debian import DebianBuildClient
 from pybitclient.subversion import SubversionClient
 
@@ -38,7 +39,7 @@ class TestClient(unittest.TestCase) :
 
 	def test_01_client_config (self) :
 		log = logging.getLogger( "testCase" )
-		log.debug("\n")
+		log.debug(" ")
 		conffile = "%s/pybitclient/client.conf" % (os.getcwd());
 		self.assertTrue (os.path.isfile(conffile), "could not find %s" % conffile)
 		log.debug("I: reading %s" % (os.path.relpath(conffile, os.getcwd())))
@@ -54,10 +55,15 @@ class TestClient(unittest.TestCase) :
 	def test_02_build_client (self) :
 		log = logging.getLogger( "testCase" )
 		log.debug("\n")
+		base_client = BuildClient()
+		self.assertTrue (base_client)
+		self.assertFalse (base_client.is_dry_run())
 		deb_client = DebianBuildClient()
 		self.assertTrue (deb_client)
+		self.assertTrue (deb_client.is_dry_run())
 		svn_client = SubversionClient()
 		self.assertTrue (svn_client)
+		self.assertTrue (svn_client.is_dry_run())
 
 if __name__ == '__main__':
 	FORMAT = '%(msg)s'
