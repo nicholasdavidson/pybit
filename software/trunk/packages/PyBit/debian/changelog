@@ -1,3 +1,9 @@
+pybit (0.0.12) development; urgency=low
+
+  * Fixed accidental altering of connection properties.
+
+ -- Nick Davidson <nickd@toby-churchill.com>  Mon, 15 Oct 2012 11:08:18 +0100
+
 pybit (0.0.11) development; urgency=low
 
   * Added back in support for packageinstance reports.

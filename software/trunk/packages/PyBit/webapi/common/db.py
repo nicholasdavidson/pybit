@@ -24,7 +24,7 @@ class db:
 	#Connects to DB. Hardcoding the connection string in here is probably a bad idea...
 	def connect(self):
 		try:
-			self.conn = psycopg2.connect(database="pybit", user="pybit", host="localhost", port="5432", password="pybit")
+			self.conn = psycopg2.connect(database="pybit", user="postgres", host="catbells", port="5432")
 			self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 		except Exception as e:
 			raise Exception('Error connecting to database: ' + str(e))
