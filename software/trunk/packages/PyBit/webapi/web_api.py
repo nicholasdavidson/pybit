@@ -8,7 +8,7 @@ from routes import buildd,forms,job,lookups,package,reports,packageinstance
 from routes.controller import controller
 
 myDb = db()
-buildController = controller()
+buildController = controller(myDb)
 
 @error(404)
 def error404(error):
@@ -23,6 +23,14 @@ def error404(error):
 def index():
 	#main index page for the whole API, composed of forms and reports pages
 	return '''<h1>PyBit - python Buildd Integration Toolkit.</h1>''', forms.index() , reports.index()
+
+route('/add', method='POST') (buildController.add)
+
+route('/cancel_all', method='POST') (buildController.cancelAllBuilds)
+
+route('/cancel_package', method='POST') (buildController.cancelPackage)
+
+route('/cancel_package_instance', method='POST') (buildController.cancelPackageInstance)
 
 try:
 	debug(True)
