@@ -53,7 +53,7 @@ class controller:
 			matching_package_versions = self.job_db.get_package_byvalues(package_name,version)
 			if len(matching_package_versions) < 0 :
 				print "FOUND", len(matching_package_versions)
-				current_package = matching_package_versions[0] #FIXME: 
+				current_package = matching_package_versions[0]
 			else :
 				print "NO PACKAGE FOUND"
 				# add new package to db
@@ -63,16 +63,20 @@ class controller:
 					print "FAILED TO ADD PACKAGE:", package_name
 					response.status = "404 - failed to add package."
 					return
+			current_suite_id = self.job_db.get_suite_byname(suite)[0].id
+			current_dist_id = self.job_db.get_dist_byname(dist)[0].id
+			current_format_id = self.job_db.get_format_byname(format)[0].id
 			for arch in supported_arches:
 				if not self.job_db.check_specific_packageinstance_exists(arch, dist, format, package_name, version, suite) :
+					current_arch_id = self.job_db.get_arch_byname(arch)[0].id
 					# add package instance to db
-					new_packageinstance = self.job_db.put_packageinstance(current_package.id,arch,suite,dist,format,False)
+					new_packageinstance = self.job_db.put_packageinstance(current_package.id,current_arch_id,current_suite_id,current_dist_id,current_format_id,False)
 					if new_packageinstance.id : 
 						print "ADDED", new_packageinstance.id
 						# TODO: check if database contains a package where status = building, version < package_version, suite = suite
-						new_job = self.job_db.add(new_packageinstance.id, None)
+						new_job = self.job_db.put_job(new_packageinstance.id, None)
 						if new_job.id :
-							print "ADDED", job.id
+							print "ADDED", new_job.id, arch
 							#TODO: add job to message queue
 #							msg = amqp.Message(jsonpickle.encode(instance))
 #							msg.properties["delivery_mode"] = 2
@@ -90,7 +94,6 @@ class controller:
 		return
 
 	def cancelPackage(self):
-		
 		return
 
 	def cancelPackageInstance(self):
