@@ -91,22 +91,23 @@ def recv_callback(msg):
 	if not buildd_id or buildd_id == "default":
 		print "E: Misconfiguration - refusing to build with a default or empty idstring."
 		return
-	if pkg.format == "deb" and pkg.distribution.lower() == "debian":
-		client = DebianBuildClient ()
-	else:
-		print "W: shouldn't get here"
-		return
-	# FIXME : May need more sanity checking here or support for -cross
-	if pkg.architecture != host_arch:
-		print "E: BuildClient %s is not configured to support %s" % (buildd_id, pkg.architecture)
-		return
-	if not dput_dest or dput_dest == "":
-		print "E: Misconfiguration - refusing to upload to default dput destination (Debian ftpmaster)."
-		return
 	if pkg.method_type == "svn":
 		vcs = SubversionClient ()
 	else :
 		print "E: %s method not supported." % (pkg.method_type)
+		return
+	if pkg.format == "deb" and pkg.distribution.lower() == "debian":
+		# check Debian-specific stuff
+		# FIXME : May need more sanity checking here or support for -cross
+		if pkg.architecture != host_arch:
+			print "E: BuildClient %s is not configured to support %s" % (buildd_id, pkg.architecture)
+			return
+		if not dput_dest or dput_dest == "":
+			print "E: Misconfiguration - refusing to upload to default dput destination (Debian ftpmaster)."
+			return
+		client = DebianBuildClient ()
+	else:
+		print "W: shouldn't get here"
 		return
 	# FIXME: use same naming convention in schroot setup whether lvm is used or not.
 	if use_lvm :
@@ -124,8 +125,12 @@ def recv_callback(msg):
 	elif role == "slave":
 		client.build_slave (srcdir, pkg)
 
+# register the callback to the relevant queue
+chan.basic_consume(queue='rabbit', no_ack=True, callback=recv_callback, consumer_tag="build_callback")
 while True:
 	chan.wait()
+# drop registration
+chan.basic_cancel("build_callback")
 
 chan.close()
 conn.close()
