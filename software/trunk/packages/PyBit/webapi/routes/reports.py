@@ -31,5 +31,15 @@ def report_package() :
 		response.content_type = "application/json"
 		return jsonpickle.encode(myDb.get_report_package_instance())
 	except Exception as e:
-		raise Exception('Exception encountered: ' + str(e))
+		raise e
+		return None
+		
+@route('/report/suitearches/<suite>', method='GET')
+def report_suitearches(suite) :
+	try:
+		response.content_type = "application/json"
+		return jsonpickle.encode(myDb.supportedArchitectures(suite))
+	except Exception as e:
+		response.content_type = "text/html"
+		raise e
 		return None

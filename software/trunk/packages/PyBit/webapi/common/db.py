@@ -24,7 +24,7 @@ class db:
 	#Connects to DB. Hardcoding the connection string in here is probably a bad idea...
 	def connect(self):
 		try:
-			self.conn = psycopg2.connect(database="pybit", user="postgres", host="catbells", port="5432")
+			self.conn = psycopg2.connect(database="pybit", user="pybit", host="localhost", port="5432", password="pybit")
 			self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 		except Exception as e:
 			raise Exception('Error connecting to database: ' + str(e))
@@ -526,7 +526,6 @@ class db:
 
 			package_instances = []
 			for i in res :
-				print i
 				package_instances.append(packageinstance(i['id'], i['package'], i['arch'], i['suite'], i['dist'], i['format'], i['master']))
 			return package_instances
 		except Exception as e:
@@ -534,7 +533,18 @@ class db:
 			return None
 
 	def supportedArchitectures(self,suite) :
-		arch_list = []
-		arch_list.append("i386")
-		arch_list.append("armel")
-		return arch_list
+		print "Suite: " + suite
+		try:
+			if suite :
+				self.cur.execute("SELECT arch.id, arch.name FROM suite LEFT JOIN suitearches ON suite.id=suite_id LEFT JOIN arch ON arch_id = arch.id WHERE suite.name=%s",[suite])
+				res = self.cur.fetchall()
+				arch_list = []
+				for i in res :
+					arch_list.append(i['name'])
+				return arch_list
+			else:
+				return False
+		except Exception as e:
+			raise Exception('Error performing database operation: ' + str(e))
+			return None	
+		
