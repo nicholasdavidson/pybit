@@ -2,8 +2,8 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-from common.db import db
-from common.models import job
+from db import db
+import job
 
 myDb = db()
 

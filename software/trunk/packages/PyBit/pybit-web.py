@@ -1,11 +1,16 @@
 #!/usr/bin/python
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-
-from common.db import db
-from routes import buildd,forms,job,lookups,package,reports,packageinstance
-from routes.controller import controller
+from pybitweb.bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
+from pybitweb.db import db
+import pybitweb.buildd
+import pybitweb.forms
+import pybitweb.job
+import pybitweb.lookups
+import pybitweb.package
+import pybitweb.reports
+import pybitweb.packageinstance
+from pybitweb.controller import controller
 
 myDb = db()
 buildController = controller(myDb)

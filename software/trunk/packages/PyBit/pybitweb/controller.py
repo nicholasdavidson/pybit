@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
-from bottle import Bottle,response,error,request
+from pybitweb.bottle import Bottle,response,error,request
 from amqplib import client_0_8 as amqp
 import jsonpickle
 import os.path
 
-from common.db import db
-from common.models import transport, packageinstance, job
+import db
+from models import transport, packageinstance, job, deb_package
 # example CURL command....
 # /usr/bin/curl -X POST http://localhost:8080/add --data "uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpea&format=deb"
 
@@ -50,7 +50,7 @@ class controller:
 
 		try:
 			supported_arches = self.job_db.supportedArchitectures(suite)
-			print "SUPPORTED ARCHITECTURES: ", supported_arches
+			print "SUPPORTED ARCHITECTURES:", supported_arches
 
 			if (len(supported_arches) == 0):
 				response.status = "404 - no supported architectures for this suite."
@@ -94,8 +94,10 @@ class controller:
 							new_job = self.job_db.put_job(new_packageinstance.id, None)
 							if new_job.id :
 								print "ADDED Job:", new_job.id, "PackageInstance:", new_packageinstance.id, "for", arch
-								#TODO: add job to message queue
-								msg = amqp.Message(jsonpickle.encode(new_job))
+								jobToSend = deb_package(format,dist,method,arch,suite)
+								pickled = jsonpickle.encode(jobToSend)
+								print "Sending " ,pickled
+								msg = amqp.Message(pickled)
 								msg.properties["delivery_mode"] = 2
 								self.chan.basic_publish(msg,exchange="i386",routing_key="buildd")
 							else :

@@ -2,7 +2,7 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-from common.db import db
+from db import db
 
 myDb = db()
 

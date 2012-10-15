@@ -2,7 +2,7 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect
 
-from common.db import db
+from db import db
 #TODO: Package instances
 
 myDb = db()

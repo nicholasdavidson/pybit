@@ -89,3 +89,11 @@ class packageinstance(model):
 		self.distribution = distribution
 		self.format = format
 		self.master = master
+
+class deb_package(model):
+	def __init__(self,format,distribution,method_type,architecture,suite):
+		self.format = format
+		self.distribution = distribution
+		self.method_type = method_type
+		self.architecture = architecture
+		self.suite = suite
