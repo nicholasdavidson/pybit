@@ -10,18 +10,17 @@ from models import transport, packageinstance, job, deb_package
 # example CURL command....
 # /usr/bin/curl -X POST http://localhost:8080/add --data "uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpea&format=deb"
 
-# PyBit setup variables - package content
-queue_name = "rabbit"
-report_name = "controller"
-listening_name = "buildd"
-dput_cfg = "/etc/pybit/client/dput.cf"
-
 class controller:
 
 	def __init__(self, jobDb):
 		self.job_db = jobDb
 		self.conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
 		self.chan = self.conn.channel()
+		
+		self.chan.queue_declare(queue="controller_queue", durable=True, exclusive=False, auto_delete=False)
+		self.chan.exchange_declare(exchange="controller_exchange", type="direct", durable=True, auto_delete=False,)
+		self.chan.queue_bind(queue="controller_queue", exchange="controller_exchange", routing_key="controller_key")
+		self.chan.basic_consume(queue='controller_queue', no_ack=True, callback=recv_callback, consumer_tag="contoller_callback")
 		print "controller init"
 
 	def add(self):
@@ -97,7 +96,7 @@ class controller:
 								#TODO: tidy in model so deb_package inherits from package & transport
 								jobToSend = deb_package(current_package.name,current_package.version,format,dist,trans.method,trans.uri,trans.vcs_id,arch,suite)
 								pickled = jsonpickle.encode(jobToSend)
-								print "Sending " ,pickled
+								#print "SENDING:" ,pickled
 								msg = amqp.Message(pickled)
 								msg.properties["delivery_mode"] = 2
 								self.chan.basic_publish(msg,exchange="i386",routing_key="buildd")
@@ -122,3 +121,8 @@ class controller:
 
 	def cancelPackageInstance(self):
 		return
+
+def recv_callback(msg):
+	
+	print "TEST", msg.body
+	#pkg = pybitclient.deb_package (msg.body)
