@@ -40,11 +40,13 @@ class deb_package:
 		if msg_body:
 			print msg_body
 			tmp = json.loads(msg_body)
-			self.format = tmp['format']
-			self.distribution = tmp['distribution']
 			self.method_type = tmp['method_type']
-			self.architecture = tmp['architecture']
-			self.method_uri = tmp['uri']
+			self.format = tmp['format']
+			self.uri = tmp['uri']
 			self.vcs_id = tmp['vcs_id']
+			self.version = tmp['version']
+			self.architecture = tmp['architecture']
 			self.suite = tmp['suite']
+			self.distribution = tmp['distribution']
+			self.name = tmp['name']
 			#self = jsonpickle.decode (msg_body) # TODO: broken :(
