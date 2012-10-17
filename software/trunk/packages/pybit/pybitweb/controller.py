@@ -6,7 +6,7 @@ import jsonpickle
 import os.path
 
 import db
-from models import transport, packageinstance, job, deb_package
+from models import transport, packageinstance, job, jobDetails
 # example CURL command....
 # /usr/bin/curl -X POST http://localhost:8080/add --data "uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpea&format=deb"
 
@@ -19,9 +19,6 @@ class controller:
 			self.chan = self.conn.channel()
 
 			self.chan.queue_declare(queue="controller_queue", durable=True, exclusive=False, auto_delete=False)
-			self.chan.exchange_declare(exchange="controller_exchange", type="direct", durable=True, auto_delete=False,)
-			self.chan.queue_bind(queue="controller_queue", exchange="controller_exchange", routing_key="controller_key")
-			self.chan.basic_consume(queue='controller_queue', no_ack=True, callback=recv_callback, consumer_tag="contoller_callback")
 			print "controller init"
 		except Exception as e:
 			raise Exception('Error creating controller (Maybe we cannot connect to queue?) - ' + str(e))
@@ -96,14 +93,13 @@ class controller:
 							# TODO: check if database contains a package where status = building, version < package_version, suite = suite
 							new_job = self.job_db.put_job(new_packageinstance.id, None)
 							if new_job.id :
-								print "ADDED Job:", new_job.id, "PackageInstance:", new_packageinstance.id, "for", arch
-								#TODO: tidy in model so deb_package inherits from package & transport
-								jobToSend = deb_package(current_package.name,current_package.version,format,dist,trans.method,trans.uri,trans.vcs_id,arch,suite)
+								jobToSend = jobDetails(new_job.id, current_package.name, new_packageinstance, trans)
 								pickled = jsonpickle.encode(jobToSend)
-								#print "SENDING:" ,pickled
 								msg = amqp.Message(pickled)
 								msg.properties["delivery_mode"] = 2
-								self.chan.basic_publish(msg,exchange="i386",routing_key="buildd")
+								routing_key = "%s.%s.%s.%s" % (dist, arch, suite, format)
+								print "____________SENDING", pickled, "____________TO____________", routing_key
+								self.chan.basic_publish(msg,exchange="pybit",routing_key=routing_key)
 							else :
 								print "FAILED TO ADD JOB"
 								response.status = "404 - failed to add job."

@@ -90,14 +90,9 @@ class packageinstance(model):
 		self.format = format
 		self.master = master
 
-class deb_package(model):
-	def __init__(self,name,version,format,distribution,method_type,uri,vcs_id,architecture,suite):
-		self.name = name
-		self.version = version
-		self.format = format
-		self.distribution = distribution
-		self.method_type = method_type
-		self.uri = uri
-		self.vcs_id = vcs_id
-		self.architecture = architecture
-		self.suite = suite
+class jobDetails(model):
+	def __init__(self, job_id, package_name, packageinstance, transport):
+		self.job_id = job_id
+		self.package_name = package_name
+		self.packageinstance = packageinstance
+		self.transport = transport
