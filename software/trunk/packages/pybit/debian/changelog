@@ -1,3 +1,9 @@
+pybit (0.0.17) development; urgency=low
+
+  * Added consumer for pybit client basic.
+
+ -- Nick Davidson <nickd@toby-churchill.com>  Wed, 17 Oct 2012 16:26:37 +0100
+
 pybit (0.0.16) development; urgency=low
 
   * Improve build-client to actually build jobs.
