@@ -81,6 +81,7 @@ class DebianBuildClient(BuildClient):
 		upload (changes)
 
 	def __init__(self):
+		BuildClient.__init__(self)
 		# Specific buildd options
 		# FIXME: decide how this is managed and packaged
 		self.options =  pybitclient.get_settings(self)

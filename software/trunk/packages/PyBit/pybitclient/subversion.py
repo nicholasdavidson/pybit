@@ -42,7 +42,7 @@ class SubversionClient(BuildClient):
 			return
 		if (hasattr(pkg, 'vcs_id')):
 			command = "svn export %s@%s" % (pkg.method_uri, pkg.vcs_id)
-		elif (hasattr(pkg, 'method_uri')):
+		elif (hasattr(pkg, 'uri')):
 			command = "svn export %s" % (pkg.method_uri)
 		else:
 			print "Could not fetch source, no method URI found"

@@ -29,9 +29,10 @@ import pybitclient
 
 class BuildClient(object):
 
-	build_process = None
+	
 
 	def __init__(self):
+		self.build_process = None
 		return
 
 	def send_message (self, chan, pkg, key):
