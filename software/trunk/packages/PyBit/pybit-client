@@ -32,128 +32,143 @@ import pybitclient
 from pybitclient.debian import DebianBuildClient
 from pybitclient.subversion import SubversionClient
 
-supported_distributions = [ "debian" ]
-supported_formats = [ "deb" ]
+try:
+	supported_distributions = [ "debian" ]
+	supported_formats = [ "deb" ]
 
-conffile = "%s/pybitclient/client.conf" % (os.getcwd());
-if os.path.isfile (conffile):
-	options = pybitclient.get_settings(conffile)
-else :
-	options = pybitclient.get_settings(self)
+	conffile = "%s/pybitclient/client.conf" % (os.getcwd());
+	if os.path.isfile (conffile):
+		options = pybitclient.get_settings(conffile)
+	else :
+		options = pybitclient.get_settings(self)
 
-host_arch = options["host_arch"] # i386
-use_lvm = options["use_lvm"] # true
-# FIXME: role is part of the Job.
-role = options["role"] # master - builds Architecture: all packages.
-buildroot = options["buildroot"]
-host_opt = options["host"]
-port_opt = options["port"]
-userid_opt = options["userid"]
-pass_opt = options["password"]
-vhost_opt = options["virtual_host"]
-insist_opt = True if options["insist"] == "True" else False
-addr_opt = host_opt + ":" + port_opt
-dput_opt = options["dput"]
-buildd_id = options["idstring"]
+	host_arch = options["host_arch"] # i386
+	use_lvm = options["use_lvm"] # true
+	# FIXME: role is part of the Job.
+	role = options["role"] # master - builds Architecture: all packages.
+	buildroot = options["buildroot"]
+	host_opt = options["host"]
+	port_opt = options["port"]
+	userid_opt = options["userid"]
+	pass_opt = options["password"]
+	vhost_opt = options["virtual_host"]
+	insist_opt = True if options["insist"] == "True" else False
+	addr_opt = host_opt + ":" + port_opt
+	dput_opt = options["dput"]
+	buildd_id = options["idstring"]
 
-# PyBit setup variables - package content
-queue_name = "rabbit"
-report_name = "controller"
-listening_name = "buildd"
-dput_cfg = "/etc/pybit/client/dput.cf"
+	# PyBit setup variables - package content
+	queue_name = "rabbit"
+	report_name = "controller"
+	listening_name = "buildd"
+	dput_cfg = "/etc/pybit/client/dput.cf"
 
-# variables to retrieve from the job object later
-dput_dest = "tcl"
+	# variables to retrieve from the job object later
+	dput_dest = "tcl"
 
-conn = amqp.Connection(host=addr_opt, userid=userid_opt, password=pass_opt, virtual_host=vhost_opt, insist=insist_opt)
-chan = conn.channel()
-chan.queue_declare(queue=queue_name, durable=True, exclusive=False, auto_delete=False)
-chan.exchange_declare(exchange=host_arch, type="direct", durable=True, auto_delete=False,)
-chan.queue_bind(queue=queue_name, exchange=host_arch, routing_key=listening_name)
+	conn = amqp.Connection(host=addr_opt, userid=userid_opt, password=pass_opt, virtual_host=vhost_opt, insist=insist_opt)
+	chan = conn.channel()
+	chan.queue_declare(queue=queue_name, durable=True, exclusive=False, auto_delete=False)
+	chan.exchange_declare(exchange=host_arch, type="direct", durable=True, auto_delete=False,)
+	chan.queue_bind(queue=queue_name, exchange=host_arch, routing_key=listening_name)
+except Exception as e:
+	raise Exception('Error initialising client: ' + str(e))
 
 def signal_handler(signal, frame):
-	print '\nClosing %s' % os.path.basename(__file__)
-	os._exit (os.EX_OK)
+	try:
+		print '\nClosing %s' % os.path.basename(__file__)
+		os._exit (os.EX_OK)
+	except Exception as e:
+		raise Exception('Error in signal handler: ' + str(e))
+		return
 
-signal.signal(signal.SIGINT, signal_handler)
-
-print "Hit Ctrl-C to quit."
+try:
+	signal.signal(signal.SIGINT, signal_handler)
+	print "Hit Ctrl-C to quit."
+except Exception as e:
+	raise Exception('Error configuring signal handler: ' + str(e))
 
 def recv_callback(msg):
-	pkg = pybitclient.deb_package (msg.body)
-	if not pkg:
-		print "E: Misconfiguration - could not parse message."
-		return
-	if not hasattr(pkg, 'format'):
-		print "E: Invalid message, could not find a format"
-		return
-	if not hasattr(pkg, 'distribution'):
-		print "E: Invalid message, could not find a distribution"
-		return
-	if not hasattr(pkg, 'method_type') :
-		print "E: Invalid message, could not find a method_type"
-		return
-	if not hasattr(pkg, 'architecture') :
-		print "E: Invalid message, could not find the architecture"
-		return
-	if not hasattr(pkg, 'suite') :
-		print "E: Invalid message, could not find the sutie"
-		return
-	if not pkg.format.lower() in supported_formats:
-		print "E: Misconfiguration - format is not for us."
-		return
-	if not pkg.distribution.lower() in supported_distributions:
-		print "E: Misconfiguration - distribution is not for us."
-		return
-	if not buildd_id or buildd_id == "default":
-		print "E: Misconfiguration - refusing to build with a default or empty idstring."
-		return
-	if pkg.method_type == "svn":
-		vcs = SubversionClient ()
-	else :
-		print "E: %s method not supported." % (pkg.method_type)
-		return
-	if pkg.format == "deb" and pkg.distribution.lower() == "debian":
-		# check Debian-specific stuff
-		# FIXME : May need more sanity checking here or support for -cross
-		if pkg.architecture != host_arch:
-			print "E: BuildClient %s is not configured to support %s" % (buildd_id, pkg.architecture)
+	try:
+		pkg = pybitclient.deb_package (msg.body)
+		if not pkg:
+			print "E: Misconfiguration - could not parse message."
 			return
-		if not dput_dest or dput_dest == "":
-			print "E: Misconfiguration - refusing to upload to default dput destination (Debian ftpmaster)."
+		if not hasattr(pkg, 'format'):
+			print "E: Invalid message, could not find a format"
 			return
-		client = DebianBuildClient ()
-	else:
-		print "W: shouldn't get here"
-		return
-	# FIXME: use same naming convention in schroot setup whether lvm is used or not.
-	if use_lvm :
-		name = pkg.suite + "-source"
-	else:
-		name = pkg.suite
-	client.update_environment (name)
-	while client.is_building() :
-		wait(self)
-	pkg.buildd = buildd_id
-	pkg.msgtype = "building"
-	client.send_message (chan, pkg, report_name)
-	vcs.fetch_source(pkg)
-	srcdir = vcs.get_srcdir()
-	if role == "master" :
-		client.build_master (srcdir, pkg)
+		if not hasattr(pkg, 'distribution'):
+			print "E: Invalid message, could not find a distribution"
+			return
+		if not hasattr(pkg, 'method_type') :
+			print "E: Invalid message, could not find a method_type"
+			return
+		if not hasattr(pkg, 'architecture') :
+			print "E: Invalid message, could not find the architecture"
+			return
+		if not hasattr(pkg, 'suite') :
+			print "E: Invalid message, could not find the sutie"
+			return
+		if not pkg.format.lower() in supported_formats:
+			print "E: Misconfiguration - format is not for us."
+			return
+		if not pkg.distribution.lower() in supported_distributions:
+			print "E: Misconfiguration - distribution is not for us."
+			return
+		if not buildd_id or buildd_id == "default":
+			print "E: Misconfiguration - refusing to build with a default or empty idstring."
+			return
+		if pkg.method_type == "svn":
+			vcs = SubversionClient ()
+		else :
+			print "E: %s method not supported." % (pkg.method_type)
+			return
+		if pkg.format == "deb" and pkg.distribution.lower() == "debian":
+			# check Debian-specific stuff
+			# FIXME : May need more sanity checking here or support for -cross
+			if pkg.architecture != host_arch:
+				print "E: BuildClient %s is not configured to support %s" % (buildd_id, pkg.architecture)
+				return
+			if not dput_dest or dput_dest == "":
+				print "E: Misconfiguration - refusing to upload to default dput destination (Debian ftpmaster)."
+				return
+			client = DebianBuildClient ()
+		else:
+			print "W: shouldn't get here"
+			return
+		# FIXME: use same naming convention in schroot setup whether lvm is used or not.
+		if use_lvm :
+			name = pkg.suite + "-source"
+		else:
+			name = pkg.suite
+		client.update_environment (name)
 		while client.is_building() :
 			wait(self)
-	elif role == "slave":
-		client.build_slave (srcdir, pkg)
-		while client.is_building() :
-			wait(self)
+		pkg.buildd = buildd_id
+		pkg.msgtype = "building"
+		client.send_message (chan, pkg, report_name)
+		vcs.fetch_source(pkg)
+		srcdir = vcs.get_srcdir()
+		if role == "master" :
+			client.build_master (srcdir, pkg)
+			while client.is_building() :
+				wait(self)
+		elif role == "slave":
+			client.build_slave (srcdir, pkg)
+			while client.is_building() :
+				wait(self)
+	except Exception as e:
+		raise Exception('Error processing callback: ' + str(e))
+		return
 
-# register the callback to the relevant queue
-chan.basic_consume(queue='rabbit', no_ack=True, callback=recv_callback, consumer_tag="build_callback")
-while True:
-	chan.wait()
-# drop registration
-chan.basic_cancel("build_callback")
-
-chan.close()
-conn.close()
+try:
+	# register the callback to the relevant queue
+	chan.basic_consume(queue='rabbit', no_ack=True, callback=recv_callback, consumer_tag="build_callback")
+	while True:
+		chan.wait()
+	# drop registration
+	chan.basic_cancel("build_callback")
+	chan.close()
+	conn.close()
+except Exception as e:
+	raise Exception('Error processing queue: ' + str(e))

@@ -13,15 +13,19 @@ from models import transport, packageinstance, job, deb_package
 class controller:
 
 	def __init__(self, jobDb):
-		self.job_db = jobDb
-		self.conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
-		self.chan = self.conn.channel()
-		
-		self.chan.queue_declare(queue="controller_queue", durable=True, exclusive=False, auto_delete=False)
-		self.chan.exchange_declare(exchange="controller_exchange", type="direct", durable=True, auto_delete=False,)
-		self.chan.queue_bind(queue="controller_queue", exchange="controller_exchange", routing_key="controller_key")
-		self.chan.basic_consume(queue='controller_queue', no_ack=True, callback=recv_callback, consumer_tag="contoller_callback")
-		print "controller init"
+		try:
+			self.job_db = jobDb
+			self.conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
+			self.chan = self.conn.channel()
+
+			self.chan.queue_declare(queue="controller_queue", durable=True, exclusive=False, auto_delete=False)
+			self.chan.exchange_declare(exchange="controller_exchange", type="direct", durable=True, auto_delete=False,)
+			self.chan.queue_bind(queue="controller_queue", exchange="controller_exchange", routing_key="controller_key")
+			self.chan.basic_consume(queue='controller_queue', no_ack=True, callback=recv_callback, consumer_tag="contoller_callback")
+			print "controller init"
+		except Exception as e:
+			raise Exception('Error creating controller (Maybe we cannot connect to queue?) - ' + str(e))
+			return
 
 	def add(self):
 		try:
@@ -45,7 +49,7 @@ class controller:
 		except Exception as e:
 			raise Exception('Error parsing job information: ' + str(e))
 			response.status = "500 - Error parsing job information"
-			return None
+			return
 
 		try:
 			supported_arches = self.job_db.supportedArchitectures(suite)
@@ -57,7 +61,7 @@ class controller:
 		except Exception as e:
 			raise Exception('Error parsing arch information: ' + str(e))
 			response.status = "500 - Error parsing arch information"
-			return None
+			return
 
 		try:
 			if (architectures and len(architectures) == 1 and architectures[0] == "all"):
@@ -110,7 +114,7 @@ class controller:
 		except Exception as e:
 			raise Exception('Error submitting job: ' + str(e))
 			response.status = "500 - Error submitting job"
-			return None
+			return
 		return
 
 	def cancelAllBuilds(self):
@@ -123,6 +127,6 @@ class controller:
 		return
 
 def recv_callback(msg):
-	
+
 	print "TEST", msg.body
 	#pkg = pybitclient.deb_package (msg.body)

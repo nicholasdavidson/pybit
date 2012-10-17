@@ -32,30 +32,38 @@ class SubversionClient(BuildClient):
 	options = {}
 
 	def fetch_source(self, pkg):
-		if pkg.method_type != "svn":
+		try:
+			if pkg.method_type != "svn":
+				return
+			self.workdir = os.path.join (self.options["buildroot"], pkg.suite, pkg.method_type)
+			pybitclient.mkdir_p (self.workdir)
+			if os.path.isdir(self.workdir) :
+				os.chdir (self.workdir)
+			else:
+				return
+			if (hasattr(pkg, 'vcs_id')):
+				command = "svn export %s@%s" % (pkg.uri, pkg.vcs_id)
+			elif (hasattr(pkg, 'uri')):
+				command = "svn export %s" % (pkg.uri)
+			else:
+				print "Could not fetch source, no method URI found"
+				return
+			if self.run_cmd (command, "failed", report_name, self.options["dry_run"]):
+				return
 			return
-		self.workdir = os.path.join (self.options["buildroot"], pkg.suite, pkg.method_type)
-		pybitclient.mkdir_p (self.workdir)
-		if os.path.isdir(self.workdir) :
-			os.chdir (self.workdir)
-		else:
+		except Exception as e:
+			raise Exception('Error fetching source: ' + str(e))
 			return
-		if (hasattr(pkg, 'vcs_id')):
-			command = "svn export %s@%s" % (pkg.method_uri, pkg.vcs_id)
-		elif (hasattr(pkg, 'uri')):
-			command = "svn export %s" % (pkg.method_uri)
-		else:
-			print "Could not fetch source, no method URI found"
-			return
-		if self.run_cmd (command, "failed", report_name, self.options["dry_run"]):
-			return
-		return
 
 	def get_srcdir (self):
 		return self.workdir
 
 	def __init__(self):
-		self.options =  pybitclient.get_settings(self)
-		if len(self.options) == 0 :
-			self.options["dry_run"] = True
-			self.options["buildroot"] = "/tmp/buildd"
+		try:
+			self.options =  pybitclient.get_settings(self)
+			if len(self.options) == 0 :
+				self.options["dry_run"] = True
+				self.options["buildroot"] = "/tmp/buildd"
+		except Exception as e:
+			raise Exception('Error constructing subversion build client: ' + str(e))
+			return

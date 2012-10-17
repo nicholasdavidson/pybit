@@ -29,31 +29,39 @@ import pybitclient
 
 class BuildClient(object):
 
-	
+
 
 	def __init__(self):
 		self.build_process = None
 		return
 
 	def send_message (self, chan, pkg, key):
-		msg = amqp.Message(jsonpickle.encode(pkg))
-		msg.properties["delivery_mode"] = 2
-		chan.basic_publish(msg,exchange=pkg.architecture,routing_key=key)
+		try:
+			msg = amqp.Message(jsonpickle.encode(pkg))
+			msg.properties["delivery_mode"] = 2
+			chan.basic_publish(msg,exchange=pkg.architecture,routing_key=key)
+		except Exception as e:
+			raise Exception('Error constructing build client: ' + str(e))
+			return
 
 	def run_cmd (self, cmd, fail_msg, report, simulate):
-		if simulate :
-			print cmd
+		try:
+			if simulate :
+				print cmd
+				return True
+			elif not self.build_process :
+				self.build_process = subprocess.Popen(shlex.split(command))
+			else:
+				if os.system (command) :
+					pkg.msgtype = fail_msg
+					msg.amqp.Message(jsonpickle.encode(pkg))
+					msg.properties["delivery_mode"] = 2
+					chan.basic_publish(msg,exchange=pkg.architecture,routing_key=report)
+					return False
 			return True
-		elif not self.build_process :
-			self.build_process = subprocess.Popen(shlex.split(command))
-		else:
-			if os.system (command) :
-				pkg.msgtype = fail_msg
-				msg.amqp.Message(jsonpickle.encode(pkg))
-				msg.properties["delivery_mode"] = 2
-				chan.basic_publish(msg,exchange=pkg.architecture,routing_key=report)
-				return False
-		return True
+		except Exception as e:
+			raise Exception('Error running command: ' + str(e))
+			return
 
 	def is_dry_run (self):
 		if (not hasattr(self, 'options')) :
@@ -85,7 +93,11 @@ class BuildClient(object):
 		return True
 
 	def cancel (self) :
-		if not self.build_process :
+		try:
+			if not self.build_process :
+				return
+			if self.build_process.poll() == None : # None if still running
+				self.build_process.terminate()
+		except Exception as e:
+			raise Exception('Error cancelling: ' + str(e))
 			return
-		if self.build_process.poll() == None : # None if still running
-			self.build_process.terminate()

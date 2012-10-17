@@ -6,25 +6,29 @@ import json
 import jsonpickle
 
 def get_settings(path):
-	ret = {}
-	if (type(path) != str) :
-		# passed self or some other object, assume default
-		path = "client.conf"
-	if (os.path.isfile(path)):
-		pass
-	elif os.path.isfile ("/etc/pybit/client/client.conf") :
-		path = "/etc/pybit/client/client.conf"
-	else :
-		return ret
+	try:
+		ret = {}
+		if (type(path) != str) :
+			# passed self or some other object, assume default
+			path = "client.conf"
+		if (os.path.isfile(path)):
+			pass
+		elif os.path.isfile ("/etc/pybit/client/client.conf") :
+			path = "/etc/pybit/client/client.conf"
+		else :
+			return ret
+	except Exception as e:
+			raise Exception('Cannot access path to config file: ' +  str(e))
+			return
 	try:
 		fh = open(path,"r")
 		file_contents = fh.read();
 		return json.loads(file_contents)
-	except IOError:
-		raise Exception, "Cannot open config file for reading."
+	except IOError as e:
+		raise Exception("Cannot open config file for reading: " +  str(e))
 		return
-	except Exception:
-		raise Exception,"Unhandled JSON error"
+	except Exception as e:
+		raise Exception("Unhandled JSON error" + str(e))
 		return
 
 def mkdir_p(path):
@@ -33,20 +37,26 @@ def mkdir_p(path):
 	except OSError as exc: # Python >2.5
 		if exc.errno == errno.EEXIST:
 			pass
-		else: raise
+		else:
+			raise Exception("Exception" + str(e))
+			return
 
 class deb_package:
 	def __init__(self,msg_body=''):
-		if msg_body:
-			print msg_body
-			tmp = json.loads(msg_body)
-			self.method_type = tmp['method_type']
-			self.format = tmp['format']
-			self.uri = tmp['uri']
-			self.vcs_id = tmp['vcs_id']
-			self.version = tmp['version']
-			self.architecture = tmp['architecture']
-			self.suite = tmp['suite']
-			self.distribution = tmp['distribution']
-			self.name = tmp['name']
-			#self = jsonpickle.decode (msg_body) # TODO: broken :(
+		try:
+			if msg_body:
+				print msg_body
+				tmp = json.loads(msg_body)
+				self.method_type = tmp['method_type']
+				self.format = tmp['format']
+				self.uri = tmp['uri']
+				self.vcs_id = tmp['vcs_id']
+				self.version = tmp['version']
+				self.architecture = tmp['architecture']
+				self.suite = tmp['suite']
+				self.distribution = tmp['distribution']
+				self.name = tmp['name']
+				#self = jsonpickle.decode (msg_body) # TODO: broken :(
+		except Exception as e:
+			raise Exception('Cannot construct deb_package: ' + str(e))
+			return
