@@ -1,10 +1,9 @@
-pybit (0.0.22+nmu1) development; urgency=low
+pybit (0.0.23) development; urgency=low
 
-  * Non-maintainer upload.
   * Made change to DB so that jobstatus time field was NOT NULL and auto
     set to the current time upon insertion
 
- -- James Bennet <jamesb@tclpc02.TCL.office>  Thu, 18 Oct 2012 13:17:33 +0100
+ -- James Bennet <James.Bennet@toby-churchill.com>  Thu, 18 Oct 2012 13:17:33 +0100
 
 pybit (0.0.22) development; urgency=low
 
