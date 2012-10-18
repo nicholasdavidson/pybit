@@ -456,7 +456,7 @@ class db(object):
 			for i in res:
 				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
 				buildclient = self.get_buildd_id(i['buildclient_id'])
-				jobs.append(job(i['id'],packageinstance,buildclient))
+				jobs.append(job(i['id'],packageinstance,None,buildclient))
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
@@ -473,7 +473,7 @@ class db(object):
 			for i in res:
 				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
 				buildclient = self.get_buildd_id(i['buildclient_id'])
-				jobs.append(job(i['id'],packageinstance,buildclient))
+				jobs.append(job(i['id'],packageinstance,None,buildclient))
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
@@ -488,7 +488,7 @@ class db(object):
 
 			jobs = []
 			for i in res:
-				jobs.append(self.get_job(i['id']))
+				jobs.append(self.get_job(i['job_id']))
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
@@ -503,7 +503,7 @@ class db(object):
 
 			jobs = []
 			for i in res:
-				jobs.append(self.get_job(i['id']))
+				jobs.append(self.get_job(i['job_id']))
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
@@ -512,11 +512,10 @@ class db(object):
 
 	def get_job_status(self,id):
 		try:
-			#TODO: work in progress
-			self.cur.execute("SELECT job.id, status.name FROM job, jobstatus, status WHERE job.id=%s AND job.id = jobstatus.job_id AND job.status_id = status.id",(id,))
-			res = self.cur.fetchall()
-			self.conn.commit()
-			return res
+			#TODO: CODEME - gets job status *history*
+
+			jobstatus = []
+			return jobstatus
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))

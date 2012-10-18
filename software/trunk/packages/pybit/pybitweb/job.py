@@ -11,8 +11,30 @@ myDb = db()
 def get_jobs():
 	try:
 		response.content_type = "application/json"
-		#return list of jobs"
+		#return list of ALL jobs"
 		return jsonpickle.encode(myDb.get_jobs());
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
+@route('/job/status', method='GET')
+def get_jobstatuses():
+	try:
+		response.content_type = "application/json"
+		#return list of UNFINISHED jobs"
+		res = myDb.get_unfinished_jobs()
+		return jsonpickle.encode(res)
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
+@route('/job/status/<status>', method='GET')
+def get_jobs_bystatus(status):
+	try:
+		response.content_type = "application/json"
+		#return list of UNFINISHED jobs"
+		res = myDb.get_jobs_by_status(status)
+		return jsonpickle.encode(res)
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
 		return None
@@ -67,17 +89,10 @@ def del_jobid(jobid):
 @route('/job/<jobid:int>/status', method='GET')
 def get_jobstatus(jobid):
 	try:
-		# Return status for specified job ID
+		# TODO: CODEME! - SHOW STATUS HISTORY
 		res = myDb.get_job_status(jobid)
-
-		# check results returned
-		if len(res) > 0:
-			encoded = jsonpickle.encode(res)
-			response.content_type = "application/json"
-			return encoded
-		else:
-			response.status = "404 - No statuses found for job with this ID."
-			return
+		response.status = "501 - ERROR: Not coded yet."
+		return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
 		return None
