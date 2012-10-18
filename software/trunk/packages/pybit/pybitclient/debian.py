@@ -43,8 +43,8 @@ class DebianBuildClient(BuildClient):
 			package_dir = "%s/%s" % (srcdir, pkg.package)
 			builddir= "%s/tmpbuilds/%s" % (self.options["buildroot"], pkg.suite)
 			# FIXME: doesn't make sense to run dpkg-checkbuilddeps outside the chroot!
-#			if os.path.isdir(package_dir) :
-#				os.chdir (package_dir)
+			if os.path.isdir(package_dir) :
+				os.chdir (package_dir)
 #				command = "dpkg-checkbuilddeps"
 #				if not self.run_cmd (command, "build-dep-wait", pkg, report_name, self.options["dry_run"]):
 #					return
