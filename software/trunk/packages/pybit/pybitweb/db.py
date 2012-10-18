@@ -663,7 +663,12 @@ class db(object):
 
 			packageinstances = []
 			for i in res:
-				packageinstances.append(packageinstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
+				package = self.get_package_id(i['package_id'])
+				arch = self.get_arch_id(i['arch_id'])
+				suite = self.get_suite_id(i['suite_id'])
+				dist = self.get_dist_id(i['dist_id'])
+				format = self.get_format_id(i['format_id'])
+				packageinstances.append(packageinstance(i['id'],package,arch,suite,dist,format,i['master']))
 			return packageinstances
 		except Exception as e:
 			self.conn.rollback()
