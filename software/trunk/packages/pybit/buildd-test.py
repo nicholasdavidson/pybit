@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+#       buildd-test.py
+#
+#       Copyright 2012 Neil Williams <codehelp@debian.org>
+#
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
+
+import os
+import pybitclient
+from pybitclient.subversion import SubversionClient
+from pybitclient.debian import DebianBuildClient
+
+def main():
+	conffile = "%s/pybitclient/client.conf" % (os.getcwd());
+	if os.path.isfile (conffile):
+		options = pybitclient.get_settings(conffile)
+	else :
+		options = pybitclient.get_settings("/etc/pybit/client/client.conf")
+	pkg = pybitclient.deb_package ("")
+	pkg.vcs_id = "21078"
+	pkg.method_type = "svn"
+	pkg.suite = "pybit"
+	pkg.package = "pybit"
+	pkg.version = "0.0.19"
+	pkg.architecture = "i386"
+	pkg.uri = "http://svn/svn/lwdev/software/trunk/packages/pybit"
+	vcs = SubversionClient ()
+	vcs.fetch_source (pkg)
+	srcdir = vcs.get_srcdir()
+	client = DebianBuildClient ()
+	if options["use_lvm"] :
+		name = pkg.suite + "-source"
+	else:
+		name = pkg.suite
+	client.update_environment (name)
+	while client.is_building() :
+		wait(self)
+	pkg.buildd = options["idstring"]
+	pkg.msgtype = "building"
+	client.build_master (srcdir, pkg)
+
+	return 0
+
+if __name__ == '__main__':
+	main()
+

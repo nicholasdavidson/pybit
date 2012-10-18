@@ -31,3 +31,22 @@ setup(name='pybit-common',
 	maintainer='TCL Build System user',
 	maintainer_email='rnd@toby-churchill.com',
 	)
+
+setup(name='pybit-client',
+	version='__CHANGELOG_VERSION__',
+	description='PyBit client related modules',
+	url='http://www.toby-churchill.co.uk',
+	packages=['pybitclient'],
+	maintainer='TCL Build System user',
+	maintainer_email='rnd@toby-churchill.com',
+	test_suite='tests'
+	)
+
+setup(name='pybit-web',
+	version='__CHANGELOG_VERSION__',
+	description='PyBit controller and RESTful API',
+	url='http://www.toby-churchill.co.uk',
+	packages=['pybitweb'],
+	maintainer='TCL Build System user',
+	maintainer_email='rnd@toby-churchill.com',
+	)

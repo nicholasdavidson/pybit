@@ -37,16 +37,14 @@ build-stamp: configure-stamp
 	$(call pyalldo, test/*.py)
 	touch $@
 
-build-setup: pybit-setup.py pybitweb-setup.py pybitclient-setup.py
+build-setup: setup.py
 	dh_testdir
-	python pybit-setup.py build 
-	python pybitweb-setup.py build 
-	python pybitclient-setup.py build 
+	python setup.py build
 
 clean:
 	dh_testdir
 	dh_testroot
-	$(RM) build-stamp configure-stamp *-setup.py
+	$(RM) build-stamp configure-stamp setup.py
 	$(RM) -r build pybit_client.egg-info pybit_common.egg-info pybit_web.egg-info
 	$(RM) -r build 	[ ! -f Makefile ] || $(MAKE) clean
 	find . -name '*.pyc' -delete
@@ -57,9 +55,7 @@ install: build
 	dh_testroot
 	dh_prep
 	dh_installdirs
-	python pybitclient-setup.py install --root="$(CURDIR)/debian/pybit-client" --no-compile
-	python pybitweb-setup.py install --root="$(CURDIR)/debian/pybit-web" --no-compile
-	python pybit-setup.py install --root="$(CURDIR)/debian/pybit-common" --no-compile
+	python setup.py install --root="$(CURDIR)/debian/tmp" --no-compile
 
 # Build architecture-independent files here.
 binary-indep: build install

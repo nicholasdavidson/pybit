@@ -29,8 +29,6 @@ import pybitclient
 
 class BuildClient(object):
 
-
-
 	def __init__(self):
 		self.build_process = None
 		return
@@ -41,18 +39,18 @@ class BuildClient(object):
 			msg.properties["delivery_mode"] = 2
 			chan.basic_publish(msg,exchange=pkg.architecture,routing_key=key)
 		except Exception as e:
-			raise Exception('Error constructing build client: ' + str(e))
+			raise Exception('Error sending message from client: ' + str(e))
 			return
 
 	def run_cmd (self, cmd, fail_msg, report, simulate):
 		try:
-			if simulate :
+			if simulate == True :
 				print cmd
 				return True
-			elif not self.build_process :
-				self.build_process = subprocess.Popen(shlex.split(command))
+#			elif not self.build_process :
+#				self.build_process = subprocess.Popen(shlex.split(command))
 			else:
-				if os.system (command) :
+				if os.system (cmd) :
 					pkg.msgtype = fail_msg
 					msg.amqp.Message(jsonpickle.encode(pkg))
 					msg.properties["delivery_mode"] = 2

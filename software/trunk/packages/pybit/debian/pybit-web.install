@@ -1,0 +1,2 @@
+debian/tmp/usr/local/lib/python*/dist-packages/pybitweb/ ./usr/share/pyshared/
+debian/tmp/usr/local/lib/python*/dist-packages/pybit_web-*.egg-info ./usr/share/pyshared/

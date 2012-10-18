@@ -86,7 +86,7 @@ try:
 	signal.signal(signal.SIGINT, signal_handler)
 	print "Hit Ctrl-C to quit."
 except Exception as e:
-	raise Exception('Error configuring signal handler: ' + str(e))
+	raise Exception('Error enabling signal handler: ' + str(e))
 
 def recv_callback(msg):
 	try:
@@ -137,6 +137,7 @@ def recv_callback(msg):
 			print "W: shouldn't get here"
 			return
 		# FIXME: use same naming convention in schroot setup whether lvm is used or not.
+		# reasons for this are that the update_environment call needs to be persistent in the snapshot
 		if use_lvm :
 			name = pkg.suite + "-source"
 		else:

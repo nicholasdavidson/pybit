@@ -1,0 +1,27 @@
+Creating new build environments
+
+mkdir /mnt/pybit
+lvcreate -n schroot-pybit -L1G buildbox
+mke2fs -j /dev/buildbox/schroot-pybit
+mount /dev/buildbox/schroot-pybit /mnt
+debootstrap --include=sudo,fakeroot,build-essential,debfoster,apt,vim,mc --variant=buildd --arch=i386 --keyring=/etc/apt/trusted.gpg squeeze /mnt /pybit http://netstore/debian
+umount /mnt/pybit
+
+Under /etc/schroot/schroot.conf: (After lenny, /etc/schrrot/chroot.d/
+
+[squeeze]
+type=lvm-snapshot
+device=/dev/buildbox/schroot-squeeze
+description=Debian squeeze
+priority=5
+users=buildd,sbuild,zumbi
+root-users=zumbi,buildd
+source-root-users=root,zumbi,buildd
+aliases=stable,development,default
+lvm-snapshot-options=--size 2G
+
+Edit LVM chroot sourced packages with schroot -c squeeze-source:
+ # schroot -c squeeze-source
+ (sid)# echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/50enrico
+ (sid)# apt-get install build-essential pbuilder devscripts fakeroot tcl-archive-keyring
+ (sid)# apt-get clean
