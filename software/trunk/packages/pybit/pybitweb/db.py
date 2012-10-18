@@ -446,6 +446,23 @@ class db(object):
 	#<<<<<<<< Job related database functions >>>>>>>>
 	# UPDATE queries?
 
+	def get_job(self,id):
+		try:
+			self.cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job WHERE id=%s",(id,))
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			jobs = []
+			for i in res:
+				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
+				buildclient = self.get_buildd_id(i['buildclient_id'])
+				jobs.append(job(i['id'],packageinstance,buildclient))
+			return jobs
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
 	def get_jobs(self):
 		try:
 			self.cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job ORDER BY id")
@@ -454,8 +471,8 @@ class db(object):
 
 			jobs = []
 			for i in res:
-				packageinstance = get_packageinstance_id(i['packageinstance_id'])
-				buildclient = get_buildd_id(i['buildclient_id'])
+				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
+				buildclient = self.get_buildd_id(i['buildclient_id'])
 				jobs.append(job(i['id'],packageinstance,buildclient))
 			return jobs
 		except Exception as e:
@@ -471,7 +488,7 @@ class db(object):
 
 			jobs = []
 			for i in res:
-				jobs.append(get_job(i['id']))
+				jobs.append(self.get_job(i['id']))
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
@@ -486,24 +503,7 @@ class db(object):
 
 			jobs = []
 			for i in res:
-				jobs.append(get_job(i['id']))
-			return jobs
-		except Exception as e:
-			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
-			return None
-
-	def get_job(self,id):
-		try:
-			self.cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job WHERE id=%s",(id,))
-			res = self.cur.fetchall()
-			self.conn.commit()
-
-			jobs = []
-			for i in res:
-				packageinstance = get_packageinstance_id(i['packageinstance_id'])
-				buildclient = get_buildd_id(i['buildclient_id'])
-				jobs.append(job(i['id'],packageinstance,buildclient))
+				jobs.append(self.get_job(i['id']))
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
