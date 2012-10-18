@@ -465,8 +465,7 @@ class db(object):
 
 	def get_jobs_by_status(self,status):
 		try:
-			
-			self.cur.execute("WITH oq AS (SELECT job.id, SELECT status.name FROM jobstatus LEFT JOIN status ON status_id=status.id WHERE job_id=job.id ORDER BY time DESC LIMIT 1) AS current_status FROM job) SELECT oq.id FROM oq WHERE oq.current_status=%s",(status,));
+			self.cur.execute("WITH latest_status AS (SELECT DISTINCT ON (job_id) job_id, status.name FROM jobstatus LEFT JOIN status ON status_id=status.id ORDER BY job_id, time DESC) SELECT job_id, name FROM latest_status WHERE name=%s",(status,));
 			res = self.cur.fetchall()
 			self.conn.commit()
 
@@ -481,8 +480,7 @@ class db(object):
 
 	def get_unfinished_jobs(self):
 		try:
-			
-			self.cur.execute("WITH oq AS (SELECT job.id, SELECT status.name FROM jobstatus LEFT JOIN status ON status_id=status.id WHERE job_id=job.id ORDER BY time DESC LIMIT 1) AS current_status FROM job) SELECT oq.id FROM oq WHERE oq.current_status!='Uploaded' AND oq.current_status!='Done'",(status,));
+			self.cur.execute("WITH latest_status AS (SELECT DISTINCT ON (job_id) job_id, status.name FROM jobstatus LEFT JOIN status ON status_id=status.id ORDER BY job_id, time DESC) SELECT job_id, name FROM latest_status WHERE name!='Uploaded' AND name!='Done'");
 			res = self.cur.fetchall()
 			self.conn.commit()
 
