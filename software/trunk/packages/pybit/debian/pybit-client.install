@@ -3,3 +3,4 @@ pybit-client ./usr/bin/
 pybit-client-basic ./usr/bin/
 debian/tmp/usr/local/lib/python*/dist-packages/pybitclient/ ./usr/share/pyshared/
 debian/tmp/usr/local/lib/python*/dist-packages/pybit_client-*.egg-info ./usr/share/pyshared/
+buildd-test.py ./usr/share/pybitclient/

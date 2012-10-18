@@ -1,3 +1,9 @@
+pybit (0.0.24) pybit; urgency=low
+
+  * Set a test suite for test builds, to be changed back later.
+
+ -- Neil Williams <neilw@toby-churchill.com>  Thu, 18 Oct 2012 13:20:16 +0100
+
 pybit (0.0.23) development; urgency=low
 
   * Made change to DB so that jobstatus time field was NOT NULL and auto

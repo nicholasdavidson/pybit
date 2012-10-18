@@ -142,7 +142,7 @@ def recv_callback(msg):
 			name = pkg.suite + "-source"
 		else:
 			name = pkg.suite
-		client.update_environment (name)
+		client.update_environment (name, pkg)
 		while client.is_building() :
 			wait(self)
 		pkg.buildd = buildd_id

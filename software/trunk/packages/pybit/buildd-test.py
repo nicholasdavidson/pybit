@@ -32,12 +32,13 @@ def main():
 	else :
 		options = pybitclient.get_settings("/etc/pybit/client/client.conf")
 	pkg = pybitclient.deb_package ("")
-	pkg.vcs_id = "21078"
+	pkg.vcs_id = "21085"
 	pkg.method_type = "svn"
 	pkg.suite = "pybit"
 	pkg.package = "pybit"
-	pkg.version = "0.0.19"
+	pkg.version = "0.0.22"
 	pkg.architecture = "i386"
+	pkg.source = "pybit"
 	pkg.uri = "http://svn/svn/lwdev/software/trunk/packages/pybit"
 	vcs = SubversionClient ()
 	vcs.fetch_source (pkg)
@@ -47,7 +48,7 @@ def main():
 		name = pkg.suite + "-source"
 	else:
 		name = pkg.suite
-	client.update_environment (name)
+	client.update_environment (name, pkg)
 	while client.is_building() :
 		wait(self)
 	pkg.buildd = options["idstring"]

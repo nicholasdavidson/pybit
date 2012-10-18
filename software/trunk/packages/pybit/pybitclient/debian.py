@@ -30,9 +30,9 @@ report_name = "controller"
 class DebianBuildClient(BuildClient):
 	options = {}
 
-	def update_environment(self,name):
+	def update_environment(self,name,pkg):
 		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
-		if self.run_cmd (command, "failed", report_name, self.options["dry_run"]):
+		if self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 			return
 
 	def build_master (self, srcdir, pkg):
@@ -42,16 +42,17 @@ class DebianBuildClient(BuildClient):
 				return
 			package_dir = "%s/%s" % (srcdir, pkg.package)
 			builddir= "%s/tmpbuilds/%s" % (self.options["buildroot"], pkg.suite)
+			# FIXME: doesn't make sense to run dpkg-checkbuilddeps outside the chroot!
 			if os.path.isdir(package_dir) :
 				os.chdir (package_dir)
-				command = "dpkg-checkbuilddeps"
-				if self.run_cmd (command, "build-dep-wait", report_name, self.options["dry_run"]):
-					return
+#				command = "dpkg-checkbuilddeps"
+#				if self.run_cmd (command, "build-dep-wait", pkg, report_name, self.options["dry_run"]):
+#					return
 			command = "dpkg-buildpackage -S -d > /dev/null 2>&1"
-			if self.run_cmd (command, "failed", report_name, self.options["dry_run"]):
+			if self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			command = "sbuild -A -s -d %s%s/%s_%s.dsc" % (pkg.suite, srcdir, pkg.source, pkg.version)
-			if self.run_cmd (command, "failed", report_name, self.options["dry_run"]):
+			if self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			changes = "%s/%s_%s_%s.changes" % (builddir, pkg.package, pkg.version, pkg.architecture)
 			if not os.path.isfile (changes) :
@@ -67,7 +68,7 @@ class DebianBuildClient(BuildClient):
 		try:
 			builddir= self.options["buildroot"] + "/tmpbuilds/" + pkg.suite
 			command = "dput -c %s %s %s %s" % (dput_cfg, dput_opt, dput_dest, changes)
-			if self.run_cmd (command, "failed", report_name, self.options["dry_run"]):
+			if self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			pkg.msgtype = "uploaded"
 			send_message (chan, pkg, report_name)
@@ -78,7 +79,7 @@ class DebianBuildClient(BuildClient):
 	def build_slave (self, srcdir, pkg):
 		try:
 			command = "sbuild -d %s %s_%s" % (pkg.suite, pkg.source, pkg.version)
-			if self.run_cmd (command, "failed", report_name, self.options["dry_run"]):
+			if self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			changes = "%s/%s_%s_%s.changes" % (builddir, pkg.package, pkg.version, pkg.architecture)
 			if not os.path.isfile (changes) :

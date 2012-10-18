@@ -42,7 +42,7 @@ class BuildClient(object):
 			raise Exception('Error sending message from client: ' + str(e))
 			return
 
-	def run_cmd (self, cmd, fail_msg, report, simulate):
+	def run_cmd (self, cmd, fail_msg, pkg, report, simulate):
 		try:
 			if simulate == True :
 				print cmd
@@ -52,9 +52,10 @@ class BuildClient(object):
 			else:
 				if os.system (cmd) :
 					pkg.msgtype = fail_msg
-					msg.amqp.Message(jsonpickle.encode(pkg))
+					msg = amqp.Message(jsonpickle.encode(pkg))
 					msg.properties["delivery_mode"] = 2
-					chan.basic_publish(msg,exchange=pkg.architecture,routing_key=report)
+#					chan.basic_publish(msg,exchange=pkg.architecture,routing_key=report)
+					print "E: Failed to run %s" % (cmd)
 					return False
 			return True
 		except Exception as e:
@@ -77,7 +78,7 @@ class BuildClient(object):
 	def build_slave (buildroot):
 		pass
 
-	def update_environment (self) :
+	def update_environment (self,name,pkg) :
 		pass
 
 	def upload (self) :
