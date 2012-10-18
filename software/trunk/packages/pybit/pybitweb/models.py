@@ -90,3 +90,10 @@ class job(model):
 		self.packageinstance = packageinstance
 		self.transport = transport
 		self.buildclient = buildclient
+
+class suitearch(model):
+
+	def __init__(self,id,suite_id,arch_id):
+		self.id = id
+		self.suite_id = suite_id
+		self.arch_id = arch_id

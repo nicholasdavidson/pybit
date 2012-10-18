@@ -2,7 +2,7 @@
 
 import psycopg2
 import psycopg2.extras
-from models import arch,dist,format,status,suite,buildd,job,package,packageinstance
+from models import arch,dist,format,status,suite,buildd,job,package,packageinstance,suitearch
 
 #TODO: make more robust, more DELETEs?
 
@@ -39,6 +39,7 @@ class db:
 			self.conn.close()
 			return True
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error disconnecting from database: ' + str(e))
 			return False
 
@@ -49,12 +50,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM arch ORDER BY name")
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			arches = []
 			for i in res:
 				arches.append(arch(i['id'],i['name']))
 			return arches
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -62,12 +65,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM arch WHERE id=%s",(id,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			arches = []
 			for i in res:
 				arches.append(arch(i['id'],i['name']))
 			return arches
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -75,23 +80,70 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM arch WHERE name=%s",(name,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			arches = []
 			for i in res:
 				arches.append(arch(i['id'],i['name']))
 			return arches
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def put_arch(self,name):
 		try:
 			self.cur.execute("INSERT into arch(name) VALUES (%s) RETURNING id",(name,))
-			self.conn.commit()
 			res = self.cur.fetchall()
+			self.conn.commit()
+
 			tmp = arch(res[0]['id'],name)
 			return tmp
 		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
+	def get_suitearches(self):
+		try:
+			self.cur.execute("SELECT id,suite_id,arch_id FROM suitearches ORDER BY id")
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			suitearches = []
+			for i in res:
+				suitearches.append(suitearch(i['id'],i['suite_id'],i['arch_id']))
+			return suitearches
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
+	def get_suitearch_id(self,id):
+		try:
+			self.cur.execute("SELECT id,suite_id,arch_id FROM suitearches WHERE id=%s",(id,))
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			suitearches = []
+			for i in res:
+				suitearches.append(suitearch(i['id'],i['suite_id'],i['arch_id']))
+			return suitearches
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
+	def put_suitearch(self,suite_id,arch_id):
+		try:
+			self.cur.execute("INSERT into suitearches(suite_id,arch_id) VALUES (%s, %s) RETURNING id",(suite_id,arch_id))
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			tmp = suitearch(res[0]['id'],suite_id,arch_id)
+			return tmp
+		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -99,12 +151,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM distribution ORDER BY name")
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			dists = []
 			for i in res:
 				dists.append(dist(i['id'],i['name']))
 			return dists
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -112,12 +166,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM distribution WHERE id=%s",(id,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			dists = []
 			for i in res:
 				dists.append(dist(i['id'],i['name']))
 			return dists
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -125,23 +181,27 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM distribution WHERE name=%s",(name,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			dists = []
 			for i in res:
 				dists.append(dist(i['id'],i['name']))
 			return dists
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def put_dist(self,name):
 		try:
 			self.cur.execute("INSERT into distribution(name) VALUES (%s)  RETURNING id",(name,))
-			self.conn.commit()
 			res = self.cur.fetchall()
+			self.conn.commit()
+
 			tmp = dist(res[0]['id'],name)
 			return tmp
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -149,12 +209,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM format ORDER BY name")
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			formats = []
 			for i in res:
 				formats.append(format(i['id'],i['name']))
 			return formats
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -162,12 +224,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM format WHERE id=%s",(id,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			formats = []
 			for i in res:
 				formats.append(format(i['id'],i['name']))
 			return formats
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -187,11 +251,13 @@ class db:
 	def put_format(self,name):
 		try:
 			self.cur.execute("INSERT into format(name) VALUES (%s)  RETURNING id",(name,))
-			self.conn.commit()
 			res = self.cur.fetchall()
+			self.conn.commit()
+
 			tmp = format(res[0]['id'],name)
 			return tmp
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -199,12 +265,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM status ORDER BY name")
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			statuses = []
 			for i in res:
 				statuses.append(status(i['id'],i['name']))
 			return statuses
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -212,23 +280,27 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM status WHERE id=%s",(id,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			statuses = []
 			for i in res:
 				statuses.append(status(i['id'],i['name']))
 			return statuses
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def put_status(self,name):
 		try:
 			self.cur.execute("INSERT into status(name) VALUES (%s)  RETURNING id",(name,))
-			self.conn.commit()
 			res = self.cur.fetchall()
+			self.conn.commit()
+
 			tmp = status(res[0]['id'],name)
 			return tmp
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -236,12 +308,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM suite ORDER BY name")
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			suites = []
 			for i in res:
 				suites.append(suite(i['id'],i['name']))
 			return suites
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -249,12 +323,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM suite WHERE id=%s",(id,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			suites = []
 			for i in res:
 				suites.append(suite(i['id'],i['name']))
 			return suites
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -262,23 +338,27 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM suite WHERE name=%s",(name,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			suites = []
 			for i in res:
 				suites.append(suite(i['id'],i['name']))
 			return suites
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def put_suite(self,name):
 		try:
 			self.cur.execute("INSERT into suite(name) VALUES (%s)  RETURNING id",(name,))
-			self.conn.commit()
 			res = self.cur.fetchall()
+			self.conn.commit()
+
 			tmp = suite(res[0]['id'],name)
 			return tmp
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -288,12 +368,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM buildclients ORDER BY name")
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			buildds = []
 			for i in res:
 				buildds.append(buildd(i['id'],i['name']))
 			return buildds
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -301,37 +383,42 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name FROM buildclients WHERE id=%s",(id,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			buildds = []
 			for i in res:
 				buildds.append(buildd(i['id'],i['name']))
 			return buildds
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def put_buildclient(self,name):
 		try:
 			self.cur.execute("INSERT into buildclients(name) VALUES (%s)  RETURNING id",(name,))
-			self.conn.commit()
 			res = self.cur.fetchall()
+			self.conn.commit()
+
 			tmp = buildd(res[0]['id'],name)
 			return tmp
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def delete_buildclient(self,id):
 		try:
 			self.cur.execute("DELETE FROM buildclients WHERE id=%s RETURNING id",(id,))
-			self.conn.commit()
 			res = self.cur.fetchall() # TODO: check
+			self.conn.commit()
 
 			if res[0]['id'] == id:
 				return True
 			else:
 				return False
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -339,8 +426,11 @@ class db:
 		try:
 			self.cur.execute("SELECT job.id,buildclients.id FROM buildclients,job WHERE buildclients.id=%s AND buildclients.id = job.buildclient_id  ORDER BY job.id",(id,))
 			res = self.cur.fetchall()
+			self.conn.commit()
+
 			return res
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -351,12 +441,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job ORDER BY id")
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			jobs = []
 			for i in res:
 				jobs.append(job(i['id'],i['packageinstance_id'],i['buildclient_id']))
 			return jobs
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -364,12 +456,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job WHERE id=%s",(id,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			jobs = []
 			for i in res:
 				jobs.append(job(i['id'],i['packageinstance_id'],i['buildclient_id']))
 			return jobs
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -378,21 +472,24 @@ class db:
 			#TODO: work in progress
 			self.cur.execute("SELECT job.id, status.name FROM job, jobstatus, status WHERE job.id=%s AND job.id = jobstatus.job_id AND job.status_id = status.id",(id,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 			return res
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def delete_job(self,id):
 		try:
 			self.cur.execute("DELETE FROM job WHERE id=%s  RETURNING id",(id,))
-			self.conn.commit()
 			res = self.cur.fetchall() # TODO: check
+			self.conn.commit()
 			if res[0]['id'] == id:
 				return True
 			else:
 				return False
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -400,11 +497,12 @@ class db:
 		try:
 			#TODO: work in progress
 			self.cur.execute("INSERT INTO job (packageinstance_id,buildclient_id) VALUES (%s, %s)  RETURNING id",(packageinstance.id,(buildclient.id if buildclient else None)))
-			self.conn.commit()
 			res = self.cur.fetchall()
+			self.conn.commit()
 			tmp = job(res[0]['id'],packageinstance,transport,buildclient)
 			return tmp
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -414,12 +512,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,version,name FROM package ORDER BY name")
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			packages = []
 			for i in res:
 				packages.append(package(i['id'],i['version'],i['name']))
 			return packages
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -427,12 +527,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,version,name FROM package WHERE id=%s",(id,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			packages = []
 			for i in res:
 				packages.append(package(i['id'],i['version'],i['name']))
 			return packages
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -440,36 +542,42 @@ class db:
 		try:
 			self.cur.execute("SELECT id,name,version FROM package WHERE name=%s AND version=%s",(name,version))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			packages = []
 			for i in res:
 				packages.append(package(i['id'],i['version'],i['name']))
 			return packages
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def put_package(self,version,name):
 		try:
 			self.cur.execute("INSERT into package(version,name) VALUES (%s, %s)  RETURNING id",(version,name))
-			self.conn.commit()
 			res = self.cur.fetchall()
+			self.conn.commit()
+
 			tmp = package(res[0]['id'],version,name)
 			return tmp
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def delete_package(self,id):
 		try:
 			self.cur.execute("DELETE FROM package WHERE id=%s  RETURNING id",(id,))
-			self.conn.commit()
 			res = self.cur.fetchall() # TODO: check
+			self.conn.commit()
+
 			if res[0]['id'] == id:
 				return True
 			else:
 				return False
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -479,12 +587,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY package_id, id")
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			packageinstances = []
 			for i in res:
 				packageinstances.append(packageinstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
 			return packageinstances
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -492,12 +602,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package_id,arch_id,suite_id,dist_id,format_id))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			packageinstances = []
 			for i in res:
 				packageinstances.append(packageinstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
 			return packageinstances
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -505,12 +617,14 @@ class db:
 		try:
 			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance  WHERE id=%s",(id,))
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			packageinstances = []
 			for i in res:
 				packageinstances.append(packageinstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
 			return packageinstances
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -519,22 +633,27 @@ class db:
 			self.cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)  RETURNING id",(package.id,arch.id,suite.id,dist.id,format.id,master))
 			self.conn.commit()
 			res = self.cur.fetchall()
+			self.conn.commit()
+
 			tmp = packageinstance(res[0]['id'],package,arch,suite,dist,format,master)
 			return tmp
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
 	def delete_packageinstance(self,id):
 		try:
 			self.cur.execute("DELETE FROM packageinstance WHERE id=%s RETURNING id",(id,))
-			self.conn.commit()
 			res = self.cur.fetchall() # TODO: check
+			self.conn.commit()
+
 			if res[0]['id'] == id:
 				return True
 			else:
 				return False
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -554,6 +673,8 @@ class db:
 			if archidID and distributionID and formatID and packageID and suiteID:
 				self.cur.execute("SELECT id FROM packageinstance WHERE arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(archidID[0].id,distributionID[0].id,formatID[0].id,packageID[0].id,suiteID[0].id))
 				res = self.cur.fetchall()
+				self.conn.commit()
+
 				if len(res) > 0:
 					#Found specific package instance
 					return True
@@ -565,6 +686,7 @@ class db:
 				#Error finding specific package instance
 				return False
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 	#<<<<<<<<< Report Queries >>>>>>>
@@ -573,12 +695,14 @@ class db:
 		try:
 			self.cur.execute("SELECT packageinstance.id, suite.name AS suite, package.name AS package, package.version AS version, arch.name AS arch, format.name AS format, distribution.name AS dist, packageinstance.master AS master FROM packageinstance LEFT JOIN arch ON arch.id=arch_id LEFT JOIN suite ON suite.id=suite_id LEFT JOIN distribution ON distribution.id=dist_id LEFT JOIN package ON package_id=package.id LEFT JOIN format ON format_id=format.id")
 			res = self.cur.fetchall()
+			self.conn.commit()
 
 			package_instances = []
 			for i in res :
 				package_instances.append(packageinstance(i['id'], i['package'], i['arch'], i['suite'], i['dist'], i['format'], i['master']))
 			return package_instances
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
@@ -588,6 +712,8 @@ class db:
 			if suite :
 				self.cur.execute("SELECT arch.id, arch.name FROM suite LEFT JOIN suitearches ON suite.id=suite_id LEFT JOIN arch ON arch_id = arch.id WHERE suite.name=%s",[suite])
 				res = self.cur.fetchall()
+				self.conn.commit()
+
 				arch_list = []
 				for i in res :
 					arch_list.append(i['name'])
@@ -595,5 +721,6 @@ class db:
 			else:
 				return False
 		except Exception as e:
+			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
 			return None

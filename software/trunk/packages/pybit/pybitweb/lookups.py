@@ -3,7 +3,7 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import db
-from models import arch,dist,format,status,suite
+from models import arch,dist,format,status,suite,suitearch
 myDb = db()
 
 @route('/arch', method='GET')
@@ -45,6 +45,53 @@ def put_arch():
 
 		if name:
 			myDb.put_arch(name)
+		else:
+			response.status = "400 - Required fields missing."
+		return
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
+@route('/suitearch', method='GET')
+def get_suitearch():
+	try:
+		#return list of suitearch
+		suitearches = myDb.get_suitearches()
+		encoded = jsonpickle.encode(suitearches)
+		response.content_type = "application/json"
+		return encoded
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
+@route('/suitearch/<id:int>', method='GET')
+def get_suitearch_id(id):
+	try:
+		# Returns all information about a specific suitearch
+		res = myDb.get_suitearch_id(id)
+
+		# check results returned
+		if len(res) > 0:
+			encoded = jsonpickle.encode(res)
+			response.content_type = "application/json"
+			return encoded
+		else:
+			response.status = "404 - No suitearch found with this ID."
+			return
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
+@route('/suitearch', method='POST')
+@route('/suitearch', method='PUT')
+def put_suitearch():
+	try:
+		# Add a new suitearch. TODO: TESTME
+		suite_id = request.forms.get('suite_id')
+		arch_id =  request.forms.get('arch_id')
+
+		if suite_id and arch_id:
+			myDb.put_suitearch(suite_id,arch_id)
 		else:
 			response.status = "400 - Required fields missing."
 		return
