@@ -9,6 +9,14 @@ from pybitweb.controller import controller
 myDb = db()
 buildController = controller(myDb)
 
+def load_settings_from_file(path):
+	settings_file = open(path, 'r')
+	encoded_string = settings_file.read()
+	settings = jsonpickle.decode(encoded_string )
+	return settings
+
+settings = load_settings_from_file('configs/web_settings.json')
+
 @error(404)
 def error404(error):
     return 'HTTP Error 404 - Not Found.'
@@ -32,7 +40,7 @@ route('/cancel_package', method='POST') (buildController.cancelPackage)
 route('/cancel_package_instance', method='POST') (buildController.cancelPackageInstance)
 
 try:
-	debug(True)
-	run(host='localhost', port=8080, reloader=False)
+	debug(settings['debug'])
+	run(host=settings['host'], port=settings['port'], reloader=settings['reloader'])
 except Exception as e:
 		raise Exception('Error starting web server: ' + str(e))

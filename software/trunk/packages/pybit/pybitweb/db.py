@@ -2,19 +2,28 @@
 
 import psycopg2
 import psycopg2.extras
+import jsonpickle
 from models import arch,dist,format,status,suite,buildd,job,package,packageinstance,suitearch
 
 #TODO: make more robust, more DELETEs?
 
-class db:
+class db(object):
 
 	conn = None
 	cur = None
-
+	
 	#<<<<<<<< General database functions >>>>>>>>
 
 	#Constructor, connects on initialisation. Do we need to make sure we dont make too many of these? (pooling?)
+
+	def load_settings_from_file(self,path):
+		settings_file = open(path, 'r')
+		encoded_string = settings_file.read()
+		settings = jsonpickle.decode(encoded_string )
+		return settings
+
 	def __init__(self):
+		self.settings = self.load_settings_from_file('configs/db_settings.json')
 		self.connect()
 
 	#Deconstructor, disconnects on disposal. Need to check this actually gets called.
@@ -24,7 +33,7 @@ class db:
 	#Connects to DB. Hardcoding the connection string in here is probably a bad idea...
 	def connect(self):
 		try:
-			self.conn = psycopg2.connect(database="pybit", user="postgres", host="catbells", port="5432")
+			self.conn = psycopg2.connect(database=self.settings['database'], user=self.settings['user'], host=self.settings['host'], port=self.settings['port'])
 			self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			return True
 		except Exception as e:
