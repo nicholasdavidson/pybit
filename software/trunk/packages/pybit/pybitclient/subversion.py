@@ -48,7 +48,7 @@ class SubversionClient(BuildClient):
 			else:
 				print "Could not fetch source, no method URI found"
 				return
-			if self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
+			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			return
 		except Exception as e:
