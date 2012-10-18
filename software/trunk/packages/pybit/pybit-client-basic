@@ -3,10 +3,11 @@
 # -*- coding: utf-8 -*-
 from amqplib import client_0_8 as amqp
 from optparse import OptionParser
-import json
+import jsonpickle
 import jsonpickle
 import signal
 import os
+from pybitweb.models import jobDetails,packageinstance
 
 metaPefix="PYBIT_CLIENT_"
 parser = OptionParser()
@@ -55,14 +56,17 @@ except Exception as e:
 
 
 def recv_callback(msg):
-	print repr(msg)
-	if options.ack:
+	print msg.body
+	if options.ack == True:
 		unpickled_job = jsonpickle.decode(msg.body)
 		print "Accepting JOB ( id", unpickled_job.id, ",", unpickled_job.packageinstance.package.name, ",", unpickled_job.packageinstance.package.version, ",", unpickled_job.packageinstance.format.name, ",", unpickled_job.packageinstance.arch.name, ")"
 		chan.basic_ack(msg.delivery_tag)
 	else:
 		print "Rejecting message."
-		chan.basic_reject("build_callback",True)
+		chan.basic_recover(
+		
+		
+		True)
 	
 try:
 	chan.basic_consume(queue=queue_name, no_ack=False, callback=recv_callback, consumer_tag="build_callback")
