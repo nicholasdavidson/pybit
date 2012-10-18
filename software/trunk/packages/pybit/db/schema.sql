@@ -28,7 +28,7 @@ DROP TABLE IF EXISTS Status CASCADE
 ;
 DROP TABLE IF EXISTS Suite CASCADE
 ;
-DROP TABLE IF EXISTS Suite_Arches CASCADE
+DROP TABLE IF EXISTS SuiteArches CASCADE
 ;
 
 --  Create Tables 
@@ -76,7 +76,7 @@ CREATE TABLE JobStatus (
 	id SERIAL PRIMARY KEY,
 	Job_id bigint,
 	Status_id bigint,
-	time timestamp
+	time timestamp NOT NULL DEFAULT now()
 )
 ;
 
