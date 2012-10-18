@@ -42,7 +42,7 @@ class controller:
 				response.status = "400 - Required fields missing."
 				return
 			else :
-				print package_name, version, suite, architectures
+				print "RECEIVED BUILD REQUEST FOR", package_name, version, suite, architectures
 		except Exception as e:
 			raise Exception('Error parsing job information: ' + str(e))
 			response.status = "500 - Error parsing job information"
@@ -75,7 +75,6 @@ class controller:
 					# add new package to db
 					current_package = self.job_db.put_package(version,package_name)
 					if not current_package.id :
-						#TODO: throw error???
 						print "FAILED TO ADD PACKAGE:", package_name
 						response.status = "404 - failed to add package."
 						return
@@ -92,14 +91,36 @@ class controller:
 						# add package instance to db
 						new_packageinstance = self.job_db.put_packageinstance(current_package, current_arch, current_suite, current_dist, current_format, False)
 						if new_packageinstance.id :
-							# TODO: check if database contains a package where status = building, version < package_version, suite = suite
 							new_job = self.job_db.put_job(new_packageinstance,transport,None)
 							if new_job.id :
-								pickled = jsonpickle.encode(new_job)
-								msg = amqp.Message(pickled)
+								# check for unfinished jobs that might be cancellable
+								unfinished_jobs_list = self.job_db.get_unfinished_jobs()
+								#print unfinished_jobs_list
+								for unfinished_job in unfinished_jobs_list:
+									unfinished_job_package_name = unfinished_job.packageinstance.package.name
+									print unfinished_job_package_name
+									if unfinished_job_package_name == package_name :
+										unfinished_job_package_version = unfinished_job.packageinstance.package.version
+										command = "dpkg --compare-versions %s '<<' %s" % (unfinished_job_package_version, version)
+										if os.system (command) :
+											#FIXME: work in progress...
+											unfinished_job_dist = unfinished_job.packageinstance.distribution.name
+											unfinished_job_arch = unfinished_job.packageinstance.arch.name
+											unfinished_job_suite = unfinished_job.packageinstance.suite.name
+											if (unfinished_job_dist == dist) and (unfinished_job_arch == arch) and (unfinished_job_suite == suite) :
+												#TODO: send cancel message
+												print "SENDING CANCEL REQUEST FOR", package_name
+											else :
+												print "IGNORING UNFINISHED JOB", unfinished_job_package_name, unfinished_job_package_version, unfinished_job_dist, unfinished_job_arch, unfinished_job_suite
+										else :
+											print "IGNORING UNFINISHED JOB", unfinished_job_package_name, unfinished_job_package_version
+									else :
+										print "IGNORING UNFINISHED JOB", unfinished_job_package_name
+								pickled_job = jsonpickle.encode(new_job)
+								msg = amqp.Message(pickled_job)
 								msg.properties["delivery_mode"] = 2
 								routing_key = "%s.%s.%s.%s" % (new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name)
-								print "\n____________SENDING", pickled, "____________TO____________", routing_key
+								print "\n____________SENDING", pickled_job, "____________TO____________", routing_key
 								self.chan.basic_publish(msg,exchange="pybit",routing_key=routing_key)
 							else :
 								print "FAILED TO ADD JOB"
@@ -109,6 +130,7 @@ class controller:
 							response.status = "404 - failed to add package instance."
 					else : 
 						print "IGNORING REQUEST - PACKAGE INSTANCE ALREADY EXISTS"
+						response.status = "404 - ignored request package instance already exists."
 		except Exception as e:
 			raise Exception('Error submitting job: ' + str(e))
 			response.status = "500 - Error submitting job"
