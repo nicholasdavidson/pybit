@@ -454,7 +454,9 @@ class db(object):
 
 			jobs = []
 			for i in res:
-				jobs.append(job(i['id'],i['packageinstance_id'],i['buildclient_id']))
+				packageinstance = get_packageinstance_id(i['packageinstance_id'])
+				buildclient = get_buildd_id(i['buildclient_id'])
+				jobs.append(job(i['id'],packageinstance,buildclient))
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
@@ -469,7 +471,9 @@ class db(object):
 
 			jobs = []
 			for i in res:
-				jobs.append(job(i['id'],i['packageinstance_id'],i['buildclient_id']))
+				packageinstance = get_packageinstance_id(i['packageinstance_id'])
+				buildclient = get_buildd_id(i['buildclient_id'])
+				jobs.append(job(i['id'],packageinstance,buildclient))
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
