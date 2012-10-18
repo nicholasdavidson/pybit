@@ -6,7 +6,7 @@ import jsonpickle
 import os.path
 
 import db
-from models import transport, packageinstance, job, jobDetails
+from models import transport, packageinstance, job
 # example CURL command....
 # /usr/bin/curl -X POST http://localhost:8080/add --data "uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpea&format=deb"
 
@@ -80,25 +80,24 @@ class controller:
 						response.status = "404 - failed to add package."
 						return
 					else :
-						print "ADDED PACKAGE", current_package.id
-				current_suite_id = self.job_db.get_suite_byname(suite)[0].id
-				current_dist_id = self.job_db.get_dist_byname(dist)[0].id
-				current_format_id = self.job_db.get_format_byname(format)[0].id
+						print "ADDED PACKAGE", current_package.id, current_package.name, current_package.version
+				current_suite = self.job_db.get_suite_byname(suite)[0]
+				current_dist = self.job_db.get_dist_byname(dist)[0]
+				current_format = self.job_db.get_format_byname(format)[0]
 				for arch in supported_arches:
 					if not self.job_db.check_specific_packageinstance_exists(arch, dist, format, package_name, version, suite) :
-						current_arch_id = self.job_db.get_arch_byname(arch)[0].id
+						current_arch = self.job_db.get_arch_byname(arch)[0]
 						# add package instance to db
-						new_packageinstance = self.job_db.put_packageinstance(current_package.id,current_arch_id,current_suite_id,current_dist_id,current_format_id,False)
+						new_packageinstance = self.job_db.put_packageinstance(current_package,current_arch,current_suite,current_dist,current_format,False)
 						if new_packageinstance.id :
 							# TODO: check if database contains a package where status = building, version < package_version, suite = suite
-							new_job = self.job_db.put_job(new_packageinstance.id, None)
+							new_job = self.job_db.put_job(new_packageinstance,transport,None)
 							if new_job.id :
-								jobToSend = jobDetails(new_job.id, current_package.name, new_packageinstance, trans)
-								pickled = jsonpickle.encode(jobToSend)
+								pickled = jsonpickle.encode(new_job)
 								msg = amqp.Message(pickled)
 								msg.properties["delivery_mode"] = 2
-								routing_key = "%s.%s.%s.%s" % (dist, arch, suite, format)
-								print "____________SENDING", pickled, "____________TO____________", routing_key
+								routing_key = "%s.%s.%s.%s" % (new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name)
+								print "\n____________SENDING", pickled, "____________TO____________", routing_key
 								self.chan.basic_publish(msg,exchange="pybit",routing_key=routing_key)
 							else :
 								print "FAILED TO ADD JOB"

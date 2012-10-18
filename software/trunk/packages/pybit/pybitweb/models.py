@@ -56,13 +56,6 @@ class buildd(model):
 		self.id = id
 		self.name = name
 
-class job(model):
-
-	def __init__(self,id,packageinstance_id,buildclient_id):
-		self.id = id
-		self.packageinstance_id = packageinstance_id
-		self.buildclient_id = buildclient_id
-
 class package(model):
 
 	def __init__(self,id,version,name):
@@ -90,9 +83,10 @@ class packageinstance(model):
 		self.format = format
 		self.master = master
 
-class jobDetails(model):
-	def __init__(self, job_id, package_name, packageinstance, transport):
-		self.job_id = job_id
-		self.package_name = package_name
+class job(model):
+
+	def __init__(self,id,packageinstance,transport,buildclient):
+		self.id = id
 		self.packageinstance = packageinstance
 		self.transport = transport
+		self.buildclient = buildclient

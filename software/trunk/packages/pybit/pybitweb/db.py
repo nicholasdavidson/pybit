@@ -396,13 +396,13 @@ class db:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
-	def put_job(self,packageinstance_id,buildclient_id):
+	def put_job(self,packageinstance,transport,buildclient):
 		try:
 			#TODO: work in progress
-			self.cur.execute("INSERT INTO job (packageinstance_id,buildclient_id) VALUES (%s, %s)  RETURNING id",(packageinstance_id,buildclient_id))
+			self.cur.execute("INSERT INTO job (packageinstance_id,buildclient_id) VALUES (%s, %s)  RETURNING id",(packageinstance.id,(buildclient.id if buildclient else None)))
 			self.conn.commit()
 			res = self.cur.fetchall()
-			tmp = job(res[0]['id'],packageinstance_id,buildclient_id)
+			tmp = job(res[0]['id'],packageinstance,transport,buildclient)
 			return tmp
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
@@ -514,12 +514,12 @@ class db:
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
-	def put_packageinstance(self,package_id,arch_id,suite_id,dist_id,format_id,master):
+	def put_packageinstance(self,package,arch,suite,dist,format,master):
 		try:
-			self.cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)  RETURNING id",(package_id,arch_id,suite_id,dist_id,format_id,master))
+			self.cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)  RETURNING id",(package.id,arch.id,suite.id,dist.id,format.id,master))
 			self.conn.commit()
 			res = self.cur.fetchall()
-			tmp = packageinstance(res[0]['id'],package_id,arch_id,suite_id,dist_id,format_id,master)
+			tmp = packageinstance(res[0]['id'],package,arch,suite,dist,format,master)
 			return tmp
 		except Exception as e:
 			raise Exception('Error performing database operation: ' + str(e))
