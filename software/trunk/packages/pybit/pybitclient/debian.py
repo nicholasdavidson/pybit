@@ -45,18 +45,20 @@ class DebianBuildClient(BuildClient):
 			# FIXME: doesn't make sense to run dpkg-checkbuilddeps outside the chroot!
 			if os.path.isdir(package_dir) :
 				os.chdir (package_dir)
+				print os.getcwd()
 #				command = "dpkg-checkbuilddeps"
 #				if self.run_cmd (command, "build-dep-wait", pkg, report_name, self.options["dry_run"]):
 #					return
 			command = "dpkg-buildpackage -S -d > /dev/null 2>&1"
 			if self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
-			command = "sbuild -A -s -d %s%s/%s_%s.dsc" % (pkg.suite, srcdir, pkg.source, pkg.version)
+			command = "sbuild -A -s -d %s %s/%s_%s.dsc" % (pkg.suite, srcdir, pkg.source, pkg.version)
 			if self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			changes = "%s/%s_%s_%s.changes" % (builddir, pkg.package, pkg.version, pkg.architecture)
 			if not os.path.isfile (changes) :
 				pkg.msgtype = "failed"
+				print "Failed to find %s file." % (changes)
 #				send_message (chan, pkg, report_name)
 				return
 			upload (changes)

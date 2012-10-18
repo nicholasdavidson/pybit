@@ -32,11 +32,11 @@ def main():
 	else :
 		options = pybitclient.get_settings("/etc/pybit/client/client.conf")
 	pkg = pybitclient.deb_package ("")
-	pkg.vcs_id = "21085"
+	pkg.vcs_id = "21092"
 	pkg.method_type = "svn"
 	pkg.suite = "pybit"
 	pkg.package = "pybit"
-	pkg.version = "0.0.22"
+	pkg.version = "0.0.24"
 	pkg.architecture = "i386"
 	pkg.source = "pybit"
 	pkg.uri = "http://svn/svn/lwdev/software/trunk/packages/pybit"
