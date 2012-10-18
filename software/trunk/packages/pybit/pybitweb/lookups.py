@@ -3,7 +3,7 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import db
-from models import arch,dist,format,status,suite,suitearch
+from pybit.models import arch,dist,format,status,suite,suitearch
 myDb = db()
 
 @route('/arch', method='GET')

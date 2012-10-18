@@ -6,7 +6,7 @@ import jsonpickle
 import os.path
 
 import db
-from models import transport, packageinstance, job
+from pybit.models import transport, packageinstance, job
 # example CURL command....
 # /usr/bin/curl -X POST http://localhost:8080/add --data "uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpea&format=deb"
 

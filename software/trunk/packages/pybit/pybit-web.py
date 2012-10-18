@@ -3,7 +3,8 @@
 import jsonpickle
 from pybitweb.bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 from pybitweb.db import db
-from pybitweb import buildd,forms,job,lookups,package,reports,packageinstance
+from pybitweb import buildd,forms,job,lookups,reports
+from pybit.models import package,packageinstance
 from pybitweb.controller import controller
 
 myDb = db()

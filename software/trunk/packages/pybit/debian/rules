@@ -25,7 +25,7 @@ PYTHON2:=$(shell pyversions -r)
 pyalldo=set -e; $(foreach py, $(PYTHON2) $(PYTHON3), PYTHONPATH=. $(py) $(1);)
 
 configure: configure-stamp
-configure-stamp: setup.py
+configure-stamp: build-setup
 	dh_testdir
 	touch configure-stamp
 
@@ -34,16 +34,21 @@ build-arch: build-stamp
 build-indep: build-stamp
 build-stamp: configure-stamp
 	dh_testdir
-	python setup.py build
 	$(call pyalldo, test/*.py)
 	touch $@
+
+build-setup: pybit-setup.py pybitweb-setup.py pybitclient-setup.py
+	dh_testdir
+	python pybit-setup.py build 
+	python pybitweb-setup.py build 
+	python pybitclient-setup.py build 
 
 clean:
 	dh_testdir
 	dh_testroot
-	$(RM) build-stamp configure-stamp setup.py
-	$(RM) -r build pybit_client.egg-info
-	[ ! -f Makefile ] || $(MAKE) clean
+	$(RM) build-stamp configure-stamp *-setup.py
+	$(RM) -r build pybit_client.egg-info pybit_common.egg-info pybit_web.egg-info
+	$(RM) -r build 	[ ! -f Makefile ] || $(MAKE) clean
 	find . -name '*.pyc' -delete
 	dh_clean
 
@@ -52,7 +57,9 @@ install: build
 	dh_testroot
 	dh_prep
 	dh_installdirs
-	python setup.py install --root="$(CURDIR)/debian/pybit-client" --no-compile
+	python pybitclient-setup.py install --root="$(CURDIR)/debian/pybit-client" --no-compile
+	python pybitweb-setup.py install --root="$(CURDIR)/debian/pybit-web" --no-compile
+	python pybit-setup.py install --root="$(CURDIR)/debian/pybit-common" --no-compile
 
 # Build architecture-independent files here.
 binary-indep: build install

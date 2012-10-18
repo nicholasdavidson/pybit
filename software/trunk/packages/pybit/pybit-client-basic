@@ -60,7 +60,11 @@ def recv_callback(msg):
 		if options.ack:
 			print "Accepting JOB ( id", unpickled_job.id, ",", unpickled_job.packageinstance.package.name, ",", unpickled_job.packageinstance.package.version, ",", unpickled_job.packageinstance.format.name, ",", unpickled_job.packageinstance.arch.name, ")"
 			chan.basic_ack(msg.delivery_tag)
-	else:	
+		else:
+			print "Rejecting message."
+			chan.basic_recover(True)
+			
+	else:
 		while True:
 			user_input = raw_input('''Recived message:
 	[A]ccept:

@@ -3,7 +3,7 @@
 import psycopg2
 import psycopg2.extras
 import jsonpickle
-from models import arch,dist,format,status,suite,buildd,job,package,packageinstance,suitearch
+from pybit.models import arch,dist,format,status,suite,buildd,job,package,packageinstance,suitearch
 
 #TODO: make more robust, more DELETEs?
 
