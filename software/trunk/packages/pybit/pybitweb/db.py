@@ -463,6 +463,38 @@ class db(object):
 			raise Exception('Error performing database operation: ' + str(e))
 			return None
 
+	def get_jobs_by_status(self,status):
+		try:
+			
+			self.cur.execute("WITH oq AS (SELECT job.id, SELECT status.name FROM jobstatus LEFT JOIN status ON status_id=status.id WHERE job_id=job.id ORDER BY time DESC LIMIT 1) AS current_status FROM job) SELECT oq.id FROM oq WHERE oq.current_status=%s",(status,));
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			jobs = []
+			for i in res:
+				jobs.append(get_job(i['id']))
+			return jobs
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
+	def get_unfinished_jobs(self):
+		try:
+			
+			self.cur.execute("WITH oq AS (SELECT job.id, SELECT status.name FROM jobstatus LEFT JOIN status ON status_id=status.id WHERE job_id=job.id ORDER BY time DESC LIMIT 1) AS current_status FROM job) SELECT oq.id FROM oq WHERE oq.current_status!='Uploaded' AND oq.current_status!='Done'",(status,));
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			jobs = []
+			for i in res:
+				jobs.append(get_job(i['id']))
+			return jobs
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error performing database operation: ' + str(e))
+			return None
+
 	def get_job(self,id):
 		try:
 			self.cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job WHERE id=%s",(id,))
