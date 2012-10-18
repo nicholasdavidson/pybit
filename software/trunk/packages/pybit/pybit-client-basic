@@ -3,17 +3,17 @@
 # -*- coding: utf-8 -*-
 from amqplib import client_0_8 as amqp
 from optparse import OptionParser
-import jsonpickle
-import jsonpickle
-import signal
-import os
-from pybitweb.models import jobDetails,packageinstance
+
+import os, tty, sys, signal, jsonpickle
+
+
+from pybitweb.models import packageinstance
 
 metaPefix="PYBIT_CLIENT_"
 parser = OptionParser()
 
 parser.add_option("--arch", dest="arch", default="i386", help="Architecture to use, defaults to i386", metavar= metaPefix + "ARCH")
-parser.add_option("--ack", dest="ack", default=True, help="Does the client ack the message or reject it by default?",metavar= metaPefix +"ACK")
+parser.add_option("--ack", dest="ack", help="Does the client ack the message or reject it? If unset the client will be interactive.",metavar= metaPefix +"ACK")
 parser.add_option("--distribution", dest="distribution", default="Debian", help="Distribution to use, defaults to Debian", metavar= metaPefix +"DIST")
 parser.add_option("--package", dest="package", default="deb", help="Package type to use, defaults to deb", metavar= metaPefix +"PACKAGE")
 parser.add_option("--suite", dest="suite", default="development", help="Suite to use, defaults to development", metavar= metaPefix +"SUITE")
@@ -56,17 +56,37 @@ except Exception as e:
 
 
 def recv_callback(msg):
-	print msg.body
-	if options.ack == True:
-		unpickled_job = jsonpickle.decode(msg.body)
-		print "Accepting JOB ( id", unpickled_job.id, ",", unpickled_job.packageinstance.package.name, ",", unpickled_job.packageinstance.package.version, ",", unpickled_job.packageinstance.format.name, ",", unpickled_job.packageinstance.arch.name, ")"
-		chan.basic_ack(msg.delivery_tag)
-	else:
-		print "Rejecting message."
-		chan.basic_recover(
-		
-		
-		True)
+	if options.ack not None:
+		if options.ack:
+			print "Accepting JOB ( id", unpickled_job.id, ",", unpickled_job.packageinstance.package.name, ",", unpickled_job.packageinstance.package.version, ",", unpickled_job.packageinstance.format.name, ",", unpickled_job.packageinstance.arch.name, ")"
+			chan.basic_ack(msg.delivery_tag)
+	else:	
+		while True:
+			user_input = raw_input('''Recived message:
+	[A]ccept:
+	[R]eject
+	[B]uild
+	B[l]ock
+	[F]ail
+	''').lower()
+			
+			if user_input == "a":
+				unpickled_job = jsonpickle.decode(msg.body)
+				print "Accepting JOB ( id", unpickled_job.id, ",", unpickled_job.packageinstance.package.name, ",", unpickled_job.packageinstance.package.version, ",", unpickled_job.packageinstance.format.name, ",", unpickled_job.packageinstance.arch.name, ")"
+				chan.basic_ack(msg.delivery_tag)
+				break
+			elif user_input == "r":
+				print "Rejecting message."
+				chan.basic_recover(True)
+				break
+			elif user_input == "b":
+				print "Unimplimented"
+			elif user_input == "l":
+				print "Unimplimented"
+			elif user_input == "f":
+				print "Unimplimented"
+			else:
+				print "Invalid selection."
 	
 try:
 	chan.basic_consume(queue=queue_name, no_ack=False, callback=recv_callback, consumer_tag="build_callback")
