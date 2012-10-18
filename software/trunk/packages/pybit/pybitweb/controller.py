@@ -67,9 +67,9 @@ class controller:
 			else :
 				current_package = None
 				matching_package_versions = self.job_db.get_package_byvalues(package_name,version)
-				if len(matching_package_versions) < 0 :
-					print "FOUND", len(matching_package_versions)
+				if len(matching_package_versions) > 0 :
 					current_package = matching_package_versions[0]
+					print "MATCHING PACKAGE FOUND (", current_package.id, current_package.name, current_package.version, ")"
 				else :
 					print "NO MATCHING PACKAGE FOUND"
 					# add new package to db
@@ -80,15 +80,17 @@ class controller:
 						response.status = "404 - failed to add package."
 						return
 					else :
-						print "ADDED PACKAGE", current_package.id, current_package.name, current_package.version
+						print "ADDED NEW PACKAGE (", current_package.id, current_package.name, current_package.version, ")"
+				
 				current_suite = self.job_db.get_suite_byname(suite)[0]
 				current_dist = self.job_db.get_dist_byname(dist)[0]
 				current_format = self.job_db.get_format_byname(format)[0]
+				
 				for arch in supported_arches:
-					if not self.job_db.check_specific_packageinstance_exists(arch, dist, format, package_name, version, suite) :
-						current_arch = self.job_db.get_arch_byname(arch)[0]
+					current_arch = self.job_db.get_arch_byname(arch)[0]
+					if not self.job_db.check_specific_packageinstance_exists(current_arch, current_package, current_dist, current_format, current_suite) :
 						# add package instance to db
-						new_packageinstance = self.job_db.put_packageinstance(current_package,current_arch,current_suite,current_dist,current_format,False)
+						new_packageinstance = self.job_db.put_packageinstance(current_package, current_arch, current_suite, current_dist, current_format, False)
 						if new_packageinstance.id :
 							# TODO: check if database contains a package where status = building, version < package_version, suite = suite
 							new_job = self.job_db.put_job(new_packageinstance,transport,None)
@@ -105,7 +107,8 @@ class controller:
 						else :
 							print "FAILED TO ADD PACKAGE INSTANCE!"
 							response.status = "404 - failed to add package instance."
-				# cancel any job older jobs matching this package on queue
+					else : 
+						print "IGNORING REQUEST - PACKAGE INSTANCE ALREADY EXISTS"
 		except Exception as e:
 			raise Exception('Error submitting job: ' + str(e))
 			response.status = "500 - Error submitting job"

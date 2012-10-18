@@ -658,20 +658,10 @@ class db:
 			return None
 
 	# <<<<< TODO: This is a work in progress!!! >>>>>
-	def check_specific_packageinstance_exists(self,arch,distribution,format,packagename,packageversion,suite):
+	def check_specific_packageinstance_exists(self,arch,package,distribution,format,suite):
 		try:
-			if arch and distribution and format and packagename and packageversion and suite:
-				archidID =  self.get_arch_byname(arch)
-				distributionID = self.get_dist_byname(distribution)
-				formatID =  self.get_format_byname(format)
-				packageID =  self.get_package_byvalues(packagename,packageversion)
-				suiteID = self.get_suite_byname(suite)
-			else:
-				#Error finding specific package instance
-				return False
-
-			if archidID and distributionID and formatID and packageID and suiteID:
-				self.cur.execute("SELECT id FROM packageinstance WHERE arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(archidID[0].id,distributionID[0].id,formatID[0].id,packageID[0].id,suiteID[0].id))
+			if arch and distribution and format and package and suite:
+				self.cur.execute("SELECT id FROM packageinstance WHERE arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(arch.id,distribution.id,format.id,package.id,suite.id))
 				res = self.cur.fetchall()
 				self.conn.commit()
 
