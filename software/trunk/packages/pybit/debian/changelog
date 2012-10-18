@@ -1,3 +1,15 @@
+pybit (0.0.26) pybit; urgency=low
+
+  * Add a slave build to the test build script
+  * Describe the issue with updating the lvm snapshot in-place vs apt-
+    get update
+  * Add a dput config file
+  * Use /usr/lib/pbuilder/pbuilder-satisfydepends-classic as dpkg-
+    checkbuilddeps doesn't check the available packages, only those
+    already installed.
+
+ -- Neil Williams <neilw@toby-churchill.com>  Thu, 18 Oct 2012 16:29:51 +0100
+
 pybit (0.0.25) pybit; urgency=low
 
   * Add jsonpickle to the build-depends.

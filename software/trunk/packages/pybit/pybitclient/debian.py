@@ -29,6 +29,8 @@ report_name = "controller"
 
 class DebianBuildClient(BuildClient):
 	options = {}
+	dput_cfg = ""
+	dput_dest = ""
 
 	def update_environment(self,name,pkg):
 		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
@@ -41,13 +43,14 @@ class DebianBuildClient(BuildClient):
 				print "E: not able to identify package name."
 				return
 			package_dir = "%s/%s" % (srcdir, pkg.package)
-			builddir= "%s/tmpbuilds/%s" % (self.options["buildroot"], pkg.suite)
 			# FIXME: doesn't make sense to run dpkg-checkbuilddeps outside the chroot!
 			if os.path.isdir(package_dir) :
 				os.chdir (package_dir)
-#				command = "dpkg-checkbuilddeps"
-#				if not self.run_cmd (command, "build-dep-wait", pkg, report_name, self.options["dry_run"]):
-#					return
+				control = os.path.join (package_dir, 'debian', 'control')
+				dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
+				command = "schroot -u root -c %s -- %s %s" % (pkg.suite, dep_check, os.path.realpath(control))
+				if not self.run_cmd (command, "build-dep-wait", pkg, report_name, self.options["dry_run"]):
+					return
 			command = "dpkg-buildpackage -S -d"
 			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
@@ -56,40 +59,48 @@ class DebianBuildClient(BuildClient):
 			command = "sbuild -A -s -d %s %s/%s_%s.dsc" % (pkg.suite, srcdir, pkg.source, pkg.version)
 			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
-			changes = "%s/%s_%s_%s.changes" % (builddir, pkg.package, pkg.version, pkg.architecture)
+			changes = "%s/%s_%s_%s.changes" % (srcdir, pkg.package, pkg.version, pkg.architecture)
 			if not os.path.isfile (changes) :
 				pkg.msgtype = "failed"
 				print "Failed to find %s file." % (changes)
 #				send_message (chan, pkg, report_name)
 				return
-			upload (changes)
+			self.upload (srcdir, changes, pkg)
 		except Exception as e:
 			raise Exception('Error performing master build: ' + str(e))
 			return
 
-	def upload (changes):
+	def upload (self, dirname, changes, pkg):
 		try:
-			builddir= self.options["buildroot"] + "/tmpbuilds/" + pkg.suite
-			command = "dput -c %s %s %s %s" % (dput_cfg, dput_opt, dput_dest, changes)
+			changes_path = os.path.join (dirname, changes)
+			command = "dput -c %s %s %s %s" % (self.dput_cfg, self.options["dput"], self.dput_dest, changes_path)
 			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			pkg.msgtype = "uploaded"
-			send_message (chan, pkg, report_name)
+#			send_message (chan, pkg, report_name)
 		except Exception as e:
 			raise Exception('Upload error: ' + str(e))
 			return
 
 	def build_slave (self, srcdir, pkg):
 		try:
-			command = "sbuild -d %s %s_%s" % (pkg.suite, pkg.source, pkg.version)
+			package_dir = "%s/%s" % (srcdir, pkg.package)
+			if os.path.isdir(package_dir) :
+				os.chdir (package_dir)
+			command = "dpkg-buildpackage -S -d"
 			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
-			changes = "%s/%s_%s_%s.changes" % (builddir, pkg.package, pkg.version, pkg.architecture)
+			if os.path.isdir(srcdir) :
+				os.chdir (srcdir)
+			command = "sbuild --apt-update -d %s %s/%s_%s.dsc" % (pkg.suite, srcdir, pkg.source, pkg.version)
+			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
+				return
+			changes = "%s/%s_%s_%s.changes" % (srcdir, pkg.package, pkg.version, pkg.architecture)
 			if not os.path.isfile (changes) :
 				pkg.msgtype = "failed"
 				send_message (chan, pkg, report_name)
 				return
-			upload (changes)
+			self.upload (srcdir, changes, pkg)
 		except Exception as e:
 			raise Exception('Error performing slave build: ' + str(e))
 			return
@@ -106,8 +117,8 @@ class DebianBuildClient(BuildClient):
 			else :
 				self.options["dry_run"] = True
 			# variables to retrieve from the job object later
-			#dput_dest = "tcl"
-			dput_cfg = "/etc/pybit/dput.cf"
+			self.dput_dest = "tcl"
+			self.dput_cfg = "/etc/pybit/client/dput.cf"
 		except Exception as e:
 			raise Exception('Error constructing debian build client: ' + str(e))
 			return

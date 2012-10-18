@@ -81,7 +81,7 @@ class BuildClient(object):
 	def update_environment (self,name,pkg) :
 		pass
 
-	def upload (self) :
+	def upload (self, dirname, changes, pkg) :
 		pass
 
 	def is_building (self) :

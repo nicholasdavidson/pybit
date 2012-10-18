@@ -32,7 +32,7 @@ def main():
 	else :
 		options = pybitclient.get_settings("/etc/pybit/client/client.conf")
 	pkg = pybitclient.deb_package ("")
-	pkg.vcs_id = "21093"
+	pkg.vcs_id = "21094"
 	pkg.method_type = "svn"
 	pkg.suite = "pybit"
 	pkg.package = "pybit"
@@ -44,6 +44,12 @@ def main():
 	vcs.fetch_source (pkg)
 	srcdir = vcs.get_srcdir()
 	client = DebianBuildClient ()
+	# To check the build-dependencies in advance, we need to ensure the
+	# chroot has an update apt-cache, so can't use apt-update option of
+	# sbuild. The alternative is to update the apt-cache twice per build,
+	# once for the dep check and once before the build. The choice depends
+	# on whether two network trips are more efficient than rewriting the
+	# lvm snapshot before even trying to do any build.
 	if options["use_lvm"] :
 		name = pkg.suite + "-source"
 	else:
@@ -54,6 +60,14 @@ def main():
 	pkg.buildd = options["idstring"]
 	pkg.msgtype = "building"
 	client.build_master (srcdir, pkg)
+	pkg.vcs_id = ""
+	pkg.package = "textparser"
+	pkg.version = "0.0.13"
+	pkg.architecture = "i386"
+	pkg.source = "textparser"
+	pkg.uri = "http://svn/svn/lwdev/software/trunk/packages/textparser"
+	vcs.fetch_source (pkg)
+	client.build_slave (srcdir, pkg)
 
 	return 0
 
