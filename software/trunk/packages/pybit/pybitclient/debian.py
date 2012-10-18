@@ -63,7 +63,8 @@ class DebianBuildClient(BuildClient):
 			if not os.path.isfile (changes) :
 				pkg.msgtype = "failed"
 				print "Failed to find %s file." % (changes)
-#				send_message (chan, pkg, report_name)
+				if (self.chan != None) :
+					send_message (self.chan, pkg, report_name)
 				return
 			self.upload (srcdir, changes, pkg)
 		except Exception as e:
@@ -77,7 +78,8 @@ class DebianBuildClient(BuildClient):
 			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			pkg.msgtype = "uploaded"
-#			send_message (chan, pkg, report_name)
+			if (self.chan != None) :
+				send_message (self.chan, pkg, report_name)
 		except Exception as e:
 			raise Exception('Upload error: ' + str(e))
 			return
@@ -98,16 +100,17 @@ class DebianBuildClient(BuildClient):
 			changes = "%s/%s_%s_%s.changes" % (srcdir, pkg.package, pkg.version, pkg.architecture)
 			if not os.path.isfile (changes) :
 				pkg.msgtype = "failed"
-				send_message (chan, pkg, report_name)
+				if (self.chan != None) :
+					send_message (self.chan, pkg, report_name)
 				return
 			self.upload (srcdir, changes, pkg)
 		except Exception as e:
 			raise Exception('Error performing slave build: ' + str(e))
 			return
 
-	def __init__(self):
+	def __init__(self, chan):
 		try:
-			BuildClient.__init__(self)
+			BuildClient.__init__(self, chan)
 			# Specific buildd options
 			# FIXME: decide how this is managed and packaged
 			self.options =  pybitclient.get_settings(self)

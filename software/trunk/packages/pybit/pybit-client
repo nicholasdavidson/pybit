@@ -119,7 +119,7 @@ def recv_callback(msg):
 			print "E: Misconfiguration - refusing to build with a default or empty idstring."
 			return
 		if pkg.method_type == "svn":
-			vcs = SubversionClient ()
+			vcs = SubversionClient (chan)
 		else :
 			print "E: %s method not supported." % (pkg.method_type)
 			return
@@ -132,7 +132,7 @@ def recv_callback(msg):
 			if not dput_dest or dput_dest == "":
 				print "E: Misconfiguration - refusing to upload to default dput destination (Debian ftpmaster)."
 				return
-			client = DebianBuildClient ()
+			client = DebianBuildClient (chan)
 		else:
 			print "W: shouldn't get here"
 			return
@@ -162,6 +162,7 @@ def recv_callback(msg):
 			client.build_slave (srcdir, pkg)
 			while client.is_building() :
 				wait(self)
+		vcs.clean_source(pkg)
 	except Exception as e:
 		raise Exception('Error processing callback: ' + str(e))
 		return

@@ -58,7 +58,19 @@ class SubversionClient(BuildClient):
 	def get_srcdir (self):
 		return self.workdir
 
-	def __init__(self):
+	def clean_source (self, pkg) :
+		if pkg.method_type != "svn":
+			return
+		self.cleandir = os.path.join (self.options["buildroot"], pkg.suite)
+		if os.path.isdir(self.cleandir) :
+			os.chdir (self.cleandir)
+			command = "rm -rf ./*"
+			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]) :
+				return
+			return
+
+	def __init__(self, chan):
+		BuildClient.__init__(self, chan)
 		try:
 			self.options =  pybitclient.get_settings(self)
 			if len(self.options) == 0 :

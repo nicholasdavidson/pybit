@@ -29,8 +29,11 @@ import pybitclient
 
 class BuildClient(object):
 
-	def __init__(self):
+	chan = None
+
+	def __init__(self, channel):
 		self.build_process = None
+		self.chan = channel
 		return
 
 	def send_message (self, chan, pkg, key):
@@ -54,7 +57,8 @@ class BuildClient(object):
 					pkg.msgtype = fail_msg
 					msg = amqp.Message(jsonpickle.encode(pkg))
 					msg.properties["delivery_mode"] = 2
-#					chan.basic_publish(msg,exchange=pkg.architecture,routing_key=report)
+					if (self.chan != None) :
+						self.chan.basic_publish(msg,exchange=pkg.architecture,routing_key=report)
 					print "E: Failed to run %s" % (cmd)
 					return False
 			return True
