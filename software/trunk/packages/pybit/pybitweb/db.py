@@ -37,7 +37,7 @@ class db(object):
 			self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			return True
 		except Exception as e:
-			raise Exception('Error connecting to database: ' + str(e))
+			raise Exception('Error connecting to database:' + str(e))
 			return False
 
 	#When to call this? - Does python have deconstructors?
@@ -49,7 +49,7 @@ class db(object):
 			return True
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error disconnecting from database: ' + str(e))
+			raise Exception('Error disconnecting from database:' + str(e))
 			return False
 
 	#<<<<<<<< Lookup table queries >>>>>>>>
@@ -67,7 +67,7 @@ class db(object):
 			return arches
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving arches list:' + str(e))
 			return None
 
 	def get_arch_id(self,id):
@@ -79,7 +79,7 @@ class db(object):
 			return arch(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving arch with id:' + id + str(e))
 			return None
 
 	def get_arch_byname(self,name):
@@ -94,7 +94,7 @@ class db(object):
 			return arches
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving arch by name:' + name + str(e))
 			return None
 
 	def put_arch(self,name):
@@ -106,7 +106,7 @@ class db(object):
 			return arch(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error adding arch:' + name + str(e))
 			return None
 
 	def get_suitearches(self):
@@ -121,7 +121,7 @@ class db(object):
 			return suitearches
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving suite arches list:' + str(e))
 			return None
 
 	def get_suitearch_id(self,id):
@@ -133,7 +133,7 @@ class db(object):
 			return suitearch(res[0]['id'],res[0]['suite_id'],res[0]['arch_id'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving suite arch with id:' + id + str(e))
 			return None
 
 	def put_suitearch(self,suite_id,arch_id):
@@ -145,7 +145,7 @@ class db(object):
 			return suitearch(res[0]['id'],suite_id,arch_id)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error adding suite arch:' + suite_id + arch_id + str(e))
 			return None
 
 	def get_dists(self):
@@ -160,7 +160,7 @@ class db(object):
 			return dists
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving dist list:' + str(e))
 			return None
 
 	def get_dist_id(self,id):
@@ -172,7 +172,7 @@ class db(object):
 			return dist(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving dist with id:' + id + str(e))
 			return None
 
 	def get_dist_byname(self,name):
@@ -187,7 +187,7 @@ class db(object):
 			return dists
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving dist by name:' + name + str(e))
 			return None
 
 	def put_dist(self,name):
@@ -199,7 +199,7 @@ class db(object):
 			return dist(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error adding dist:' + name + str(e))
 			return None
 
 	def get_formats(self):
@@ -214,7 +214,7 @@ class db(object):
 			return formats
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving formats list:' + str(e))
 			return None
 
 	def get_format_id(self,id):
@@ -226,7 +226,7 @@ class db(object):
 			return format(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving format with id:' + id + str(e))
 			return None
 
 	def get_format_byname(self,name):
@@ -239,7 +239,7 @@ class db(object):
 				formats.append(format(i['id'],i['name']))
 			return formats
 		except Exception as e:
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving format by name:' + name + str(e))
 			return None
 
 	def put_format(self,name):
@@ -251,7 +251,7 @@ class db(object):
 			return format(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error adding format:' + name + str(e))
 			return None
 
 	def get_statuses(self):
@@ -266,7 +266,7 @@ class db(object):
 			return statuses
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving status list:' + str(e))
 			return None
 
 	def get_status_id(self,id):
@@ -278,7 +278,7 @@ class db(object):
 			return status(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving status with id:' + id + str(e))
 			return None
 
 	def put_status(self,name):
@@ -290,7 +290,7 @@ class db(object):
 			return status(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error add status:' + name + str(e))
 			return None
 
 	def get_suites(self):
@@ -305,7 +305,7 @@ class db(object):
 			return suites
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving suite list:' + str(e))
 			return None
 
 	def get_suite_id(self,id):
@@ -317,7 +317,7 @@ class db(object):
 			return suite(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving suite with id:' + id + str(e))
 			return None
 
 	def get_suite_byname(self,name):
@@ -332,7 +332,7 @@ class db(object):
 			return suites
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving suite with name:' + name + str(e))
 			return None
 
 	def put_suite(self,name):
@@ -344,7 +344,7 @@ class db(object):
 			return suite(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error adding suite:' + name + str(e))
 			return None
 
 	#<<<<<<<< BuildD related database functions >>>>>>>>
@@ -361,7 +361,7 @@ class db(object):
 			return buildds
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving buildd list:' + str(e))
 			return None
 
 	def get_buildd_id(self,id):
@@ -373,7 +373,7 @@ class db(object):
 			return buildd(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving buildd with id:' + id + str(e))
 			return None
 
 	def put_buildclient(self,name):
@@ -385,7 +385,7 @@ class db(object):
 			return buildd(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error adding buildd:' + name + str(e))
 			return None
 
 	def delete_buildclient(self,id):
@@ -400,7 +400,7 @@ class db(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error deleting buildd with id:' + id + str(e))
 			return None
 
 	def get_buildd_jobs(self,id):
@@ -412,7 +412,7 @@ class db(object):
 			return res
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving jobs on buildd with id:' + id + str(e))
 			return None
 
 	#<<<<<<<< Job related database functions >>>>>>>>
@@ -429,7 +429,7 @@ class db(object):
 			return job(res[0]['id'],packageinstance,None,buildclient)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving job with id:' + id + str(e))
 			return None
 
 	def get_jobs(self):
@@ -446,7 +446,7 @@ class db(object):
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving jobs list:' + str(e))
 			return None
 
 	def get_jobs_by_status(self,status):
@@ -461,7 +461,7 @@ class db(object):
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving jobs list with status:' + status + str(e))
 			return None
 
 	def get_unfinished_jobs(self):
@@ -476,7 +476,7 @@ class db(object):
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving unfinished jobs:' + str(e))
 			return None
 
 	def get_job_status(self,id):
@@ -487,7 +487,7 @@ class db(object):
 			return jobstatus
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving job status with:' + id + str(e))
 			return None
 
 	def delete_job(self,id):
@@ -501,7 +501,7 @@ class db(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error deleting job with:' + id + str(e))
 			return None
 
 	def put_job(self,packageinstance,transport,buildclient):
@@ -514,7 +514,7 @@ class db(object):
 			return job(res[0]['id'],packageinstance,transport,buildclient)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error adding job:' + str(e))
 			return None
 
 	#<<<<<<<< Package related database functions >>>>>>>>
@@ -531,7 +531,7 @@ class db(object):
 			return packages
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving packages list:' + str(e))
 			return None
 
 	def get_package_id(self,id):
@@ -543,7 +543,7 @@ class db(object):
 			return package(res[0]['id'],res[0]['version'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving package with id:' + id + str(e))
 			return None
 
 	def get_package_byvalues(self,name,version):
@@ -558,7 +558,7 @@ class db(object):
 			return packages
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving package by values:' + name + version + str(e))
 			return None
 
 	def put_package(self,version,name):
@@ -570,7 +570,7 @@ class db(object):
 			return package(res[0]['id'],version,name)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error adding package:' + name + version + str(e))
 			return None
 
 	def delete_package(self,id):
@@ -585,7 +585,7 @@ class db(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error deleting package with:' + id + str(e))
 			return None
 
 	#<<<<<<<<< Packageinstance related Queries >>>>>>>
@@ -602,7 +602,7 @@ class db(object):
 			return packageinstances
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving package instances list:' + str(e))
 			return None
 
 	def get_packageinstance_byvalues(self,package_id,arch_id,suite_id,dist_id,format_id):
@@ -617,7 +617,7 @@ class db(object):
 			return packageinstances
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving package instance by value:' + str(e))
 			return None
 
 	def get_packageinstance_id(self,id):
@@ -634,7 +634,7 @@ class db(object):
 			return packageinstance(res[0]['id'],package,arch,suite,dist,format,res[0]['master'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving package instance with:' + id + str(e))
 			return None
 
 	def put_packageinstance(self,package,arch,suite,dist,format,master):
@@ -647,7 +647,7 @@ class db(object):
 			return packageinstance(res[0]['id'],package,arch,suite,dist,format,master)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error adding package instance:' + package + arch + suite + dist + format + master + str(e))
 			return None
 
 	def delete_packageinstance(self,id):
@@ -662,7 +662,7 @@ class db(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error deleting package instance with:' + id + str(e))
 			return None
 
 	# <<<<< TODO: This is a work in progress!!! >>>>>
@@ -685,7 +685,7 @@ class db(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error checking package instance exists:' + str(e))
 			return None
 	#<<<<<<<<< Report Queries >>>>>>>
 
@@ -701,7 +701,7 @@ class db(object):
 			return package_instances
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving package instance list:' + str(e))
 			return None
 
 	def supportedArchitectures(self,suite) :
@@ -719,5 +719,5 @@ class db(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error performing database operation: ' + str(e))
+			raise Exception('Error retrieving supported architectures for:' + suite + str(e))
 			return None
