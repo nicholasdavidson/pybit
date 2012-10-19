@@ -1,3 +1,10 @@
+pybit (0.0.28) pybit; urgency=low
+
+  * Fixed pybit-client-basic to use RESTFUL api to ack requests. Added
+    restful API for sending job statuses
+
+ -- Nick Davidson <nickd@toby-churchill.com>  Fri, 19 Oct 2012 15:45:57 +0100
+
 pybit (0.0.27) pybit; urgency=low
 
   * Allow the vcs client to clean up what it generated

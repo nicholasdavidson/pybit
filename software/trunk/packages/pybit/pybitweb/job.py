@@ -28,6 +28,16 @@ def get_jobstatuses():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
+@route('/job/<jobid:int>', method='PUT')
+@route('/job/<jobid:int>', method='POST')
+def update_job(jobid):
+	job_status = request.forms.status
+	if job_status:
+		print "Setting ", jobid, " to ", job_status
+	else:
+		response.status = "400 - Required fields missing."
+	return
+
 @route('/job/status/<status>', method='GET')
 def get_jobs_bystatus(status):
 	try:

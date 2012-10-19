@@ -20,6 +20,14 @@ class model(object):
 			raise Exception('Error in fromJson(): ' + str(e))
 			return None
 
+
+class ClientMessage:
+	failed = "failed"
+	building = "building"
+	done = "done"
+	blocked = "blocked"
+
+
 class arch(model):
 
 	def __init__(self,id,name):
@@ -63,6 +71,7 @@ class package(model):
 		self.version = version
 		self.name = name
 
+
 class transport(model) :
 
 	def __init__(self,id,method,uri,vcs_id):
@@ -88,6 +97,7 @@ class job(model):
 		self.id = id
 		self.packageinstance = packageinstance
 		self.buildclient = buildclient
+
 
 class suitearch(model):
 

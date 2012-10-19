@@ -4,7 +4,7 @@ from pybitweb.bottle import Bottle,response,error,request
 from amqplib import client_0_8 as amqp
 import jsonpickle
 import os.path
-
+import pybit
 import db
 from pybit.models import transport, packageinstance, job, buildRequest
 # example CURL command....
@@ -17,8 +17,12 @@ class controller:
 			self.job_db = jobDb
 			self.conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
 			self.chan = self.conn.channel()
-
-			self.chan.queue_declare(queue="controller_queue", durable=True, exclusive=False, auto_delete=False)
+			#declare exchange.
+			self.chan.exchange_declare(exchange=pybit.exchange_name, type="direct", durable=True, auto_delete=False)
+			#declare command queue.
+			self.chan.queue_declare(queue=pybit.status_queue, durable=True, exclusive=False, auto_delete=False)
+			#bind routing from exchange to command queue based on routing key.
+			self.chan.queue_bind(queue=pybit.status_queue, exchange=pybit.exchange_name, routing_key=pybit.status_route)
 			print "controller init"
 		except Exception as e:
 			raise Exception('Error creating controller (Maybe we cannot connect to queue?) - ' + str(e))
@@ -117,12 +121,12 @@ class controller:
 											print "IGNORING UNFINISHED JOB", unfinished_job_package_name, unfinished_job_package_version
 									else :
 										print "IGNORING UNFINISHED JOB", unfinished_job_package_name
-								build_req = jsonpickle.encode(buildRequest(new_job,trans,"localhost:5672"))
+								build_req = jsonpickle.encode(buildRequest(new_job,trans,"localhost:8080"))
 								msg = amqp.Message(build_req)
 								msg.properties["delivery_mode"] = 2
-								routing_key = "%s.%s.%s.%s" % (new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name)
+								routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name)
 								print "\n____________SENDING", build_req, "____________TO____________", routing_key
-								self.chan.basic_publish(msg,exchange="pybit",routing_key=routing_key)
+								self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key)
 							else :
 								print "FAILED TO ADD JOB"
 								response.status = "404 - failed to add job."

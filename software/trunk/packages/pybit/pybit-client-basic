@@ -3,11 +3,8 @@
 # -*- coding: utf-8 -*-
 from amqplib import client_0_8 as amqp
 from optparse import OptionParser
-
-import os, tty, sys, signal, jsonpickle
-
-
-from pybitweb.models import packageinstance
+import tty, sys, signal, jsonpickle, requests, pybit, os
+from pybit.models import packageinstance, ClientMessage, buildRequest
 
 metaPefix="PYBIT_CLIENT_"
 parser = OptionParser()
@@ -23,22 +20,24 @@ parser.add_option("--userid", dest="userid", default="guest", help="user id to u
 parser.add_option("--port", dest="port", default="5672", help="port to use for AMQP server, defaults to 5672", metavar=metaPefix + "PORT")
 parser.add_option("--password", dest="password", default="guest", help="password to use for AMQP server, defaults to guest", metavar=metaPefix + "PASSWORD")
 parser.add_option("--insist", dest="insist", default=False, help="insist to use for AMQP server, defaults to 5672", metavar=metaPefix + "INSIST")
+parser.add_option("--id", dest="id", default=1, help="id to use for build-client control queue, defaults to 1 but is unique per amqp server.", metavar=metaPefix + "INSIST")
 
 
 (options, args) = parser.parse_args()
 
-routing_key = "%s.%s.%s.%s" % (options.distribution, options.arch, options.suite, options.package)
-queue_name = "%s_%s_%s_%s" % (options.distribution, options.arch, options.suite, options.package)
-
-
+routing_key = pybit.get_build_route_name(options.distribution, options.arch, options.suite, options.package)
+queue_name = pybit.get_build_queue_name(options.distribution, options.arch, options.suite, options.package)
+client_queue_name = pybit.get_client_queue(options.id)
 print "Connecting with... \nhost: " + options.host + "\nuser id: " + options.userid + "\npassword: "  + options.password + "\nvhost: " + options.vhost + "\ninsist: " + str(options.insist)
 conn = amqp.Connection(host=options.host, userid=options.userid, password=options.password, virtual_host=options.vhost, insist= options.insist)
 chan = conn.channel()
-print "Creating queue with name:" + str(queue_name)
-chan.queue_declare(queue=queue_name, durable=True, exclusive=False, auto_delete=False)
-chan.exchange_declare(exchange="pybit", type="direct", durable=True, auto_delete=False,)
-chan.queue_bind(queue=queue_name, exchange="pybit", routing_key=routing_key)
 
+print "Creating queue with name:" + queue_name
+chan.queue_declare(queue=queue_name, durable=True, exclusive=False, auto_delete=False)
+chan.queue_bind(queue=queue_name, exchange=pybit.exchange_name, routing_key=routing_key)
+
+print "Creating private command queue with name:" + client_queue_name
+chan.queue_declare(queue=client_queue_name, durable=False, exclusive=True, auto_delete=False)
 
 def signal_handler(signal, frame):
 	try:
@@ -56,40 +55,59 @@ except Exception as e:
 
 
 def recv_callback(msg):
-	if options.ack not None:
+	if options.ack is not None:
 		if options.ack:
-			print "Accepting BUILD REQUEST ( job id", unpickled_req.job.id, ",", unpickled_req.job.packageinstance.package.name, ",", unpickled_req.job.packageinstance.package.version, ",", unpickled_req.job.packageinstance.format.name, ",", unpickled_req.job.packageinstance.arch.name, ")"			chan.basic_ack(msg.delivery_tag)
+			chan.basic_ack(msg.delivery_tag)
+			print "Accepting BUILD REQUEST ( job id", unpickled_req.job.id, ",", unpickled_req.job.packageinstance.package.name, ",", unpickled_req.job.packageinstance.package.version, ",", unpickled_req.job.packageinstance.format.name, ",", unpickled_req.job.packageinstance.arch.name, ")"
 		else:
 			print "Rejecting message."
 			chan.basic_recover(True)
 			
 	else:
+		status = None
+		unpickled_req = jsonpickle.decode(msg.body)
 		while True:
 			user_input = raw_input('''Recived message:
-	[A]ccept:
+	[A]ccept
 	[R]eject
-	[B]uild
+	[B]uilding
+	[D]one
 	B[l]ock
 	[F]ail
 	''').lower()
-			
 			if user_input == "a":
-				unpickled_req = jsonpickle.decode(msg.body)
-				print "Accepting BUILD REQUEST ( job id", unpickled_req.job.id, ",", unpickled_req.job.packageinstance.package.name, ",", unpickled_req.job.packageinstance.package.version, ",", unpickled_req.job.packageinstance.format.name, ",", unpickled_req.job.packageinstance.arch.name, ")"
 				chan.basic_ack(msg.delivery_tag)
+				print "Blindly accepting message..."
+				msg = ClientMessage.done
 				break
 			elif user_input == "r":
-				print "Rejecting message."
 				chan.basic_recover(True)
+				print "Rejecting message."
 				break
 			elif user_input == "b":
-				print "Unimplimented"
+				chan.basic_ack(msg.delivery_tag)
+				status = ClientMessage.building
+				break;
+			elif user_input == "d":
+				chan.basic_ack(msg.delivery_tag)
+				status = ClientMessage.done
+				break;
 			elif user_input == "l":
-				print "Unimplimented"
+				chan.basic_ack(msg.delivery_tag)
+				status = ClientMessage.blocked
+				break;
 			elif user_input == "f":
-				print "Unimplimented"
+				chan.basic_ack(msg.delivery_tag)
+				chan.basic_ack(msg.delivery_tag)
+				status = ClientMessage.failed
+				break;
 			else:
 				print "Invalid selection."
+		if status is not None:
+			print "Marking JOB( id ", unpickled_req.job.id,  ") As ", status
+			payload = {'status' : status }
+			job_status_url = "http://%s/job/%s" % (unpickled_req.web_host, unpickled_req.job.id)
+			r = requests.put(job_status_url, payload)
 	
 try:
 	chan.basic_consume(queue=queue_name, no_ack=False, callback=recv_callback, consumer_tag="build_callback")

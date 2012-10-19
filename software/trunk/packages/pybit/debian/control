@@ -27,7 +27,7 @@ Description: subversion post commit hook for pybit
 
 Package: pybit-client
 Architecture: all
-Depends: sbuild, dput, dpkg-dev, pybit-common,
+Depends: sbuild, dput, dpkg-dev, pybit-common, python-requests
  subversion,
  ${python:Depends}, ${misc:Depends}
 Description: buildd client support for pybit
