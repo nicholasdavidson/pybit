@@ -22,10 +22,10 @@ class model(object):
 
 
 class ClientMessage:
-	failed = "failed"
-	building = "building"
-	done = "done"
-	blocked = "blocked"
+	failed = "Failed"
+	building = "Building"
+	done = "Done"
+	blocked = "Blocked"
 
 
 class arch(model):

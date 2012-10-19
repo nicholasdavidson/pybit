@@ -1,3 +1,9 @@
+pybit (0.0.29) pybit; urgency=low
+
+  * Build client status reporting added.
+
+ -- Nick Davidson <nickd@toby-churchill.com>  Fri, 19 Oct 2012 16:36:39 +0100
+
 pybit (0.0.28) pybit; urgency=low
 
   * Fixed pybit-client-basic to use RESTFUL api to ack requests. Added

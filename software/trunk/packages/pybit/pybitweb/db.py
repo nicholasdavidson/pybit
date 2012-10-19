@@ -489,7 +489,15 @@ class db(object):
 			self.conn.rollback()
 			raise Exception('Error retrieving job status with:' + id + str(e))
 			return None
-
+	def put_job_status(self, jobid, status):
+		try:
+			self.cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s)) ",(jobid,status,))
+			self.conn.commit()
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error setting job status:' + str(e))
+			return None
+		
 	def delete_job(self,id):
 		try:
 			self.cur.execute("DELETE FROM job WHERE id=%s  RETURNING id",(id,))

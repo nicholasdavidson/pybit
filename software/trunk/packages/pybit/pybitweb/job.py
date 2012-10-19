@@ -30,13 +30,19 @@ def get_jobstatuses():
 
 @route('/job/<jobid:int>', method='PUT')
 @route('/job/<jobid:int>', method='POST')
-def update_job(jobid):
+def update_job_status(jobid):
 	job_status = request.forms.status
 	if job_status:
-		print "Setting ", jobid, " to ", job_status
+		job = myDb.get_job(jobid)
+		if job is not None:
+			print "Setting ", job.id, " to ", job_status
+			myDb.put_job_status(job.id, job_status)
+		else:
+			response.status = "404 - No job found with this ID."
+			return
 	else:
 		response.status = "400 - Required fields missing."
-	return
+		return
 
 @route('/job/status/<status>', method='GET')
 def get_jobs_bystatus(status):

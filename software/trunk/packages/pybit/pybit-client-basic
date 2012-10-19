@@ -87,20 +87,19 @@ def recv_callback(msg):
 			elif user_input == "b":
 				chan.basic_ack(msg.delivery_tag)
 				status = ClientMessage.building
-				break;
+				break
 			elif user_input == "d":
 				chan.basic_ack(msg.delivery_tag)
 				status = ClientMessage.done
-				break;
+				break
 			elif user_input == "l":
 				chan.basic_ack(msg.delivery_tag)
 				status = ClientMessage.blocked
-				break;
+				break
 			elif user_input == "f":
 				chan.basic_ack(msg.delivery_tag)
-				chan.basic_ack(msg.delivery_tag)
 				status = ClientMessage.failed
-				break;
+				break
 			else:
 				print "Invalid selection."
 		if status is not None:
