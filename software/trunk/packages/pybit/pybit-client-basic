@@ -58,8 +58,7 @@ except Exception as e:
 def recv_callback(msg):
 	if options.ack not None:
 		if options.ack:
-			print "Accepting JOB ( id", unpickled_job.id, ",", unpickled_job.packageinstance.package.name, ",", unpickled_job.packageinstance.package.version, ",", unpickled_job.packageinstance.format.name, ",", unpickled_job.packageinstance.arch.name, ")"
-			chan.basic_ack(msg.delivery_tag)
+			print "Accepting BUILD REQUEST ( job id", unpickled_req.job.id, ",", unpickled_req.job.packageinstance.package.name, ",", unpickled_req.job.packageinstance.package.version, ",", unpickled_req.job.packageinstance.format.name, ",", unpickled_req.job.packageinstance.arch.name, ")"			chan.basic_ack(msg.delivery_tag)
 		else:
 			print "Rejecting message."
 			chan.basic_recover(True)
@@ -75,8 +74,8 @@ def recv_callback(msg):
 	''').lower()
 			
 			if user_input == "a":
-				unpickled_job = jsonpickle.decode(msg.body)
-				print "Accepting JOB ( id", unpickled_job.id, ",", unpickled_job.packageinstance.package.name, ",", unpickled_job.packageinstance.package.version, ",", unpickled_job.packageinstance.format.name, ",", unpickled_job.packageinstance.arch.name, ")"
+				unpickled_req = jsonpickle.decode(msg.body)
+				print "Accepting BUILD REQUEST ( job id", unpickled_req.job.id, ",", unpickled_req.job.packageinstance.package.name, ",", unpickled_req.job.packageinstance.package.version, ",", unpickled_req.job.packageinstance.format.name, ",", unpickled_req.job.packageinstance.arch.name, ")"
 				chan.basic_ack(msg.delivery_tag)
 				break
 			elif user_input == "r":

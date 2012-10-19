@@ -71,7 +71,6 @@ class transport(model) :
 		self.uri = uri
 		self.vcs_id = vcs_id
 
-# TODO: needs fixing, report model != db model
 class packageinstance(model):
 
 	def __init__(self, id, package, arch, suite, distribution, format, master) :
@@ -85,10 +84,9 @@ class packageinstance(model):
 
 class job(model):
 
-	def __init__(self,id,packageinstance,transport,buildclient):
+	def __init__(self,id,packageinstance,buildclient):
 		self.id = id
 		self.packageinstance = packageinstance
-		self.transport = transport
 		self.buildclient = buildclient
 
 class suitearch(model):
@@ -97,3 +95,10 @@ class suitearch(model):
 		self.id = id
 		self.suite_id = suite_id
 		self.arch_id = arch_id
+
+class buildRequest(model):
+
+	def __init__(self,job,transport,web_host):
+		self.job = job
+		self.transport = transport
+		self.web_host = web_host

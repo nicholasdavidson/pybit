@@ -426,7 +426,7 @@ class db(object):
 
 			packageinstance = self.get_packageinstance_id(res[0]['packageinstance_id'])
 			buildclient = self.get_buildd_id(res[0]['buildclient_id']) if res[0]['buildclient_id'] else None
-			return job(res[0]['id'],packageinstance,None,buildclient)
+			return job(res[0]['id'],packageinstance,buildclient)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving job with id:' + id + str(e))
@@ -442,7 +442,7 @@ class db(object):
 			for i in res:
 				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
 				buildclient = self.get_buildd_id(i['buildclient_id']) if i['buildclient_id'] else None 
-				jobs.append(job(i['id'],packageinstance,None,buildclient))
+				jobs.append(job(i['id'],packageinstance,buildclient))
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
@@ -504,14 +504,14 @@ class db(object):
 			raise Exception('Error deleting job with:' + id + str(e))
 			return None
 
-	def put_job(self,packageinstance,transport,buildclient):
+	def put_job(self,packageinstance,buildclient):
 		try:
 			#TODO: work in progress
 			self.cur.execute("INSERT INTO job (packageinstance_id,buildclient_id) VALUES (%s, %s)  RETURNING id",(packageinstance.id,(buildclient.id if buildclient else None)))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return job(res[0]['id'],packageinstance,transport,buildclient)
+			return job(res[0]['id'],packageinstance,buildclient)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error adding job:' + str(e))

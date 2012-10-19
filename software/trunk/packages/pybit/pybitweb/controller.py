@@ -6,7 +6,7 @@ import jsonpickle
 import os.path
 
 import db
-from pybit.models import transport, packageinstance, job
+from pybit.models import transport, packageinstance, job, buildRequest
 # example CURL command....
 # /usr/bin/curl -X POST http://localhost:8080/add --data "uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpea&format=deb"
 
@@ -92,7 +92,7 @@ class controller:
 						new_packageinstance = self.job_db.put_packageinstance(current_package, current_arch, current_suite, current_dist, current_format, False)
 						if new_packageinstance.id :
 							#print "CREATED NEW PACKAGE INSTANCE ID", new_packageinstance.id
-							new_job = self.job_db.put_job(new_packageinstance,transport,None)
+							new_job = self.job_db.put_job(new_packageinstance,None)
 							#print "CREATED NEW JOB ID", new_job.id
 							if new_job.id :
 								# check for unfinished jobs that might be cancellable
@@ -117,11 +117,11 @@ class controller:
 											print "IGNORING UNFINISHED JOB", unfinished_job_package_name, unfinished_job_package_version
 									else :
 										print "IGNORING UNFINISHED JOB", unfinished_job_package_name
-								pickled_job = jsonpickle.encode(new_job)
-								msg = amqp.Message(pickled_job)
+								build_req = jsonpickle.encode(buildRequest(new_job,trans,"localhost:5672"))
+								msg = amqp.Message(build_req)
 								msg.properties["delivery_mode"] = 2
 								routing_key = "%s.%s.%s.%s" % (new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name)
-								print "\n____________SENDING", pickled_job, "____________TO____________", routing_key
+								print "\n____________SENDING", build_req, "____________TO____________", routing_key
 								self.chan.basic_publish(msg,exchange="pybit",routing_key=routing_key)
 							else :
 								print "FAILED TO ADD JOB"
