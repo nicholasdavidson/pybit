@@ -91,14 +91,15 @@ class controller:
 						# add package instance to db
 						new_packageinstance = self.job_db.put_packageinstance(current_package, current_arch, current_suite, current_dist, current_format, False)
 						if new_packageinstance.id :
+							#print "CREATED NEW PACKAGE INSTANCE ID", new_packageinstance.id
 							new_job = self.job_db.put_job(new_packageinstance,transport,None)
+							#print "CREATED NEW JOB ID", new_job.id
 							if new_job.id :
 								# check for unfinished jobs that might be cancellable
 								unfinished_jobs_list = self.job_db.get_unfinished_jobs()
-								#print unfinished_jobs_list
-								for unfinished_job in unfinished_jobs_list:
+								#print "UNFINISHED JOB LIST", unfinished_jobs_list
+								for unfinished_job in unfinished_jobs_list: 
 									unfinished_job_package_name = unfinished_job.packageinstance.package.name
-									print unfinished_job_package_name
 									if unfinished_job_package_name == package_name :
 										unfinished_job_package_version = unfinished_job.packageinstance.package.version
 										command = "dpkg --compare-versions %s '<<' %s" % (unfinished_job_package_version, version)

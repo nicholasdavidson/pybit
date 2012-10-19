@@ -76,10 +76,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			arches = []
-			for i in res:
-				arches.append(arch(i['id'],i['name']))
-			return arches
+			return arch(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -106,8 +103,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			tmp = arch(res[0]['id'],name)
-			return tmp
+			return arch(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -134,10 +130,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			suitearches = []
-			for i in res:
-				suitearches.append(suitearch(i['id'],i['suite_id'],i['arch_id']))
-			return suitearches
+			return suitearch(res[0]['id'],res[0]['suite_id'],res[0]['arch_id'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -149,8 +142,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			tmp = suitearch(res[0]['id'],suite_id,arch_id)
-			return tmp
+			return suitearch(res[0]['id'],suite_id,arch_id)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -177,10 +169,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			dists = []
-			for i in res:
-				dists.append(dist(i['id'],i['name']))
-			return dists
+			return dist(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -207,8 +196,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			tmp = dist(res[0]['id'],name)
-			return tmp
+			return dist(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -235,10 +223,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			formats = []
-			for i in res:
-				formats.append(format(i['id'],i['name']))
-			return formats
+			return format(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -263,8 +248,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			tmp = format(res[0]['id'],name)
-			return tmp
+			return format(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -291,10 +275,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			statuses = []
-			for i in res:
-				statuses.append(status(i['id'],i['name']))
-			return statuses
+			return status(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -306,8 +287,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			tmp = status(res[0]['id'],name)
-			return tmp
+			return status(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -334,10 +314,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			suites = []
-			for i in res:
-				suites.append(suite(i['id'],i['name']))
-			return suites
+			return suite(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -364,8 +341,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			tmp = suite(res[0]['id'],name)
-			return tmp
+			return suite(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -394,10 +370,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			buildds = []
-			for i in res:
-				buildds.append(buildd(i['id'],i['name']))
-			return buildds
+			return buildd(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -409,8 +382,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			tmp = buildd(res[0]['id'],name)
-			return tmp
+			return buildd(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -452,12 +424,9 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			jobs = []
-			for i in res:
-				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
-				buildclient = self.get_buildd_id(i['buildclient_id'])
-				jobs.append(job(i['id'],packageinstance,None,buildclient))
-			return jobs
+			packageinstance = self.get_packageinstance_id(res[0]['packageinstance_id'])
+			buildclient = self.get_buildd_id(res[0]['buildclient_id']) if res[0]['buildclient_id'] else None
+			return job(res[0]['id'],packageinstance,None,buildclient)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -472,7 +441,7 @@ class db(object):
 			jobs = []
 			for i in res:
 				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
-				buildclient = self.get_buildd_id(i['buildclient_id'])
+				buildclient = self.get_buildd_id(i['buildclient_id']) if i['buildclient_id'] else None 
 				jobs.append(job(i['id'],packageinstance,None,buildclient))
 			return jobs
 		except Exception as e:
@@ -541,8 +510,8 @@ class db(object):
 			self.cur.execute("INSERT INTO job (packageinstance_id,buildclient_id) VALUES (%s, %s)  RETURNING id",(packageinstance.id,(buildclient.id if buildclient else None)))
 			res = self.cur.fetchall()
 			self.conn.commit()
-			tmp = job(res[0]['id'],packageinstance,transport,buildclient)
-			return tmp
+
+			return job(res[0]['id'],packageinstance,transport,buildclient)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -571,10 +540,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			packages = []
-			for i in res:
-				packages.append(package(i['id'],i['version'],i['name']))
-			return packages
+			return package(res[0]['id'],res[0]['version'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -601,8 +567,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			tmp = package(res[0]['id'],version,name)
-			return tmp
+			return package(res[0]['id'],version,name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -661,15 +626,12 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			packageinstances = []
-			for i in res:
-				package = self.get_package_id(i['package_id'])
-				arch = self.get_arch_id(i['arch_id'])
-				suite = self.get_suite_id(i['suite_id'])
-				dist = self.get_dist_id(i['dist_id'])
-				format = self.get_format_id(i['format_id'])
-				packageinstances.append(packageinstance(i['id'],package,arch,suite,dist,format,i['master']))
-			return packageinstances
+			package = self.get_package_id(res[0]['package_id'])
+			arch = self.get_arch_id(res[0]['arch_id'])
+			suite = self.get_suite_id(res[0]['suite_id'])
+			dist = self.get_dist_id(res[0]['dist_id'])
+			format = self.get_format_id(res[0]['format_id'])
+			return packageinstance(res[0]['id'],package,arch,suite,dist,format,res[0]['master'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -682,8 +644,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			tmp = packageinstance(res[0]['id'],package,arch,suite,dist,format,master)
-			return tmp
+			return packageinstance(res[0]['id'],package,arch,suite,dist,format,master)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error performing database operation: ' + str(e))
@@ -744,7 +705,6 @@ class db(object):
 			return None
 
 	def supportedArchitectures(self,suite) :
-		print "Suite: " + suite
 		try:
 			if suite :
 				self.cur.execute("SELECT arch.id, arch.name FROM suite LEFT JOIN suitearches ON suite.id=suite_id LEFT JOIN arch ON arch_id = arch.id WHERE suite.name=%s",[suite])
