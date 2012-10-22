@@ -33,12 +33,17 @@ def index():
 	return '''<h1>PyBit - python Buildd Integration Toolkit.</h1>''', forms.index() , reports.index()
 
 route('/add', method='POST') (buildController.add)
+# example CURL command....
+# /usr/bin/curl -X POST http://localhost:8080/add --data "uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpea&format=deb"
 
 route('/cancel_all', method='POST') (buildController.cancelAllBuilds)
+#/usr/bin/curl -X POST http://localhost:8080/cancel_all"
 
 route('/cancel_package', method='POST') (buildController.cancelPackage)
+#/usr/bin/curl -X POST http://localhost:8080/cancel_package --data "package_version=0.6.33chickpea47&package=appbarwidget"
 
 route('/cancel_package_instance', method='POST') (buildController.cancelPackageInstance)
+#/usr/bin/curl -X POST http://localhost:8080/cancel_package_instance --data "job_id=54"
 
 try:
 	debug(settings['debug'])

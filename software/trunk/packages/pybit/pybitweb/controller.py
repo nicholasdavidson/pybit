@@ -7,8 +7,6 @@ import os.path
 import pybit
 import db
 from pybit.models import transport, packageinstance, job, buildRequest
-# example CURL command....
-# /usr/bin/curl -X POST http://localhost:8080/add --data "uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpea&format=deb"
 
 class controller:
 
@@ -42,7 +40,7 @@ class controller:
 
 			trans = transport(None, method, uri, vcs_id)
 
-			if not uri and method and dist and vcs_id and architectures and version and package_name and suite and format :
+			if not uri and not method and not dist and not vcs_id and not architectures and not version and not package_name and not suite and not format :
 				response.status = "400 - Required fields missing."
 				return
 			else :
@@ -143,15 +141,36 @@ class controller:
 		return
 
 	def cancelAllBuilds(self):
+		unfinished_jobs_list = self.job_db.get_unfinished_jobs()
+		for unfinished_job in unfinished_jobs_list: 
+			print "RECEIVED CANCEL REQUEST FOR", unfinished_job.id
+			#TODO: send cancel message
 		return
 
 	def cancelPackage(self):
+		version = request.forms.get('package_version')
+		package_name = request.forms.get('package')
+		unfinished_jobs_list = self.job_db.get_unfinished_jobs()
+		for unfinished_job in unfinished_jobs_list: 
+			if unfinished_job.packageinstance.package.name == package_name :
+				unfinished_job_package_version = unfinished_job.packageinstance.package.version
+				command = "dpkg --compare-versions %s '<<' %s" % (unfinished_job_package_version, version)
+				if os.system (command) :
+					#TODO: send cancel message
+					print "SENDING CANCEL REQUEST FOR", unfinished_job.id, package_name
 		return
 
 	def cancelPackageInstance(self):
+		try:
+			job_id = request.forms.get('job_id')
+			if not job_id :
+				response.status = "400 - Required fields missing."
+				return
+			else :
+				#TODO: send cancel message
+				print "RECEIVED CANCEL REQUEST FOR", job_id
+		except Exception as e:
+			raise Exception('Error parsing job information: ' + str(e))
+			response.status = "500 - Error parsing job information"
+			return
 		return
-
-def recv_callback(msg):
-
-	print "TEST", msg.body
-	#pkg = pybitclient.deb_package (msg.body)
