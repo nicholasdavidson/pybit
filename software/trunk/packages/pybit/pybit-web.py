@@ -3,7 +3,7 @@
 import jsonpickle
 from pybitweb.bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 from pybitweb.db import Database
-from pybitweb import forms, lookups, reports, buildd, job, package, packageinstance
+from pybitweb import forms, lookups, buildd, job, package, packageinstance
 from pybitweb.controller import Controller
 
 build_db = Database()
@@ -29,7 +29,7 @@ def error404(error):
 @route('/', method='GET')
 def index():
 	#main index page for the whole API, composed of forms and reports pages
-	return '''<h1>PyBit - python Buildd Integration Toolkit.</h1>''', forms.index() , reports.index()
+	return '''<h1>PyBit - python Buildd Integration Toolkit.</h1>''', forms.index()
 
 route('/add', method='POST') (build_controller.add)
 # example CURL command....

@@ -5,7 +5,7 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 from db import Database
 #TODO: Package instances
 
-buid_db = Database()
+db = Database()
 
 @route('/forms', method='GET')
 def index():
@@ -51,11 +51,11 @@ def buildd_form():
 def package_instance_form():
 	try:
 
-		packages = build_db.get_packages()
-		arches = build_db.get_arches()
-		suites = build_db.get_suites()
-		dists = build_db.get_dists()
-		formats = build_db.get_formats()
+		packages = db.get_packages()
+		arches = db.get_arches()
+		suites = db.get_suites()
+		dists = db.get_dists()
+		formats = db.get_formats()
 
 		# TODO: NEW. master???
 
@@ -95,8 +95,8 @@ def package_instance_form():
 def job_form():
 	try:
 
-		instances = build_db.get_packageinstances()
-		clients = build_db.get_buildclients()
+		instances = db.get_packageinstances()
+		clients = db.get_buildclients()
 
 		markup = '''<form method="POST" action="/job">
 					<h4>Submit a Job</h4>
@@ -127,7 +127,7 @@ def job_form():
 @route('/forms/package', method='GET')
 def package_form():
 	try:
-		return '''<form method="POST" action="/job">
+		return '''<form method="POST" action="/package">
 					<h4>Add a Package</h4>
 					<label for="name">name</label>
 					<input name="name" type="text" />

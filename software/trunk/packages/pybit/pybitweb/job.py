@@ -64,7 +64,9 @@ def put_job():
 		buildclient_id =  request.forms.get('buildclient_id')
 
 		if  packageinstance_id and buildclient_id:
-			myDb.put_job(packageinstance_id,buildclient_id)
+			packageinstance = myDb.get_packageinstance_id(packageinstance_id)
+			buildclient = myDb.get_buildd_id(buildclient_id)
+			myDb.put_job(packageinstance,buildclient)
 		else:
 			response.status = "400 - Required fields missing."
 		return
