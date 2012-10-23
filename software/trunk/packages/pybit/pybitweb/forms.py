@@ -27,6 +27,21 @@ def index():
 					<li><a href='/forms/packageinstance'>Package Instances</a></li>
 					<li><a href='/forms/job'>Build Jobs</a></li>
 					</ul>
+					<h4><a href='/forms'>WebAPI Endpoints (JSON format)</a></h4>
+					<ul>
+					<li><a href='/buildd'>Build Boxes</a> (Specify ~/[id] to go to a specific one, and ~/[id]/status or ~/[id]/jobs 					to see its jobs)</li>
+					<li><a href='/job'>Build Jobs</a> (Specify ~/status to see all unfinished jobs, ~/status/[status] to see all of 					a specified state, or ~/[id] to go to a specific one. </li>
+					<li><a href='/package'>Packages</a> (Specify ~/[id] to go to a specific one)</li>
+					<li><a href='/packageinstance'>Package Instances</a>  (Specify ~/[id] to go to a specific one)</li>
+					</ul>
+
+					<ul>
+					<li><a href='/arch'>Package Architectures</a> (Specify ~/[id] to go to a specific one)</li>
+					<li><a href='/status'>Job Statuses</a> (Specify ~/[id] to go to a specific one)</li>
+					<li><a href='/dist'>Software Distributions</a> (Specify ~/[id] to go to a specific one)</li>
+					<li><a href='/format'>Package Formats</a> (Specify ~/[id] to go to a specific one)</li>
+					<li><a href='/suite'>Software Suites</a> (Specify ~/[id] to go to a specific one)</li>
+					</ul>
 					'''
 	except Exception as e:
 		raise Exception('Error rendering page: ' + str(e))
