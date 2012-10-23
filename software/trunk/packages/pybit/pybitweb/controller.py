@@ -6,7 +6,7 @@ import jsonpickle
 import os.path
 import pybit
 from db import Database
-from pybit.models import Transport, BuildRequest
+from pybit.models import Transport, BuildRequest, CancelRequest
 
 class Controller:
 
@@ -77,7 +77,7 @@ class Controller:
 					# add new package to db
 					current_package = self.build_db.put_package(version,package_name)
 					if not current_package.id :
-						print "FAILED TO ADD PACKAGE:", package_name
+						#print "FAILED TO ADD PACKAGE:", package_name
 						response.status = "404 - failed to add package."
 						return
 					else :
@@ -93,7 +93,7 @@ class Controller:
 						# add package instance to db
 						new_packageinstance = self.build_db.put_packageinstance(current_package, current_arch, current_suite, current_dist, current_format, False)
 						if new_packageinstance.id :
-							#print "CREATED NEW PACKAGE INSTANCE ID", new_packageinstance.id
+							print "CREATED NEW PACKAGE INSTANCE ID", new_packageinstance.id
 							new_job = self.build_db.put_job(new_packageinstance,None)
 							#print "CREATED NEW JOB ID", new_job.id
 							if new_job.id :
@@ -104,26 +104,25 @@ class Controller:
 									unfinished_job_package_name = unfinished_job.packageinstance.package.name
 									if unfinished_job_package_name == package_name :
 										unfinished_job_package_version = unfinished_job.packageinstance.package.version
-										command = "dpkg --compare-versions %s '<<' %s" % (unfinished_job_package_version, version)
+										command = "dpkg --compare-versions %s '<<' %s" % (version, unfinished_job_package_version)
 										if os.system (command) :
-											#FIXME: work in progress...
 											unfinished_job_dist = unfinished_job.packageinstance.distribution.name
 											unfinished_job_arch = unfinished_job.packageinstance.arch.name
 											unfinished_job_suite = unfinished_job.packageinstance.suite.name
 											if (unfinished_job_dist == dist) and (unfinished_job_arch == arch) and (unfinished_job_suite == suite) :
-												#TODO: send cancel message
-												print "SENDING CANCEL REQUEST FOR", package_name
-											else :
-												print "IGNORING UNFINISHED JOB", unfinished_job_package_name, unfinished_job_package_version, unfinished_job_dist, unfinished_job_arch, unfinished_job_suite
-										else :
-											print "IGNORING UNFINISHED JOB", unfinished_job_package_name, unfinished_job_package_version
-									else :
-										print "IGNORING UNFINISHED JOB", unfinished_job_package_name
+												self.send_cancel_request(unfinished_job)
+#											else :
+#												print "IGNORING UNFINISHED JOB", unfinished_job_package_name, unfinished_job_package_version, unfinished_job_dist, unfinished_job_arch, unfinished_job_suite
+#										else :
+#											print "IGNORING UNFINISHED JOB", unfinished_job_package_name, unfinished_job_package_version
+#									else :
+#										print "IGNORING UNFINISHED JOB", unfinished_job_package_name
 								build_req = jsonpickle.encode(BuildRequest(new_job,trans,"localhost:8080"))
 								msg = amqp.Message(build_req)
 								msg.properties["delivery_mode"] = 2
 								routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name)
-								print "\n____________SENDING", build_req, "____________TO____________", routing_key
+								print "SENDING BUILD REQUEST FOR JOB ID", new_job.id, new_job.packageinstance.package.name, new_job.packageinstance.package.version, new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name
+								#print "\n____________SENDING", build_req, "____________TO____________", routing_key
 								self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key)
 							else :
 								print "FAILED TO ADD JOB"
@@ -143,8 +142,7 @@ class Controller:
 	def cancel_all_builds(self):
 		unfinished_jobs_list = self.build_db.get_unfinished_jobs()
 		for unfinished_job in unfinished_jobs_list: 
-			print "RECEIVED CANCEL REQUEST FOR", unfinished_job.id
-			#TODO: send cancel message
+			self.send_cancel_request(unfinished_job)
 		return
 
 	def cancel_package(self):
@@ -156,8 +154,7 @@ class Controller:
 				unfinished_job_package_version = unfinished_job.packageinstance.package.version
 				command = "dpkg --compare-versions %s '<<' %s" % (unfinished_job_package_version, version)
 				if os.system (command) :
-					#TODO: send cancel message
-					print "SENDING CANCEL REQUEST FOR", unfinished_job.id, package_name
+					self.send_cancel_request(unfinished_job)
 		return
 
 	def cancel_package_instance(self):
@@ -167,10 +164,22 @@ class Controller:
 				response.status = "400 - Required fields missing."
 				return
 			else :
-				#TODO: send cancel message
-				print "RECEIVED CANCEL REQUEST FOR", job_id
+				job_to_cancel = self.build_db.get_job(job_id)
+				if not job_to_cancel :
+					response.status = "404 - no job matching id"
+				else :
+					self.send_cancel_request(job_to_cancel)
 		except Exception as e:
 			raise Exception('Error parsing job information: ' + str(e))
 			response.status = "500 - Error parsing job information"
 			return
 		return
+
+	def send_cancel_request(self, job):
+		print "SENDING CANCEL REQUEST FOR JOB ID", job.id, job.packageinstance.package.name, job.packageinstance.package.version, job.packageinstance.distribution.name, job.packageinstance.arch.name, job.packageinstance.suite.name, job.packageinstance.format.name
+		cancel_req = jsonpickle.encode(CancelRequest(job,"localhost:8080"))
+		msg = amqp.Message(cancel_req)
+		msg.properties["delivery_mode"] = 2
+		routing_key = pybit.get_build_route_name(job.packageinstance.distribution.name, job.packageinstance.arch.name, job.packageinstance.suite.name, job.packageinstance.format.name)
+		#print "\n____________SENDING", cancel_req, "____________TO____________", routing_key
+		self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key)
