@@ -112,8 +112,15 @@ class BuildRequest(Model):
 		self.transport = transport
 		self.web_host = web_host
 
-class CancelRequest(Model):
-
+class CommandRequest(Model):
 	def __init__(self,job,web_host):
 		self.job = job
 		self.web_host = web_host
+
+class CancelRequest(CommandRequest):
+	def  __init__(self,job,web_host):
+		CommandRequest.__init__(job, web_host)
+
+class StatusRequest(CommandRequest):
+	def  __init__(self,job,web_host):
+		CommandRequest.__init__(job, web_host)

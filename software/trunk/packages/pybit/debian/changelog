@@ -1,3 +1,10 @@
+pybit (0.0.30) pybit; urgency=low
+
+  * Initial refactor of pybit-client-basic and buildclient and
+    subversion.
+
+ -- Nick Davidson <nickd@toby-churchill.com>  Tue, 23 Oct 2012 17:06:37 +0100
+
 pybit (0.0.29) pybit; urgency=low
 
   * Build client status reporting added.

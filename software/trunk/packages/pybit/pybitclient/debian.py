@@ -23,11 +23,11 @@
 import os
 import json
 import pybitclient
-from buildclient import BuildClient
+from buildclient import PackageHandler
 
 report_name = "controller"
 
-class DebianBuildClient(BuildClient):
+class DebianBuildClient(PackageHandler):
 	options = {}
 	dput_cfg = ""
 	dput_dest = ""

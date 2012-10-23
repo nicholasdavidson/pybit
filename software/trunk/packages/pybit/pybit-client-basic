@@ -3,42 +3,24 @@
 # -*- coding: utf-8 -*-
 from amqplib import client_0_8 as amqp
 from optparse import OptionParser
-import tty, sys, signal, jsonpickle, requests, pybit, os
-from pybit.models import packageinstance, ClientMessage, buildRequest
+import tty
+import sys
+import signal
+import jsonpickle
+import requests
+import pybit
+import os
+import time 
 
-metaPefix="PYBIT_CLIENT_"
-parser = OptionParser()
+from pybit.models import PackageInstance, ClientMessage, BuildRequest
+from pybitclient.debian import DebianBuildClient
+from pybitclient.subversion import SubversionClient
+from pybitclient.buildclient import PyBITClient
 
-parser.add_option("--arch", dest="arch", default="i386", help="Architecture to use, defaults to i386", metavar= metaPefix + "ARCH")
-parser.add_option("--ack", dest="ack", help="Does the client ack the message or reject it? If unset the client will be interactive.",metavar= metaPefix +"ACK")
-parser.add_option("--distribution", dest="distribution", default="Debian", help="Distribution to use, defaults to Debian", metavar= metaPefix +"DIST")
-parser.add_option("--package", dest="package", default="deb", help="Package type to use, defaults to deb", metavar= metaPefix +"PACKAGE")
-parser.add_option("--suite", dest="suite", default="development", help="Suite to use, defaults to development", metavar= metaPefix +"SUITE")
-parser.add_option("--host", dest="host", default="localhost", help="vhost to connect to, defaults to localhost.", metavar=metaPefix + "HOST")
-parser.add_option("--vhost", dest="vhost", default="/", help="vhost to connect to, defaults to localhost.", metavar=metaPefix + "VHOST")
-parser.add_option("--userid", dest="userid", default="guest", help="user id to use for AMQP server, defaults to guest.", metavar=metaPefix + "USERID")
-parser.add_option("--port", dest="port", default="5672", help="port to use for AMQP server, defaults to 5672", metavar=metaPefix + "PORT")
-parser.add_option("--password", dest="password", default="guest", help="password to use for AMQP server, defaults to guest", metavar=metaPefix + "PASSWORD")
-parser.add_option("--insist", dest="insist", default=False, help="insist to use for AMQP server, defaults to 5672", metavar=metaPefix + "INSIST")
-parser.add_option("--id", dest="id", default=1, help="id to use for build-client control queue, defaults to 1 but is unique per amqp server.", metavar=metaPefix + "INSIST")
+META = "PYBIT_CLIENT_"
 
 
-(options, args) = parser.parse_args()
-
-routing_key = pybit.get_build_route_name(options.distribution, options.arch, options.suite, options.package)
-queue_name = pybit.get_build_queue_name(options.distribution, options.arch, options.suite, options.package)
-client_queue_name = pybit.get_client_queue(options.id)
-print "Connecting with... \nhost: " + options.host + "\nuser id: " + options.userid + "\npassword: "  + options.password + "\nvhost: " + options.vhost + "\ninsist: " + str(options.insist)
-conn = amqp.Connection(host=options.host, userid=options.userid, password=options.password, virtual_host=options.vhost, insist= options.insist)
-chan = conn.channel()
-
-print "Creating queue with name:" + queue_name
-chan.queue_declare(queue=queue_name, durable=True, exclusive=False, auto_delete=False)
-chan.queue_bind(queue=queue_name, exchange=pybit.exchange_name, routing_key=routing_key)
-
-print "Creating private command queue with name:" + client_queue_name
-chan.queue_declare(queue=client_queue_name, durable=False, exclusive=True, auto_delete=False)
-
+#register the single handler
 def signal_handler(signal, frame):
 	try:
 		print '\nClosing %s' % os.path.basename(__file__)
@@ -54,67 +36,61 @@ except Exception as e:
 	raise Exception('Error configuring signal handler: ' + str(e))
 
 
-def recv_callback(msg):
-	if options.ack is not None:
-		if options.ack:
-			chan.basic_ack(msg.delivery_tag)
-			print "Accepting BUILD REQUEST ( job id", unpickled_req.job.id, ",", unpickled_req.job.packageinstance.package.name, ",", unpickled_req.job.packageinstance.package.version, ",", unpickled_req.job.packageinstance.format.name, ",", unpickled_req.job.packageinstance.arch.name, ")"
-		else:
-			print "Rejecting message."
-			chan.basic_recover(True)
-			
-	else:
-		status = None
-		unpickled_req = jsonpickle.decode(msg.body)
-		while True:
-			user_input = raw_input('''Recived message:
-	[A]ccept
-	[R]eject
-	[B]uilding
-	[D]one
-	B[l]ock
-	[F]ail
-	''').lower()
-			if user_input == "a":
-				chan.basic_ack(msg.delivery_tag)
-				print "Blindly accepting message..."
-				msg = ClientMessage.done
-				break
-			elif user_input == "r":
-				chan.basic_recover(True)
-				print "Rejecting message."
-				break
-			elif user_input == "b":
-				chan.basic_ack(msg.delivery_tag)
-				status = ClientMessage.building
-				break
-			elif user_input == "d":
-				chan.basic_ack(msg.delivery_tag)
-				status = ClientMessage.done
-				break
-			elif user_input == "l":
-				chan.basic_ack(msg.delivery_tag)
-				status = ClientMessage.blocked
-				break
-			elif user_input == "f":
-				chan.basic_ack(msg.delivery_tag)
-				status = ClientMessage.failed
-				break
-			else:
-				print "Invalid selection."
-		if status is not None:
-			print "Marking JOB( id ", unpickled_req.job.id,  ") As ", status
-			payload = {'status' : status }
-			job_status_url = "http://%s/job/%s" % (unpickled_req.web_host, unpickled_req.job.id)
-			r = requests.put(job_status_url, payload)
+if __name__ == '__main__':
+	parser = OptionParser()
 	
-try:
-	chan.basic_consume(queue=queue_name, no_ack=False, callback=recv_callback, consumer_tag="build_callback")
-	while True:
-		chan.wait()
-	# drop registration
-	chan.basic_cancel("build_callback")
-	chan.close()
-	conn.close()
-except Exception as e:
-	raise e
+	parser.add_option("--arch", dest="arch", default="i386",
+		help="Architecture to use, defaults to i386", metavar= META + "ARCH")
+	parser.add_option("--distribution", dest="distribution", 
+		default="Debian", help="Distribution to use, defaults to Debian",
+		metavar= META +"DIST")
+	parser.add_option("--format", dest="format", default="deb",
+		help="Package type to use, defaults to deb", metavar= META +"FORMAT")
+	parser.add_option("--suite", dest="suite", default="development",
+		help="Suite to use, defaults to development", metavar= META +"SUITE")
+	parser.add_option("--host", dest="host", default="localhost",
+		help="vhost to connect to, defaults to localhost.", metavar=META + "HOST")
+	parser.add_option("--vhost", dest="vhost", default="/",
+		help="vhost to connect to, defaults to localhost.", metavar=META + "VHOST")
+	parser.add_option("--userid", dest="userid", default="guest",
+		help="user id to use for AMQP server, defaults to guest.", metavar=META + "USERID")
+	parser.add_option("--port", dest="port", default="5672",
+		help="port to use for AMQP server, defaults to 5672", metavar=META + "PORT")
+	parser.add_option("--password", dest="password", default="guest",
+		help="password to use for AMQP server, defaults to guest", metavar=META + "PASSWORD")
+	parser.add_option("--insist", dest="insist", default=False,
+		help="insist to use for AMQP server, defaults to 5672", metavar=META + "INSIST")
+	parser.add_option("--id", dest="id", default=1,
+		help="id to use for build-client control queue, defaults to 1 but is unique per amqp server.", metavar=META + "INSIST")
+	parser.add_option("--interactive", dest="interactive", default=True,
+		help="Run the basic client in interactive mode.", metavar=META + "INTERACTIVE")
+	
+	(options, args) = parser.parse_args()
+	build_client = PyBITClient(options.arch, options.distribution, 
+		options.format, options.suite, options.host, options.vhost,
+		options.userid, options.port, options.password, options.insist,
+		options.id, options.interactive)
+	def recv_callback(msg):
+		build_req = jsonpickle.decode(msg.body)
+		if not isinstance(build_req, BuildRequest) :
+			build_client.chan.basic_recover(True)
+			return
+		build_client.msg_handler(msg, build_req)
+		cmd_req = None
+		while (build_client.is_building()) :
+			time.sleep(1)
+			cmd_req = build_client.chan.basic_get(build_client.client_queue_name)
+			if (cmd_req is not None and isinstance(cmd_req, CommandRequest)):
+				build_client.control_handler(msg, cmd_req)
+
+
+	try:
+		build_client.chan.basic_consume(queue=build_client.queue_name, no_ack=False, callback=recv_callback, consumer_tag="build_callback")
+		while True:
+			build_client.chan.wait()
+		# drop registration
+		build_client.chan.basic_cancel("build_callback")
+		build_client.chan.close()
+		build_client.conn.close()
+	except Exception as e:
+		raise e

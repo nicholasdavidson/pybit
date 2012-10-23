@@ -22,15 +22,11 @@
 
 import os
 import pybitclient
-from buildclient import BuildClient
+from buildclient import PackageHandler, VersionControlHandler
 
 report_name = "controller"
 
-class SubversionClient(BuildClient):
-
-	workdir = ""
-	options = {}
-
+class SubversionClient(VersionControlHandler):
 	def fetch_source(self, pkg):
 		try:
 			if pkg.method_type != "svn":
@@ -69,13 +65,5 @@ class SubversionClient(BuildClient):
 				return
 			return
 
-	def __init__(self, chan):
-		BuildClient.__init__(self, chan)
-		try:
-			self.options =  pybitclient.get_settings(self)
-			if len(self.options) == 0 :
-				self.options["dry_run"] = True
-				self.options["buildroot"] = "/tmp/buildd"
-		except Exception as e:
-			raise Exception('Error constructing subversion build client: ' + str(e))
-			return
+	def __init__(self):
+		VersionControlHandler.__init__(self)
