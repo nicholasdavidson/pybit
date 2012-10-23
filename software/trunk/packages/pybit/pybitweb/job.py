@@ -59,13 +59,23 @@ def get_jobs_bystatus(status):
 @route('/job', method='PUT')
 def put_job():
 	try:
-		# Add a new job. TODO: TESTME
+		# Add a new job. TODO: Make this poke simons controller code with the correct values for uri, method, vcs_id, architecture_list
 		packageinstance_id = request.forms.get('packageinstance_id')
 		buildclient_id =  request.forms.get('buildclient_id')
 
 		if  packageinstance_id and buildclient_id:
+			# original
 			packageinstance = myDb.get_packageinstance_id(packageinstance_id)
+			package_version = packageinstance.package.version
+			package_name = packageinstance.package.name
 			buildclient = myDb.get_buildd_id(buildclient_id)
+
+			dist = packageinstance.distribution.name
+			suite = packageinstance.suite.name
+			format = packageinstance.format.name
+
+			print "TODO: call Controller.add(uri,method," , dist, ",vcs_id,architecture_list," + package_version + "," + package_name + "," + suite + "," + format
+
 			myDb.put_job(packageinstance,buildclient)
 		else:
 			response.status = "400 - Required fields missing."

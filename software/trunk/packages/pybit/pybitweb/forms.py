@@ -76,24 +76,24 @@ def package_instance_form():
 
 		markup = '''<form method="POST" action="/packageinstance">
 					<h4>Create a package instance</h4>
-					<label for="package_id">package_id</label>
+					<label for="package_id">Package: </label>
 					<select name="package_id">'''
 
 		for i in packages:
 			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + " " + str(i.version) + "</option>"
-		markup = markup + '''</select><br/><label for="arch_id">arch_id</label><select name="arch_id">'''
+		markup = markup + '''</select><br/><label for="arch_id">Architecture: </label><select name="arch_id">'''
 
 		for i in arches:
 			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + "</option>"
-		markup = markup + '''</select><br/><label for="suite_id">suite_id</label><select name="suite_id">'''
+		markup = markup + '''</select><br/><label for="suite_id">Suite: </label><select name="suite_id">'''
 
 		for i in suites:
 			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + "</option>"
-		markup = markup + '''</select><br/><label for="dist_id">dist_id</label><select name="dist_id">'''
+		markup = markup + '''</select><br/><label for="dist_id">Distribution: </label><select name="dist_id">'''
 
 		for i in dists:
 			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + "</option>"
-		markup = markup + '''</select><br/><label for="format_id">format_id</label><select name="format_id">'''
+		markup = markup + '''</select><br/><label for="format_id">Package Format: </label><select name="format_id">'''
 
 		for i in formats:
 			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + "</option>"
@@ -115,14 +115,14 @@ def job_form():
 
 		markup = '''<form method="POST" action="/job">
 					<h4>Submit a Job</h4>
-					<label for="packageinstance_id">packageinstance_id</label>
+					<label for="packageinstance_id">Package Instance ID: </label>
 					<select name="packageinstance_id">'''
 
 		for i in instances:
 			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.id) + "</option>"
 
 		markup = markup + '''</select><br/>
-					<label for="buildclient_id">buildclient_id</label>
+					<label for="buildclient_id">Build Client: </label>
 
 					<select name="buildclient_id">'''
 
