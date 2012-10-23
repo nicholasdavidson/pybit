@@ -25,7 +25,7 @@ def get_arch_id(id):
 		res = myDb.get_arch_id(id)
 
 		# check results returned
-		if len(res) > 0:
+		if res:
 			encoded = jsonpickle.encode(res)
 			response.content_type = "application/json"
 			return encoded
@@ -71,7 +71,7 @@ def get_suitearch_id(id):
 		res = myDb.get_suitearch_id(id)
 
 		# check results returned
-		if len(res) > 0:
+		if res:
 			encoded = jsonpickle.encode(res)
 			response.content_type = "application/json"
 			return encoded
@@ -118,7 +118,7 @@ def get_status_id(id):
 		res = myDb.get_status_id(id)
 
 		# check results returned
-		if len(res) > 0:
+		if res:
 			encoded = jsonpickle.encode(res)
 			response.content_type = "application/json"
 			return encoded
@@ -164,7 +164,7 @@ def get_dist_id(id):
 		res = myDb.get_dist_id(id)
 
 		# check results returned
-		if len(res) > 0:
+		if res:
 			encoded = jsonpickle.encode(res)
 			response.content_type = "application/json"
 			return encoded
@@ -210,7 +210,7 @@ def get_format_id(id):
 		res = myDb.get_format_id(id)
 
 		# check results returned
-		if len(res) > 0:
+		if res:
 			encoded = jsonpickle.encode(res)
 			response.content_type = "application/json"
 			return encoded
@@ -256,7 +256,7 @@ def get_suite_id(id):
 		res = myDb.get_suite_id(id)
 
 		# check results returned
-		if len(res) > 0:
+		if res:
 			encoded = jsonpickle.encode(res)
 			response.content_type = "application/json"
 			return encoded

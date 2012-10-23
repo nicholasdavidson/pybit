@@ -42,7 +42,7 @@ def get_buildd_id(id):
 		res = myDb.get_buildd_id(id)
 
 		# check results returned
-		if len(res) > 0:
+		if res:
 			encoded = jsonpickle.encode(res)
 			response.content_type = "application/json"
 			return encoded
@@ -83,7 +83,7 @@ def get_buildd_jobs(id):
 		res = myDb.get_buildd_jobs(id)
 
 		# check results returned
-		if len(res) > 0:
+		if res:
 			encoded =  jsonpickle.encode(res)
 			response.content_type = "application/json"
 			return encoded

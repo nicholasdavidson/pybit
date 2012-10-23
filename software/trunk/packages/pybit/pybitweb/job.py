@@ -79,7 +79,7 @@ def get_jobid(jobid):
 		res = myDb.get_job(jobid)
 
 		# check results returned
-		if len(res) > 0:
+		if res:
 			encoded = jsonpickle.encode(res)
 			response.content_type = "application/json"
 			return encoded

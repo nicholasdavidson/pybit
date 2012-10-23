@@ -27,7 +27,7 @@ def get_packageinstance_id(id):
 		res = myDb.get_packageinstance_id(id)
 
 		# check results returned
-		if len(res) > 0:
+		if res:
 			encoded = jsonpickle.encode(res)
 			response.content_type = "application/json"
 			return encoded

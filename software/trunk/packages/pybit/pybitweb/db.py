@@ -79,7 +79,7 @@ class db(object):
 			return arch(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving arch with id:' + id + str(e))
+			raise Exception('Error retrieving arch with id:' + str(id) + str(e))
 			return None
 
 	def get_arch_byname(self,name):
@@ -133,7 +133,7 @@ class db(object):
 			return suitearch(res[0]['id'],res[0]['suite_id'],res[0]['arch_id'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving suite arch with id:' + id + str(e))
+			raise Exception('Error retrieving suite arch with id:' + str(id) + str(e))
 			return None
 
 	def put_suitearch(self,suite_id,arch_id):
@@ -172,7 +172,7 @@ class db(object):
 			return dist(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving dist with id:' + id + str(e))
+			raise Exception('Error retrieving dist with id:' + str(id) + str(e))
 			return None
 
 	def get_dist_byname(self,name):
@@ -226,7 +226,7 @@ class db(object):
 			return format(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving format with id:' + id + str(e))
+			raise Exception('Error retrieving format with id:' + str(id) + str(e))
 			return None
 
 	def get_format_byname(self,name):
@@ -278,7 +278,7 @@ class db(object):
 			return status(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving status with id:' + id + str(e))
+			raise Exception('Error retrieving status with id:' + str(id) + str(e))
 			return None
 
 	def put_status(self,name):
@@ -317,7 +317,7 @@ class db(object):
 			return suite(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving suite with id:' + id + str(e))
+			raise Exception('Error retrieving suite with id:' + str(id) + str(e))
 			return None
 
 	def get_suite_byname(self,name):
@@ -373,7 +373,7 @@ class db(object):
 			return buildd(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving buildd with id:' + id + str(e))
+			raise Exception('Error retrieving buildd with id:' + str(id) + str(e))
 			return None
 
 	def put_buildclient(self,name):
@@ -400,19 +400,24 @@ class db(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting buildd with id:' + id + str(e))
+			raise Exception('Error deleting buildd with id:' + str(id) + str(e))
 			return None
 
 	def get_buildd_jobs(self,id):
 		try:
-			self.cur.execute("SELECT job.id,buildclients.id FROM buildclients,job WHERE buildclients.id=%s AND buildclients.id = job.buildclient_id  ORDER BY job.id",(id,))
+			self.cur.execute("SELECT job.id AS job_id,packageinstance_id,buildclients.id AS buildclients_id FROM buildclients,job WHERE buildclients.id=%s AND buildclients.id = job.buildclient_id  ORDER BY job.id",(id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return res
+			jobs = []
+			for i in res:
+				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
+				jobs.append(jobs.append(job(i['job_id'],packageinstance,id)))
+
+			return jobs
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving jobs on buildd with id:' + id + str(e))
+			raise Exception('Error retrieving jobs on buildd with id:' + str(id) + str(e))
 			return None
 
 	#<<<<<<<< Job related database functions >>>>>>>>
@@ -429,7 +434,7 @@ class db(object):
 			return job(res[0]['id'],packageinstance,buildclient)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving job with id:' + id + str(e))
+			raise Exception('Error retrieving job with id:' + str(id) + str(e))
 			return None
 
 	def get_jobs(self):
@@ -487,7 +492,7 @@ class db(object):
 			return jobstatus
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving job status with:' + id + str(e))
+			raise Exception('Error retrieving job status with:' + str(id) + str(e))
 			return None
 	def put_job_status(self, jobid, status):
 		try:
@@ -509,7 +514,7 @@ class db(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting job with:' + id + str(e))
+			raise Exception('Error deleting job with:' + str(id) + str(e))
 			return None
 
 	def put_job(self,packageinstance,buildclient):
@@ -551,7 +556,7 @@ class db(object):
 			return package(res[0]['id'],res[0]['version'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving package with id:' + id + str(e))
+			raise Exception('Error retrieving package with id:' + str(id) + str(e))
 			return None
 
 	def get_package_byvalues(self,name,version):
@@ -593,7 +598,7 @@ class db(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting package with:' + id + str(e))
+			raise Exception('Error deleting package with:' + str(id) + str(e))
 			return None
 
 	#<<<<<<<<< Packageinstance related Queries >>>>>>>
@@ -642,7 +647,7 @@ class db(object):
 			return packageinstance(res[0]['id'],package,arch,suite,dist,format,res[0]['master'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving package instance with:' + id + str(e))
+			raise Exception('Error retrieving package instance with:' + str(id) + str(e))
 			return None
 
 	def put_packageinstance(self,package,arch,suite,dist,format,master):
@@ -670,7 +675,7 @@ class db(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting package instance with:' + id + str(e))
+			raise Exception('Error deleting package instance with:' + str(id) + str(e))
 			return None
 
 	# <<<<< TODO: This is a work in progress!!! >>>>>
