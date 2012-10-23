@@ -2,10 +2,10 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-from db import db
+from db import Database
 import job
 
-myDb = db()
+myDb = Database()
 
 @route('/job', method='GET')
 def get_jobs():
