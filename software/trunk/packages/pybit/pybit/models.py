@@ -5,7 +5,7 @@
 import jsonpickle
 
 # new
-class model(object):
+class Model(object):
 	def toJson(self):
 		try:
 			return jsonpickle.encode(self)
@@ -28,51 +28,50 @@ class ClientMessage:
 	blocked = "Blocked"
 
 
-class arch(model):
+class Arch(Model):
 
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
-class dist(model):
+class Dist(Model):
 
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
-class format(model):
+class Format(Model):
 
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
-class status(model):
+class Status(Model):
 
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
-class suite(model):
+class Suite(Model):
 
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
-class buildd(model):
+class BuildD(Model):
 
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
-class package(model):
+class Package(Model):
 
 	def __init__(self,id,version,name):
 		self.id = id
 		self.version = version
 		self.name = name
 
-
-class transport(model) :
+class Transport(Model) :
 
 	def __init__(self,id,method,uri,vcs_id):
 		self.id = id
@@ -80,7 +79,7 @@ class transport(model) :
 		self.uri = uri
 		self.vcs_id = vcs_id
 
-class packageinstance(model):
+class PackageInstance(Model):
 
 	def __init__(self, id, package, arch, suite, distribution, format, master) :
 		self.id = id
@@ -91,7 +90,7 @@ class packageinstance(model):
 		self.format = format
 		self.master = master
 
-class job(model):
+class Job(Model):
 
 	def __init__(self,id,packageinstance,buildclient):
 		self.id = id
@@ -99,16 +98,22 @@ class job(model):
 		self.buildclient = buildclient
 
 
-class suitearch(model):
+class SuiteArch(Model):
 
 	def __init__(self,id,suite_id,arch_id):
 		self.id = id
 		self.suite_id = suite_id
 		self.arch_id = arch_id
 
-class buildRequest(model):
+class BuildRequest(Model):
 
 	def __init__(self,job,transport,web_host):
 		self.job = job
 		self.transport = transport
+		self.web_host = web_host
+
+class CancelRequest(Model):
+
+	def __init__(self,job,web_host):
+		self.job = job
 		self.web_host = web_host

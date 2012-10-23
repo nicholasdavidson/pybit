@@ -2,10 +2,10 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect
 
-from db import db
+from db import Database
 #TODO: Package instances
 
-myDb = db()
+buid_db = Database()
 
 @route('/forms', method='GET')
 def index():
@@ -51,11 +51,11 @@ def buildd_form():
 def package_instance_form():
 	try:
 
-		packages = myDb.get_packages()
-		arches = myDb.get_arches()
-		suites = myDb.get_suites()
-		dists = myDb.get_dists()
-		formats = myDb.get_formats()
+		packages = build_db.get_packages()
+		arches = build_db.get_arches()
+		suites = build_db.get_suites()
+		dists = build_db.get_dists()
+		formats = build_db.get_formats()
 
 		# TODO: NEW. master???
 
@@ -95,8 +95,8 @@ def package_instance_form():
 def job_form():
 	try:
 
-		instances = myDb.get_packageinstances()
-		clients = myDb.get_buildclients()
+		instances = build_db.get_packageinstances()
+		clients = build_db.get_buildclients()
 
 		markup = '''<form method="POST" action="/job">
 					<h4>Submit a Job</h4>

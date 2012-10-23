@@ -3,11 +3,11 @@
 import psycopg2
 import psycopg2.extras
 import jsonpickle
-from pybit.models import arch,dist,format,status,suite,buildd,job,package,packageinstance,suitearch
+from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch
 
 #TODO: make more robust, more DELETEs?
 
-class db(object):
+class Database(object):
 
 	conn = None
 	cur = None
@@ -63,7 +63,7 @@ class db(object):
 
 			arches = []
 			for i in res:
-				arches.append(arch(i['id'],i['name']))
+				arches.append(Arch(i['id'],i['name']))
 			return arches
 		except Exception as e:
 			self.conn.rollback()
@@ -76,7 +76,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return arch(res[0]['id'],res[0]['name'])
+			return Arch(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving arch with id:' + str(id) + str(e))
@@ -90,7 +90,7 @@ class db(object):
 
 			arches = []
 			for i in res:
-				arches.append(arch(i['id'],i['name']))
+				arches.append(Arch(i['id'],i['name']))
 			return arches
 		except Exception as e:
 			self.conn.rollback()
@@ -103,7 +103,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return arch(res[0]['id'],name)
+			return Arch(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error adding arch:' + name + str(e))
@@ -115,10 +115,10 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			suitearches = []
+			suite_arches = []
 			for i in res:
-				suitearches.append(suitearch(i['id'],i['suite_id'],i['arch_id']))
-			return suitearches
+				suite_arches.append(SuiteArch(i['id'],i['suite_id'],i['arch_id']))
+			return suite_arches
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving suite arches list:' + str(e))
@@ -130,7 +130,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return suitearch(res[0]['id'],res[0]['suite_id'],res[0]['arch_id'])
+			return SuiteArch(res[0]['id'],res[0]['suite_id'],res[0]['arch_id'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving suite arch with id:' + str(id) + str(e))
@@ -142,7 +142,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return suitearch(res[0]['id'],suite_id,arch_id)
+			return SuiteArch(res[0]['id'],suite_id,arch_id)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error adding suite arch:' + suite_id + arch_id + str(e))
@@ -156,7 +156,7 @@ class db(object):
 
 			dists = []
 			for i in res:
-				dists.append(dist(i['id'],i['name']))
+				dists.append(Dist(i['id'],i['name']))
 			return dists
 		except Exception as e:
 			self.conn.rollback()
@@ -169,7 +169,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return dist(res[0]['id'],res[0]['name'])
+			return Dist(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving dist with id:' + str(id) + str(e))
@@ -183,7 +183,7 @@ class db(object):
 
 			dists = []
 			for i in res:
-				dists.append(dist(i['id'],i['name']))
+				dists.append(Dist(i['id'],i['name']))
 			return dists
 		except Exception as e:
 			self.conn.rollback()
@@ -196,7 +196,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return dist(res[0]['id'],name)
+			return Dist(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error adding dist:' + name + str(e))
@@ -210,7 +210,7 @@ class db(object):
 
 			formats = []
 			for i in res:
-				formats.append(format(i['id'],i['name']))
+				formats.append(Format(i['id'],i['name']))
 			return formats
 		except Exception as e:
 			self.conn.rollback()
@@ -223,7 +223,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return format(res[0]['id'],res[0]['name'])
+			return Format(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving format with id:' + str(id) + str(e))
@@ -236,7 +236,7 @@ class db(object):
 
 			formats = []
 			for i in res:
-				formats.append(format(i['id'],i['name']))
+				formats.append(Format(i['id'],i['name']))
 			return formats
 		except Exception as e:
 			raise Exception('Error retrieving format by name:' + name + str(e))
@@ -248,7 +248,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return format(res[0]['id'],name)
+			return Format(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error adding format:' + name + str(e))
@@ -262,7 +262,7 @@ class db(object):
 
 			statuses = []
 			for i in res:
-				statuses.append(status(i['id'],i['name']))
+				statuses.append(Status(i['id'],i['name']))
 			return statuses
 		except Exception as e:
 			self.conn.rollback()
@@ -275,7 +275,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return status(res[0]['id'],res[0]['name'])
+			return Status(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving status with id:' + str(id) + str(e))
@@ -287,7 +287,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return status(res[0]['id'],name)
+			return Status(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error add status:' + name + str(e))
@@ -301,7 +301,7 @@ class db(object):
 
 			suites = []
 			for i in res:
-				suites.append(suite(i['id'],i['name']))
+				suites.append(Suite(i['id'],i['name']))
 			return suites
 		except Exception as e:
 			self.conn.rollback()
@@ -314,7 +314,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return suite(res[0]['id'],res[0]['name'])
+			return Suite(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving suite with id:' + str(id) + str(e))
@@ -328,7 +328,7 @@ class db(object):
 
 			suites = []
 			for i in res:
-				suites.append(suite(i['id'],i['name']))
+				suites.append(Suite(i['id'],i['name']))
 			return suites
 		except Exception as e:
 			self.conn.rollback()
@@ -341,7 +341,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return suite(res[0]['id'],name)
+			return Suite(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error adding suite:' + name + str(e))
@@ -355,10 +355,10 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			buildds = []
+			build_clients = []
 			for i in res:
-				buildds.append(buildd(i['id'],i['name']))
-			return buildds
+				build_clients.append(BuildD(i['id'],i['name']))
+			return build_clients
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving buildd list:' + str(e))
@@ -370,7 +370,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return buildd(res[0]['id'],res[0]['name'])
+			return BuildD(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving buildd with id:' + str(id) + str(e))
@@ -382,7 +382,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return buildd(res[0]['id'],name)
+			return BuildD(res[0]['id'],name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error adding buildd:' + name + str(e))
@@ -431,7 +431,7 @@ class db(object):
 
 			packageinstance = self.get_packageinstance_id(res[0]['packageinstance_id'])
 			buildclient = self.get_buildd_id(res[0]['buildclient_id']) if res[0]['buildclient_id'] else None
-			return job(res[0]['id'],packageinstance,buildclient)
+			return Job(res[0]['id'],packageinstance,buildclient)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving job with id:' + str(id) + str(e))
@@ -447,7 +447,7 @@ class db(object):
 			for i in res:
 				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
 				buildclient = self.get_buildd_id(i['buildclient_id']) if i['buildclient_id'] else None 
-				jobs.append(job(i['id'],packageinstance,buildclient))
+				jobs.append(Job(i['id'],packageinstance,buildclient))
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
@@ -494,6 +494,7 @@ class db(object):
 			self.conn.rollback()
 			raise Exception('Error retrieving job status with:' + str(id) + str(e))
 			return None
+
 	def put_job_status(self, jobid, status):
 		try:
 			self.cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s)) ",(jobid,status,))
@@ -524,7 +525,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return job(res[0]['id'],packageinstance,buildclient)
+			return Job(res[0]['id'],packageinstance,buildclient)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error adding job:' + str(e))
@@ -540,7 +541,7 @@ class db(object):
 
 			packages = []
 			for i in res:
-				packages.append(package(i['id'],i['version'],i['name']))
+				packages.append(Package(i['id'],i['version'],i['name']))
 			return packages
 		except Exception as e:
 			self.conn.rollback()
@@ -553,7 +554,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return package(res[0]['id'],res[0]['version'],res[0]['name'])
+			return Package(res[0]['id'],res[0]['version'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving package with id:' + str(id) + str(e))
@@ -567,7 +568,7 @@ class db(object):
 
 			packages = []
 			for i in res:
-				packages.append(package(i['id'],i['version'],i['name']))
+				packages.append(Package(i['id'],i['version'],i['name']))
 			return packages
 		except Exception as e:
 			self.conn.rollback()
@@ -580,7 +581,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return package(res[0]['id'],version,name)
+			return Package(res[0]['id'],version,name)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error adding package:' + name + version + str(e))
@@ -611,7 +612,7 @@ class db(object):
 
 			packageinstances = []
 			for i in res:
-				packageinstances.append(packageinstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
+				packageinstances.append(PackageInstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
 			return packageinstances
 		except Exception as e:
 			self.conn.rollback()
@@ -626,7 +627,7 @@ class db(object):
 
 			packageinstances = []
 			for i in res:
-				packageinstances.append(packageinstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
+				packageinstances.append(PackageInstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
 			return packageinstances
 		except Exception as e:
 			self.conn.rollback()
@@ -644,7 +645,7 @@ class db(object):
 			suite = self.get_suite_id(res[0]['suite_id'])
 			dist = self.get_dist_id(res[0]['dist_id'])
 			format = self.get_format_id(res[0]['format_id'])
-			return packageinstance(res[0]['id'],package,arch,suite,dist,format,res[0]['master'])
+			return PackageInstance(res[0]['id'],package,arch,suite,dist,format,res[0]['master'])
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving package instance with:' + str(id) + str(e))
@@ -657,7 +658,7 @@ class db(object):
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return packageinstance(res[0]['id'],package,arch,suite,dist,format,master)
+			return PackageInstance(res[0]['id'],package,arch,suite,dist,format,master)
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error adding package instance:' + package + arch + suite + dist + format + master + str(e))
@@ -710,14 +711,14 @@ class db(object):
 
 			package_instances = []
 			for i in res :
-				package_instances.append(packageinstance(i['id'], i['package'], i['arch'], i['suite'], i['dist'], i['format'], i['master']))
+				package_instances.append(PackageInstance(i['id'], i['package'], i['arch'], i['suite'], i['dist'], i['format'], i['master']))
 			return package_instances
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving package instance list:' + str(e))
 			return None
 
-	def supportedArchitectures(self,suite) :
+	def get_supported_architectures(self,suite) :
 		try:
 			if suite :
 				self.cur.execute("SELECT arch.id, arch.name FROM suite LEFT JOIN suitearches ON suite.id=suite_id LEFT JOIN arch ON arch_id = arch.id WHERE suite.name=%s",[suite])

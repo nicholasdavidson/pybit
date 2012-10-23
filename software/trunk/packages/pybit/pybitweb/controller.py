@@ -5,14 +5,14 @@ from amqplib import client_0_8 as amqp
 import jsonpickle
 import os.path
 import pybit
-import db
-from pybit.models import transport, packageinstance, job, buildRequest
+from db import Database
+from pybit.models import Transport, BuildRequest
 
-class controller:
+class Controller:
 
-	def __init__(self, jobDb):
+	def __init__(self, db):
 		try:
-			self.job_db = jobDb
+			self.build_db = db
 			self.conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
 			self.chan = self.conn.channel()
 			#declare exchange.
@@ -38,7 +38,7 @@ class controller:
 			suite = request.forms.get('suite')
 			format = request.forms.get('format')
 
-			trans = transport(None, method, uri, vcs_id)
+			trans = Transport(None, method, uri, vcs_id)
 
 			if not uri and not method and not dist and not vcs_id and not architectures and not version and not package_name and not suite and not format :
 				response.status = "400 - Required fields missing."
@@ -51,7 +51,7 @@ class controller:
 			return
 
 		try:
-			supported_arches = self.job_db.supportedArchitectures(suite)
+			supported_arches = self.build_db.get_supported_architectures(suite)
 			print "SUPPORTED ARCHITECTURES:", supported_arches
 
 			if (len(supported_arches) == 0):
@@ -68,14 +68,14 @@ class controller:
 				new_packageinstance = packageinstance(suite, package_name, version, supported_arches[0], format, dist, trans)
 			else :
 				current_package = None
-				matching_package_versions = self.job_db.get_package_byvalues(package_name,version)
+				matching_package_versions = self.build_db.get_package_byvalues(package_name,version)
 				if len(matching_package_versions) > 0 :
 					current_package = matching_package_versions[0]
 					print "MATCHING PACKAGE FOUND (", current_package.id, current_package.name, current_package.version, ")"
 				else :
 					print "NO MATCHING PACKAGE FOUND"
 					# add new package to db
-					current_package = self.job_db.put_package(version,package_name)
+					current_package = self.build_db.put_package(version,package_name)
 					if not current_package.id :
 						print "FAILED TO ADD PACKAGE:", package_name
 						response.status = "404 - failed to add package."
@@ -83,22 +83,22 @@ class controller:
 					else :
 						print "ADDED NEW PACKAGE (", current_package.id, current_package.name, current_package.version, ")"
 				
-				current_suite = self.job_db.get_suite_byname(suite)[0]
-				current_dist = self.job_db.get_dist_byname(dist)[0]
-				current_format = self.job_db.get_format_byname(format)[0]
+				current_suite = self.build_db.get_suite_byname(suite)[0]
+				current_dist = self.build_db.get_dist_byname(dist)[0]
+				current_format = self.build_db.get_format_byname(format)[0]
 				
 				for arch in supported_arches:
-					current_arch = self.job_db.get_arch_byname(arch)[0]
-					if not self.job_db.check_specific_packageinstance_exists(current_arch, current_package, current_dist, current_format, current_suite) :
+					current_arch = self.build_db.get_arch_byname(arch)[0]
+					if not self.build_db.check_specific_packageinstance_exists(current_arch, current_package, current_dist, current_format, current_suite) :
 						# add package instance to db
-						new_packageinstance = self.job_db.put_packageinstance(current_package, current_arch, current_suite, current_dist, current_format, False)
+						new_packageinstance = self.build_db.put_packageinstance(current_package, current_arch, current_suite, current_dist, current_format, False)
 						if new_packageinstance.id :
 							#print "CREATED NEW PACKAGE INSTANCE ID", new_packageinstance.id
-							new_job = self.job_db.put_job(new_packageinstance,None)
+							new_job = self.build_db.put_job(new_packageinstance,None)
 							#print "CREATED NEW JOB ID", new_job.id
 							if new_job.id :
 								# check for unfinished jobs that might be cancellable
-								unfinished_jobs_list = self.job_db.get_unfinished_jobs()
+								unfinished_jobs_list = self.build_db.get_unfinished_jobs()
 								#print "UNFINISHED JOB LIST", unfinished_jobs_list
 								for unfinished_job in unfinished_jobs_list: 
 									unfinished_job_package_name = unfinished_job.packageinstance.package.name
@@ -119,7 +119,7 @@ class controller:
 											print "IGNORING UNFINISHED JOB", unfinished_job_package_name, unfinished_job_package_version
 									else :
 										print "IGNORING UNFINISHED JOB", unfinished_job_package_name
-								build_req = jsonpickle.encode(buildRequest(new_job,trans,"localhost:8080"))
+								build_req = jsonpickle.encode(BuildRequest(new_job,trans,"localhost:8080"))
 								msg = amqp.Message(build_req)
 								msg.properties["delivery_mode"] = 2
 								routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name)
@@ -140,17 +140,17 @@ class controller:
 			return
 		return
 
-	def cancelAllBuilds(self):
-		unfinished_jobs_list = self.job_db.get_unfinished_jobs()
+	def cancel_all_builds(self):
+		unfinished_jobs_list = self.build_db.get_unfinished_jobs()
 		for unfinished_job in unfinished_jobs_list: 
 			print "RECEIVED CANCEL REQUEST FOR", unfinished_job.id
 			#TODO: send cancel message
 		return
 
-	def cancelPackage(self):
+	def cancel_package(self):
 		version = request.forms.get('package_version')
 		package_name = request.forms.get('package')
-		unfinished_jobs_list = self.job_db.get_unfinished_jobs()
+		unfinished_jobs_list = self.build_db.get_unfinished_jobs()
 		for unfinished_job in unfinished_jobs_list: 
 			if unfinished_job.packageinstance.package.name == package_name :
 				unfinished_job_package_version = unfinished_job.packageinstance.package.version
@@ -160,7 +160,7 @@ class controller:
 					print "SENDING CANCEL REQUEST FOR", unfinished_job.id, package_name
 		return
 
-	def cancelPackageInstance(self):
+	def cancel_package_instance(self):
 		try:
 			job_id = request.forms.get('job_id')
 			if not job_id :

@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect
-from db import db
+from db import Database
 import jsonpickle
 
-myDb = db()
+build_db = Database()
 
 @route('/report', method='GET')
 def index():
@@ -29,7 +29,7 @@ def index():
 def report_package() :
 	try:
 		response.content_type = "application/json"
-		return jsonpickle.encode(myDb.get_report_package_instance())
+		return jsonpickle.encode(build_db.get_report_package_instance())
 	except Exception as e:
 		raise e
 		return None
@@ -38,7 +38,7 @@ def report_package() :
 def report_suitearches(suite) :
 	try:
 		response.content_type = "application/json"
-		return jsonpickle.encode(myDb.supportedArchitectures(suite))
+		return jsonpickle.encode(build_db.get_supported_architectures(suite))
 	except Exception as e:
 		response.content_type = "text/html"
 		raise e
