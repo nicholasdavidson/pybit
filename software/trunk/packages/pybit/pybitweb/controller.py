@@ -150,11 +150,8 @@ class Controller:
 		package_name = request.forms.get('package')
 		unfinished_jobs_list = self.build_db.get_unfinished_jobs()
 		for unfinished_job in unfinished_jobs_list: 
-			if unfinished_job.packageinstance.package.name == package_name :
-				unfinished_job_package_version = unfinished_job.packageinstance.package.version
-				command = "dpkg --compare-versions %s '<<' %s" % (unfinished_job_package_version, version)
-				if os.system (command) :
-					self.send_cancel_request(unfinished_job)
+			if (unfinished_job.packageinstance.package.name == package_name) and (unfinished_job.packageinstance.package.version == version):
+				self.send_cancel_request(unfinished_job)
 		return
 
 	def cancel_package_instance(self):
