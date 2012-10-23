@@ -62,19 +62,22 @@ def put_job():
 		# Add a new job. TODO: Make this poke simons controller code with the correct values for uri, method, vcs_id, architecture_list
 		packageinstance_id = request.forms.get('packageinstance_id')
 		buildclient_id =  request.forms.get('buildclient_id')
+		method = request.forms.get('method')
+		vcs_id = request.forms.get('vcs_id')
+		uri = request.forms.get('uri')
+		architecture_list = request.forms.get('architecture_list')
 
-		if  packageinstance_id and buildclient_id:
-			# original
+		if  packageinstance_id and buildclient_id and method and vcs_id and uri and architecture_list:
 			packageinstance = myDb.get_packageinstance_id(packageinstance_id)
 			package_version = packageinstance.package.version
 			package_name = packageinstance.package.name
 			buildclient = myDb.get_buildd_id(buildclient_id)
-
+			arch =  myDb.get_arch_id(architecture_list).name # TODO: parse list
 			dist = packageinstance.distribution.name
 			suite = packageinstance.suite.name
 			format = packageinstance.format.name
-
-			print "TODO: call Controller.add(uri,method," , dist, ",vcs_id,architecture_list," + package_version + "," + package_name + "," + suite + "," + format
+			
+			print "TODO: call Controller.add(" , uri,method,dist,vcs_id,arch,package_version,package_name,suite,format
 
 			myDb.put_job(packageinstance,buildclient)
 		else:

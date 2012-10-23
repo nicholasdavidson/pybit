@@ -112,6 +112,7 @@ def job_form():
 
 		instances = db.get_packageinstances()
 		clients = db.get_buildclients()
+		arches = db.get_arches()
 
 		markup = '''<form method="POST" action="/job">
 					<h4>Submit a Job</h4>
@@ -129,10 +130,22 @@ def job_form():
 		for i in clients:
 			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + "</option>"
 
-		markup = markup + '''</select><br/>
+		markup = markup + '''
+		</select><br/>
+		URI: <input type="text" name="uri"><br>
+		Method: <input type="text" name="method"><br>
+		Revision: <input type="text" name="vcs_id"><br>
+		<label for='architecture_list'>Architecture: </label><select name='architecture_list'>
+		'''
 
-					<input type="submit" />
-					</form>'''
+		for i in arches:
+
+			markup = markup + "<option value='" + str(i.id) + "'>" +  str(i.name) + "</option>"
+
+		markup = markup + '''
+		</select><br>
+		<input type="submit" />
+		</form>'''
 
 		return markup
 	except Exception as e:
