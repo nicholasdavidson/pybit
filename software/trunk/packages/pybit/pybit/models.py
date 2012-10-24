@@ -29,50 +29,42 @@ class ClientMessage:
 
 
 class Arch(Model):
-
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
 class Dist(Model):
-
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
 class Format(Model):
-
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
 class Status(Model):
-
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
 class Suite(Model):
-
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
 class BuildD(Model):
-
 	def __init__(self,id,name):
 		self.id = id
 		self.name = name
 
 class Package(Model):
-
 	def __init__(self,id,version,name):
 		self.id = id
 		self.version = version
 		self.name = name
 
 class Transport(Model) :
-
 	def __init__(self,id,method,uri,vcs_id):
 		self.id = id
 		self.method = method
@@ -80,7 +72,6 @@ class Transport(Model) :
 		self.vcs_id = vcs_id
 
 class PackageInstance(Model):
-
 	def __init__(self, id, package, arch, suite, distribution, format, master) :
 		self.id = id
 		self.package = package
@@ -91,22 +82,18 @@ class PackageInstance(Model):
 		self.master = master
 
 class Job(Model):
-
 	def __init__(self,id,packageinstance,buildclient):
 		self.id = id
 		self.packageinstance = packageinstance
 		self.buildclient = buildclient
 
-
 class SuiteArch(Model):
-
 	def __init__(self,id,suite_id,arch_id):
 		self.id = id
 		self.suite_id = suite_id
 		self.arch_id = arch_id
 
 class BuildRequest(Model):
-
 	def __init__(self,job,transport,web_host):
 		self.job = job
 		self.transport = transport
@@ -119,8 +106,8 @@ class CommandRequest(Model):
 
 class CancelRequest(CommandRequest):
 	def  __init__(self,job,web_host):
-		CommandRequest.__init__(job, web_host)
+		CommandRequest.__init__(self, job, web_host)
 
 class StatusRequest(CommandRequest):
 	def  __init__(self,job,web_host):
-		CommandRequest.__init__(job, web_host)
+		CommandRequest.__init__(self, job, web_host)
