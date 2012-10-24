@@ -140,29 +140,6 @@ class Controller:
 				print "IGNORING UNFINISHED JOB", unfinished_job_package_name
 		return
 
-	def add(self):
-		try:
-			uri = request.forms.get('uri')
-			method = request.forms.get('method')
-			dist = request.forms.get('distribution')
-			vcs_id = request.forms.get('vcs_id')
-			architectures = request.forms.get('architecture_list')
-			version = request.forms.get('package_version')
-			package_name = request.forms.get('package')
-			suite = request.forms.get('suite')
-			format = request.forms.get('format')
-
-			if not uri and not method and not dist and not vcs_id and not architectures and not version and not package_name and not suite and not format :
-				response.status = "400 - Required fields missing."
-				return
-			else :
-				print "RECEIVED BUILD REQUEST FOR", package_name, version, suite, architectures
-				self.process_job(uri, method, dist, vcs_id, architectures, version, package_name, suite, format, Transport(None, method, uri, vcs_id))
-		except Exception as e:
-			raise Exception('Error parsing job information: ' + str(e))
-			response.status = "500 - Error parsing job information"
-			return
-
 	def cancel_all_builds(self):
 		# cancels all packages/jobs
 		unfinished_jobs_list = self.build_db.get_unfinished_jobs()
@@ -180,10 +157,9 @@ class Controller:
 				self.send_cancel_request(unfinished_job)
 		return
 
-	def cancel_package_instance(self):
+	def cancel_package_instance(self,job_id):
 		# cancels a specific job/package instance
 		try:
-			job_id = request.forms.get('job_id')
 			if not job_id :
 				response.status = "400 - Required fields missing."
 				return

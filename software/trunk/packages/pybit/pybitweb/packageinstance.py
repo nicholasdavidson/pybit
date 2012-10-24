@@ -68,7 +68,7 @@ def put_packageinstance():
 @route('/packageinstance/<id:int>', method='DELETE')
 def delete_packageinstance(id):
 	try:
-		# Deletes a specific buildd
+		# Deletes a specific package instance
 		# TODO: validation,security
 		response.status = "202 - DELETE request recieved"
 		res = myDb.delete_packageinstance(id)

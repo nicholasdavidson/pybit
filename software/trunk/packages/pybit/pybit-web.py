@@ -31,17 +31,17 @@ def index():
 	#main index page for the whole API, composed of forms and reports pages
 	return '''<h1>PyBit - python Buildd Integration Toolkit.</h1>''', forms.index()
 
-route('/add', method='POST') (build_controller.add)
+##route('/add', method='POST') (build_controller.add) # job.vcs_hook now handles the input, and passes off to myController.process_job
 # example CURL command....
 # /usr/bin/curl -X POST http://localhost:8080/add --data "uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpea&format=deb"
 
-route('/cancel_all', method='POST') (build_controller.cancel_all_builds)
+##route('/cancel_all', method='POST') (build_controller.cancel_all_builds) # moved to job.cancel_jobs
 #/usr/bin/curl -X POST http://localhost:8080/cancel_all"
 
 route('/cancel_package', method='POST') (build_controller.cancel_package)
 #/usr/bin/curl -X POST http://localhost:8080/cancel_package --data "package_version=0.6.33chickpea47&package=appbarwidget"
 
-route('/cancel_package_instance', method='POST') (build_controller.cancel_package_instance)
+##route('/cancel_package_instance', method='POST') (build_controller.cancel_package_instance)  # moved to job.cancel_job
 #/usr/bin/curl -X POST http://localhost:8080/cancel_package_instance --data "job_id=54"
 
 try:

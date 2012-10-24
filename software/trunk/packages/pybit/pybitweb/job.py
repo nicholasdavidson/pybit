@@ -8,13 +8,64 @@ from controller import Controller
 from pybit.models import Transport
 
 myDb = Database()
+myController = Controller(myDb)
+
+#NEW: proxy to class method controller.add
+@route('/job/vcshook', method='POST')
+@route('/job/vcshook', method='PUT')
+def vcs_hook():
+	try:
+			response.status = "200 - Version control poke recieved"
+			uri = request.forms.get('uri')
+			method = request.forms.get('method')
+			dist = request.forms.get('distribution')
+			vcs_id = request.forms.get('vcs_id')
+			architectures = request.forms.get('architecture_list')
+			version = request.forms.get('package_version')
+			package_name = request.forms.get('package')
+			suite = request.forms.get('suite')
+			format = request.forms.get('format')
+
+			if not uri and not method and not dist and not vcs_id and not architectures and not version and not package_name and not suite and not format :
+				response.status = "400 - Required fields missing."
+				return None
+			else :
+				print "RECEIVED BUILD REQUEST FOR", package_name, version, suite, architectures
+				myController.process_job(uri, method, dist, vcs_id, architectures, version, package_name, suite, format, Transport(None, method, uri, vcs_id))
+				return
+	except Exception as e:
+		raise Exception('Exception encountered in vcs_hook: ' + str(e))
+		response.status = "500 - Exception encountered in vcs_hook"
+		return None
 
 @route('/job', method='GET')
 def get_jobs():
 	try:
 		response.content_type = "application/json"
-		#return list of ALL jobs"
-		return jsonpickle.encode(myDb.get_jobs());
+		#return list of ALL jobs
+		return jsonpickle.encode(myDb.get_jobs())
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
+#NEW: Have controller cancel all jobs.
+@route('/job', method='DELETE')
+def cancel_jobs():
+	try:
+		response.status = "202 - CANCEL ALL request recieved"
+		myController.cancel_all_builds()
+		return
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
+#NEW: Have controller cancel a specific job.
+@route('/job/<jobid:int>/cancel', method='GET')
+def cancel_job(jobid):
+	try:
+		response.status = "202 - CANCEL JOB request recieved"
+		myController.cancel_package_instance(jobid)
+		return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
 		return None
@@ -82,10 +133,9 @@ def put_job():
 			print ("Calling Controller.process_job(" + uri + "," + method + "," + dist + "," + vcs_id  + "," + arch + "," + package_version + "," + package_name  + "," + suite + "," + format + ")")
 
 			# Add to DB
-			myDb.put_job(packageinstance,buildclient)
+			#myDb.put_job(packageinstance,buildclient)
 
 			# Pass to controller to queue up
-			myController = Controller(myDb)
 			transport = Transport(None, method, uri, vcs_id)
 			myController.process_job(uri,method,dist,vcs_id,arch,package_version,package_name,suite,format,transport)
 		else:
