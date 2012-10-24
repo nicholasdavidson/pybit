@@ -31,7 +31,6 @@ def main():
 		options = pybitclient.get_settings(conffile)
 	else :
 		options = pybitclient.get_settings("/etc/pybit/client/client.conf")
-	chan = None
 	pkg = pybitclient.deb_package ("")
 	pkg.vcs_id = "21094"
 	pkg.method_type = "svn"
@@ -41,10 +40,10 @@ def main():
 	pkg.architecture = "i386"
 	pkg.source = "pybit"
 	pkg.uri = "http://svn/svn/lwdev/software/trunk/packages/pybit"
-	vcs = SubversionClient (chan)
+	vcs = SubversionClient ()
 	vcs.fetch_source (pkg)
 	srcdir = vcs.get_srcdir()
-	client = DebianBuildClient (chan)
+	client = DebianBuildClient ()
 	# To check the build-dependencies in advance, we need to ensure the
 	# chroot has an update apt-cache, so can't use apt-update option of
 	# sbuild. The alternative is to update the apt-cache twice per build,

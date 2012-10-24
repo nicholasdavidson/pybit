@@ -163,18 +163,6 @@ class PackageHandler(object):
 		self.build_process = None
 		return
 
-	def run_cmd (self, cmd, fail_msg, pkg, report, simulate):
-		try:
-			if simulate == True :
-				print cmd
-				return True
-			else:
-				if os.system (cmd) :
-					print "E: Failed to run %s" % (cmd)
-					return False
-		except Exception as e:
-			raise Exception('Error running command: ' + str(e))
-
 	def is_dry_run (self):
 		if (not hasattr(self, 'options')) :
 			return False

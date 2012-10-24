@@ -34,7 +34,7 @@ class DebianBuildClient(PackageHandler):
 
 	def update_environment(self,name,pkg):
 		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
-		if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
+		if not pybitclient.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 			return
 
 	def build_master (self, srcdir, pkg):
@@ -49,15 +49,15 @@ class DebianBuildClient(PackageHandler):
 				control = os.path.join (package_dir, 'debian', 'control')
 				dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
 				command = "schroot -u root -c %s -- %s %s" % (pkg.suite, dep_check, os.path.realpath(control))
-				if not self.run_cmd (command, "build-dep-wait", pkg, report_name, self.options["dry_run"]):
+				if not pybitclient.run_cmd (command, "build-dep-wait", pkg, report_name, self.options["dry_run"]):
 					return
 			command = "dpkg-buildpackage -S -d"
-			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
+			if not pybitclient.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			if os.path.isdir(srcdir) :
 				os.chdir (srcdir)
 			command = "sbuild -A -s -d %s %s/%s_%s.dsc" % (pkg.suite, srcdir, pkg.source, pkg.version)
-			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
+			if not pybitclient.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			changes = "%s/%s_%s_%s.changes" % (srcdir, pkg.package, pkg.version, pkg.architecture)
 			if not os.path.isfile (changes) :
@@ -75,7 +75,7 @@ class DebianBuildClient(PackageHandler):
 		try:
 			changes_path = os.path.join (dirname, changes)
 			command = "dput -c %s %s %s %s" % (self.dput_cfg, self.options["dput"], self.dput_dest, changes_path)
-			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
+			if not pybitclient.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			pkg.msgtype = "uploaded"
 			if (self.chan != None) :
@@ -90,12 +90,12 @@ class DebianBuildClient(PackageHandler):
 			if os.path.isdir(package_dir) :
 				os.chdir (package_dir)
 			command = "dpkg-buildpackage -S -d"
-			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
+			if not pybitclient.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			if os.path.isdir(srcdir) :
 				os.chdir (srcdir)
 			command = "sbuild --apt-update -d %s %s/%s_%s.dsc" % (pkg.suite, srcdir, pkg.source, pkg.version)
-			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
+			if not pybitclient.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			changes = "%s/%s_%s_%s.changes" % (srcdir, pkg.package, pkg.version, pkg.architecture)
 			if not os.path.isfile (changes) :

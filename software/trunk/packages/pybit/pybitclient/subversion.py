@@ -44,7 +44,7 @@ class SubversionClient(VersionControlHandler):
 			else:
 				print "Could not fetch source, no method URI found"
 				return
-			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
+			if not pybitclient.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
 				return
 			return
 		except Exception as e:
@@ -61,7 +61,7 @@ class SubversionClient(VersionControlHandler):
 		if os.path.isdir(self.cleandir) :
 			os.chdir (self.cleandir)
 			command = "rm -rf ./*"
-			if not self.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]) :
+			if not pybitclient.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]) :
 				return
 			return
 

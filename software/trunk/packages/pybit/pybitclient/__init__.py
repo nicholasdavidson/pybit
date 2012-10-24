@@ -5,6 +5,19 @@ import errno
 import json
 import jsonpickle
 
+def run_cmd (cmd, fail_msg, pkg, report, simulate):
+	try:
+		if simulate == True :
+			print cmd
+			return True
+		else:
+			if os.system (cmd) :
+				print "E: Failed to run %s" % (cmd)
+				return False
+	except Exception as e:
+		raise Exception('Error running command: ' + str(e))
+
+
 def get_settings(path):
 	try:
 		ret = {}
