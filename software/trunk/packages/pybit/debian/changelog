@@ -1,3 +1,9 @@
+pybit (0.0.32) pybit; urgency=low
+
+  * Changed my code to speak to simon's controller code
+
+ -- James Bennet <James.Bennet@toby-churchill.com>  Wed, 24 Oct 2012 10:12:50 +0100
+
 pybit (0.0.31) pybit; urgency=low
 
   * Migrate to dh_python2 as pysupport is deprecated.

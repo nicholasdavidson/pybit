@@ -4,6 +4,8 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import Database
 import job
+from controller import Controller
+from pybit.models import Transport
 
 myDb = Database()
 
@@ -76,10 +78,16 @@ def put_job():
 			dist = packageinstance.distribution.name
 			suite = packageinstance.suite.name
 			format = packageinstance.format.name
-			
-			print "TODO: call Controller.add(" , uri,method,dist,vcs_id,arch,package_version,package_name,suite,format
 
+			print ("Calling Controller.process_job(" + uri + "," + method + "," + dist + "," + vcs_id  + "," + arch + "," + package_version + "," + package_name  + "," + suite + "," + format + ")")
+
+			# Add to DB
 			myDb.put_job(packageinstance,buildclient)
+
+			# Pass to controller to queue up
+			myController = Controller(myDb)
+			transport = Transport(None, method, uri, vcs_id)
+			myController.process_job(uri,method,dist,vcs_id,arch,package_version,package_name,suite,format,transport)
 		else:
 			response.status = "400 - Required fields missing."
 		return
