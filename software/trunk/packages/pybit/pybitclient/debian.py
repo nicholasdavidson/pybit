@@ -108,9 +108,9 @@ class DebianBuildClient(PackageHandler):
 			raise Exception('Error performing slave build: ' + str(e))
 			return
 
-	def __init__(self, chan):
+	def __init__(self):
 		try:
-			BuildClient.__init__(self, chan)
+			PackageHandler.__init__(self)
 			# Specific buildd options
 			# FIXME: decide how this is managed and packaged
 			self.options =  pybitclient.get_settings(self)

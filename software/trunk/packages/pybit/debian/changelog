@@ -1,3 +1,11 @@
+pybit (0.0.31) pybit; urgency=low
+
+  * Migrate to dh_python2 as pysupport is deprecated.
+  * Migrate test client script to work with PackageHandler.
+  * Add the is_dry_run compare back to support the test case.
+
+ -- Neil Williams <neilw@toby-churchill.com>  Wed, 24 Oct 2012 09:56:39 +0100
+
 pybit (0.0.30) pybit; urgency=low
 
   * Initial refactor of pybit-client-basic and buildclient and

@@ -27,6 +27,7 @@ import subprocess
 import shlex
 import pybitclient
 import requests
+# needs PYTHONPATH=..
 import pybit
 
 from pybit.models import ClientMessage
@@ -47,25 +48,25 @@ class PyBITClient(object):
 		self.insist = insist
 		self.id = id
 		self.interactive = interactive
-		
-		self.routing_key = pybit.get_build_route_name(self.distribution, 
+
+		self.routing_key = pybit.get_build_route_name(self.distribution,
 			self.arch, self.suite, self.format)
-		
-		self.queue_name = pybit.get_build_queue_name(self.distribution, 
+
+		self.queue_name = pybit.get_build_queue_name(self.distribution,
 			self.arch, self.suite, self.format)
-		
+
 		self.client_queue_name = pybit.get_client_queue(self.id)
 		print "Connecting with... \nhost: " + self.host + "\nuser id: " + self.userid + "\npassword: "  + self.password + "\nvhost: " + self.vhost + "\ninsist: " + str(self.insist)
 		self.conn = amqp.Connection(host=self.host, userid=self.userid, password=self.password, virtual_host=self.vhost, insist= self.insist)
 		self.chan = self.conn.channel()
-	
+
 		print "Creating queue with name:" + self.queue_name
 		self.chan.queue_declare(queue=self.queue_name, durable=True, exclusive=False, auto_delete=False)
 		self.chan.queue_bind(queue=self.queue_name, exchange=pybit.exchange_name, routing_key=self.routing_key)
-	
+
 		print "Creating private command queue with name:" + self.client_queue_name
 		self.chan.queue_declare(queue=self.client_queue_name, durable=False, exclusive=True, auto_delete=False)
-		
+
 
 	def interactive_handler(self, msg, build_req) :
 		status = None
@@ -113,13 +114,13 @@ class PyBITClient(object):
 
 	def build_handler(self, msg, build_req):
 		pass
-	
+
 	def message_handler(self, msg, build_req):
 		if self.interactive:
 			interactive_handler(msg, build_req)
 		else:
 			build_handler(msg, build_req)
-			
+
 
 	def  is_building():
 		pass
@@ -127,13 +128,21 @@ class PyBITClient(object):
 class VersionControlHandler(object):
 	def fetch_source(self):
 		pass
-	
+
 	def get_srcdir (self):
 		pass
-	
+
 	def clean_source (self, pkg) :
 		pass
-	
+
+	# support test cases
+	def is_dry_run (self):
+		if (not hasattr(self, 'options')) :
+			return False
+		if (not "dry_run" in self.options) :
+			return False
+		return self.options["dry_run"]
+
 	def __init__(self):
 		self.workdir = ""
 		self.options = {}

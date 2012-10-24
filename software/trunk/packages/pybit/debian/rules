@@ -66,9 +66,8 @@ binary-indep: build install
 	dh_installexamples
 	dh_install $(exclusions) --exclude=.svn
 	dh_compress
-	dh_pysupport -d
+	dh_python2
 	dh_link
-	dh_pysupport
 	dh_installdeb
 	dh_gencontrol
 	dh_md5sums

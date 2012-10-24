@@ -27,7 +27,7 @@ import json
 import unittest
 # needs PYTHONPATH=.:..
 import pybitclient
-from pybitclient.buildclient import BuildClient
+from pybitclient.buildclient import PackageHandler, VersionControlHandler
 from pybitclient.debian import DebianBuildClient
 from pybitclient.subversion import SubversionClient
 
@@ -55,7 +55,7 @@ class TestClient(unittest.TestCase) :
 	def test_02_build_client (self) :
 		log = logging.getLogger( "testCase" )
 		log.debug("\n")
-		base_client = BuildClient()
+		base_client = PackageHandler()
 		self.assertTrue (base_client)
 		self.assertFalse (base_client.is_dry_run())
 		deb_client = DebianBuildClient()
