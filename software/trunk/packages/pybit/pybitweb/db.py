@@ -520,7 +520,6 @@ class Database(object):
 
 	def put_job(self,packageinstance,buildclient):
 		try:
-			#TODO: work in progress
 			self.cur.execute("INSERT INTO job (packageinstance_id,buildclient_id) VALUES (%s, %s)  RETURNING id",(packageinstance.id,(buildclient.id if buildclient else None)))
 			res = self.cur.fetchall()
 			self.conn.commit()
@@ -603,36 +602,6 @@ class Database(object):
 			return None
 
 	#<<<<<<<<< Packageinstance related Queries >>>>>>>
-	# TODO: TEST
-	def get_packageinstances(self):
-		try:
-			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY package_id, id")
-			res = self.cur.fetchall()
-			self.conn.commit()
-
-			packageinstances = []
-			for i in res:
-				packageinstances.append(PackageInstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
-			return packageinstances
-		except Exception as e:
-			self.conn.rollback()
-			raise Exception('Error retrieving package instances list:' + str(e))
-			return None
-
-	def get_packageinstance_byvalues(self,package_id,arch_id,suite_id,dist_id,format_id):
-		try:
-			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package_id,arch_id,suite_id,dist_id,format_id))
-			res = self.cur.fetchall()
-			self.conn.commit()
-
-			packageinstances = []
-			for i in res:
-				packageinstances.append(PackageInstance(i['id'],i['package_id'],i['arch_id'],i['suite_id'],i['dist_id'],i['format_id'],i['master']))
-			return packageinstances
-		except Exception as e:
-			self.conn.rollback()
-			raise Exception('Error retrieving package instance by value:' + str(e))
-			return None
 
 	def get_packageinstance_id(self,id):
 		try:
@@ -649,6 +618,37 @@ class Database(object):
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving package instance with:' + str(id) + str(e))
+			return None
+
+	def get_packageinstances(self):
+		try:
+			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY package_id, id")
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			packageinstances = []
+			for i in res:
+				packageinstances.append(self.get_packageinstance_id(i['id']))
+			return packageinstances
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error retrieving package instances list:' + str(e))
+			return None
+
+	def get_packageinstance_byvalues(self,package,arch,suite,dist,format):
+		# TODO: return single instance instead of list
+		try:
+			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package.id,arch.id,suite.id,dist.id,format.id))
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			packageinstances = []
+			for i in res:
+				packageinstances.append(self.get_packageinstance_id(i['id']))
+			return packageinstances
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error retrieving package instance by value:' + str(e))
 			return None
 
 	def put_packageinstance(self,package,arch,suite,dist,format,master):
