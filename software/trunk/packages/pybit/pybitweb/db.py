@@ -3,7 +3,7 @@
 import psycopg2
 import psycopg2.extras
 import jsonpickle
-from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch
+from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobStatusHistoryModel
 
 myDb = None
 
@@ -491,12 +491,17 @@ class Database(object):
 			raise Exception('Error retrieving unfinished jobs:' + str(e))
 			return None
 
-	def get_job_status(self,id):
+	# TODO!!!!! - Testme
+	def get_job_statuses(self,id):
+	#gets job status *history*
 		try:
-			#TODO: CODEME - gets job status *history*
-
-			jobstatus = []
-			return jobstatus
+			self.cur.execute("SELECT job.id AS job_id, status.name AS status, buildclients.name AS buildclient, jobstatus.time AS time FROM job LEFT JOIN jobstatus ON job.id=jobstatus.job_id LEFT JOIN status ON jobstatus.status_id=status.id  LEFT JOIN buildclients ON buildclients.id=job.buildclient_id WHERE job.id = %s ORDER BY time",(id,));
+			res = self.cur.fetchall()
+			self.conn.commit()
+			jobstatuses = []
+			for i in res:
+				jobstatuses.append(JobStatusHistoryModel(i['job_id'],i['status'],i['buildclient'],i['time']))
+			return jobstatuses
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error retrieving job status with:' + str(id) + str(e))

@@ -5,7 +5,7 @@ import jsonpickle
 from db import Database,myDb
 import job
 from controller import Controller,buildController
-from pybit.models import Transport
+from pybit.models import Transport,JobStatusHistoryModel
 
 #NEW: proxy to class method controller.add
 @route('/job/vcshook', method='POST')
@@ -172,13 +172,21 @@ def del_jobid(jobid):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
+# TODO!!!!! - Testme
 @route('/job/<jobid:int>/status', method='GET')
 def get_jobstatus(jobid):
 	try:
-		# TODO: CODEME! - SHOW STATUS HISTORY
-		res = myDb.get_job_status(jobid)
-		response.status = "501 - ERROR: Not coded yet."
-		return
+		# Return status history for specified job ID
+		res = myDb.get_job_statuses(jobid)
+
+		# check results returned
+		if res:
+			encoded = jsonpickle.encode(res)
+			response.content_type = "application/json"
+			return encoded
+		else:
+			response.status = "404 - No job found with this ID."
+			return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
 		return None
