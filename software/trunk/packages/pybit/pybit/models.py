@@ -20,7 +20,7 @@ class Model(object):
 			raise Exception('Error in fromJson(): ' + str(e))
 			return None
 
-class JobStatusHistoryModel(Model):
+class JobHistory(Model):
 	def __init__(self,job_id,status,buildclient,time):
 		self.job_id = job_id
 		self.status = status

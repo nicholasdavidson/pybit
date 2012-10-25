@@ -5,7 +5,7 @@ import jsonpickle
 from db import Database,myDb
 import job
 from controller import Controller,buildController
-from pybit.models import Transport,JobStatusHistoryModel
+from pybit.models import Transport,JobHistory
 
 #NEW: proxy to class method controller.add
 @route('/job/vcshook', method='POST')

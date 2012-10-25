@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import jsonpickle
-from pybitweb.bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
+from pybitweb.bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request, hook
 from pybitweb.db import Database,myDb
 from pybitweb import forms, lookups, buildd, job, package, packageinstance
 from pybitweb.controller import Controller,buildController
@@ -19,9 +19,15 @@ def error404(error):
     return 'HTTP Error 404 - Not Found.'
 
 # Remove this to get more debug.
-#@error(500)
-#def error404(error):
-#    return 'HTTP Error 500 - Internal Server Error.'
+@error(500)
+def error404(error):
+    return 'HTTP Error 500 - Internal Server Error.'
+
+# Things in here are applied to all requests. We need to set this header so strict browsers can query it using jquery
+#http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+@hook('after_request')
+def enable_cors():
+    response.headers['Access-Control-Allow-Origin'] = '*'
 
 @route('/', method='GET')
 def index():

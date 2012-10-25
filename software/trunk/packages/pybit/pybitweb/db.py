@@ -3,7 +3,7 @@
 import psycopg2
 import psycopg2.extras
 import jsonpickle
-from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobStatusHistoryModel
+from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory
 
 myDb = None
 
@@ -500,7 +500,7 @@ class Database(object):
 			self.conn.commit()
 			jobstatuses = []
 			for i in res:
-				jobstatuses.append(JobStatusHistoryModel(i['job_id'],i['status'],i['buildclient'],i['time']))
+				jobstatuses.append(JobHistory(i['job_id'],i['status'],i['buildclient'],i['time']))
 			return jobstatuses
 		except Exception as e:
 			self.conn.rollback()

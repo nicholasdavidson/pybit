@@ -1,3 +1,9 @@
+pybit (0.0.36) pybit; urgency=low
+
+  * Renamed the overly wordy JobStatusHistoryModel to JobHistory
+
+ -- James Bennet <James.Bennet@toby-churchill.com>  Thu, 25 Oct 2012 16:29:31 +0100
+
 pybit (0.0.35) pybit; urgency=low
 
   * Added the ability to see a job's status history in time order
