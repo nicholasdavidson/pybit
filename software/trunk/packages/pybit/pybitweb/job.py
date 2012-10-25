@@ -2,13 +2,10 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-from db import Database
+from db import Database,myDb
 import job
-from controller import Controller
+from controller import Controller,buildController
 from pybit.models import Transport
-
-myDb = Database()
-myController = Controller(myDb)
 
 #NEW: proxy to class method controller.add
 @route('/job/vcshook', method='POST')
@@ -31,7 +28,7 @@ def vcs_hook():
 				return None
 			else :
 				print "RECEIVED BUILD REQUEST FOR", package_name, version, suite, architectures
-				myController.process_job(uri, method, dist, vcs_id, architectures, version, package_name, suite, format, Transport(None, method, uri, vcs_id))
+				buildController.process_job(uri, method, dist, vcs_id, architectures, version, package_name, suite, format, Transport(None, method, uri, vcs_id))
 				return
 	except Exception as e:
 		raise Exception('Exception encountered in vcs_hook: ' + str(e))
@@ -53,7 +50,7 @@ def get_jobs():
 def cancel_jobs():
 	try:
 		response.status = "202 - CANCEL ALL request recieved"
-		myController.cancel_all_builds()
+		buildController.cancel_all_builds()
 		return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
@@ -64,7 +61,7 @@ def cancel_jobs():
 def cancel_job(jobid):
 	try:
 		response.status = "202 - CANCEL JOB request recieved"
-		myController.cancel_package_instance(jobid)
+		buildController.cancel_package_instance(jobid)
 		return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
@@ -137,7 +134,7 @@ def put_job():
 
 			# Pass to controller to queue up
 			transport = Transport(None, method, uri, vcs_id)
-			myController.process_job(uri,method,dist,vcs_id,arch,package_version,package_name,suite,format,transport)
+			buildController.process_job(uri,method,dist,vcs_id,arch,package_version,package_name,suite,format,transport)
 		else:
 			response.status = "400 - Required fields missing."
 		return

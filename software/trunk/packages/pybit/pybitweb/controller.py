@@ -5,30 +5,33 @@ from amqplib import client_0_8 as amqp
 import jsonpickle
 import os.path
 import pybit
-from db import Database
+from db import Database,myDb
 from pybit.models import Transport, BuildRequest, CancelRequest
+
+buildController = None
 
 class Controller:
 
-	def __init__(self, db):
-		try:
-			self.build_db = db
-			self.conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
-			self.chan = self.conn.channel()
-			#declare exchange.
-			self.chan.exchange_declare(exchange=pybit.exchange_name, type="direct", durable=True, auto_delete=False)
-			#declare command queue.
-			self.chan.queue_declare(queue=pybit.status_queue, durable=True, exclusive=False, auto_delete=False)
-			#bind routing from exchange to command queue based on routing key.
-			self.chan.queue_bind(queue=pybit.status_queue, exchange=pybit.exchange_name, routing_key=pybit.status_route)
-			print "controller init"
-		except Exception as e:
-			raise Exception('Error creating controller (Maybe we cannot connect to queue?) - ' + str(e))
-			return
+	def __init__(self):
+		print "DEBUG: Controller constructor called."
+		if not buildController: # DONT allow construction of more than 1 controller instance (i.e. none other than the buildController here)
+			print "DEBUG: Controller Singleton constructor called."
+			try:
+				self.conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
+				self.chan = self.conn.channel()
+				#declare exchange.
+				self.chan.exchange_declare(exchange=pybit.exchange_name, type="direct", durable=True, auto_delete=False)
+				#declare command queue.
+				self.chan.queue_declare(queue=pybit.status_queue, durable=True, exclusive=False, auto_delete=False)
+				#bind routing from exchange to command queue based on routing key.
+				self.chan.queue_bind(queue=pybit.status_queue, exchange=pybit.exchange_name, routing_key=pybit.status_route)
+			except Exception as e:
+				raise Exception('Error creating controller (Maybe we cannot connect to queue?) - ' + str(e))
+				return
 
 	def process_job(self, uri, method, dist, vcs_id, architectures, version, name, suite, format, transport) :
 		try:
-			supported_arches = self.build_db.get_supported_architectures(suite)
+			supported_arches = myDb.get_supported_architectures(suite)
 			print "SUPPORTED ARCHITECTURES:", supported_arches
 
 			if (len(supported_arches) == 0):
@@ -43,14 +46,14 @@ class Controller:
 			current_package = self.process_package(name, version)
 			if not current_package.id :
 				return
-			current_suite = self.build_db.get_suite_byname(suite)[0]
-			current_dist = self.build_db.get_dist_byname(dist)[0]
-			current_format = self.build_db.get_format_byname(format)[0]
+			current_suite = myDb.get_suite_byname(suite)[0]
+			current_dist = myDb.get_dist_byname(dist)[0]
+			current_format = myDb.get_format_byname(format)[0]
 			for arch in supported_arches:
-				current_arch = self.build_db.get_arch_byname(arch)[0]
+				current_arch = myDb.get_arch_byname(arch)[0]
 				current_packageinstance = self.process_packageinstance(current_arch, current_package, current_dist, current_format, current_suite)
 				if current_packageinstance.id :
-					new_job = self.build_db.put_job(current_packageinstance,None)
+					new_job = myDb.put_job(current_packageinstance,None)
 					print "CREATED NEW JOB ID", new_job.id
 					if new_job.id :
 						self.cancel_superceded_jobs(current_packageinstance)
@@ -80,14 +83,14 @@ class Controller:
 	def process_package(self, name, version) :
 		# retrieve existing package or try to add a new one
 		package = None
-		matching_package_versions = self.build_db.get_package_byvalues(name,version)
+		matching_package_versions = myDb.get_package_byvalues(name,version)
 		if len(matching_package_versions) > 0 :
 			package = matching_package_versions[0]
 			if package.id :
 				print "MATCHING PACKAGE FOUND (", package.id, ")"
 		else :
 			# add new package to db
-			package = self.build_db.put_package(version,name)
+			package = myDb.put_package(version,name)
 			if package.id :
 				print "ADDED NEW PACKAGE (", package.id, ")"
 		return package
@@ -95,14 +98,14 @@ class Controller:
 	def process_packageinstance(self, arch, package, dist, format, suite) :
 		# check & retrieve existing package or try to add a new one
 		packageinstance = None
-		if self.build_db.check_specific_packageinstance_exists(arch, package, dist, format, suite) :
+		if myDb.check_specific_packageinstance_exists(arch, package, dist, format, suite) :
 			# retrieve existing package instance from db
-			packageinstance = self.build_db.get_packageinstance_byvalues(package, arch, suite, dist, format)[0]
+			packageinstance = myDb.get_packageinstance_byvalues(package, arch, suite, dist, format)[0]
 			if packageinstance.id :
 				print "MATCHING PACKAGE INSTANCE FOUND (", packageinstance.id, ")"
 		else :
 			# add new package instance to db
-			packageinstance = self.build_db.put_packageinstance(package, arch, suite, dist, format, False)
+			packageinstance = myDb.put_packageinstance(package, arch, suite, dist, format, False)
 			if packageinstance.id :
 				print "ADDED NEW PACKAGE INSTANCE (", packageinstance.id, ")"
 		return packageinstance
@@ -119,9 +122,9 @@ class Controller:
 
 	def cancel_superceded_jobs(self, packageinstance) :
 		# check for unfinished jobs that might be cancellable
-		unfinished_jobs_list = self.build_db.get_unfinished_jobs()
+		unfinished_jobs_list = myDb.get_unfinished_jobs()
 		#print "UNFINISHED JOB LIST", unfinished_jobs_list
-		for unfinished_job in unfinished_jobs_list: 
+		for unfinished_job in unfinished_jobs_list:
 			unfinished_job_package_name = unfinished_job.packageinstance.package.name
 			if unfinished_job_package_name == packageinstance.package.name :
 				unfinished_job_package_version = unfinished_job.packageinstance.package.version
@@ -142,8 +145,8 @@ class Controller:
 
 	def cancel_all_builds(self):
 		# cancels all packages/jobs
-		unfinished_jobs_list = self.build_db.get_unfinished_jobs()
-		for unfinished_job in unfinished_jobs_list: 
+		unfinished_jobs_list = myDb.get_unfinished_jobs()
+		for unfinished_job in unfinished_jobs_list:
 			self.send_cancel_request(unfinished_job)
 		return
 
@@ -151,8 +154,8 @@ class Controller:
 		# cancels all instances of a package
 		version = request.forms.get('package_version')
 		package_name = request.forms.get('package')
-		unfinished_jobs_list = self.build_db.get_unfinished_jobs()
-		for unfinished_job in unfinished_jobs_list: 
+		unfinished_jobs_list = myDb.get_unfinished_jobs()
+		for unfinished_job in unfinished_jobs_list:
 			if (unfinished_job.packageinstance.package.name == package_name) and (unfinished_job.packageinstance.package.version == version):
 				self.send_cancel_request(unfinished_job)
 		return
@@ -164,7 +167,7 @@ class Controller:
 				response.status = "400 - Required fields missing."
 				return
 			else :
-				job_to_cancel = self.build_db.get_job(job_id)
+				job_to_cancel = myDb.get_job(job_id)
 				if not job_to_cancel :
 					response.status = "404 - no job matching id"
 				else :
@@ -174,3 +177,5 @@ class Controller:
 			response.status = "500 - Error parsing job information"
 			return
 		return
+
+buildController = Controller() # singleton instance

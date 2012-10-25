@@ -2,15 +2,14 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-from db import Database
+from db import Database,myDb
 from pybit.models import Arch,Dist,Format,Status,Suite,SuiteArch
-db = Database()
 
 @route('/arch', method='GET')
 def get_arch():
 	try:
 		#return list of arches
-		arches = db.get_arches()
+		arches = myDb.get_arches()
 		encoded = jsonpickle.encode(arches)
 		response.content_type = "application/json"
 		return encoded
@@ -22,7 +21,7 @@ def get_arch():
 def get_arch_id(id):
 	try:
 		# Returns all information about a specific arch
-		res = db.get_arch_id(id)
+		res = myDb.get_arch_id(id)
 
 		# check results returned
 		if res:
@@ -44,7 +43,7 @@ def put_arch():
 		name = request.forms.get('name')
 
 		if name:
-			db.put_arch(name)
+			myDb.put_arch(name)
 		else:
 			response.status = "400 - Required fields missing."
 		return
@@ -56,7 +55,7 @@ def put_arch():
 def get_suitearch():
 	try:
 		#return list of suitearch
-		suitearches = db.get_suitearches()
+		suitearches = myDb.get_suitearches()
 		encoded = jsonpickle.encode(suitearches)
 		response.content_type = "application/json"
 		return encoded
@@ -68,7 +67,7 @@ def get_suitearch():
 def get_suitearch_id(id):
 	try:
 		# Returns all information about a specific suitearch
-		res = db.get_suitearch_id(id)
+		res = myDb.get_suitearch_id(id)
 
 		# check results returned
 		if res:
@@ -91,7 +90,7 @@ def put_suitearch():
 		arch_id =  request.forms.get('arch_id')
 
 		if suite_id and arch_id:
-			db.put_suitearch(suite_id,arch_id)
+			myDb.put_suitearch(suite_id,arch_id)
 		else:
 			response.status = "400 - Required fields missing."
 		return
@@ -103,7 +102,7 @@ def put_suitearch():
 def get_statuses():
 	try:
 		#return list of statuses
-		statuses = db.get_statuses()
+		statuses = myDb.get_statuses()
 		encoded = jsonpickle.encode(statuses)
 		response.content_type = "application/json"
 		return encoded
@@ -115,7 +114,7 @@ def get_statuses():
 def get_status_id(id):
 	try:
 		# Returns all information about a specific status
-		res = db.get_status_id(id)
+		res = myDb.get_status_id(id)
 
 		# check results returned
 		if res:
@@ -137,7 +136,7 @@ def put_status():
 		name = request.forms.get('name')
 
 		if name:
-			db.put_status(name)
+			myDb.put_status(name)
 		else:
 			response.status = "400 - Required fields missing."
 		return
@@ -149,7 +148,7 @@ def put_status():
 def get_dists():
 	try:
 		#return list of distributions
-		dists = db.get_dists()
+		dists = myDb.get_dists()
 		encoded = jsonpickle.encode(dists)
 		response.content_type = "application/json"
 		return encoded
@@ -161,7 +160,7 @@ def get_dists():
 def get_dist_id(id):
 	try:
 		# Returns all information about a specific dist
-		res = db.get_dist_id(id)
+		res = myDb.get_dist_id(id)
 
 		# check results returned
 		if res:
@@ -183,7 +182,7 @@ def put_dist():
 		name = request.forms.get('name')
 
 		if name:
-			db.put_dist(name)
+			myDb.put_dist(name)
 		else:
 			response.status = "400 - Required fields missing."
 		return
@@ -195,7 +194,7 @@ def put_dist():
 def get_formats():
 	try:
 		#return list of package formats
-		formats = db.get_formats()
+		formats = myDb.get_formats()
 		encoded = jsonpickle.encode(formats)
 		response.content_type = "application/json"
 		return encoded
@@ -207,7 +206,7 @@ def get_formats():
 def get_format_id(id):
 	try:
 		# Returns all information about a specific format
-		res = db.get_format_id(id)
+		res = myDb.get_format_id(id)
 
 		# check results returned
 		if res:
@@ -229,7 +228,7 @@ def put_format():
 		name = request.forms.get('name')
 
 		if name:
-			db.put_format(name)
+			myDb.put_format(name)
 		else:
 			response.status = "400 - Required fields missing."
 		return
@@ -241,7 +240,7 @@ def put_format():
 def get_suites():
 	try:
 		#return list of suites
-		suites = db.get_suites()
+		suites = myDb.get_suites()
 		encoded = jsonpickle.encode(suites)
 		response.content_type = "application/json"
 		return encoded
@@ -253,7 +252,7 @@ def get_suites():
 def get_suite_id(id):
 	try:
 		# Returns all information about a specific suite
-		res = db.get_suite_id(id)
+		res = myDb.get_suite_id(id)
 
 		# check results returned
 		if res:
@@ -275,7 +274,7 @@ def put_suite():
 		name = request.forms.get('name')
 
 		if name:
-			db.put_suite(name)
+			myDb.put_suite(name)
 		else:
 			response.status = "400 - Required fields missing."
 		return

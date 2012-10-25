@@ -2,10 +2,8 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-from db import Database
+from db import Database,myDb
 import buildd
-
-myDb = Database()
 
 @route('/buildd', method='GET')
 def get_buildd():

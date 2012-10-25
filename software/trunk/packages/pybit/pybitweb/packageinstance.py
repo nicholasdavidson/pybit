@@ -2,11 +2,9 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-from db import Database
+from db import Database,myDb
 
 # TODO: Work in progress.
-
-myDb = Database()
 
 @route('/packageinstance', method='GET')
 def get_all_packageinstances():

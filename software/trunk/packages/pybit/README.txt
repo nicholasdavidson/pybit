@@ -36,7 +36,7 @@ Run pybit.web.py and pybit-client.py to run it. You can test using curl like:
 
     * curl -i -X GET http://0.0.0.0:8080/arch
     * curl -i -X PUT http://localhost:8080/arch --data "name=test"
-    * curl -X POST http://localhost:8080/add --data "uri=http://svn.tcl.office/svn/lwdev&dire...pea&format=deb"
+    * curl -X POST http://localhost:8080/job/vcshook --data "uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea94&package=appbarwidget&suite=chickpea&format=deb"
 
 Proof-of-concept lives in svn under ~/software/users/codehelp/amqp
 Current version lives in svn under ~/software/trunk/packages/pybit

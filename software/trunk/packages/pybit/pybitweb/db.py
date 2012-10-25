@@ -7,6 +7,8 @@ from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,Packag
 
 #TODO: make more robust, more DELETEs?
 
+myDb = None
+
 class Database(object):
 
 	conn = None
@@ -23,8 +25,11 @@ class Database(object):
 		return settings
 
 	def __init__(self):
-		self.settings = self.load_settings_from_file('configs/db_settings.json')
-		self.connect()
+		print "DEBUG: DB constructor called."
+		if not myDb: # DONT allow construction of more than 1 db instance (i.e. none other than the myDb here)
+			print "DEBUG: DB Singleton constructor called."
+			self.settings = self.load_settings_from_file('configs/db_settings.json')
+			self.connect()
 
 	#Deconstructor, disconnects on disposal. Need to check this actually gets called.
 	def __del__(self):
@@ -735,3 +740,5 @@ class Database(object):
 			self.conn.rollback()
 			raise Exception('Error retrieving supported architectures for:' + suite + str(e))
 			return None
+
+myDb = Database() # singleton instance
