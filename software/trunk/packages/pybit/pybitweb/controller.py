@@ -150,14 +150,16 @@ class Controller:
 			self.send_cancel_request(unfinished_job)
 		return
 
-	def cancel_package(self):
+	def cancel_package(self, package_id):
 		# cancels all instances of a package
-		version = request.forms.get('package_version')
-		package_name = request.forms.get('package')
-		unfinished_jobs_list = myDb.get_unfinished_jobs()
-		for unfinished_job in unfinished_jobs_list:
-			if (unfinished_job.packageinstance.package.name == package_name) and (unfinished_job.packageinstance.package.version == version):
-				self.send_cancel_request(unfinished_job)
+		package = myDb.get_package_id(package_id)
+		if not package.id :
+			response.status = "404 - no package matching id"
+		else :
+			unfinished_jobs_list = myDb.get_unfinished_jobs()
+			for unfinished_job in unfinished_jobs_list:
+				if (unfinished_job.packageinstance.package.name == package.name) and (unfinished_job.packageinstance.package.version == package.version):
+					self.send_cancel_request(unfinished_job)
 		return
 
 	def cancel_package_instance(self,job_id):

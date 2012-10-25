@@ -35,7 +35,7 @@ def index():
 ##route('/cancel_all', method='POST') (buildController.cancel_all_builds) # moved to job.cancel_jobs
 #/usr/bin/curl -X POST http://localhost:8080/cancel_all"
 
-route('/cancel_package', method='POST') (buildController.cancel_package)
+##route('/cancel_package', method='POST') (buildController.cancel_package) # move to package.cancel
 #/usr/bin/curl -X POST http://localhost:8080/cancel_package --data "package_version=0.6.33chickpea47&package=appbarwidget"
 
 ##route('/cancel_package_instance', method='POST') (buildController.cancel_package_instance)  # moved to job.cancel_job

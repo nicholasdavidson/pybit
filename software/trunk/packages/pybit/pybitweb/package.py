@@ -3,6 +3,8 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import Database,myDb
+from controller import Controller,buildController
+
 
 @route('/package', method='GET')
 def get_all_packages():
@@ -58,6 +60,18 @@ def delete_package(id):
 		# TODO: validation,security
 		response.status = "202 - DELETE request recieved"
 		res = myDb.delete_package(id)
+		return
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
+#NEW: Have controller cancel all jobs for this package.
+@route('/package/<id:int>/cancel', method='GET')
+def cancel_package(id):
+	try:
+		response.status = "202 - CANCEL PACKAGE request recieved"
+
+		buildController.cancel_package(id)
 		return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
