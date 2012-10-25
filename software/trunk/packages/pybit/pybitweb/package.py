@@ -40,7 +40,7 @@ def get_package_id(id):
 @route('/package', method='PUT')
 def put_package():
 	try:
-		# Add a new package. TODO: TESTME
+		# Add a new package.
 		version = request.forms.get('version')
 		name = request.forms.get('name')
 
@@ -87,22 +87,37 @@ def get_packages_filtered():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/package/details/:name:', method='GET')
+# Gets package versions (not instances!) by name.
+@route('/package/details/:name', method='GET')
 def get_package_versions(name):
 	try:
-		response.content_type = "application/json"
-		#TODO - CODEME
-		return template("Returning versions for package {{name}}",name=name)
+		#TODO - TESTME
+		res = myDb.get_packages_byname(name)
+		# check results returned
+		if res:
+			encoded = jsonpickle.encode(res)
+			response.content_type = "application/json"
+			return encoded
+		else:
+			response.status = "404 - No packages found with this name."
+			return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/package/details/:name:/:version', method='GET')
+@route('/package/details/:name/:version', method='GET')
 def get_package_details(name,version):
 	try:
-		response.content_type = "application/json"
-		#TODO - CODEME
-		return template("Returning details for package {{name}} v{{version}}",name=name, version=version)
+		#TODO - TESTME
+		res = myDb.get_package_byvalues(name,version)
+		# check results returned
+		if res:
+			encoded = jsonpickle.encode(res)
+			response.content_type = "application/json"
+			return encoded
+		else:
+			response.status = "404 - No package found with this name and version."
+			return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
 		return None

@@ -3,7 +3,6 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect
 
 from db import Database,myDb
-#TODO: Package instances
 
 @route('/forms', method='GET')
 def index():

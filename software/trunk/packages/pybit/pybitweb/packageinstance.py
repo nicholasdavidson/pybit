@@ -4,8 +4,6 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import Database,myDb
 
-# TODO: Work in progress.
-
 @route('/packageinstance', method='GET')
 def get_all_packageinstances():
 	try:
@@ -40,7 +38,7 @@ def get_packageinstance_id(id):
 @route('/packageinstance', method='PUT')
 def put_packageinstance():
 	try:
-		# Add a new packageinstance. TODO: CODEME
+		# Add a new packageinstance.
 		package_id = request.forms.get('package_id')
 		arch_id = request.forms.get('arch_id')
 		suite_id = request.forms.get('suite_id')
@@ -75,32 +73,29 @@ def delete_packageinstance(id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/packageinstance/list', method='GET') # TODO, filter by paramater (request.query.[x])
+@route('/packageinstance/list', method='GET')
 def get_packageinstances_filtered():
 	try:
 		response.content_type = "application/json"
-		#TODO - CODEME
+		#TODO - CODEME, filter by paramater (request.query.[x])
 		return "Returning packageinstances by filter"
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/packageinstance/details/:name:', method='GET')
+@route('/packageinstance/details/:name', method='GET')
 def get_packageinstance_versions(name):
 	try:
-		response.content_type = "application/json"
-		#TODO - CODEME
-		return template("Returning versions for packageinstance {{name}}",name=name)
-	except Exception as e:
-		raise Exception('Exception encountered: ' + str(e))
-		return None
-
-@route('/packageinstance/details/:name:/:version', method='GET')
-def get_packageinstance_details(name,version):
-	try:
-		response.content_type = "application/json"
-		#TODO - CODEME
-		return template("Returning details for packageinstance {{name}} v{{version}}",name=name, version=version)
+		#TODO - TESTME
+		res = myDb.get_packageinstances_byname(name)
+		# lists all instances of a package by name
+		if res:
+			encoded = jsonpickle.encode(res)
+			response.content_type = "application/json"
+			return encoded
+		else:
+			response.status = "404 - No packageinstances found with this name."
+			return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
 		return None

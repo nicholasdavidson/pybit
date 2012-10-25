@@ -109,7 +109,7 @@ def get_jobs_bystatus(status):
 @route('/job', method='PUT')
 def put_job():
 	try:
-		# Add a new job. TODO: Make this poke simons controller code with the correct values for uri, method, vcs_id, architecture_list
+		# Add a new job. Pokes simons controller code with the correct values for uri, method, vcs_id, architecture_list etc...
 		packageinstance_id = request.forms.get('packageinstance_id')
 		buildclient_id =  request.forms.get('buildclient_id')
 		method = request.forms.get('method')

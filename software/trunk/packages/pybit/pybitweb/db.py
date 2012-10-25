@@ -5,18 +5,16 @@ import psycopg2.extras
 import jsonpickle
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch
 
-#TODO: make more robust, more DELETEs?
-
 myDb = None
 
 class Database(object):
 
 	conn = None
 	cur = None
-	
+
 	#<<<<<<<< General database functions >>>>>>>>
 
-	#Constructor, connects on initialisation. Do we need to make sure we dont make too many of these? (pooling?)
+	#Constructor, connects on initialisation.
 
 	def load_settings_from_file(self,path):
 		settings_file = open(path, 'r')
@@ -31,11 +29,11 @@ class Database(object):
 			self.settings = self.load_settings_from_file('configs/db_settings.json')
 			self.connect()
 
-	#Deconstructor, disconnects on disposal. Need to check this actually gets called.
+	#Deconstructor, disconnects on disposal.
 	def __del__(self):
 		self.disconnect()
 
-	#Connects to DB. Hardcoding the connection string in here is probably a bad idea...
+	#Connects to DB using settings loaded from file.
 	def connect(self):
 		try:
 			self.conn = psycopg2.connect(database=self.settings['database'], user=self.settings['user'], host=self.settings['host'], port=self.settings['port'])
@@ -45,7 +43,7 @@ class Database(object):
 			raise Exception('Error connecting to database:' + str(e))
 			return False
 
-	#When to call this? - Does python have deconstructors?
+	#Called by deconstructor
 	def disconnect(self):
 		try:
 			self.conn.commit()
@@ -87,6 +85,7 @@ class Database(object):
 			raise Exception('Error retrieving arch with id:' + str(id) + str(e))
 			return None
 
+	# TODO: return single instance instead of list?
 	def get_arch_byname(self,name):
 		try:
 			self.cur.execute("SELECT id,name FROM arch WHERE name=%s",(name,))
@@ -180,6 +179,7 @@ class Database(object):
 			raise Exception('Error retrieving dist with id:' + str(id) + str(e))
 			return None
 
+	# TODO: return single instance instead of list?
 	def get_dist_byname(self,name):
 		try:
 			self.cur.execute("SELECT id,name FROM distribution WHERE name=%s",(name,))
@@ -234,6 +234,7 @@ class Database(object):
 			raise Exception('Error retrieving format with id:' + str(id) + str(e))
 			return None
 
+	# TODO: return single instance instead of list?
 	def get_format_byname(self,name):
 		try:
 			self.cur.execute("SELECT id,name FROM format WHERE name=%s",(name,))
@@ -325,6 +326,7 @@ class Database(object):
 			raise Exception('Error retrieving suite with id:' + str(id) + str(e))
 			return None
 
+	# TODO: return single instance instead of list?
 	def get_suite_byname(self,name):
 		try:
 			self.cur.execute("SELECT id,name FROM suite WHERE name=%s",(name,))
@@ -396,7 +398,7 @@ class Database(object):
 	def delete_buildclient(self,id):
 		try:
 			self.cur.execute("DELETE FROM buildclients WHERE id=%s RETURNING id",(id,))
-			res = self.cur.fetchall() # TODO: check
+			res = self.cur.fetchall()
 			self.conn.commit()
 
 			if res[0]['id'] == id:
@@ -451,7 +453,7 @@ class Database(object):
 			jobs = []
 			for i in res:
 				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
-				buildclient = self.get_buildd_id(i['buildclient_id']) if i['buildclient_id'] else None 
+				buildclient = self.get_buildd_id(i['buildclient_id']) if i['buildclient_id'] else None
 				jobs.append(Job(i['id'],packageinstance,buildclient))
 			return jobs
 		except Exception as e:
@@ -508,11 +510,11 @@ class Database(object):
 			self.conn.rollback()
 			raise Exception('Error setting job status:' + str(e))
 			return None
-		
+
 	def delete_job(self,id):
 		try:
 			self.cur.execute("DELETE FROM job WHERE id=%s  RETURNING id",(id,))
-			res = self.cur.fetchall() # TODO: check
+			res = self.cur.fetchall()
 			self.conn.commit()
 			if res[0]['id'] == id:
 				return True
@@ -552,6 +554,21 @@ class Database(object):
 			raise Exception('Error retrieving packages list:' + str(e))
 			return None
 
+	def get_packages_byname(self, name):
+		try:
+			self.cur.execute("SELECT id,version,name FROM package WHERE name=%s",(name,))
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			packages = []
+			for i in res:
+				packages.append(Package(i['id'],i['version'],i['name']))
+			return packages
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error retrieving package with name:' + str(name) + str(e))
+			return None
+
 	def get_package_id(self,id):
 		try:
 			self.cur.execute("SELECT id,version,name FROM package WHERE id=%s",(id,))
@@ -564,6 +581,7 @@ class Database(object):
 			raise Exception('Error retrieving package with id:' + str(id) + str(e))
 			return None
 
+	# TODO: return single instance instead of list?
 	def get_package_byvalues(self,name,version):
 		try:
 			self.cur.execute("SELECT id,name,version FROM package WHERE name=%s AND version=%s",(name,version))
@@ -594,7 +612,7 @@ class Database(object):
 	def delete_package(self,id):
 		try:
 			self.cur.execute("DELETE FROM package WHERE id=%s  RETURNING id",(id,))
-			res = self.cur.fetchall() # TODO: check
+			res = self.cur.fetchall()
 			self.conn.commit()
 
 			if res[0]['id'] == id:
@@ -640,8 +658,23 @@ class Database(object):
 			raise Exception('Error retrieving package instances list:' + str(e))
 			return None
 
+	def get_packageinstances_byname(self, name):
+		try:
+			self.cur.execute("SELECT packageinstance.id AS id,package.id AS package_id ,arch_id,suite_id,dist_id,format_id,master FROM packageinstance,package WHERE packageinstance.package_id = package.id AND name = %s ORDER BY package_id, id",(name,))
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			packageinstances = []
+			for i in res:
+				packageinstances.append(self.get_packageinstance_id(i['id']))
+			return packageinstances
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error retrieving package instances by name:' + str(e))
+			return None
+
+	# TODO: return single instance instead of list?
 	def get_packageinstance_byvalues(self,package,arch,suite,dist,format):
-		# TODO: return single instance instead of list
 		try:
 			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package.id,arch.id,suite.id,dist.id,format.id))
 			res = self.cur.fetchall()
@@ -672,7 +705,7 @@ class Database(object):
 	def delete_packageinstance(self,id):
 		try:
 			self.cur.execute("DELETE FROM packageinstance WHERE id=%s RETURNING id",(id,))
-			res = self.cur.fetchall() # TODO: check
+			res = self.cur.fetchall()
 			self.conn.commit()
 
 			if res[0]['id'] == id:
