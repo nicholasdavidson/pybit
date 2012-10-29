@@ -38,39 +38,36 @@ class DebianBuildClient(PackageHandler):
 		pybitclient.send_message (conn_data, retval)
 
 	def build_master (self, srcdir, pkg, conn_data):
-		try:
-			retval = None
-			if (not hasattr(pkg, 'package')):
-				print "E: not able to identify package name."
-				return
-			package_dir = "%s/%s" % (srcdir, pkg.package)
-			# FIXME: doesn't make sense to run dpkg-checkbuilddeps outside the chroot!
-			if os.path.isdir(package_dir) :
-				control = os.path.join (package_dir, 'debian', 'control')
-				dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
-				command = "schroot -u root -c %s -- %s %s" % (pkg.suite, dep_check, os.path.realpath(control))
-				if not pybitclient.run_cmd (command, pkg, self.options["dry_run"]):
-					retval = "build-dep-wait"
-			if not retval :
-				command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % (package_dir)
-				if not pybitclient.run_cmd (command, pkg, self.options["dry_run"]):
-					retval = "build_dsc"
-			if not retval :
-				command = "sbuild -A -s -d %s %s/%s_%s.dsc" % (pkg.suite, srcdir, pkg.source, pkg.version)
-				if not pybitclient.run_cmd (command, pkg, self.options["dry_run"]):
-					retval = "build_binary"
-			if not retval :
-				changes = "%s/%s_%s_%s.changes" % (srcdir, pkg.package, pkg.version, pkg.architecture)
-				if not os.path.isfile (changes) :
-					print "Failed to find %s file." % (changes)
-					retval = "build_changes"
-			if not retval :
-				retval = "success"
+		retval = None
+		if (not hasattr(pkg, 'package')):
+			print "E: not able to identify package name."
+			retval = "misconfigured"
 			pybitclient.send_message (conn_data, retval)
-#			self.upload (srcdir, changes, pkg)
-		except Exception as e:
-			raise Exception('Error performing master build: ' + str(e))
 			return
+		package_dir = "%s/%s" % (srcdir, pkg.package)
+		# FIXME: doesn't make sense to run dpkg-checkbuilddeps outside the chroot!
+		if os.path.isdir(package_dir) :
+			control = os.path.join (package_dir, 'debian', 'control')
+			dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
+			command = "schroot -u root -c %s -- %s %s" % (pkg.suite, dep_check, os.path.realpath(control))
+			if not pybitclient.run_cmd (command, self.options["dry_run"]):
+				retval = "build-dep-wait"
+		if not retval :
+			command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % (package_dir)
+			if not pybitclient.run_cmd (command, self.options["dry_run"]):
+				retval = "build_dsc"
+		if not retval :
+			command = "sbuild -A -s -d %s %s/%s_%s.dsc" % (pkg.suite, srcdir, pkg.source, pkg.version)
+			if not pybitclient.run_cmd (command, self.options["dry_run"]):
+				retval = "build_binary"
+		if not retval :
+			changes = "%s/%s_%s_%s.changes" % (srcdir, pkg.package, pkg.version, pkg.architecture)
+			if not os.path.isfile (changes) :
+				print "Failed to find %s file." % (changes)
+				retval = "build_changes"
+		if not retval :
+			retval = "success"
+		pybitclient.send_message (conn_data, retval)
 
 	def upload (self, dirname, changes, pkg, conn_data):
 		retval = None
@@ -81,37 +78,31 @@ class DebianBuildClient(PackageHandler):
 		if not retval :
 			changes_path = os.path.join (dirname, changes)
 			command = "dput -c %s %s %s %s" % (self.dput_cfg, self.options["dput"], self.dput_dest, changes_path)
-		if not retval :
-			if not pybitclient.run_cmd (command, pkg, self.options["dry_run"]):
+			if not pybitclient.run_cmd (command, self.options["dry_run"]):
 				retval = "upload_fail"
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
 
 	def build_slave (self, srcdir, pkg, conn_data):
-		try:
-			retval = None
-			package_dir = "%s/%s" % (srcdir, pkg.package)
-			if os.path.isdir(package_dir) :
-				command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % package_dir
-				if not pybitclient.run_cmd (command, pkg, self.options["dry_run"]):
-					retval = "build_dsc"
-				if not retval :
-					command = "sbuild --apt-update -d %s %s/%s_%s.dsc" % (pkg.suite, srcdir, pkg.source, pkg.version)
-					if not pybitclient.run_cmd (command, pkg, self.options["dry_run"]):
-						retval = "build_binary"
-				if not retval :
-					changes = "%s/%s_%s_%s.changes" % (srcdir, pkg.package, pkg.version, pkg.architecture)
-					if not os.path.isfile (changes) :
-						print "Failed to find %s file." % (changes)
-						retval = "build_changes"
+		retval = None
+		package_dir = "%s/%s" % (srcdir, pkg.package)
+		if os.path.isdir(package_dir) :
+			command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % package_dir
+			if not pybitclient.run_cmd (command, self.options["dry_run"]):
+				retval = "build_dsc"
 			if not retval :
-				retval = "success"
-			pybitclient.send_message (conn_data, retval)
-#			self.upload (srcdir, changes, pkg)
-		except Exception as e:
-			raise Exception('Error performing slave build: ' + str(e))
-			return
+				command = "sbuild --apt-update -d %s %s/%s_%s.dsc" % (pkg.suite, srcdir, pkg.source, pkg.version)
+				if not pybitclient.run_cmd (command, self.options["dry_run"]):
+					retval = "build_binary"
+			if not retval :
+				changes = "%s/%s_%s_%s.changes" % (srcdir, pkg.package, pkg.version, pkg.architecture)
+				if not os.path.isfile (changes) :
+					print "Failed to find %s file." % (changes)
+					retval = "build_changes"
+		if not retval :
+			retval = "success"
+		pybitclient.send_message (conn_data, retval)
 
 	def __init__(self):
 		try:

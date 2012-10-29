@@ -30,12 +30,7 @@ import requests
 # needs PYTHONPATH=..
 import pybit
 import multiprocessing
-
 from pybit.models import ClientMessage
-
-
-
-
 
 class PyBITClient(object):
 	states = [ "UNKNOWN",
@@ -90,6 +85,7 @@ class PyBITClient(object):
 	def move_state(self, new_state):
 		if new_state in PyBITClient.states :
 			if new_state == "CHECKOUT":
+				# FIXME: pass pkg, conn_data to fetch_source() - caution: run_cmd has a different definition in pybitclient
 				self.process = Process(target=pybitclient.run_cmd,args=(self))
 				self.process.r
 			self.last_state = current_state
@@ -166,11 +162,12 @@ class PyBITClient(object):
 			if (self.state == "CHECKOUT"):
 				move_state("BUILD")
 			elif (self.state ==  "IDLE"):
+				# FIXME
 				move_state("")
-
 
 	def is_building(self):
 		if format_handler.is_building() :
+			# FIXME
 			return True
 		return False
 

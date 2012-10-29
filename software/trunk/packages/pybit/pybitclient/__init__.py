@@ -7,14 +7,14 @@ import jsonpickle
 from amqplib import client_0_8 as amqp
 import pybit
 
-def run_cmd (cmd, pkg, simulate):
+def run_cmd (cmd, simulate):
 	if simulate == True :
 		print cmd
-		msg = TaskComplete(job.id, None)
+		return True
 	else:
 		if not os.system (cmd) :
-			msg = TaskComplete(job.id, None)
-	chan.basic_publish(msg,pybit.exchange_name,client_name)
+			return False
+	return True
 
 def send_message (conn_data, msg) :
 	conn = amqp.Connection(host=conn_data.addr_opt, userid=conn_data.userid_opt,

@@ -26,46 +26,37 @@ from buildclient import PackageHandler, VersionControlHandler
 
 class SubversionClient(VersionControlHandler):
 	def fetch_source(self, pkg, conn_data):
-		try:
-			retval = None
-			if pkg.method_type != "svn":
-				retval = "wrong_method"
-			if not retval :
-				self.workdir = os.path.join (self.options["buildroot"], pkg.suite, pkg.method_type)
-				if (hasattr(pkg, 'vcs_id')):
-					command = "svn export %s@%s %s" % (pkg.uri, pkg.vcs_id, self.workdir)
-				elif (hasattr(pkg, 'uri')):
-					command = "svn export %s %s" % (pkg.uri, self.workdir)
-				else:
-					print "Could not fetch source, no method URI found"
-					retval = "unrecognised uri"
-				if not retval :
-					if not pybitclient.run_cmd (command, pkg, self.option["dry_run"]) :
-						retval = "fetch_source"
-			if not retval :
-				if not pybitclient.run_cmd (command, pkg, self.option["dry_run"]) :
-					retval = "fetch_source"
-			if not retval :
-				retval = "success"
-			pybitclient.send_message (conn_data, retval)
-		except Exception as e:
-			raise Exception('Error fetching source: ' + str(e))
-			return
+		retval = None
+		if pkg.method_type != "svn":
+			retval = "wrong_method"
+		if not retval :
+			self.workdir = os.path.join (self.options["buildroot"], pkg.suite, pkg.method_type)
+			if (hasattr(pkg, 'vcs_id')):
+				command = "svn export %s@%s %s" % (pkg.uri, pkg.vcs_id, self.workdir)
+			elif (hasattr(pkg, 'uri')):
+				command = "svn export %s %s" % (pkg.uri, self.workdir)
+			else:
+				print "Could not fetch source, no method URI found"
+				retval = "unrecognised uri"
+		if not retval :
+			if not pybitclient.run_cmd (command, self.option["dry_run"]) :
+				retval = "fetch_source"
+		if not retval :
+			retval = "success"
+		pybitclient.send_message (conn_data, retval)
 
 	def get_srcdir (self):
 		return self.workdir
 
 	def clean_source (self, pkg) :
-		retval = None
+		retval = "success"
 		if pkg.method_type != "svn":
 			retval = "wrong_method"
 		if not retval :
 			self.cleandir = os.path.join (self.options["buildroot"], pkg.suite)
 			command = "rm -rf %s/*" % (self.cleandir)
-			if not pybitclient.run_cmd (command, pkg, self.option["dry_run"]) :
+			if not pybitclient.run_cmd (command, self.option["dry_run"]) :
 				retval = "failed_clean"
-		if not retval :
-			retval = "success"
 		pybitclient.send_message (conn_data, retval)
 
 	def __init__(self):
