@@ -34,17 +34,17 @@ import multiprocessing
 from pybit.models import ClientMessage
 
 
-	
-	
+
+
 
 class PyBITClient(object):
-	states = { "UNKNOWN",
+	states = [ "UNKNOWN",
 		"IDLE",
 		"FATAL_ERROR",
 		"CHECKOUT",
 		"BUILD",
 		"UPLOAD",
-		"CLEAN" }
+		"CLEAN" ]
 	def __init__(self, arch, distribution, format, suite, host, vhost, userid, port,
 		password, insist, id, interactive) :
 		move_state("UNKNOWN")
@@ -61,7 +61,7 @@ class PyBITClient(object):
 		self.insist = insist
 		self.id = id
 		self.interactive = interactive
-		
+
 		self.routing_key = pybit.get_build_route_name(self.distribution,
 			self.arch, self.suite, self.format)
 
@@ -90,7 +90,7 @@ class PyBITClient(object):
 	def move_state(self, new_state):
 		if new_state in PyBITClient.states :
 			if new_state == "CHECKOUT":
-				self.process = Process(target=pybitclient.run_cmd,args=(self.))
+				self.process = Process(target=pybitclient.run_cmd,args=(self))
 				self.process.r
 			self.last_state = current_state
 			self.current_state = new_state
@@ -151,6 +151,12 @@ class PyBITClient(object):
 			return
 		move_state("CHECKOUT")
 
+	def message_handler(self, msg, build_req):
+		if self.interactive:
+			self.interactive_handler(msg, build_req)
+		else:
+			build_handler(msg, build_req)
+
 	def command_handler(self, msg, cmd_req):
 		if not isinstance(cmd_req, CommandRequest):
 			self.chan.basic_recover(True)
@@ -160,11 +166,13 @@ class PyBITClient(object):
 			if (self.state == "CHECKOUT"):
 				move_state("BUILD")
 			elif (self.state ==  "IDLE"):
-				move_state(""
+				move_state("")
 
 
-	def  is_building():
-		if format_handler.is_building()
+	def is_building(self):
+		if format_handler.is_building() :
+			return True
+		return False
 
 class VersionControlHandler(object):
 	def fetch_source(self):

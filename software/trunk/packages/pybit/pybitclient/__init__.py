@@ -4,20 +4,25 @@ import os
 import errno
 import json
 import jsonpickle
+from amqplib import client_0_8 as amqp
 import pybit
 
-def run_cmd (cmd, simulate, job, client_name, host="localhost:5672", userid="guest", password="guest", virtual_host="/"):
-		conn = amqp.Connection(host=host, userid=userid, password=password, virtual_host=vhost, insist=False)
-		chan = conn.channel()
-		msg = TaskFailed(job.id, None)
-		if simulate == True :
-			print cmd
+def run_cmd (cmd, pkg, simulate):
+	if simulate == True :
+		print cmd
+		msg = TaskComplete(job.id, None)
+	else:
+		if not os.system (cmd) :
 			msg = TaskComplete(job.id, None)
-		else:
-			if not os.system (cmd) :
-				msg = TaskComplete(job.id, None)
-		chan.basic_publish(msg,pybit.exchange_name,client_name)
+	chan.basic_publish(msg,pybit.exchange_name,client_name)
 
+def send_message (conn_data, msg) :
+	conn = amqp.Connection(host=conn_data.addr_opt, userid=conn_data.userid_opt,
+		password=conn_data.pass_opt, virtual_host=conn_data.vhost_opt, insist=False)
+	chan = conn.channel()
+	chan.basic_publish(amqp.Message(jsonpickle.encode(msg)),exchange=pybit.exchange_name,routing_key=conn_data.key)
+	chan.close()
+	conn.close()
 
 def get_settings(path):
 	try:

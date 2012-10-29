@@ -24,29 +24,30 @@ import os
 import pybitclient
 from buildclient import PackageHandler, VersionControlHandler
 
-report_name = "controller"
-
 class SubversionClient(VersionControlHandler):
-	def fetch_source(self, pkg):
+	def fetch_source(self, pkg, conn_data):
 		try:
+			retval = None
 			if pkg.method_type != "svn":
-				return
-			self.workdir = os.path.join (self.options["buildroot"], pkg.suite, pkg.method_type)
-			pybitclient.mkdir_p (self.workdir)
-			if os.path.isdir(self.workdir) :
-				os.chdir (self.workdir)
-			else:
-				return
-			if (hasattr(pkg, 'vcs_id')):
-				command = "svn export %s@%s" % (pkg.uri, pkg.vcs_id)
-			elif (hasattr(pkg, 'uri')):
-				command = "svn export %s" % (pkg.uri)
-			else:
-				print "Could not fetch source, no method URI found"
-				return
-			if not pybitclient.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]):
-				return
-			return
+				retval = "wrong_method"
+			if not retval :
+				self.workdir = os.path.join (self.options["buildroot"], pkg.suite, pkg.method_type)
+				if (hasattr(pkg, 'vcs_id')):
+					command = "svn export %s@%s %s" % (pkg.uri, pkg.vcs_id, self.workdir)
+				elif (hasattr(pkg, 'uri')):
+					command = "svn export %s %s" % (pkg.uri, self.workdir)
+				else:
+					print "Could not fetch source, no method URI found"
+					retval = "unrecognised uri"
+				if not retval :
+					if not pybitclient.run_cmd (command, pkg, self.option["dry_run"]) :
+						retval = "fetch_source"
+			if not retval :
+				if not pybitclient.run_cmd (command, pkg, self.option["dry_run"]) :
+					retval = "fetch_source"
+			if not retval :
+				retval = "success"
+			pybitclient.send_message (conn_data, retval)
 		except Exception as e:
 			raise Exception('Error fetching source: ' + str(e))
 			return
@@ -55,15 +56,17 @@ class SubversionClient(VersionControlHandler):
 		return self.workdir
 
 	def clean_source (self, pkg) :
+		retval = None
 		if pkg.method_type != "svn":
-			return
-		self.cleandir = os.path.join (self.options["buildroot"], pkg.suite)
-		if os.path.isdir(self.cleandir) :
-			os.chdir (self.cleandir)
-			command = "rm -rf ./*"
-			if not pybitclient.run_cmd (command, "failed", pkg, report_name, self.options["dry_run"]) :
-				return
-			return
+			retval = "wrong_method"
+		if not retval :
+			self.cleandir = os.path.join (self.options["buildroot"], pkg.suite)
+			command = "rm -rf %s/*" % (self.cleandir)
+			if not pybitclient.run_cmd (command, pkg, self.option["dry_run"]) :
+				retval = "failed_clean"
+		if not retval :
+			retval = "success"
+		pybitclient.send_message (conn_data, retval)
 
 	def __init__(self):
 		VersionControlHandler.__init__(self)
