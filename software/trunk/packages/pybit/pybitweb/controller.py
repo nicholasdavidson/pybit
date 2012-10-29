@@ -67,7 +67,7 @@ class Controller:
 						if (architectures == "all"):
 							# this is an arch-all request so we only need to build for the first supported arch
 							print "ARCH-ALL REQUEST SO WE ONLY NEED TO BUILD FOR FIRST SUPPORTED ARCH..."
-						return
+							return
 					else :
 						print "FAILED TO ADD JOB"
 						response.status = "404 - failed to add job."
