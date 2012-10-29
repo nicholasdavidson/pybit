@@ -4,6 +4,7 @@
 
 import jsonpickle
 
+
 # new
 class Model(object):
 	def toJson(self):
@@ -107,6 +108,15 @@ class BuildRequest(Model):
 		self.job = job
 		self.transport = transport
 		self.web_host = web_host
+
+
+class AMQPConnection(object):
+	def __init__(self, client_name, host, userid, password, vhost):
+		self.client_name = client_name
+		self.host = host
+		self.userid = userid
+		self.password = password
+		self.vhost = vhost
 
 
 class CommandRequest(Model):
