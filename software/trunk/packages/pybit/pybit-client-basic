@@ -10,7 +10,7 @@ import jsonpickle
 import requests
 import pybit
 import os
-import time 
+import time
 
 from pybit.models import PackageInstance, ClientMessage, BuildRequest
 from pybitclient.debian import DebianBuildClient
@@ -28,7 +28,7 @@ def signal_handler(signal, frame):
 	except Exception as e:
 		raise Exception('Error in signal handler: ' + str(e))
 		return
-		
+
 try:
 	signal.signal(signal.SIGINT, signal_handler)
 	print "Hit Ctrl-C to quit."
@@ -38,10 +38,10 @@ except Exception as e:
 
 if __name__ == '__main__':
 	parser = OptionParser()
-	
+
 	parser.add_option("--arch", dest="arch", default="i386",
 		help="Architecture to use, defaults to i386", metavar= META + "ARCH")
-	parser.add_option("--distribution", dest="distribution", 
+	parser.add_option("--distribution", dest="distribution",
 		default="Debian", help="Distribution to use, defaults to Debian",
 		metavar= META +"DIST")
 	parser.add_option("--format", dest="format", default="deb",
@@ -64,15 +64,15 @@ if __name__ == '__main__':
 		help="id to use for build-client control queue, defaults to 1 but is unique per amqp server.", metavar=META + "INSIST")
 	parser.add_option("--interactive", dest="interactive", default=True,
 		help="Run the basic client in interactive mode.", metavar=META + "INTERACTIVE")
-	
+
 	(options, args) = parser.parse_args()
-	build_client = PyBITClient(options.arch, options.distribution, 
+	build_client = PyBITClient(options.arch, options.distribution,
 		options.format, options.suite, options.host, options.vhost,
 		options.userid, options.port, options.password, options.insist,
 		options.id, options.interactive)
 	def recv_callback(msg):
 		build_req = jsonpickle.decode(msg.body)
-		build_client.msg_handler(msg, build_req)
+		build_client.message_handler(msg, build_req)
 	
 	def cmd_callback(msg):
 		cmd_req = jsonpickle.decode(msg.body)

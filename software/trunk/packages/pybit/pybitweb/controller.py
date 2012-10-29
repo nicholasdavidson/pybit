@@ -79,7 +79,7 @@ class Controller:
 			response.status = "500 - Error submitting job"
 			return
 		return
-		
+
 	def process_package(self, name, version) :
 		# retrieve existing package or try to add a new one
 		package = None
