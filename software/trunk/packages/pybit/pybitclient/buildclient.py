@@ -29,12 +29,25 @@ import pybitclient
 import requests
 # needs PYTHONPATH=..
 import pybit
+import multiprocessing
 
 from pybit.models import ClientMessage
 
+
+	
+	
+
 class PyBITClient(object):
+	states = { "UNKNOWN",
+		"IDLE",
+		"FATAL_ERROR",
+		"CHECKOUT",
+		"BUILD",
+		"UPLOAD",
+		"CLEAN" }
 	def __init__(self, arch, distribution, format, suite, host, vhost, userid, port,
 		password, insist, id, interactive) :
+		move_state("UNKNOWN")
 		self.arch = arch
 		self.distribution = distribution
 		self.suite = suite
@@ -48,7 +61,7 @@ class PyBITClient(object):
 		self.insist = insist
 		self.id = id
 		self.interactive = interactive
-
+		
 		self.routing_key = pybit.get_build_route_name(self.distribution,
 			self.arch, self.suite, self.format)
 
@@ -66,6 +79,23 @@ class PyBITClient(object):
 
 		print "Creating private command queue with name:" + self.client_queue_name
 		self.chan.queue_declare(queue=self.client_queue_name, durable=False, exclusive=True, auto_delete=False)
+		if (format == "deb") :
+			self.format_handler = DebianBuildClient()
+		else:
+			self.format_handler = None
+		self.vcs_handler = None
+		self.process = None
+
+
+	def move_state(self, new_state):
+		if new_state in PyBITClient.states :
+			if new_state == "CHECKOUT":
+				self.process = Process(target=pybitclient.run_cmd,args=(self.))
+				self.process.r
+			self.last_state = current_state
+			self.current_state = new_state
+		else:
+			print "Error: %s not a valid state" % (new_state)
 
 
 	def interactive_handler(self, msg, build_req) :
@@ -113,17 +143,28 @@ class PyBITClient(object):
 			r = requests.put(job_status_url, payload)
 
 	def build_handler(self, msg, build_req):
-		pass
+		if not isinstance(build_req, BuildRequest) :
+			self.chan.basic_recover(True)
+			return
+		if self.process:
+			self.chan.basic_recover(True)
+			return
+		move_state("CHECKOUT")
 
-	def message_handler(self, msg, build_req):
-		if self.interactive:
-			interactive_handler(msg, build_req)
-		else:
-			build_handler(msg, build_req)
+	def command_handler(self, msg, cmd_req):
+		if not isinstance(cmd_req, CommandRequest):
+			self.chan.basic_recover(True)
+			return
+		if isinstance(cmd_req, TaskComplete):
+			self.process.join()
+			if (self.state == "CHECKOUT"):
+				move_state("BUILD")
+			elif (self.state ==  "IDLE"):
+				move_state(""
 
 
 	def  is_building():
-		pass
+		if format_handler.is_building()
 
 class VersionControlHandler(object):
 	def fetch_source(self):

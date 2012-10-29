@@ -4,18 +4,19 @@ import os
 import errno
 import json
 import jsonpickle
+import pybit
 
-def run_cmd (cmd, fail_msg, pkg, report, simulate):
-	try:
+def run_cmd (cmd, simulate, job, client_name, host="localhost:5672", userid="guest", password="guest", virtual_host="/"):
+		conn = amqp.Connection(host=host, userid=userid, password=password, virtual_host=vhost, insist=False)
+		chan = conn.channel()
+		msg = TaskFailed(job.id, None)
 		if simulate == True :
 			print cmd
-			return True
+			msg = TaskComplete(job.id, None)
 		else:
-			if os.system (cmd) :
-				print "E: Failed to run %s" % (cmd)
-				return False
-	except Exception as e:
-		raise Exception('Error running command: ' + str(e))
+			if not os.system (cmd) :
+				msg = TaskComplete(job.id, None)
+		chan.basic_publish(msg,pybit.exchange_name,client_name)
 
 
 def get_settings(path):

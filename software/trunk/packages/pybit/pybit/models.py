@@ -87,11 +87,13 @@ class PackageInstance(Model):
 		self.format = format
 		self.master = master
 
+
 class Job(Model):
 	def __init__(self,id,packageinstance,buildclient):
 		self.id = id
 		self.packageinstance = packageinstance
 		self.buildclient = buildclient
+
 
 class SuiteArch(Model):
 	def __init__(self,id,suite_id,arch_id):
@@ -99,21 +101,36 @@ class SuiteArch(Model):
 		self.suite_id = suite_id
 		self.arch_id = arch_id
 
+
 class BuildRequest(Model):
 	def __init__(self,job,transport,web_host):
 		self.job = job
 		self.transport = transport
 		self.web_host = web_host
 
+
 class CommandRequest(Model):
 	def __init__(self,job,web_host):
 		self.job = job
 		self.web_host = web_host
 
+
 class CancelRequest(CommandRequest):
 	def  __init__(self,job,web_host):
 		CommandRequest.__init__(self, job, web_host)
 
+
 class StatusRequest(CommandRequest):
 	def  __init__(self,job,web_host):
+		CommandRequest.__init__(self, job, web_host)
+
+
+class TaskComplete(CommandRequest):
+	def __init__(self, job, web_host):
+		CommandRequest.__init__(self, job, web_host)
+		
+
+
+class TaskFailed(CommandRequest):
+	def __init__(self, job, web_host):
 		CommandRequest.__init__(self, job, web_host)

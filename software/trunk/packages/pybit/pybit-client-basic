@@ -72,20 +72,16 @@ if __name__ == '__main__':
 		options.id, options.interactive)
 	def recv_callback(msg):
 		build_req = jsonpickle.decode(msg.body)
-		if not isinstance(build_req, BuildRequest) :
-			build_client.chan.basic_recover(True)
-			return
 		build_client.msg_handler(msg, build_req)
-		cmd_req = None
-		while (build_client.is_building()) :
-			time.sleep(1)
-			cmd_req = build_client.chan.basic_get(build_client.client_queue_name)
-			if (cmd_req is not None and isinstance(cmd_req, CommandRequest)):
-				build_client.control_handler(msg, cmd_req)
+	
+	def cmd_callback(msg):
+		cmd_req = jsonpickle.decode(msg.body)
+		build_client.command_handler(msg, build_req)
 
 
 	try:
 		build_client.chan.basic_consume(queue=build_client.queue_name, no_ack=False, callback=recv_callback, consumer_tag="build_callback")
+		build_client.chan.basic_consume(queue=build_client.client_queue_name, no_ack=False, callback=cmd_callback, consumer_tag="build_callback")
 		while True:
 			build_client.chan.wait()
 		# drop registration
