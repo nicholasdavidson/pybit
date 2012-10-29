@@ -2,8 +2,9 @@ pybit (0.0.37) pybit; urgency=low
 
   * Implement a send_message during the modified run_cmd to report on a
     failure of a sequence of tasks within one Process callback routine.
+  * fold pybit-client  attribute checks into a simpler function
 
- -- Neil Williams <neilw@toby-churchill.com>  Mon, 29 Oct 2012 16:15:21 +0000
+ -- Neil Williams <neilw@toby-churchill.com>  Mon, 29 Oct 2012 16:34:33 +0000
 
 pybit (0.0.36) pybit; urgency=low
 
