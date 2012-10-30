@@ -30,13 +30,15 @@ import requests
 # needs PYTHONPATH=..
 import pybit
 import multiprocessing
-from pybit.models import ClientMessage
+from pybit.models import ClientMessage, AMQPConnection
 
 class PyBITClient(object):
 
 
-	def move_state(self, new_state)
+	def move_state(self, new_state):
 		if (new_state in state_table):
+			#FIXME: we can stack state handling in here.
+				
 			self.old_state = state
 			self.state = new_state
 		else:
@@ -48,39 +50,62 @@ class PyBITClient(object):
 		print "Idle handler"
 		if (isinstance(decoded) == BuildRequest):
 			move_state("BUILD")
-			self, client_name, host, userid, password, vhost
-			conn_info = AMQPConnection(self.client_queue_name,self.hostname,
-				self.userid, self.password, self.vhost)
-			self.process = Process(target=vcs_handler.fetch_source,args=(decoded.job.package_instance,conn_info)
+			self.current_request = decoded
+			if (self.current_request.transport.method == "svn" or
+				self.current_request.transport.method == "svn+ssh"):
+					self.vcs_handler = SubversionClient()
+			args = (self.current_request.job.package_instance,self.conn_info)
+			self.process = Process(target=vcs_handler.fetch_source,args=args)
 			self.process.start()
 
 	def fatal_error_handler(self, msg, decoded):
 		print "Fatal Error handler"
 
 	def checkout_handler(self, msg, decoded):
-		if (isinstance(decoded, TaskComplete) :
+		if isinstance(decoded, TaskComplete) :
 			process.join()
+			args = (self.current_request.job.package_instance,self.conn_info)
 			if decoded.success == True:
-				move_state("")
-			else
+				move_state("BUILD")
+				if decoded.job.decoded.job.package_instance.master == True:
+					self.process = Process(target=format_handler.build_master, args=args)
+				else:
+					self.process = Process(target=format_handler.build_slave, args=args)
+			else:
 				move_state("CLEAN")
-				self.process = Process(target=vcs_handler.clean_source, args=(decoded.job.package_instance,conn_info)
-				self.process.start()
+				self.process = Process(target=vcs_handler.clean_source, args=args)
+			self.process.start()
 
 	def build_handler(self, msg, decoded):
-		print "Build handler"
+		if isinstance(decoded, TaskComplete) :
+			self.process.join()
+			args = (self.current_request.job.package_instance,self.conn_info)
+			if decoded.success == True:
+				move_state("UPLOAD")
+				self.process = Process(target=format_handler.upload, args=args)
+				
+			else:
+				move_state("CLEAN")
+				self.process = Process(target=vcs_handler.clean_source, args=args)
+			self.process.start()
+			
 
 	def upload_handler(self, msg, decoded):
-		print "Upload handler"
+		if isinstance(decoded, TaskComplete) :
+			args = (self.current_request.job.package_instance,self.conn_info)
+			self.process.join()
+			move_state("CLEAN")
+			self.process = Process(target=vcs_handler.clean_source, args=args)
+			self.process.start()
 
 	def clean_handler(self, msg, decoded):
 		print "Clean handler"
-		if (isinstance(decoded, TaskComplete) :
+		if isinstance(decoded, TaskComplete) :
 			process.join()
+			self.current_request = None
+			self.process = None
 			if decoded.success == True:
-				if (old_state == "UPLOAD"):
-				else
-				move_state("IDLE")
+				move_state("IDLE")	
 			else:
 				move_state("FATAL_ERROR")
 			
@@ -88,14 +113,14 @@ class PyBITClient(object):
 	def __init__(self, arch, distribution, format, suite, host, vhost, userid, port,
 		password, insist, id, interactive) :
 		self.state_table = {}
-		self.state_table["UNKNOWN"] = fatal_error_handler
-		self.state_table["IDLE"] = idle_handler
-		self.state_table["FATAL_ERROR"] = fatal_error_handler
-		self.state_table["CHECKOUT"] = checkout_handler
-		self.state_table["BUILD"] = build_handler
-		self.state_table["UPLOAD"] = upload_handler
-		self.state_table["CLEAN"] = clean_handler
-		
+		self.state_table["UNKNOWN"] = self.fatal_error_handler
+		self.state_table["IDLE"] = self.idle_handler
+		self.state_table["FATAL_ERROR"] = self.fatal_error_handler
+		self.state_table["CHECKOUT"] = self.checkout_handler
+		self.state_table["BUILD"] = self.build_handler
+		self.state_table["UPLOAD"] = self.upload_handler
+		self.state_table["CLEAN"] = self.clean_handler
+
 		self.arch = arch
 		self.distribution = distribution
 		self.suite = suite
@@ -117,6 +142,10 @@ class PyBITClient(object):
 			self.arch, self.suite, self.format)
 
 		self.client_queue_name = pybit.get_client_queue(self.id)
+		
+		self.conn_info = AMQPConnection(self.client_queue_name,self.host,
+			self.userid, self.password, self.vhost)
+		
 		print "Connecting with... \nhost: " + self.host + "\nuser id: " + self.userid + "\npassword: "  + self.password + "\nvhost: " + self.vhost + "\ninsist: " + str(self.insist)
 		self.conn = amqp.Connection(host=self.host, userid=self.userid, password=self.password, virtual_host=self.vhost, insist= self.insist)
 		self.chan = self.conn.channel()
@@ -145,7 +174,8 @@ class PyBITClient(object):
 		self.state_table[self.current_state](msg, build_req)
 
 	def command_handler(self, msg, cmd_req):
-		if not isinstance(cmd_req, CommandRequest):
+		if (not isinstance(cmd_req, TaskComplete) or
+			not isinstance(cmd_req, CommandRequest)):
 			self.chan.basic_recover(True)
 			return
 		self.state_table[self.current_state](msg, cmd_req)

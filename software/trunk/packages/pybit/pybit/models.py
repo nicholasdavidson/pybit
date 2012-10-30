@@ -136,7 +136,7 @@ class StatusRequest(CommandRequest):
 
 
 class TaskComplete(Model):
-	def __init__(self, success = True, message):
+	def __init__(self, message, success = True):
 		self.success = success
 		self.message = message
 		
