@@ -29,7 +29,6 @@ import pybitclient
 import requests
 # needs PYTHONPATH=..
 import pybit
-import multiprocessing
 from pybit.models import ClientMessage
 import debian
 

@@ -11,11 +11,13 @@ import requests
 import pybit
 import os
 import time
+import multiprocessing
 
 from pybit.models import PackageInstance, ClientMessage, BuildRequest
 from pybitclient.debian import DebianBuildClient
 from pybitclient.subversion import SubversionClient
 from pybit.models import AMQPConnection
+
 
 class PyBITClient(object):
 
@@ -32,14 +34,14 @@ class PyBITClient(object):
 
 	def idle_handler(self, msg, decoded):
 		print "Idle handler"
-		if (isinstance(decoded) == BuildRequest):
-			move_state("BUILD")
+		if isinstance(decoded, BuildRequest):
+			self.move_state("BUILD")
 			self.current_request = decoded
 			if (self.current_request.transport.method == "svn" or
 				self.current_request.transport.method == "svn+ssh"):
 					self.vcs_handler = SubversionClient()
-			args = (self.current_request.job.package_instance,self.conn_info)
-			self.process = Process(target=vcs_handler.fetch_source,args=args)
+			args = (self.current_request.job.packageinstance,self.conn_info)
+			self.process = multiprocessing.Process(target=self.vcs_handler.fetch_source,args=args)
 			self.process.start()
 
 	def fatal_error_handler(self, msg, decoded):
@@ -48,38 +50,38 @@ class PyBITClient(object):
 	def checkout_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
 			process.join()
-			args = (self.current_request.job.package_instance,self.conn_info)
+			args = (self.current_request.job.packageinstance,self.conn_info)
 			if decoded.success == True:
-				move_state("BUILD")
-				if decoded.job.decoded.job.package_instance.master == True:
-					self.process = Process(target=format_handler.build_master, args=args)
+				self.move_state("BUILD")
+				if decoded.job.decoded.job.packageinstance.master == True:
+					self.process = multiprocessing.Process(target=self.format_handler.build_master, args=args)
 				else:
-					self.process = Process(target=format_handler.build_slave, args=args)
+					self.process = multiprocessing.Process(target=self.format_handler.build_slave, args=args)
 			else:
-				move_state("CLEAN")
-				self.process = Process(target=vcs_handler.clean_source, args=args)
+				self.move_state("CLEAN")
+				self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
 			self.process.start()
 
 	def build_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
 			self.process.join()
-			args = (self.current_request.job.package_instance,self.conn_info)
+			args = (self.current_request.job.packageinstance,self.conn_info)
 			if decoded.success == True:
-				move_state("UPLOAD")
-				self.process = Process(target=format_handler.upload, args=args)
+				self.move_state("UPLOAD")
+				self.process = multiprocessing.Process(target=self.format_handler.upload, args=args)
 				
 			else:
-				move_state("CLEAN")
-				self.process = Process(target=vcs_handler.clean_source, args=args)
+				self.move_state("CLEAN")
+				self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
 			self.process.start()
 			
 
 	def upload_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
-			args = (self.current_request.job.package_instance,self.conn_info)
+			args = (self.current_request.job.packageinstance,self.conn_info)
 			self.process.join()
-			move_state("CLEAN")
-			self.process = Process(target=vcs_handler.clean_source, args=args)
+			self.move_state("CLEAN")
+			self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
 			self.process.start()
 
 	def clean_handler(self, msg, decoded):
@@ -140,6 +142,7 @@ class PyBITClient(object):
 
 		print "Creating private command queue with name:" + self.client_queue_name
 		self.chan.queue_declare(queue=self.client_queue_name, durable=False, exclusive=True, auto_delete=False)
+		self.chan.queue_bind(queue=self.client_queue_name, exchange=pybit.exchange_name, routing_key=self.client_queue_name)
 		if (format == "deb") :
 			self.format_handler = DebianBuildClient()
 		else:
@@ -149,15 +152,17 @@ class PyBITClient(object):
 		self.move_state("IDLE")
 
 	def message_handler(self, msg, build_req):
+		print "Message Handler"
 		if not isinstance(build_req, BuildRequest) :
 			self.chan.basic_recover(True)
 			return
 		if self.process:
 			self.chan.basic_recover(True)
 			return
-		self.state_table[self.current_state](msg, build_req)
+		self.state_table[self.state](msg, build_req)
 
 	def command_handler(self, msg, cmd_req):
+		print "Command Handler"
 		if (not isinstance(cmd_req, TaskComplete) or
 			not isinstance(cmd_req, CommandRequest)):
 			self.chan.basic_recover(True)
@@ -230,7 +235,7 @@ if __name__ == '__main__':
 	
 	def cmd_callback(msg):
 		cmd_req = jsonpickle.decode(msg.body)
-		build_client.command_handler(msg, build_req)
+		build_client.command_handler(msg, cmd_req)
 
 
 	try:

@@ -6,6 +6,7 @@ import json
 import jsonpickle
 from amqplib import client_0_8 as amqp
 import pybit
+from pybit.models import TaskComplete
 
 def run_cmd (cmd, simulate):
 	if simulate == True :
@@ -17,10 +18,16 @@ def run_cmd (cmd, simulate):
 	return True
 
 def send_message (conn_data, msg) :
-	conn = amqp.Connection(host=conn_data.addr_opt, userid=conn_data.userid_opt,
-		password=conn_data.pass_opt, virtual_host=conn_data.vhost_opt, insist=False)
+	conn = amqp.Connection(host=conn_data.host, userid=conn_data.userid,
+		password=conn_data.password, virtual_host=conn_data.vhost, insist=True)
 	chan = conn.channel()
-	chan.basic_publish(amqp.Message(jsonpickle.encode(msg)),exchange=pybit.exchange_name,routing_key=conn_data.key)
+	task = None
+	if msg == "success":
+		task = TaskComplete(msg, True)
+	else:
+		task = TaskComplete(msg, False)
+	print "Publishing message: \"%s\" with success: %s to %s" % (msg, task.success, conn_data.client_name)
+	chan.basic_publish(amqp.Message(task.toJson(),exchange=pybit.exchange_name,routing_key=conn_data.client_name))
 	chan.close()
 	conn.close()
 
@@ -60,22 +67,3 @@ def mkdir_p(path):
 			raise Exception("Exception" + str(e))
 			return
 
-class deb_package:
-	def __init__(self,msg_body=''):
-		try:
-			if msg_body:
-				print msg_body
-				tmp = json.loads(msg_body)
-				self.method_type = tmp['method_type']
-				self.format = tmp['format']
-				self.uri = tmp['uri']
-				self.vcs_id = tmp['vcs_id']
-				self.version = tmp['version']
-				self.architecture = tmp['architecture']
-				self.suite = tmp['suite']
-				self.distribution = tmp['distribution']
-				self.name = tmp['name']
-				#self = jsonpickle.decode (msg_body) # TODO: broken :(
-		except Exception as e:
-			raise Exception('Cannot construct deb_package: ' + str(e))
-			return

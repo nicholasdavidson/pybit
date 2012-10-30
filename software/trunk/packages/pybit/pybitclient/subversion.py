@@ -27,20 +27,23 @@ from buildclient import PackageHandler, VersionControlHandler
 class SubversionClient(VersionControlHandler):
 	def fetch_source(self, pkg, conn_data):
 		retval = None
-		if pkg.method_type != "svn":
-			retval = "wrong_method"
-		if not retval :
-			self.workdir = os.path.join (self.options["buildroot"], pkg.suite, pkg.method_type)
-			if (hasattr(pkg, 'vcs_id')):
-				command = "svn export %s@%s %s" % (pkg.uri, pkg.vcs_id, self.workdir)
-			elif (hasattr(pkg, 'uri')):
-				command = "svn export %s %s" % (pkg.uri, self.workdir)
-			else:
-				print "Could not fetch source, no method URI found"
-				retval = "unrecognised uri"
-		if not retval :
-			if not pybitclient.run_cmd (command, self.option["dry_run"]) :
-				retval = "fetch_source"
+		try:
+			if pkg.transport.method != "svn":
+				retval = "wrong_method"
+			if not retval :
+				self.workdir = os.path.join (self.options["buildroot"], pkg.suite, pkg.method_type)
+				if (hasattr(pkg, 'vcs_id')):
+					command = "svn export %s@%s %s" % (pkg.uri, pkg.vcs_id, self.workdir)
+				elif (hasattr(pkg, 'uri')):
+					command = "svn export %s %s" % (pkg.uri, self.workdir)
+				else:
+					print "Could not fetch source, no method URI found"
+					retval = "unrecognised uri"
+			if not retval :
+				if not pybitclient.run_cmd (command, self.option["dry_run"]) :
+					retval = "fetch_source"
+		except Exception as e:
+			retval = str(e)
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
