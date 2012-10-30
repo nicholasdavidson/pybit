@@ -61,6 +61,7 @@ def put_packageinstance():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
+@route('/packageinstance/<id:int>/delete', method='GET')
 @route('/packageinstance/<id:int>', method='DELETE')
 def delete_packageinstance(id):
 	try:

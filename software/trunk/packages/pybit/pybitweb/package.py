@@ -53,6 +53,7 @@ def put_package():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
+@route('/package/<id:int>/delete', method='GET')
 @route('/package/<id:int>', method='DELETE')
 def delete_package(id):
 	try:

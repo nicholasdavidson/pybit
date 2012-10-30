@@ -160,6 +160,7 @@ def get_jobid(jobid):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
+@route('/job/<jobid:int>/delete', method='GET')
 @route('/job/<jobid:int>', method='DELETE')
 def del_jobid(jobid):
 	try:

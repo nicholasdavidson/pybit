@@ -1,7 +1,8 @@
-build-d statuses etc
+buildd statuses, commands
 reports
 jobs by state
 suitearches
 delete etc...
-
+make cancel buttons work
+deleting things - lookups?
 most of it, really...

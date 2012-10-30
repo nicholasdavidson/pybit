@@ -44,6 +44,7 @@
 	      <li><a href="package.htm">Packages</a></li>
               <li><a href="packageinstance.htm">Package Instances</a></li>
 	      <li><a href="job.htm">Jobs</a></li>
+	      <li><a href="buildd.htm">Build Boxes</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -62,12 +63,12 @@
               <li><a href="lookups.htm#dists">Dists</a></li>
               <li><a href="lookups.htm#formats">Formats</a></li>
               <li><a href="lookups.htm#suites">Suites</a></li>
-              <li><a href="lookups.htm#buildds">BuildBoxes</a></li>
               <li class="nav-header">Packages</li>
               <li><a href="package.htm">All Packages</a></li>
               <li><a href="packageinstance.htm">Package Instances</a></li>
               <li class="nav-header">Jobs</li>
               <li><a href="job.htm">Jobs</a></li>
+              <li><a href="buildd.htm">BuildBoxes</a></li>
             </ul>
           </div><!--/.well -->
 </div>
@@ -141,19 +142,6 @@
 	<tr><th colspan='2'>Formats</th></tr>
 	</table>
 
-<form class="form-inline" method="POST" action="http://localhost:8080/buildd">
-					<legend>Add a Buildbox</legend>
-					<label for="name">Name</label>
-					<input name="name" type="text" />
-					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
-					</form>
-
-	<a id="buildds"></a>
-	<table id="tbl_buildds"  class="table table-bordered table-condensed">
-	<tr><th colspan='2'>Buildboxes</th></tr>
-	</table>
-
-
       <hr>
 
       <footer>
@@ -171,7 +159,7 @@ $().ready(function ()
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_arches").append("<tr><td><a href='http://localhost:8080/package/" + field.id + "'>" + field.name + "</a></td></tr>");
+			$("#tbl_arches").append("<tr><td><a href='http://localhost:8080/arch/" + field.id + "'>" + field.name + "</a></td></tr>");
 		});
 	});
 
@@ -208,15 +196,6 @@ $().ready(function ()
 		$.each(json, function(i, field)
 		{
 			$("#tbl_suites").append("<tr><td><a href='http://localhost:8080/suite/" + field.id + "'>" + field.name + "</a></td></tr>");
-		});
-	});
-
-	var url = "http://localhost:8080/buildd"
-	$.getJSON(url, function(json)
-	{
-		$.each(json, function(i, field)
-		{
-			$("#tbl_buildds").append("<tr><td><a href='http://localhost:8080/buildd/" + field.id + "'>" + field.name + "</a></td></tr>");
 		});
 	});
 });

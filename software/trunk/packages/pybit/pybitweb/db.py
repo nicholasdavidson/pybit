@@ -419,7 +419,7 @@ class Database(object):
 			jobs = []
 			for i in res:
 				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
-				jobs.append(jobs.append(job(i['job_id'],packageinstance,id)))
+				jobs.append(jobs.append(Job(i['job_id'],packageinstance,id)))
 
 			return jobs
 		except Exception as e:

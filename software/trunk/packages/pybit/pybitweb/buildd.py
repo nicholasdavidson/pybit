@@ -51,6 +51,7 @@ def get_buildd_id(id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
+@route('/buildd/<id:int>/delete', method='GET')
 @route('/buildd/<id:int>', method='DELETE')
 def delete_buildd_id(id):
 	try:
