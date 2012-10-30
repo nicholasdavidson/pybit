@@ -28,7 +28,7 @@ def vcs_hook():
 				return None
 			else :
 				print "RECEIVED BUILD REQUEST FOR", package_name, version, suite, architectures
-				buildController.process_job(uri, method, dist, vcs_id, architectures, version, package_name, suite, format, Transport(None, method, uri, vcs_id))
+				buildController.process_job(dist, architectures, version, package_name, suite, format, Transport(None, method, uri, vcs_id))
 				return
 	except Exception as e:
 		raise Exception('Exception encountered in vcs_hook: ' + str(e))
@@ -134,7 +134,7 @@ def put_job():
 
 			# Pass to controller to queue up
 			transport = Transport(None, method, uri, vcs_id)
-			buildController.process_job(uri,method,dist,vcs_id,arch,package_version,package_name,suite,format,transport)
+			buildController.process_job(dist, arch, package_version, package_name, suite, format, transport)
 		else:
 			response.status = "400 - Required fields missing."
 		return

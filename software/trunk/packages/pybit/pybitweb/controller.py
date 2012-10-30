@@ -29,7 +29,7 @@ class Controller:
 				raise Exception('Error creating controller (Maybe we cannot connect to queue?) - ' + str(e))
 				return
 
-	def process_job(self, uri, method, dist, vcs_id, architectures, version, name, suite, format, transport) :
+	def process_job(self, dist, architectures, version, name, suite, format, transport) :
 		try:
 			supported_arches = myDb.get_supported_architectures(suite)
 			print "SUPPORTED ARCHITECTURES:", supported_arches
