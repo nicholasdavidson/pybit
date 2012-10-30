@@ -87,14 +87,15 @@ class PyBITClient(object):
 	def clean_handler(self, msg, decoded):
 		print "Clean handler"
 		if isinstance(decoded, TaskComplete) :
-			process.join()
+			self.process.join()
 			self.current_request = None
 			self.process = None
 			if decoded.success == True:
-				move_state("IDLE")	
+				self.move_state("IDLE")	
 			else:
-				move_state("FATAL_ERROR")
-			
+				self.move_state("FATAL_ERROR")
+				
+		
 
 	def __init__(self, arch, distribution, format, suite, host, vhost, userid, port,
 		password, insist, id, interactive) :

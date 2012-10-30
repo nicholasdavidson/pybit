@@ -109,6 +109,8 @@ class BuildRequest(Model):
 		self.transport = transport
 		self.web_host = web_host
 
+	def get_suite_name(self):
+		return self.job.packageinstance.suite.name
 
 class AMQPConnection(object):
 	def __init__(self, client_name, host, userid, password, vhost):
