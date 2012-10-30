@@ -13,7 +13,7 @@ import os
 import time
 import multiprocessing
 
-from pybit.models import PackageInstance, ClientMessage, BuildRequest
+from pybit.models import PackageInstance, ClientMessage, BuildRequest, TaskComplete, CommandRequest
 from pybitclient.debian import DebianBuildClient
 from pybitclient.subversion import SubversionClient
 from pybit.models import AMQPConnection
@@ -40,7 +40,7 @@ class PyBITClient(object):
 			if (self.current_request.transport.method == "svn" or
 				self.current_request.transport.method == "svn+ssh"):
 					self.vcs_handler = SubversionClient()
-			args = (self.current_request.job.packageinstance,self.conn_info)
+			args = (self.current_request,self.conn_info)
 			self.process = multiprocessing.Process(target=self.vcs_handler.fetch_source,args=args)
 			self.process.start()
 
@@ -50,7 +50,7 @@ class PyBITClient(object):
 	def checkout_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
 			process.join()
-			args = (self.current_request.job.packageinstance,self.conn_info)
+			args = (self.current_request,self.conn_info)
 			if decoded.success == True:
 				self.move_state("BUILD")
 				if decoded.job.decoded.job.packageinstance.master == True:
@@ -65,7 +65,7 @@ class PyBITClient(object):
 	def build_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
 			self.process.join()
-			args = (self.current_request.job.packageinstance,self.conn_info)
+			args = (self.current_request,self.conn_info)
 			if decoded.success == True:
 				self.move_state("UPLOAD")
 				self.process = multiprocessing.Process(target=self.format_handler.upload, args=args)
@@ -78,7 +78,7 @@ class PyBITClient(object):
 
 	def upload_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
-			args = (self.current_request.job.packageinstance,self.conn_info)
+			args = (self.current_request,self.conn_info)
 			self.process.join()
 			self.move_state("CLEAN")
 			self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
@@ -163,11 +163,12 @@ class PyBITClient(object):
 
 	def command_handler(self, msg, cmd_req):
 		print "Command Handler"
-		if (not isinstance(cmd_req, TaskComplete) or
+		if (not isinstance(cmd_req, TaskComplete) and
 			not isinstance(cmd_req, CommandRequest)):
+			print "Can't handle message type, rejecting."
 			self.chan.basic_recover(True)
 			return
-		self.state_table[self.current_state](msg, cmd_req)
+		self.state_table[self.state](msg, cmd_req)
 
 	def is_building(self):
 		if format_handler.is_building() :
@@ -190,6 +191,7 @@ def signal_handler(signal, frame):
 
 try:
 	signal.signal(signal.SIGINT, signal_handler)
+	signal.signal(signal.SIGTERM, signal_handler)
 	print "Hit Ctrl-C to quit."
 except Exception as e:
 	raise Exception('Error configuring signal handler: ' + str(e))

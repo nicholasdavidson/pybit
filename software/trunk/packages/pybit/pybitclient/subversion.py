@@ -22,7 +22,7 @@
 
 import os
 import pybitclient
-from buildclient import PackageHandler, VersionControlHandler
+from buildclient import VersionControlHandler
 
 class SubversionClient(VersionControlHandler):
 	def fetch_source(self, pkg, conn_data):
@@ -51,9 +51,9 @@ class SubversionClient(VersionControlHandler):
 	def get_srcdir (self):
 		return self.workdir
 
-	def clean_source (self, pkg) :
+	def clean_source (self, pkg, conn_data) :
 		retval = "success"
-		if pkg.method_type != "svn":
+		if pkg.transport.method != "svn":
 			retval = "wrong_method"
 		if not retval :
 			self.cleandir = os.path.join (self.options["buildroot"], pkg.suite)

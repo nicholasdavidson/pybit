@@ -27,7 +27,8 @@ def send_message (conn_data, msg) :
 	else:
 		task = TaskComplete(msg, False)
 	print "Publishing message: \"%s\" with success: %s to %s" % (msg, task.success, conn_data.client_name)
-	chan.basic_publish(amqp.Message(task.toJson(),exchange=pybit.exchange_name,routing_key=conn_data.client_name))
+	chan.basic_publish(amqp.Message(task.toJson()),exchange=pybit.exchange_name,
+		routing_key=conn_data.client_name)
 	chan.close()
 	conn.close()
 
@@ -64,6 +65,6 @@ def mkdir_p(path):
 		if exc.errno == errno.EEXIST:
 			pass
 		else:
-			raise Exception("Exception" + str(e))
+			raise Exception("Exception" + str(exc))
 			return
 

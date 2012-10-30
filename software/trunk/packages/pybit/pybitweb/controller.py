@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from pybitweb.bottle import Bottle,response,error,request
+from pybitweb.bottle import Bottle,response,request
 from amqplib import client_0_8 as amqp
 import jsonpickle
 import os.path
