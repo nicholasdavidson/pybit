@@ -33,16 +33,69 @@ import multiprocessing
 from pybit.models import ClientMessage
 
 class PyBITClient(object):
-	states = [ "UNKNOWN",
-		"IDLE",
-		"FATAL_ERROR",
-		"CHECKOUT",
-		"BUILD",
-		"UPLOAD",
-		"CLEAN" ]
+
+
+	def move_state(self, new_state)
+		if (new_state in state_table):
+			self.old_state = state
+			self.state = new_state
+		else:
+			print "Unhandled state: %s" % (new_state)
+			
+
+
+	def idle_handler(self, msg, decoded):
+		print "Idle handler"
+		if (isinstance(decoded) == BuildRequest):
+			move_state("BUILD")
+			self, client_name, host, userid, password, vhost
+			conn_info = AMQPConnection(self.client_queue_name,self.hostname,
+				self.userid, self.password, self.vhost)
+			self.process = Process(target=vcs_handler.fetch_source,args=(decoded.job.package_instance,conn_info)
+			self.process.start()
+
+	def fatal_error_handler(self, msg, decoded):
+		print "Fatal Error handler"
+
+	def checkout_handler(self, msg, decoded):
+		if (isinstance(decoded, TaskComplete) :
+			process.join()
+			if decoded.success == True:
+				move_state("")
+			else
+				move_state("CLEAN")
+				self.process = Process(target=vcs_handler.clean_source, args=(decoded.job.package_instance,conn_info)
+				self.process.start()
+
+	def build_handler(self, msg, decoded):
+		print "Build handler"
+
+	def upload_handler(self, msg, decoded):
+		print "Upload handler"
+
+	def clean_handler(self, msg, decoded):
+		print "Clean handler"
+		if (isinstance(decoded, TaskComplete) :
+			process.join()
+			if decoded.success == True:
+				if (old_state == "UPLOAD"):
+				else
+				move_state("IDLE")
+			else:
+				move_state("FATAL_ERROR")
+			
+
 	def __init__(self, arch, distribution, format, suite, host, vhost, userid, port,
 		password, insist, id, interactive) :
-		move_state("UNKNOWN")
+		self.state_table = {}
+		self.state_table["UNKNOWN"] = fatal_error_handler
+		self.state_table["IDLE"] = idle_handler
+		self.state_table["FATAL_ERROR"] = fatal_error_handler
+		self.state_table["CHECKOUT"] = checkout_handler
+		self.state_table["BUILD"] = build_handler
+		self.state_table["UPLOAD"] = upload_handler
+		self.state_table["CLEAN"] = clean_handler
+		
 		self.arch = arch
 		self.distribution = distribution
 		self.suite = suite
@@ -80,90 +133,22 @@ class PyBITClient(object):
 			self.format_handler = None
 		self.vcs_handler = None
 		self.process = None
+		move_state("IDLE")
 
-
-	def move_state(self, new_state):
-		if new_state in PyBITClient.states :
-			if new_state == "CHECKOUT":
-				# FIXME: pass pkg, conn_data to fetch_source() - caution: run_cmd has a different definition in pybitclient
-				self.process = Process(target=pybitclient.run_cmd,args=(self))
-				self.process.r
-			self.last_state = current_state
-			self.current_state = new_state
-		else:
-			print "Error: %s not a valid state" % (new_state)
-
-
-	def interactive_handler(self, msg, build_req) :
-		status = None
-		while True:
-			user_input = raw_input('''Recived message:
-		[A]ccept
-		[R]eject
-		[B]uilding
-		[D]one
-		B[l]ock
-		[F]ail
-		''').lower()
-			if user_input == "a":
-				self.chan.basic_ack(msg.delivery_tag)
-				print "Blindly accepting message..."
-				msg = ClientMessage.done
-				break
-			elif user_input == "r":
-				self.chan.basic_recover(True)
-				print "Rejecting message."
-				break
-			elif user_input == "b":
-				self.chan.basic_ack(msg.delivery_tag)
-				status = ClientMessage.building
-				break
-			elif user_input == "d":
-				self.chan.basic_ack(msg.delivery_tag)
-				status = ClientMessage.done
-				break
-			elif user_input == "l":
-				self.chan.basic_ack(msg.delivery_tag)
-				status = ClientMessage.blocked
-				break
-			elif user_input == "f":
-				self.chan.basic_ack(msg.delivery_tag)
-				status = ClientMessage.failed
-				break
-			else:
-				print "Invalid selection."
-		if status is not None:
-			print "Marking JOB( id ", unpickled_req.job.id,  ") As ", status
-			payload = {'status' : status }
-			job_status_url = "http://%s/job/%s" % (unpickled_req.web_host, unpickled_req.job.id)
-			r = requests.put(job_status_url, payload)
-
-	def build_handler(self, msg, build_req):
+	def message_handler(self, msg, build_req):
 		if not isinstance(build_req, BuildRequest) :
 			self.chan.basic_recover(True)
 			return
 		if self.process:
 			self.chan.basic_recover(True)
 			return
-		move_state("CHECKOUT")
-
-	def message_handler(self, msg, build_req):
-		if self.interactive:
-			self.interactive_handler(msg, build_req)
-		else:
-			build_handler(msg, build_req)
+		self.state_table[self.current_state](msg, build_req)
 
 	def command_handler(self, msg, cmd_req):
 		if not isinstance(cmd_req, CommandRequest):
 			self.chan.basic_recover(True)
 			return
-		if isinstance(cmd_req, TaskComplete):
-			self.process.join()
-			if (self.state == "CHECKOUT"):
-				move_state("BUILD")
-			elif (self.state ==  "IDLE"):
-				# FIXME
-				move_state("")
+		self.state_table[self.current_state](msg, cmd_req)
 
 	def is_building(self):
 		if format_handler.is_building() :

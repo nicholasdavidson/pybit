@@ -135,12 +135,9 @@ class StatusRequest(CommandRequest):
 		CommandRequest.__init__(self, job, web_host)
 
 
-class TaskComplete(CommandRequest):
-	def __init__(self, job, web_host):
-		CommandRequest.__init__(self, job, web_host)
+class TaskComplete(Model):
+	def __init__(self, success = True, message):
+		self.success = success
+		self.message = message
 		
 
-
-class TaskFailed(CommandRequest):
-	def __init__(self, job, web_host):
-		CommandRequest.__init__(self, job, web_host)
