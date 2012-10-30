@@ -16,11 +16,11 @@ def get_all_packageinstances():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/packageinstance/<id:int>', method='GET')
-def get_packageinstance_id(id):
+@route('/packageinstance/<packageinstance_id:int>', method='GET')
+def get_packageinstance_id(packageinstance_id):
 	try:
 		# Returns all information about a specific packageinstance
-		res = myDb.get_packageinstance_id(id)
+		res = myDb.get_packageinstance_id(packageinstance_id)
 
 		# check results returned
 		if res:
@@ -51,9 +51,9 @@ def put_packageinstance():
 			arch = myDb.get_arch_id(arch_id)
 			suite = myDb.get_suite_id(suite_id)
 			dist = myDb.get_dist_id(dist_id)
-			format = myDb.get_format_id(format_id)
+			pkg_format = myDb.get_format_id(format_id)
 
-			myDb.put_packageinstance(package,arch,suite,dist,format,"false") # TODO: "false" or False?
+			myDb.put_packageinstance(package,arch,suite,dist,pkg_format,"false") # TODO: "false" or False?
 		else:
 			response.status = "400 - Required fields missing."
 		return
@@ -61,14 +61,14 @@ def put_packageinstance():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/packageinstance/<id:int>/delete', method='GET')
-@route('/packageinstance/<id:int>', method='DELETE')
-def delete_packageinstance(id):
+@route('/packageinstance/<packageinstance_id:int>/delete', method='GET')
+@route('/packageinstance/<packageinstance_id:int>', method='DELETE')
+def delete_packageinstance(packageinstance_id):
 	try:
 		# Deletes a specific package instance
 		# TODO: validation,security
 		response.status = "202 - DELETE request recieved"
-		res = myDb.delete_packageinstance(id)
+		myDb.delete_packageinstance(packageinstance_id)
 		return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))

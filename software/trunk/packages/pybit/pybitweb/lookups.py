@@ -17,11 +17,11 @@ def get_arch():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/arch/<id:int>', method='GET')
-def get_arch_id(id):
+@route('/arch/<arch_id:int>', method='GET')
+def get_arch_id(arch_id):
 	try:
 		# Returns all information about a specific arch
-		res = myDb.get_arch_id(id)
+		res = myDb.get_arch_id(arch_id)
 
 		# check results returned
 		if res:
@@ -63,11 +63,11 @@ def get_suitearch():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/suitearch/<id:int>', method='GET')
-def get_suitearch_id(id):
+@route('/suitearch/<suitearch_id:int>', method='GET')
+def get_suitearch_id(suitearch_id):
 	try:
 		# Returns all information about a specific suitearch
-		res = myDb.get_suitearch_id(id)
+		res = myDb.get_suitearch_id(suitearch_id)
 
 		# check results returned
 		if res:
@@ -110,11 +110,11 @@ def get_statuses():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/status/<id:int>', method='GET')
-def get_status_id(id):
+@route('/status/<status_id:int>', method='GET')
+def get_status_id(status_id):
 	try:
 		# Returns all information about a specific status
-		res = myDb.get_status_id(id)
+		res = myDb.get_status_id(status_id)
 
 		# check results returned
 		if res:
@@ -156,11 +156,11 @@ def get_dists():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/dist/<id:int>', method='GET')
-def get_dist_id(id):
+@route('/dist/<dist_id:int>', method='GET')
+def get_dist_id(dist_id):
 	try:
 		# Returns all information about a specific dist
-		res = myDb.get_dist_id(id)
+		res = myDb.get_dist_id(dist_id)
 
 		# check results returned
 		if res:
@@ -202,11 +202,11 @@ def get_formats():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/format/<id:int>', method='GET')
-def get_format_id(id):
+@route('/format/<format_id:int>', method='GET')
+def get_format_id(format_id):
 	try:
 		# Returns all information about a specific format
-		res = myDb.get_format_id(id)
+		res = myDb.get_format_id(format_id)
 
 		# check results returned
 		if res:
@@ -248,11 +248,11 @@ def get_suites():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/suite/<id:int>', method='GET')
-def get_suite_id(id):
+@route('/suite/<suite_id:int>', method='GET')
+def get_suite_id(suite_id):
 	try:
 		# Returns all information about a specific suite
-		res = myDb.get_suite_id(id)
+		res = myDb.get_suite_id(suite_id)
 
 		# check results returned
 		if res:

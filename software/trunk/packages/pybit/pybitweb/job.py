@@ -21,14 +21,14 @@ def vcs_hook():
 			version = request.forms.get('package_version')
 			package_name = request.forms.get('package')
 			suite = request.forms.get('suite')
-			format = request.forms.get('format')
+			pkg_format = request.forms.get('pkg_format')
 
-			if not uri and not method and not dist and not vcs_id and not architectures and not version and not package_name and not suite and not format :
+			if not uri and not method and not dist and not vcs_id and not architectures and not version and not package_name and not suite and not pkg_format :
 				response.status = "400 - Required fields missing."
 				return None
 			else :
 				print "RECEIVED BUILD REQUEST FOR", package_name, version, suite, architectures
-				buildController.process_job(dist, architectures, version, package_name, suite, format, Transport(None, method, uri, vcs_id))
+				buildController.process_job(dist, architectures, version, package_name, suite, pkg_format, Transport(None, method, uri, vcs_id))
 				return
 	except Exception as e:
 		raise Exception('Exception encountered in vcs_hook: ' + str(e))
@@ -121,20 +121,20 @@ def put_job():
 			packageinstance = myDb.get_packageinstance_id(packageinstance_id)
 			package_version = packageinstance.package.version
 			package_name = packageinstance.package.name
-			buildclient = myDb.get_buildd_id(buildclient_id)
+			buildclient = myDb.get_buildd_id(buildclient_id) #unused?
 			arch =  myDb.get_arch_id(architecture_list).name # TODO: parse list
 			dist = packageinstance.distribution.name
 			suite = packageinstance.suite.name
-			format = packageinstance.format.name
+			pkg_format = packageinstance.format.name
 
-			print ("Calling Controller.process_job(" + uri + "," + method + "," + dist + "," + vcs_id  + "," + arch + "," + package_version + "," + package_name  + "," + suite + "," + format + ")")
+			print ("Calling Controller.process_job(" + uri + "," + method + "," + dist + "," + vcs_id  + "," + arch + "," + package_version + "," + package_name  + "," + suite + "," + pkg_format + ")")
 
 			# Add to DB
 			#myDb.put_job(packageinstance,buildclient)
 
 			# Pass to controller to queue up
 			transport = Transport(None, method, uri, vcs_id)
-			buildController.process_job(dist, arch, package_version, package_name, suite, format, transport)
+			buildController.process_job(dist, arch, package_version, package_name, suite, pkg_format, transport)
 		else:
 			response.status = "400 - Required fields missing."
 		return

@@ -33,11 +33,11 @@ def put_buildd():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/buildd/<id:int>', method='GET')
-def get_buildd_id(id):
+@route('/buildd/<buildd_id:int>', method='GET')
+def get_buildd_id(buildd_id):
 	try:
 		# Returns all information about a specific buildd
-		res = myDb.get_buildd_id(id)
+		res = myDb.get_buildd_id(buildd_id)
 
 		# check results returned
 		if res:
@@ -51,35 +51,35 @@ def get_buildd_id(id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/buildd/<id:int>/delete', method='GET')
-@route('/buildd/<id:int>', method='DELETE')
-def delete_buildd_id(id):
+@route('/buildd/<buildd_id:int>/delete', method='GET')
+@route('/buildd/<buildd_id:int>', method='DELETE')
+def delete_buildd_id(buildd_id):
 	try:
 		# Deletes a specific buildd
 		# TODO: validation,security
 		response.status = "202 - DELETE request recieved"
-		res = myDb.delete_buildclient(id)
+		myDb.delete_buildclient(buildd_id)
 		return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/buildd/<id:int>/status', method='GET')
-def get_buildd_status(id):
+@route('/buildd/<buildd_id:int>/status', method='GET')
+def get_buildd_status(buildd_id):
 	try:
 		response.content_type = "application/json"
 		#TODO - CODEME
-		return template("Returning status of buildd: {{id}}",id=id)
+		return template("Returning status of buildd: {{buildd_id}}",buildd_id=buildd_id)
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/buildd/<id:int>/jobs', method='GET')
-def get_buildd_jobs(id):
+@route('/buildd/<buildclient_id:int>/jobs', method='GET')
+def get_buildd_jobs(buildclient_id):
 	try:
 		#Returns jobs for specified buildd
 
-		res = myDb.get_buildd_jobs(id)
+		res = myDb.get_buildd_jobs(buildclient_id)
 
 		# check results returned
 		if res:
@@ -93,12 +93,12 @@ def get_buildd_jobs(id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/buildd/<id:int>/:command', method='POST')
-def post_command(id,command):
+@route('/buildd/<buildd_id:int>/:command', method='POST')
+def post_command(buildd_id,command):
 	try:
 		response.status = "202 - Command sent"
 		#TODO - CODEME
-		return template("POSTed command '{{command}}' to buildd: {{id}}",id=id, command=command)
+		return template("POSTed command '{{command}}' to buildd: {{buildd_id}}",buildd_id=buildd_id, command=command)
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
 		return None

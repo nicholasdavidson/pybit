@@ -36,69 +36,69 @@ class ClientMessage:
 
 
 class Arch(Model):
-	def __init__(self,id,name):
-		self.id = id
+	def __init__(self,arch_id,name):
+		self.id = arch_id
 		self.name = name
 
 class Dist(Model):
-	def __init__(self,id,name):
-		self.id = id
+	def __init__(self,dist_id,name):
+		self.id = dist_id
 		self.name = name
 
 class Format(Model):
-	def __init__(self,id,name):
-		self.id = id
+	def __init__(self,format_id,name):
+		self.id = format_id
 		self.name = name
 
 class Status(Model):
-	def __init__(self,id,name):
-		self.id = id
+	def __init__(self,status_id,name):
+		self.id = status_id
 		self.name = name
 
 class Suite(Model):
-	def __init__(self,id,name):
-		self.id = id
+	def __init__(self,suite_id,name):
+		self.id = suite_id
 		self.name = name
 
 class BuildD(Model):
-	def __init__(self,id,name):
-		self.id = id
+	def __init__(self,buildd_id,name):
+		self.id = buildd_id
 		self.name = name
 
 class Package(Model):
-	def __init__(self,id,version,name):
-		self.id = id
+	def __init__(self,package_id,version,name):
+		self.id = package_id
 		self.version = version
 		self.name = name
 
 class Transport(Model) :
-	def __init__(self,id,method,uri,vcs_id):
-		self.id = id
+	def __init__(self,transport_id,method,uri,vcs_id):
+		self.id = transport_id
 		self.method = method
 		self.uri = uri
 		self.vcs_id = vcs_id
 
 class PackageInstance(Model):
-	def __init__(self, id, package, arch, suite, distribution, format, master) :
-		self.id = id
+	def __init__(self, packageinstance_id, package, arch, suite, distribution, pkg_format, master) :
+		self.id = packageinstance_id
 		self.package = package
 		self.arch = arch
 		self.suite = suite
 		self.distribution = distribution
-		self.format = format
+		self.format = pkg_format
 		self.master = master
 
 
 class Job(Model):
-	def __init__(self,id,packageinstance,buildclient):
-		self.id = id
+	def __init__(self,job_id,packageinstance,buildclient):
+		self.id = job_id
 		self.packageinstance = packageinstance
 		self.buildclient = buildclient
 
 
 class SuiteArch(Model):
-	def __init__(self,id,suite_id,arch_id):
-		self.id = id
+	def __init__(self,suitearch_id,suite_id,arch_id):
+		self.id = suitearch_id
 		self.suite_id = suite_id
 		self.arch_id = arch_id
 

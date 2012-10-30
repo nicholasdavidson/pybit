@@ -29,7 +29,7 @@ class Controller:
 				raise Exception('Error creating controller (Maybe we cannot connect to queue?) - ' + str(e))
 				return
 
-	def process_job(self, dist, architectures, version, name, suite, format, transport) :
+	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport) :
 		try:
 			supported_arches = myDb.get_supported_architectures(suite)
 			print "SUPPORTED ARCHITECTURES:", supported_arches
@@ -48,7 +48,7 @@ class Controller:
 				return
 			current_suite = myDb.get_suite_byname(suite)[0]
 			current_dist = myDb.get_dist_byname(dist)[0]
-			current_format = myDb.get_format_byname(format)[0]
+			current_format = myDb.get_format_byname(pkg_format)[0]
 			for arch in supported_arches:
 				current_arch = myDb.get_arch_byname(arch)[0]
 				current_packageinstance = self.process_packageinstance(current_arch, current_package, current_dist, current_format, current_suite)
@@ -95,17 +95,17 @@ class Controller:
 				print "ADDED NEW PACKAGE (", package.id, ")"
 		return package
 
-	def process_packageinstance(self, arch, package, dist, format, suite) :
+	def process_packageinstance(self, arch, package, dist, pkg_format, suite) :
 		# check & retrieve existing package or try to add a new one
 		packageinstance = None
-		if myDb.check_specific_packageinstance_exists(arch, package, dist, format, suite) :
+		if myDb.check_specific_packageinstance_exists(arch, package, dist, pkg_format, suite) :
 			# retrieve existing package instance from db
-			packageinstance = myDb.get_packageinstance_byvalues(package, arch, suite, dist, format)[0]
+			packageinstance = myDb.get_packageinstance_byvalues(package, arch, suite, dist, pkg_format)[0]
 			if packageinstance.id :
 				print "MATCHING PACKAGE INSTANCE FOUND (", packageinstance.id, ")"
 		else :
 			# add new package instance to db
-			packageinstance = myDb.put_packageinstance(package, arch, suite, dist, format, False)
+			packageinstance = myDb.put_packageinstance(package, arch, suite, dist, pkg_format, False)
 			if packageinstance.id :
 				print "ADDED NEW PACKAGE INSTANCE (", packageinstance.id, ")"
 		return packageinstance
@@ -154,7 +154,7 @@ class Controller:
 		# cancels all instances of a package
 		package = myDb.get_package_id(package_id)
 		if not package.id :
-			response.status = "404 - no package matching id"
+			response.status = "404 - no package matching package_id"
 		else :
 			unfinished_jobs_list = myDb.get_unfinished_jobs()
 			for unfinished_job in unfinished_jobs_list:

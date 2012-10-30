@@ -18,11 +18,11 @@ def get_all_packages():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/package/<id:int>', method='GET')
-def get_package_id(id):
+@route('/package/<package_id:int>', method='GET')
+def get_package_id(package_id):
 	try:
 		# Returns all information about a specific package
-		res = myDb.get_package_id(id)
+		res = myDb.get_package_id(package_id)
 
 		# check results returned
 		if res:
@@ -53,26 +53,26 @@ def put_package():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/package/<id:int>/delete', method='GET')
-@route('/package/<id:int>', method='DELETE')
-def delete_package(id):
+@route('/package/<package_id:int>/delete', method='GET')
+@route('/package/<package_id:int>', method='DELETE')
+def delete_package(package_id):
 	try:
 		# Deletes a specific buildd
 		# TODO: validation,security
 		response.status = "202 - DELETE request recieved"
-		res = myDb.delete_package(id)
+		myDb.delete_package(package_id)
 		return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
 #NEW: Have controller cancel all jobs for this package.
-@route('/package/<id:int>/cancel', method='GET')
-def cancel_package(id):
+@route('/package/<package_id:int>/cancel', method='GET')
+def cancel_package(package_id):
 	try:
 		response.status = "202 - CANCEL PACKAGE request recieved"
 
-		buildController.cancel_package(id)
+		buildController.cancel_package(package_id)
 		return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))

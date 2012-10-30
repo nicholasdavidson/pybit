@@ -73,16 +73,16 @@ class Database(object):
 			raise Exception('Error retrieving arches list:' + str(e))
 			return None
 
-	def get_arch_id(self,id):
+	def get_arch_id(self,arch_id):
 		try:
-			self.cur.execute("SELECT id,name FROM arch WHERE id=%s",(id,))
+			self.cur.execute("SELECT id,name FROM arch WHERE id=%s",(arch_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
 			return Arch(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving arch with id:' + str(id) + str(e))
+			raise Exception('Error retrieving arch with id:' + str(arch_id) + str(e))
 			return None
 
 	# TODO: return single instance instead of list?
@@ -128,16 +128,16 @@ class Database(object):
 			raise Exception('Error retrieving suite arches list:' + str(e))
 			return None
 
-	def get_suitearch_id(self,id):
+	def get_suitearch_id(self,suitearch_id):
 		try:
-			self.cur.execute("SELECT id,suite_id,arch_id FROM suitearches WHERE id=%s",(id,))
+			self.cur.execute("SELECT id,suite_id,arch_id FROM suitearches WHERE id=%s",(suitearch_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
 			return SuiteArch(res[0]['id'],res[0]['suite_id'],res[0]['arch_id'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving suite arch with id:' + str(id) + str(e))
+			raise Exception('Error retrieving suite arch with id:' + str(suitearch_id) + str(e))
 			return None
 
 	def put_suitearch(self,suite_id,arch_id):
@@ -167,16 +167,16 @@ class Database(object):
 			raise Exception('Error retrieving dist list:' + str(e))
 			return None
 
-	def get_dist_id(self,id):
+	def get_dist_id(self,dist_id):
 		try:
-			self.cur.execute("SELECT id,name FROM distribution WHERE id=%s",(id,))
+			self.cur.execute("SELECT id,name FROM distribution WHERE id=%s",(dist_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
 			return Dist(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving dist with id:' + str(id) + str(e))
+			raise Exception('Error retrieving dist with id:' + str(dist_id) + str(e))
 			return None
 
 	# TODO: return single instance instead of list?
@@ -222,16 +222,16 @@ class Database(object):
 			raise Exception('Error retrieving formats list:' + str(e))
 			return None
 
-	def get_format_id(self,id):
+	def get_format_id(self,format_id):
 		try:
-			self.cur.execute("SELECT id,name FROM format WHERE id=%s",(id,))
+			self.cur.execute("SELECT id,name FROM format WHERE id=%s",(format_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
 			return Format(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving format with id:' + str(id) + str(e))
+			raise Exception('Error retrieving format with id:' + str(format_id) + str(e))
 			return None
 
 	# TODO: return single instance instead of list?
@@ -275,16 +275,16 @@ class Database(object):
 			raise Exception('Error retrieving status list:' + str(e))
 			return None
 
-	def get_status_id(self,id):
+	def get_status_id(self,status_id):
 		try:
-			self.cur.execute("SELECT id,name FROM status WHERE id=%s",(id,))
+			self.cur.execute("SELECT id,name FROM status WHERE id=%s",(status_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
 			return Status(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving status with id:' + str(id) + str(e))
+			raise Exception('Error retrieving status with id:' + str(status_id) + str(e))
 			return None
 
 	def put_status(self,name):
@@ -314,16 +314,16 @@ class Database(object):
 			raise Exception('Error retrieving suite list:' + str(e))
 			return None
 
-	def get_suite_id(self,id):
+	def get_suite_id(self,suite_id):
 		try:
-			self.cur.execute("SELECT id,name FROM suite WHERE id=%s",(id,))
+			self.cur.execute("SELECT id,name FROM suite WHERE id=%s",(suite_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
 			return Suite(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving suite with id:' + str(id) + str(e))
+			raise Exception('Error retrieving suite with id:' + str(suite_id) + str(e))
 			return None
 
 	# TODO: return single instance instead of list?
@@ -371,16 +371,16 @@ class Database(object):
 			raise Exception('Error retrieving buildd list:' + str(e))
 			return None
 
-	def get_buildd_id(self,id):
+	def get_buildd_id(self,buildd_id):
 		try:
-			self.cur.execute("SELECT id,name FROM buildclients WHERE id=%s",(id,))
+			self.cur.execute("SELECT id,name FROM buildclients WHERE id=%s",(buildd_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
 			return BuildD(res[0]['id'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving buildd with id:' + str(id) + str(e))
+			raise Exception('Error retrieving buildd with id:' + str(buildd_id) + str(e))
 			return None
 
 	def put_buildclient(self,name):
@@ -395,44 +395,44 @@ class Database(object):
 			raise Exception('Error adding buildd:' + name + str(e))
 			return None
 
-	def delete_buildclient(self,id):
+	def delete_buildclient(self,buildclient_id):
 		try:
-			self.cur.execute("DELETE FROM buildclients WHERE id=%s RETURNING id",(id,))
+			self.cur.execute("DELETE FROM buildclients WHERE id=%s RETURNING id",(buildclient_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			if res[0]['id'] == id:
+			if res[0]['id'] == buildclient_id:
 				return True
 			else:
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting buildd with id:' + str(id) + str(e))
+			raise Exception('Error deleting buildd with id:' + str(buildclient_id) + str(e))
 			return None
 
-	def get_buildd_jobs(self,id):
+	def get_buildd_jobs(self,buildclient_id):
 		try:
-			self.cur.execute("SELECT job.id AS job_id,packageinstance_id,buildclients.id AS buildclients_id FROM buildclients,job WHERE buildclients.id=%s AND buildclients.id = job.buildclient_id  ORDER BY job.id",(id,))
+			self.cur.execute("SELECT job.id AS job_id,packageinstance_id,buildclients.id AS buildclients_id FROM buildclients,job WHERE buildclients.id=%s AND buildclients.id = job.buildclient_id  ORDER BY job.id",(buildclient_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
 			jobs = []
 			for i in res:
 				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
-				jobs.append(jobs.append(Job(i['job_id'],packageinstance,id)))
+				jobs.append(jobs.append(Job(i['job_id'],packageinstance,buildclient_id)))
 
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving jobs on buildd with id:' + str(id) + str(e))
+			raise Exception('Error retrieving jobs on buildd with id:' + str(buildclient_id) + str(e))
 			return None
 
 	#<<<<<<<< Job related database functions >>>>>>>>
 	# UPDATE queries?
 
-	def get_job(self,id):
+	def get_job(self,job_id):
 		try:
-			self.cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job WHERE id=%s",(id,))
+			self.cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job WHERE id=%s",(job_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
@@ -441,7 +441,7 @@ class Database(object):
 			return Job(res[0]['id'],packageinstance,buildclient)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving job with id:' + str(id) + str(e))
+			raise Exception('Error retrieving job with id:' + str(job_id) + str(e))
 			return None
 
 	def get_jobs(self):
@@ -492,10 +492,10 @@ class Database(object):
 			return None
 
 	# TODO!!!!! - Testme
-	def get_job_statuses(self,id):
+	def get_job_statuses(self,job_id):
 	#gets job status *history*
 		try:
-			self.cur.execute("SELECT job.id AS job_id, status.name AS status, buildclients.name AS buildclient, jobstatus.time AS time FROM job LEFT JOIN jobstatus ON job.id=jobstatus.job_id LEFT JOIN status ON jobstatus.status_id=status.id  LEFT JOIN buildclients ON buildclients.id=job.buildclient_id WHERE job.id = %s ORDER BY time",(id,));
+			self.cur.execute("SELECT job.id AS job_id, status.name AS status, buildclients.name AS buildclient, jobstatus.time AS time FROM job LEFT JOIN jobstatus ON job.id=jobstatus.job_id LEFT JOIN status ON jobstatus.status_id=status.id  LEFT JOIN buildclients ON buildclients.id=job.buildclient_id WHERE job.id = %s ORDER BY time",(job_id,));
 			res = self.cur.fetchall()
 			self.conn.commit()
 			jobstatuses = []
@@ -504,7 +504,7 @@ class Database(object):
 			return jobstatuses
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving job status with:' + str(id) + str(e))
+			raise Exception('Error retrieving job status with:' + str(job_id) + str(e))
 			return None
 
 	def put_job_status(self, jobid, status):
@@ -516,18 +516,18 @@ class Database(object):
 			raise Exception('Error setting job status:' + str(e))
 			return None
 
-	def delete_job(self,id):
+	def delete_job(self,job_id):
 		try:
-			self.cur.execute("DELETE FROM job WHERE id=%s  RETURNING id",(id,))
+			self.cur.execute("DELETE FROM job WHERE id=%s  RETURNING id",(job_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
-			if res[0]['id'] == id:
+			if res[0]['id'] == job_id:
 				return True
 			else:
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting job with:' + str(id) + str(e))
+			raise Exception('Error deleting job with:' + str(job_id) + str(e))
 			return None
 
 	def put_job(self,packageinstance,buildclient):
@@ -574,16 +574,16 @@ class Database(object):
 			raise Exception('Error retrieving package with name:' + str(name) + str(e))
 			return None
 
-	def get_package_id(self,id):
+	def get_package_id(self,package_id):
 		try:
-			self.cur.execute("SELECT id,version,name FROM package WHERE id=%s",(id,))
+			self.cur.execute("SELECT id,version,name FROM package WHERE id=%s",(package_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
 			return Package(res[0]['id'],res[0]['version'],res[0]['name'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving package with id:' + str(id) + str(e))
+			raise Exception('Error retrieving package with id:' + str(package_id) + str(e))
 			return None
 
 	# TODO: return single instance instead of list?
@@ -614,26 +614,26 @@ class Database(object):
 			raise Exception('Error adding package:' + name + version + str(e))
 			return None
 
-	def delete_package(self,id):
+	def delete_package(self,package_id):
 		try:
-			self.cur.execute("DELETE FROM package WHERE id=%s  RETURNING id",(id,))
+			self.cur.execute("DELETE FROM package WHERE id=%s  RETURNING id",(package_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			if res[0]['id'] == id:
+			if res[0]['id'] == package_id:
 				return True
 			else:
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting package with:' + str(id) + str(e))
+			raise Exception('Error deleting package with:' + str(package_id) + str(e))
 			return None
 
 	#<<<<<<<<< Packageinstance related Queries >>>>>>>
 
-	def get_packageinstance_id(self,id):
+	def get_packageinstance_id(self,packageinstance_id):
 		try:
-			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance  WHERE id=%s",(id,))
+			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance  WHERE id=%s",(packageinstance_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
@@ -641,11 +641,11 @@ class Database(object):
 			arch = self.get_arch_id(res[0]['arch_id'])
 			suite = self.get_suite_id(res[0]['suite_id'])
 			dist = self.get_dist_id(res[0]['dist_id'])
-			format = self.get_format_id(res[0]['format_id'])
-			return PackageInstance(res[0]['id'],package,arch,suite,dist,format,res[0]['master'])
+			pkg_format = self.get_format_id(res[0]['format_id'])
+			return PackageInstance(res[0]['id'],package,arch,suite,dist,pkg_format,res[0]['master'])
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving package instance with:' + str(id) + str(e))
+			raise Exception('Error retrieving package instance with:' + str(packageinstance_id) + str(e))
 			return None
 
 	def get_packageinstances(self):
@@ -679,9 +679,9 @@ class Database(object):
 			return None
 
 	# TODO: return single instance instead of list?
-	def get_packageinstance_byvalues(self,package,arch,suite,dist,format):
+	def get_packageinstance_byvalues(self,package,arch,suite,dist,pkg_format):
 		try:
-			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package.id,arch.id,suite.id,dist.id,format.id))
+			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package.id,arch.id,suite.id,dist.id,pkg_format.id))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
@@ -694,39 +694,39 @@ class Database(object):
 			raise Exception('Error retrieving package instance by value:' + str(e))
 			return None
 
-	def put_packageinstance(self,package,arch,suite,dist,format,master):
+	def put_packageinstance(self,package,arch,suite,dist,pkg_format,master):
 		try:
-			self.cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)  RETURNING id",(package.id,arch.id,suite.id,dist.id,format.id,master))
+			self.cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)  RETURNING id",(package.id,arch.id,suite.id,dist.id,pkg_format.id,master))
 			self.conn.commit()
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			return PackageInstance(res[0]['id'],package,arch,suite,dist,format,master)
+			return PackageInstance(res[0]['id'],package,arch,suite,dist,pkg_format,master)
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error adding package instance:' + package + arch + suite + dist + format + master + str(e))
+			raise Exception('Error adding package instance:' + package + arch + suite + dist + pkg_format + master + str(e))
 			return None
 
-	def delete_packageinstance(self,id):
+	def delete_packageinstance(self,packageinstance_id):
 		try:
-			self.cur.execute("DELETE FROM packageinstance WHERE id=%s RETURNING id",(id,))
+			self.cur.execute("DELETE FROM packageinstance WHERE id=%s RETURNING id",(packageinstance_id,))
 			res = self.cur.fetchall()
 			self.conn.commit()
 
-			if res[0]['id'] == id:
+			if res[0]['id'] == packageinstance_id:
 				return True
 			else:
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting package instance with:' + str(id) + str(e))
+			raise Exception('Error deleting package instance with:' + str(packageinstance_id) + str(e))
 			return None
 
 	# <<<<< TODO: This is a work in progress!!! >>>>>
-	def check_specific_packageinstance_exists(self,arch,package,distribution,format,suite):
+	def check_specific_packageinstance_exists(self,arch,package,distribution,pkg_format,suite):
 		try:
-			if arch and distribution and format and package and suite:
-				self.cur.execute("SELECT id FROM packageinstance WHERE arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(arch.id,distribution.id,format.id,package.id,suite.id))
+			if arch and distribution and pkg_format and package and suite:
+				self.cur.execute("SELECT id FROM packageinstance WHERE arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(arch.id,distribution.id,pkg_format.id,package.id,suite.id))
 				res = self.cur.fetchall()
 				self.conn.commit()
 
