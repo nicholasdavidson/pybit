@@ -80,8 +80,18 @@
 
       <h1>PyBit - python Buildd Integration Toolkit.</h1>
       <h3>Lookups</h3>
-      <p>This page is a test to try and query the Python based WebAPI asyncronously using jQuery, and updating accordingly.</p>
 
+
+<div class="accordion" id="accordion1">
+
+<div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
+        Package Architectures
+      </a>
+    </div>
+    <div id="collapseOne" class="accordion-body collapse in">
+      <div class="accordion-inner">
       <form class="form-inline" method="POST" action="http://localhost:8080/arch">
 					<legend>Add Package Architectures</legend>
 					<label for="name">Name</label>
@@ -93,7 +103,20 @@
 	<table id="tbl_arches"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Architectures</th></tr>
 	</table>
+      </div>
+    </div>
+  </div>
 
+
+
+<div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseTwo">
+        Job Statuses
+      </a>
+    </div>
+    <div id="collapseTwo" class="accordion-body collapse">
+      <div class="accordion-inner">
 <form class="form-inline" method="POST" action="http://localhost:8080/status">
 					<legend>Add Job Statuses</legend>
 					<label for="name">Name</label>
@@ -106,6 +129,18 @@
 	<tr><th colspan='2'>Statuses</th></tr>
 	</table>
 
+      </div>
+    </div>
+  </div>
+
+<div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree">
+        Software Distributions
+      </a>
+    </div>
+    <div id="collapseThree" class="accordion-body collapse">
+      <div class="accordion-inner">
 <form class="form-inline" method="POST" action="http://localhost:8080/dist">
 					<legend>Add Software Distributions</legend>
 					<label for="name">Name</label>
@@ -117,6 +152,18 @@
 	<table id="tbl_dists"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Distributions</th></tr>
 	</table>
+      </div>
+    </div>
+  </div>
+
+<div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour">
+        Package Formats
+      </a>
+    </div>
+    <div id="collapseFour" class="accordion-body collapse">
+      <div class="accordion-inner">
 
 	<form class="form-inline" method="POST" action="http://localhost:8080/format">
 					<legend>Add Package Formats</legend>
@@ -129,7 +176,18 @@
 	<table id="tbl_formats"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Formats</th></tr>
 	</table>
+      </div>
+    </div>
+  </div>
 
+<div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseFive">
+        Software Suites
+      </a>
+    </div>
+    <div id="collapseFive" class="accordion-body collapse">
+      <div class="accordion-inner">
 	<form class="form-inline" method="POST" action="http://localhost:8080/suite">
 					<legend>Add Software Suites</legend>
 					<label for="name">Name</label>
@@ -142,6 +200,16 @@
 	<tr><th colspan='2'>Formats</th></tr>
 	</table>
 
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+</div>
       <hr>
 
       <footer>

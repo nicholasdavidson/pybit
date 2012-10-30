@@ -81,15 +81,27 @@
 
       <h1>PyBit - python Buildd Integration Toolkit.</h1>
       <h3>Lookups</h3>
-      <p>This page is a test to try and query the Python based WebAPI asyncronously using jQuery, and updating accordingly.</p>
 
+
+<div class="accordion" id="accordion1">
+<div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
+       Click here to show the register form.
+      </a>
+    </div>
+    <div id="collapseOne" class="accordion-body collapse">
+      <div class="accordion-inner">
 <form class="form-inline" method="POST" action="http://localhost:8080/buildd">
 					<legend>Add a Buildbox</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
 					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
 					</form>
-
+      </div>
+    </div>
+  </div>
+</div>
 	<a id="buildds"></a>
 	<table id="tbl_buildds"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Buildboxes</th></tr><tr><th>Name</th><th>Operations</th></tr>
@@ -106,7 +118,7 @@
 
 <script>
 
-   function delete_click(id) 
+   function delete_click(id)
    {
         console.log(id);
 $.ajax({

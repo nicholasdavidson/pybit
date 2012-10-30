@@ -80,14 +80,27 @@
 
       <h1>PyBit - python Buildd Integration Toolkit.</h1>
       <h3>Package Instances</h3>
-      <p>This page is a test to try and query the Python based WebAPI asyncronously using jQuery, and updating accordingly.</p>
 
+
+<div class="accordion" id="accordion1">
+<div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
+        Click here to show the submit packageinstance form.
+      </a>
+    </div>
+    <div id="collapseOne" class="accordion-body collapse">
+      <div class="accordion-inner">
 <form class="form" method="POST" action="http://localhost:8080/packageinstance">
 					<legend>Create a package instance</legend>
 					<label for="package_id">Package: </label>
 					<select name="package_id" id="package_id"></select><label for="arch_id">Architecture: </label><select name="arch_id" id="arch_id"></select><label for="suite_id">Suite: </label><select name="suite_id"  id="suite_id"></select><label for="dist_id">Distribution: </label><select name="dist_id" id="dist_id"></select><label for="format_id">Package Format: </label><select name="format_id"  id="format_id"></select>
 					<br/>
 <button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button></form>
+      </div>
+    </div>
+  </div>
+</div>
 
 	<table id="tbl_packageinstances"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Package Instances</th></tr>

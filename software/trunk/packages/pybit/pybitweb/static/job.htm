@@ -80,8 +80,17 @@
 
       <h1>PyBit - python Buildd Integration Toolkit.</h1>
       <h3>Jobs</h3>
-      <p>This page is a test to try and query the Python based WebAPI asyncronously using jQuery, and updating accordingly.</p>
 
+
+<div class="accordion" id="accordion1">
+<div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
+       Click here to show the submit job form.
+      </a>
+    </div>
+    <div id="collapseOne" class="accordion-body collapse">
+      <div class="accordion-inner">
 <form class="form" method="POST" action="http://localhost:8080/job">
 					<legend>Submit a Job</legend>
 					<label for="packageinstance_id">Package Instance ID: </label>
@@ -96,6 +105,10 @@
 					<br/>
 		<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
 		</form>
+      </div>
+    </div>
+  </div>
+</div>
 
 	<table id="tbl_jobs"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Jobs</th></tr>
@@ -182,7 +195,28 @@ $().ready(function ()
 				bname = field.buildclient.name
 			}
 
-			$("#tbl_jobs").append("<tr><td><a href='http://localhost:8080/job/" + field.id + "'>" + field.id + "</a></td><td><a href='http://localhost:8080/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a></td><td><a href='http://localhost:8080/buildd/" + bid + "'>" + bname + "</a></td><td>" + jobstatuses[field.id] + "</td><td><a href='http://localhost:8080/job/" + field.id + "/cancel'>Cancel</a></br><a href='http://localhost:8080/job/" + field.id + "/status'>View Status History</a></br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
+			if (jobstatuses[field.id] == "Building")
+			{
+				_class = "success"
+			}
+			else if (jobstatuses[field.id] == "Blocked")
+			{
+				_class = "warning"
+			}
+			else if (jobstatuses[field.id] == "Waiting")
+			{
+				_class = "info"
+			}
+			else if (jobstatuses[field.id] == "Failed")
+			{
+				_class = "warning"
+			}
+			else
+			{
+				_class = "warning"
+			}
+
+			$("#tbl_jobs").append("<tr class='" + _class +"'><td><a href='http://localhost:8080/job/" + field.id + "'>" + field.id + "</a></td><td><a href='http://localhost:8080/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a></td><td><a href='http://localhost:8080/buildd/" + bid + "'>" + bname + "</a></td><td>" + jobstatuses[field.id] + "</td><td><a href='http://localhost:8080/job/" + field.id + "/cancel'>Cancel</a></br><a href='http://localhost:8080/job/" + field.id + "/status'>View Status History</a></br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
 
 	});
 		});
