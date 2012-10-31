@@ -44,7 +44,7 @@ class PyBITClient(object):
 				self.overall_success = None
 				self.current_request = None
 				self.process = None
-				self.current_msg = None	
+				self.current_msg = None
 				if (overall_success is not None and current_msg is not None) :
 					self.chan.basic_ack(current_msg.delivery_tag)
 					#FIXME: need to post job id
@@ -57,7 +57,7 @@ class PyBITClient(object):
 
 	def idle_handler(self, msg, decoded):
 		if isinstance(decoded, BuildRequest):
-			
+
 			self.current_msg = msg
 			self.current_request = decoded
 			if (self.current_request.transport.method == "svn" or
@@ -79,8 +79,8 @@ class PyBITClient(object):
 				self.move_state("BUILD")
 			else:
 				self.move_state("CLEAN")
-				
-			
+
+
 
 	def build_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
@@ -90,7 +90,7 @@ class PyBITClient(object):
 				self.move_state("UPLOAD")
 			else:
 				self.move_state("CLEAN")
-			
+
 
 
 	def upload_handler(self, msg, decoded):
@@ -153,9 +153,10 @@ class PyBITClient(object):
 		print "Creating private command queue with name:" + self.client_queue_name
 		self.chan.queue_declare(queue=self.client_queue_name, durable=False, exclusive=True, auto_delete=False)
 		self.chan.queue_bind(queue=self.client_queue_name, exchange=pybit.exchange_name, routing_key=self.client_queue_name)
-		if (format == "deb") :
+		if (pkg_format == "deb") :
 			self.format_handler = DebianBuildClient()
 		else:
+			print "Empty build client"
 			self.format_handler = None
 		self.vcs_handler = None
 		self.process = None
