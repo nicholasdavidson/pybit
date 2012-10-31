@@ -15,9 +15,9 @@ class PyBITClient(object):
 
 	def wait(self):
 		if self.state == "IDLE":
-			self.chan.wait(self.message_handler)
+			self.chan.wait(allowed_methods=(self.message_handler))
 		else:
-			self.chan.wait(self.command_handler)
+			self.chan.wait(allowed_methods=(self.command_handler))
 
 	def move_state(self, new_state):
 		if (new_state in self.state_table):
