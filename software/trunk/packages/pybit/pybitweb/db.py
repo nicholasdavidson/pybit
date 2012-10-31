@@ -4,6 +4,7 @@ import psycopg2
 import psycopg2.extras
 import jsonpickle
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory
+from pybit.common import load_settings_from_file
 
 myDb = None
 
@@ -16,17 +17,11 @@ class Database(object):
 
 	#Constructor, connects on initialisation.
 
-	def load_settings_from_file(self,path):
-		settings_file = open(path, 'r')
-		encoded_string = settings_file.read()
-		settings = jsonpickle.decode(encoded_string )
-		return settings
-
 	def __init__(self):
 		print "DEBUG: DB constructor called."
 		if not myDb: # DONT allow construction of more than 1 db instance (i.e. none other than the myDb here)
 			print "DEBUG: DB Singleton constructor called."
-			self.settings = self.load_settings_from_file('configs/db_settings.json')
+			self.settings = load_settings_from_file('db_settings.json')
 			self.connect()
 
 	#Deconstructor, disconnects on disposal.
@@ -46,9 +41,10 @@ class Database(object):
 	#Called by deconstructor
 	def disconnect(self):
 		try:
-			self.conn.commit()
-			self.cur.close()
-			self.conn.close()
+			if self.conn and self.cur:
+				self.conn.commit()
+				self.cur.close()
+				self.conn.close()
 			return True
 		except Exception as e:
 			self.conn.rollback()

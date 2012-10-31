@@ -5,14 +5,9 @@ from pybitweb.bottle import Bottle,route,run,template,debug,HTTPError,response,e
 from pybitweb.db import Database,myDb
 from pybitweb import forms, lookups, buildd, job, package, packageinstance
 from pybitweb.controller import Controller,buildController
+from pybit.common import load_settings_from_file
 
-def load_settings_from_file(path):
-	settings_file = open(path, 'r')
-	encoded_string = settings_file.read()
-	settings = jsonpickle.decode(encoded_string )
-	return settings
-
-settings = load_settings_from_file('configs/web_settings.json')
+settings = load_settings_from_file('web_settings.json')
 
 @error(404)
 def error404(error):

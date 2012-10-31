@@ -7,23 +7,18 @@ import os
 import pybit
 from db import myDb
 from pybit.models import BuildRequest, CancelRequest
+from pybit.common import load_settings_from_file
 
 buildController = None
 
-class Controller:
-	
-	def load_settings_from_file(self,path):
-		settings_file = open(path, 'r')
-		encoded_string = settings_file.read()
-		settings = jsonpickle.decode(encoded_string )
-		return settings
+class Controller(object):
 
 	def __init__(self):
 		print "DEBUG: Controller constructor called."
 		if not buildController: # DONT allow construction of more than 1 controller instance (i.e. none other than the buildController here)
 			print "DEBUG: Controller Singleton constructor called."
 			try:
-				self.settings = self.load_settings_from_file('configs/controller_settings.json')
+				self.settings = load_settings_from_file('controller_settings.json')
 				self.conn = amqp.Connection(host=self.settings['rabbit_url'], userid=self.settings['rabbit_userid'], password=self.settings['rabbit_password'], virtual_host=self.settings['rabbit_virtual_host'], insist=self.settings['rabbit_insist'])
 				self.chan = self.conn.channel()
 				#declare exchange.

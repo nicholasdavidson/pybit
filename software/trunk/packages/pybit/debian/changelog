@@ -1,3 +1,10 @@
+pybit (0.0.39) pybit; urgency=low
+
+  * Controller, web and db settings now loaded by nice common module
+    from local files, or etc, and will bail out if not found
+
+ -- James Bennet <James.Bennet@toby-churchill.com>  Wed, 31 Oct 2012 14:36:40 +0000
+
 pybit (0.0.38) pybit; urgency=low
 
   * Add a possible cross-build debian client.
