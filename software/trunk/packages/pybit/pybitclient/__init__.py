@@ -148,7 +148,7 @@ class PyBITClient(object):
 		self.chan = self.conn.channel()
 
 		print "Creating queue with name:" + self.queue_name
-		self.chan.basic_qos(1)
+		self.chan.basic_qos(0,1, False)
 		self.chan.queue_declare(queue=self.queue_name, durable=True, exclusive=False, auto_delete=False)
 		self.chan.queue_bind(queue=self.queue_name, exchange=pybit.exchange_name, routing_key=self.routing_key)
 
