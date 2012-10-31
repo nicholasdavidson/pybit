@@ -13,6 +13,11 @@ import multiprocessing
 
 class PyBITClient(object):
 
+	def wait(self):
+		if self.state == "IDLE":
+			self.chan.wait(self.message_handler)
+		else:
+			self.chan.wait(self.command_handler)
 
 	def move_state(self, new_state):
 		if (new_state in self.state_table):
@@ -148,7 +153,7 @@ class PyBITClient(object):
 		self.chan = self.conn.channel()
 
 		print "Creating queue with name:" + self.queue_name
-		self.chan.basic_qos(0,1, False)
+		
 		self.chan.queue_declare(queue=self.queue_name, durable=True, exclusive=False, auto_delete=False)
 		self.chan.queue_bind(queue=self.queue_name, exchange=pybit.exchange_name, routing_key=self.routing_key)
 
