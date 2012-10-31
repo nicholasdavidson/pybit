@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       debian.py
+#       crossdebian.py
 #
 #       Copyright 2012 Neil Williams <codehelp@debian.org>
 #
@@ -45,21 +45,12 @@ class DebianBuildClient(PackageHandler):
 			pybitclient.send_message (conn_data, retval)
 			return
 		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
-		# FIXME: doesn't make sense to run dpkg-checkbuilddeps outside the chroot!
-		if os.path.isdir(package_dir) :
-			control = os.path.join (package_dir, 'debian', 'control')
-			dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
-			command = "schroot -u root -c %s -- %s %s" % (buildreq.get_suite(),
-				 dep_check, os.path.realpath(control))
-			if not pybitclient.run_cmd (command, self.options["dry_run"]):
-				retval = "build-dep-wait"
+		command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % (package_dir)
+		if not pybitclient.run_cmd (command, self.options["dry_run"]):
+			retval = "build-dep-wait"
 		if not retval :
-			command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % (package_dir)
-			if not pybitclient.run_cmd (command, self.options["dry_run"]):
-				retval = "build_dsc"
-		if not retval :
-			command = "sbuild -A -s -d %s %s/%s_%s.dsc" % (buildreq.get_suite(),
-				srcdir, buildreq.get_package(), buildreq.get_version())
+			command = "sbuild --debbuildopt=\"-a%s\" --setup-hook=\"/usr/bin/sbuild-cross.sh\" --arch=%s -A -s -d %s %s/%s_%s.dsc" %
+				(pkg.architecture, pkg.architecture, pkg.suite, srcdir, pkg.source, pkg.version)
 			if not pybitclient.run_cmd (command, self.options["dry_run"]):
 				retval = "build_binary"
 		if not retval :
@@ -80,8 +71,7 @@ class DebianBuildClient(PackageHandler):
 			print "Failed to find %s file." % (changes)
 			retval = "upload_changes"
 		if not retval :
-			command = "dput -c %s %s %s %s" % (self.dput_cfg, 
-				self.options["dput"], self.dput_dest, changes)
+			command = "dput -c %s %s %s %s" % (self.dput_cfg, self.options["dput"], self.dput_dest, changes)
 			if not pybitclient.run_cmd (command, self.options["dry_run"]):
 				retval = "upload_fail"
 		if not retval :

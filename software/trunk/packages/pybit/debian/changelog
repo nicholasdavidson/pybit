@@ -1,3 +1,9 @@
+pybit (0.0.38) pybit; urgency=low
+
+  * Add a possible cross-build debian client.
+
+ -- Neil Williams <neilw@toby-churchill.com>  Wed, 31 Oct 2012 13:37:29 +0000
+
 pybit (0.0.37) pybit; urgency=low
 
   [ Neil Williams ]

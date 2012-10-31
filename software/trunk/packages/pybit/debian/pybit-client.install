@@ -1,5 +1,6 @@
 pybitclient/client.conf ./etc/pybit/client/
 pybitclient/dput.cf ./etc/pybit/client/
+pybitclient/sbuild-cross.sh ./usr/share/pybitclient/
 pybit-client ./usr/bin/
 pybit-client-basic ./usr/bin/
 debian/tmp/usr/local/lib/python*/dist-packages/pybitclient/ ./usr/share/pyshared/
