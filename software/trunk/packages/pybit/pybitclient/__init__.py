@@ -15,9 +15,9 @@ class PyBITClient(object):
 
 	def wait(self):
 		if self.state == "IDLE":
-			self.chan.wait(allowed_methods=(self.message_handler))
+			self.message_chan.wait()
 		else:
-			self.chan.wait(allowed_methods=(self.command_handler))
+			self.command_chan.wait()
 
 	def move_state(self, new_state):
 		if (new_state in self.state_table):
@@ -52,7 +52,7 @@ class PyBITClient(object):
 				self.current_msg = None
 				if (overall_success is not None and current_msg is not None) :
 					print "Acking: %s" % current_msg.delivery_tag
-					self.chan.basic_ack(current_msg.delivery_tag)
+					self.message_chan.basic_ack(current_msg.delivery_tag)
 					#FIXME: need to post job id
 
 			print "Moved from %s to %s" % (self.old_state, self.state)
@@ -150,16 +150,23 @@ class PyBITClient(object):
 
 		print "Connecting with... \nhost: " + self.host + "\nuser id: " + self.userid + "\npassword: "  + self.password + "\nvhost: " + self.vhost + "\ninsist: " + str(self.insist)
 		self.conn = amqp.Connection(host=self.host, userid=self.userid, password=self.password, virtual_host=self.vhost, insist= self.insist)
-		self.chan = self.conn.channel()
+		self.command_chan = self.conn.channel()
+		self.message_chan = self.conn.channel()
+		self.message_chan.basic_qos(0,1,False)
 
 		print "Creating queue with name:" + self.queue_name
-		
-		self.chan.queue_declare(queue=self.queue_name, durable=True, exclusive=False, auto_delete=False)
-		self.chan.queue_bind(queue=self.queue_name, exchange=pybit.exchange_name, routing_key=self.routing_key)
+		self.message_chan.queue_declare(queue=self.queue_name, durable=True, exclusive=False, auto_delete=False)
+		self.message_chan.queue_bind(queue=self.queue_name, exchange=pybit.exchange_name, routing_key=self.routing_key)
 
 		print "Creating private command queue with name:" + self.client_queue_name
-		self.chan.queue_declare(queue=self.client_queue_name, durable=False, exclusive=True, auto_delete=False)
-		self.chan.queue_bind(queue=self.client_queue_name, exchange=pybit.exchange_name, routing_key=self.client_queue_name)
+		self.command_chan.queue_declare(queue=self.client_queue_name, durable=False, exclusive=True, auto_delete=False)
+		self.command_chan.queue_bind(queue=self.client_queue_name, exchange=pybit.exchange_name, routing_key=self.client_queue_name)
+		
+		self.message_chan.basic_consume(queue=self.queue_name, no_ack=False, callback=self.message_handler, consumer_tag="build_callback")
+		self.command_chan.basic_consume(queue=self.client_queue_name, no_ack=True, callback=self.command_handler, consumer_tag="cmd_callback")
+		
+		
+		
 		if (pkg_format == "deb") :
 			self.format_handler = DebianBuildClient()
 		else:
@@ -174,7 +181,7 @@ class PyBITClient(object):
 		print "message handler got: %s" % msg.delivery_tag
 		build_req = jsonpickle.decode(msg.body)
 		if not isinstance(build_req, BuildRequest) :
-			self.chan.basic_ack(msg.delivery_tag)
+			self.message_chan.basic_ack(msg.delivery_tag)
 			return
 		if self.process:
 			print "Detected a running process"
@@ -186,7 +193,7 @@ class PyBITClient(object):
 		if (not isinstance(cmd_req, TaskComplete) and
 			not isinstance(cmd_req, CommandRequest)):
 			print "Can't handle message type."
-			self.chan.basic_ack(msg.delivery_tag)
+			self.command_chan.basic_ack(msg.delivery_tag)
 		else:
 			self.state_table[self.state](msg, cmd_req)
 
