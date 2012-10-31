@@ -121,7 +121,7 @@ class PyBITClient(object):
 		self.state = "UNKNOWN"
 		self.arch = arch
 		self.distribution = distribution
-		self.format = pkg_format
+		self.pkg_format = pkg_format
 		self.suite = suite
 		self.host = host
 		self.vhost = vhost
