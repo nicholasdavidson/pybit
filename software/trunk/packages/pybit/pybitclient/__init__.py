@@ -19,6 +19,7 @@ class PyBITClient(object):
 				
 			self.old_state = self.state
 			self.state = new_state
+			print "Moved from %s to %s" % (self.old_state, self.state)
 		else:
 			print "Unhandled state: %s" % (new_state)
 			
@@ -26,7 +27,7 @@ class PyBITClient(object):
 
 	def idle_handler(self, msg, decoded):
 		if isinstance(decoded, BuildRequest):
-			self.move_state("BUILD")
+			self.move_state("CHECKOUT")
 			self.current_request = decoded
 			if (self.current_request.transport.method == "svn" or
 				self.current_request.transport.method == "svn+ssh"):
@@ -45,7 +46,7 @@ class PyBITClient(object):
 			if decoded.success == True:
 				self.move_state("BUILD")
 				args = (self.vcs_handler.get_srcdir(), self.current_request,self.conn_info)
-				if decoded.job.decoded.job.packageinstance.master == True:
+				if self.current_request.job.packageinstance.master == True:
 					self.process = multiprocessing.Process(target=self.format_handler.build_master, args=args)
 				else:
 					self.process = multiprocessing.Process(target=self.format_handler.build_slave, args=args)
@@ -80,7 +81,6 @@ class PyBITClient(object):
 			self.process.start()
 
 	def clean_handler(self, msg, decoded):
-		print "Clean handler"
 		if isinstance(decoded, TaskComplete) :
 			self.process.join()
 			self.current_request = None
@@ -90,7 +90,7 @@ class PyBITClient(object):
 			else:
 				self.move_state("FATAL_ERROR")
 				
-		
+		self.chan.basic_ack()
 
 	def __init__(self, arch, distribution, format, suite, host, vhost, userid, port,
 		password, insist, id, interactive) :

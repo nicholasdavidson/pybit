@@ -54,6 +54,7 @@ class SubversionClient(VersionControlHandler):
 		return self.workdir
 
 	def clean_source (self, buildreq, conn_data) :
+		print "clean_source"
 		retval = "success"
 		if buildreq.transport.method != "svn":
 			retval = "wrong_method"

@@ -38,6 +38,7 @@ class DebianBuildClient(PackageHandler):
 		pybitclient.send_message (conn_data, retval)
 
 	def build_master (self, srcdir, buildreq, conn_data):
+		print "build_master"
 		retval = None
 		if (not isinstance(buildreq, BuildRequest)):
 			print "E: not able to identify package name."
@@ -65,8 +66,8 @@ class DebianBuildClient(PackageHandler):
 		if not retval :
 			changes = "%s/%s_%s_%s.changes" % (srcdir, buildreq.get_package(),
 				buildreq.get_version(), buildreq.get_arch())
-			if not os.path.isfile (changes) :
-				print "Failed to find %s file." % (changes)
+			if not self.options["dry_run"] and not os.path.isfile (changes) :
+				print "build_master: Failed to find %s file." % (changes)
 				retval = "build_changes"
 		if not retval :
 			retval = "success"
@@ -76,8 +77,8 @@ class DebianBuildClient(PackageHandler):
 		retval = None
 		changes = "%s/%s_%s_%s.changes" % (srcdir, buildreq.get_package(),
 			buildreq.get_version(), buildreq.get_arch())
-		if not os.path.isfile (changes) :
-			print "Failed to find %s file." % (changes)
+		if not os.path.isfile (changes) and not self.options["dry_run"]:
+			print "upload: Failed to find %s file." % (changes)
 			retval = "upload_changes"
 		if not retval :
 			command = "dput -c %s %s %s %s" % (self.dput_cfg,
@@ -91,7 +92,7 @@ class DebianBuildClient(PackageHandler):
 	def build_slave (self, srcdir, buildreq, conn_data):
 		retval = None
 		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
-		if os.path.isdir(package_dir) :
+		if os.path.isdir(package_dir) or self.options["dry_run"]:
 			command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % package_dir
 			if not pybitclient.run_cmd (command, self.options["dry_run"]):
 				retval = "build_dsc"
@@ -105,9 +106,11 @@ class DebianBuildClient(PackageHandler):
 				changes = "%s/%s_%s_%s.changes" % (srcdir,
 					buildreq.get_package(), buildreq.get_version(),
 					buildreq.get_arch())
-				if not os.path.isfile (changes) :
-					print "Failed to find %s file." % (changes)
+				if not self.options["dry_run"] and not os.path.isfile (changes) :
+					print "build_slave: Failed to find %s file." % (changes)
 					retval = "build_changes"
+		else:
+			retval = "Can't find build dir."
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
