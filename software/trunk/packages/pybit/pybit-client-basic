@@ -47,7 +47,7 @@ if __name__ == '__main__':
 	parser.add_option("--distribution", dest="distribution",
 		default="Debian", help="Distribution to use, defaults to Debian",
 		metavar= META +"DIST")
-	parser.add_option("--format", dest="format", default="deb",
+	parser.add_option("--pkg_format", dest="pkg_format", default="deb",
 		help="Package type to use, defaults to deb", metavar= META +"FORMAT")
 	parser.add_option("--suite", dest="suite", default="development",
 		help="Suite to use, defaults to development", metavar= META +"SUITE")
@@ -63,17 +63,15 @@ if __name__ == '__main__':
 		help="password to use for AMQP server, defaults to guest", metavar=META + "PASSWORD")
 	parser.add_option("--insist", dest="insist", default=False,
 		help="insist to use for AMQP server, defaults to 5672", metavar=META + "INSIST")
-	parser.add_option("--id", dest="id", default=1,
+	parser.add_option("--clientid", dest="clientid", default=1,
 		help="id to use for build-client control queue, defaults to 1 but is unique per amqp server.", metavar=META + "INSIST")
-	parser.add_option("--interactive", dest="interactive", default=True,
-		help="Run the basic client in interactive mode.", metavar=META + "INTERACTIVE")
 
 	
 	(options, args) = parser.parse_args()
 	build_client = PyBITClient(options.arch, options.distribution,
-		options.format, options.suite, options.host, options.vhost,
+		options.pkg_format, options.suite, options.host, options.vhost,
 		options.userid, options.port, options.password, options.insist,
-		options.id, options.interactive)
+		options.clientid)
 	
 
 #	try:

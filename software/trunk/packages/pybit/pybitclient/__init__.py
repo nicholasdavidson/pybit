@@ -39,13 +39,15 @@ class PyBITClient(object):
 				self.process = multiprocessing.Process(target=self.format_handler.upload, args=args)
 				self.process.start()
 			elif self.state == "IDLE":
-				if (self.overall_success is not None and self.current_msg is not None) :
-					self.chan.basic_ack(self.current_msg.delivery_tag)
-					#FIXME: need to post job id
+				overall_success = self.overall_success
+				current_msg = self.current_msg
 				self.overall_success = None
 				self.current_request = None
 				self.process = None
-				self.current_msg = None
+				self.current_msg = None	
+				if (overall_success is not None and current_msg is not None) :
+					self.chan.basic_ack(current_msg.delivery_tag)
+					#FIXME: need to post job id
 
 			print "Moved from %s to %s" % (self.old_state, self.state)
 		else:
@@ -105,8 +107,8 @@ class PyBITClient(object):
 			else:
 				self.move_state("FATAL_ERROR")
 
-	def __init__(self, arch, distribution, format, suite, host, vhost, userid, port,
-		password, insist, id, interactive) :
+	def __init__(self, arch, distribution, pkg_format, suite, host, vhost, userid, port,
+		password, insist, clientid) :
 		self.state_table = {}
 		self.state_table["UNKNOWN"] = self.fatal_error_handler
 		self.state_table["IDLE"] = self.idle_handler
@@ -119,8 +121,7 @@ class PyBITClient(object):
 		self.state = "UNKNOWN"
 		self.arch = arch
 		self.distribution = distribution
-		self.suite = suite
-		self.format = format
+		self.format = pkg_format
 		self.suite = suite
 		self.host = host
 		self.vhost = vhost
@@ -129,7 +130,6 @@ class PyBITClient(object):
 		self.password = password
 		self.insist = insist
 		self.id = id
-		self.interactive = interactive
 
 		self.routing_key = pybit.get_build_route_name(self.distribution,
 			self.arch, self.suite, self.format)
@@ -159,6 +159,7 @@ class PyBITClient(object):
 			self.format_handler = None
 		self.vcs_handler = None
 		self.process = None
+		self.current_msg = None
 		self.move_state("IDLE")
 
 	def message_handler(self, msg):
