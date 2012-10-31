@@ -78,7 +78,7 @@ if __name__ == '__main__':
 
 #	try:
 	build_client.chan.basic_consume(queue=build_client.queue_name, no_ack=False, callback=build_client.message_handler, consumer_tag="build_callback")
-	build_client.chan.basic_consume(queue=build_client.client_queue_name, no_ack=False, callback=build_client.command_handler, consumer_tag="cmd_callback")
+	build_client.chan.basic_consume(queue=build_client.client_queue_name, no_ack=True, callback=build_client.command_handler, consumer_tag="cmd_callback")
 	while True:
 		build_client.chan.wait()
 	# drop registration
