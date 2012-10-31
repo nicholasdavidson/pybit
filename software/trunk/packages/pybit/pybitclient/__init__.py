@@ -175,7 +175,7 @@ class PyBITClient(object):
 		self.state_table[self.state](msg, build_req)
 
 	def command_handler(self, msg):
-		print "message handler got: %s" % msg.delivery_tag
+		print "command handler got: %s" % msg.delivery_tag
 		cmd_req = jsonpickle.decode(msg.body)
 		if (not isinstance(cmd_req, TaskComplete) and
 			not isinstance(cmd_req, CommandRequest)):
