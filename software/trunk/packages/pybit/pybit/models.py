@@ -111,13 +111,13 @@ class BuildRequest(Model):
 
 	def get_suite(self):
 		return self.job.packageinstance.suite.name
-	
-	def get_packge(self):
+
+	def get_package(self):
 		return self.job.packageinstance.package.name
-	
+
 	def get_version(self):
 		return self.job.packageinstance.package.version
-	
+
 	def get_arch(self):
 		return self.job.packageinstance.arch.name
 
@@ -150,5 +150,5 @@ class TaskComplete(Model):
 	def __init__(self, message, success = True):
 		self.success = success
 		self.message = message
-		
+
 

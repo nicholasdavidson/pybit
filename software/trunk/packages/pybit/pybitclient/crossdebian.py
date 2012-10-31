@@ -65,7 +65,7 @@ class DebianBuildClient(PackageHandler):
 
 	def upload (self, srcdir, buildreq, conn_data):
 		retval = None
-		changes = "%s/%s_%s_%s.changes" % (srcdir, buildreq.get_packge(),
+		changes = "%s/%s_%s_%s.changes" % (srcdir, buildreq.get_package(),
 			buildreq.get_version(), buildreq.get_arch())
 		if not os.path.isfile (changes) :
 			print "Failed to find %s file." % (changes)
@@ -88,11 +88,11 @@ class DebianBuildClient(PackageHandler):
 			if not retval :
 				command = "sbuild --apt-update -d %s %s/%s_%s.dsc" % (
 					buildreq.get_suite(), srcdir,
-					buildreq.get_packge(), buildreq.get_version())
+					buildreq.get_package(), buildreq.get_version())
 				if not pybitclient.run_cmd (command, self.options["dry_run"]):
 					retval = "build_binary"
 			if not retval :
-				changes = "%s/%s_%s_%s.changes" % (srcdir, 
+				changes = "%s/%s_%s_%s.changes" % (srcdir,
 					buildreq.get_package(), buildreq.get_version(),
 					buildreq.get_arch())
 				if not os.path.isfile (changes) :
