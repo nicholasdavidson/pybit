@@ -21,6 +21,7 @@
 #       MA 02110-1301, USA.
 
 import pybitclient
+import pybit
 
 class VersionControlHandler(object):
 	def fetch_source(self):
@@ -44,9 +45,10 @@ class VersionControlHandler(object):
 		self.workdir = ""
 		self.options = {}
 		try:
-			self.options =  pybitclient.get_settings(self)
-			if len(self.options) == 0 :
+			self.options =  pybit.load_settings("client.conf")
+			if not "dry_run" in self.options:
 				self.options["dry_run"] = True
+			if not "buildroot" in self.options:
 				self.options["buildroot"] = "/tmp/buildd"
 		except Exception as e:
 			raise Exception('Error constructing subversion build client: ' + str(e))
@@ -58,6 +60,15 @@ class PackageHandler(object):
 
 	def __init__(self):
 		self.build_process = None
+		try:
+			self.options = pybit.load_settings("client.conf")
+			if not "dry_run" in self.options:
+				self.options["dry_run"] = True
+			if not "buildroot" in self.options:
+				self.options["buildroot"] = "/tmp/buildd"
+		except Exception as e:
+			raise Exception('Error constructing subversion build client: ' + str(e))
+			return
 		return
 
 	def is_dry_run (self):

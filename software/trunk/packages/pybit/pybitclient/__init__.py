@@ -25,7 +25,6 @@ class PyBITClient(object):
 
 
 	def idle_handler(self, msg, decoded):
-		print "Idle handler"
 		if isinstance(decoded, BuildRequest):
 			self.move_state("BUILD")
 			self.current_request = decoded
@@ -149,7 +148,6 @@ class PyBITClient(object):
 		self.move_state("IDLE")
 
 	def message_handler(self, msg):
-		print "Message Handler"
 		build_req = jsonpickle.decode(msg.body)
 		if not isinstance(build_req, BuildRequest) :
 			self.chan.basic_recover(True)
@@ -160,8 +158,7 @@ class PyBITClient(object):
 		self.state_table[self.state](msg, build_req)
 
 	def command_handler(self, msg):
-		print "Command Handler"
-		cmd_req = cmd_req = jsonpickle.decode(msg.body)
+		cmd_req = jsonpickle.decode(msg.body)
 		if (not isinstance(cmd_req, TaskComplete) and
 			not isinstance(cmd_req, CommandRequest)):
 			print "Can't handle message type, rejecting."
@@ -178,7 +175,7 @@ class PyBITClient(object):
 
 def run_cmd (cmd, simulate):
 	if simulate == True :
-		print cmd
+		print "Simulating: %s" % cmd
 		return True
 	else:
 		if not os.system (cmd) :
