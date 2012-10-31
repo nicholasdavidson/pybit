@@ -45,6 +45,7 @@ class PyBITClient(object):
 				self.overall_success = None
 				self.current_request = None
 				self.process = None
+				self.current_msg = None
 
 			print "Moved from %s to %s" % (self.old_state, self.state)
 		else:
