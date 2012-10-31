@@ -11,171 +11,12 @@ import requests
 import pybit
 import os
 import time
-import multiprocessing
-
-from pybit.models import PackageInstance, ClientMessage, BuildRequest, TaskComplete, CommandRequest
+from pybitclient import PyBITClient
 from pybitclient.debian import DebianBuildClient
 from pybitclient.subversion import SubversionClient
 from pybit.models import AMQPConnection
 
 
-class PyBITClient(object):
-
-	def move_state(self, new_state):
-		if (new_state in self.state_table):
-			#FIXME: we can stack state handling in here.
-				
-			self.old_state = self.state
-			self.state = new_state
-		else:
-			print "Unhandled state: %s" % (new_state)
-			
-
-
-	def idle_handler(self, msg, decoded):
-		print "Idle handler"
-		if isinstance(decoded, BuildRequest):
-			self.move_state("BUILD")
-			self.current_request = decoded
-			if (self.current_request.transport.method == "svn" or
-				self.current_request.transport.method == "svn+ssh"):
-					self.vcs_handler = SubversionClient()
-			args = (self.current_request,self.conn_info)
-			self.process = multiprocessing.Process(target=self.vcs_handler.fetch_source,args=args)
-			self.process.start()
-
-	def fatal_error_handler(self, msg, decoded):
-		print "Fatal Error handler"
-
-	def checkout_handler(self, msg, decoded):
-		if isinstance(decoded, TaskComplete) :
-			process.join()
-			args = (self.current_request,self.conn_info)
-			if decoded.success == True:
-				self.move_state("BUILD")
-				if decoded.job.decoded.job.packageinstance.master == True:
-					self.process = multiprocessing.Process(target=self.format_handler.build_master, args=args)
-				else:
-					self.process = multiprocessing.Process(target=self.format_handler.build_slave, args=args)
-			else:
-				self.move_state("CLEAN")
-				self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
-			self.process.start()
-
-	def build_handler(self, msg, decoded):
-		if isinstance(decoded, TaskComplete) :
-			self.process.join()
-			args = (self.current_request,self.conn_info)
-			if decoded.success == True:
-				self.move_state("UPLOAD")
-				self.process = multiprocessing.Process(target=self.format_handler.upload, args=args)
-				
-			else:
-				self.move_state("CLEAN")
-				self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
-			self.process.start()
-			
-
-	def upload_handler(self, msg, decoded):
-		if isinstance(decoded, TaskComplete) :
-			args = (self.current_request,self.conn_info)
-			self.process.join()
-			self.move_state("CLEAN")
-			self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
-			self.process.start()
-
-	def clean_handler(self, msg, decoded):
-		print "Clean handler"
-		if isinstance(decoded, TaskComplete) :
-			self.process.join()
-			self.current_request = None
-			self.process = None
-			if decoded.success == True:
-				self.move_state("IDLE")	
-			else:
-				self.move_state("FATAL_ERROR")
-				
-		
-
-	def __init__(self, arch, distribution, format, suite, host, vhost, userid, port,
-		password, insist, id, interactive) :
-		self.state_table = {}
-		self.state_table["UNKNOWN"] = self.fatal_error_handler
-		self.state_table["IDLE"] = self.idle_handler
-		self.state_table["FATAL_ERROR"] = self.fatal_error_handler
-		self.state_table["CHECKOUT"] = self.checkout_handler
-		self.state_table["BUILD"] = self.build_handler
-		self.state_table["UPLOAD"] = self.upload_handler
-		self.state_table["CLEAN"] = self.clean_handler
-		self.state = "UNKNOWN"
-		self.arch = arch
-		self.distribution = distribution
-		self.suite = suite
-		self.format = format
-		self.suite = suite
-		self.host = host
-		self.vhost = vhost
-		self.userid = userid
-		self.port = port
-		self.password = password
-		self.insist = insist
-		self.id = id
-		self.interactive = interactive
-
-		self.routing_key = pybit.get_build_route_name(self.distribution,
-			self.arch, self.suite, self.format)
-
-		self.queue_name = pybit.get_build_queue_name(self.distribution,
-			self.arch, self.suite, self.format)
-
-		self.client_queue_name = pybit.get_client_queue(self.id)
-		
-		self.conn_info = AMQPConnection(self.client_queue_name,self.host,
-			self.userid, self.password, self.vhost)
-		
-		print "Connecting with... \nhost: " + self.host + "\nuser id: " + self.userid + "\npassword: "  + self.password + "\nvhost: " + self.vhost + "\ninsist: " + str(self.insist)
-		self.conn = amqp.Connection(host=self.host, userid=self.userid, password=self.password, virtual_host=self.vhost, insist= self.insist)
-		self.chan = self.conn.channel()
-
-		print "Creating queue with name:" + self.queue_name
-		self.chan.queue_declare(queue=self.queue_name, durable=True, exclusive=False, auto_delete=False)
-		self.chan.queue_bind(queue=self.queue_name, exchange=pybit.exchange_name, routing_key=self.routing_key)
-
-		print "Creating private command queue with name:" + self.client_queue_name
-		self.chan.queue_declare(queue=self.client_queue_name, durable=False, exclusive=True, auto_delete=False)
-		self.chan.queue_bind(queue=self.client_queue_name, exchange=pybit.exchange_name, routing_key=self.client_queue_name)
-		if (format == "deb") :
-			self.format_handler = DebianBuildClient()
-		else:
-			self.format_handler = None
-		self.vcs_handler = None
-		self.process = None
-		self.move_state("IDLE")
-
-	def message_handler(self, msg, build_req):
-		print "Message Handler"
-		if not isinstance(build_req, BuildRequest) :
-			self.chan.basic_recover(True)
-			return
-		if self.process:
-			self.chan.basic_recover(True)
-			return
-		self.state_table[self.state](msg, build_req)
-
-	def command_handler(self, msg, cmd_req):
-		print "Command Handler"
-		if (not isinstance(cmd_req, TaskComplete) and
-			not isinstance(cmd_req, CommandRequest)):
-			print "Can't handle message type, rejecting."
-			self.chan.basic_recover(True)
-			return
-		self.state_table[self.state](msg, cmd_req)
-
-	def is_building(self):
-		if format_handler.is_building() :
-			# FIXME
-			return True
-		return False
 
 
 META = "PYBIT_CLIENT_"
@@ -232,18 +73,11 @@ if __name__ == '__main__':
 		options.format, options.suite, options.host, options.vhost,
 		options.userid, options.port, options.password, options.insist,
 		options.id, options.interactive)
-	def recv_callback(msg):
-		build_req = jsonpickle.decode(msg.body)
-		build_client.message_handler(msg, build_req)
-	
-	def cmd_callback(msg):
-		cmd_req = jsonpickle.decode(msg.body)
-		build_client.command_handler(msg, cmd_req)
 
 
 	try:
-		build_client.chan.basic_consume(queue=build_client.queue_name, no_ack=False, callback=recv_callback, consumer_tag="build_callback")
-		build_client.chan.basic_consume(queue=build_client.client_queue_name, no_ack=False, callback=cmd_callback, consumer_tag="cmd_callback")
+		build_client.chan.basic_consume(queue=build_client.queue_name, no_ack=False, callback=build_client.message_handler, consumer_tag="build_callback")
+		build_client.chan.basic_consume(queue=build_client.client_queue_name, no_ack=False, callback=build_client.command_handler, consumer_tag="cmd_callback")
 		while True:
 			build_client.chan.wait()
 		# drop registration

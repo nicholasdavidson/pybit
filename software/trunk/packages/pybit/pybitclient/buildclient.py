@@ -20,18 +20,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-from amqplib import client_0_8 as amqp
-import os
-import jsonpickle
-import subprocess
-import shlex
 import pybitclient
-import requests
-# needs PYTHONPATH=..
-import pybit
-from pybit.models import ClientMessage
-import debian
-
 
 class VersionControlHandler(object):
 	def fetch_source(self):
@@ -78,10 +67,10 @@ class PackageHandler(object):
 			return False
 		return self.options["dry_run"]
 
-	def build_master (buildroot):
+	def build_master (self, buildroot):
 		pass
 
-	def build_slave (buildroot):
+	def build_slave (self, buildroot):
 		pass
 
 	def update_environment (self,name,pkg) :

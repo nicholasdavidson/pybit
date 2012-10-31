@@ -31,9 +31,11 @@ class SubversionClient(VersionControlHandler):
 		if buildreq.transport.method != "svn":
 			retval = "wrong_method"
 		if not retval :
-			self.workdir = os.path.join (self.options["buildroot"], buildreq.get_suite_name(), buildreq.transport.method)
+			self.workdir = os.path.join (self.options["buildroot"],
+				buildreq.get_suite(), buildreq.transport.method)
 			if (buildreq.transport.vcs_id is not None):
-				command = "svn export %s@%s %s" % (buildreq.transport.uri, buildreq.transport.vcs_id, self.workdir)
+				command = "svn export %s@%s %s" % (buildreq.transport.uri,
+					buildreq.transport.vcs_id, self.workdir)
 			elif (buildreq.transport.uri is not None):
 				command = "svn export %s %s" % (buildreq.transport.uri, self.workdir)
 			else:
@@ -56,7 +58,7 @@ class SubversionClient(VersionControlHandler):
 		if buildreq.transport.method != "svn":
 			retval = "wrong_method"
 		if not retval :
-			self.cleandir = os.path.join (self.options["buildroot"], buildreq.get_suite_name())
+			self.cleandir = os.path.join (self.options["buildroot"], buildreq.get_suite())
 			command = "rm -rf %s/*" % (self.cleandir)
 			if not pybitclient.run_cmd (command, self.option["dry_run"]) :
 				retval = "failed_clean"
