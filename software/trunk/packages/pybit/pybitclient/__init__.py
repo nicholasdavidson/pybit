@@ -13,12 +13,39 @@ import multiprocessing
 
 class PyBITClient(object):
 
+
 	def move_state(self, new_state):
 		if (new_state in self.state_table):
 			#FIXME: we can stack state handling in here.
-
 			self.old_state = self.state
 			self.state = new_state
+			if self.state == "CHECKOUT":
+				args = (self.current_request,self.conn_info)
+				self.process = multiprocessing.Process(target=self.vcs_handler.fetch_source,args=args)
+				self.process.start()
+			elif self.state == "BUILD":
+				args = (self.current_request,self.conn_info)
+				if self.current_request.job.packageinstance.master == True:
+					self.process = multiprocessing.Process(target=self.format_handler.build_master, args=args)
+				else:
+					self.process = multiprocessing.Process(target=self.format_handler.build_slave, args=args)
+				self.process.start()
+			elif self.state == "CLEAN":
+				args = (self.current_request,self.conn_info)
+				self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
+				self.process.start()
+			elif self.state == "UPLOAD":
+				args = (self.current_request,self.conn_info)
+				self.process = multiprocessing.Process(target=self.format_handler.upload, args=args)
+				self.process.start()
+			elif self.state == "IDLE":
+				if (self.overall_success is not None and self.current_msg is not None) :
+					self.chan.basic_ack(self.current_msg.delivery_tag)
+					#FIXME: need to post job id
+				self.overall_success = None
+				self.current_request = None
+				self.process = None
+
 			print "Moved from %s to %s" % (self.old_state, self.state)
 		else:
 			print "Unhandled state: %s" % (new_state)
@@ -27,14 +54,16 @@ class PyBITClient(object):
 
 	def idle_handler(self, msg, decoded):
 		if isinstance(decoded, BuildRequest):
-			self.move_state("CHECKOUT")
+			
+			self.current_msg = msg
 			self.current_request = decoded
 			if (self.current_request.transport.method == "svn" or
 				self.current_request.transport.method == "svn+ssh"):
-					self.vcs_handler = SubversionClient()
-			args = (self.current_request,self.conn_info)
-			self.process = multiprocessing.Process(target=self.vcs_handler.fetch_source,args=args)
-			self.process.start()
+				self.vcs_handler = SubversionClient()
+				self.move_state("CHECKOUT")
+			else:
+				self.overall_success = False
+				self.move_state("IDLE")
 
 	def fatal_error_handler(self, msg, decoded):
 		print "Fatal Error handler"
@@ -45,52 +74,35 @@ class PyBITClient(object):
 
 			if decoded.success == True:
 				self.move_state("BUILD")
-				args = (self.current_request,self.conn_info)
-				if self.current_request.job.packageinstance.master == True:
-					self.process = multiprocessing.Process(target=self.format_handler.build_master, args=args)
-				else:
-					self.process = multiprocessing.Process(target=self.format_handler.build_slave, args=args)
 			else:
-				args = (self.current_request,self.conn_info)
 				self.move_state("CLEAN")
-				self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
-			self.process.start()
+				
+			
 
 	def build_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
 			self.process.join()
 
 			if decoded.success == True:
-				args = (self.current_request,self.conn_info)
 				self.move_state("UPLOAD")
-				self.process = multiprocessing.Process(target=self.format_handler.upload, args=args)
-
 			else:
-				args = (self.current_request,self.conn_info)
 				self.move_state("CLEAN")
-				self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
-			self.process.start()
+			
 
 
 	def upload_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
-			args = (self.current_request,self.conn_info)
+			self.overall_success = decoded.success
 			self.process.join()
 			self.move_state("CLEAN")
-			self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
-			self.process.start()
 
 	def clean_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
 			self.process.join()
-			self.current_request = None
-			self.process = None
 			if decoded.success == True:
 				self.move_state("IDLE")
 			else:
 				self.move_state("FATAL_ERROR")
-
-		self.chan.basic_ack()
 
 	def __init__(self, arch, distribution, format, suite, host, vhost, userid, port,
 		password, insist, id, interactive) :
@@ -102,6 +114,7 @@ class PyBITClient(object):
 		self.state_table["BUILD"] = self.build_handler
 		self.state_table["UPLOAD"] = self.upload_handler
 		self.state_table["CLEAN"] = self.clean_handler
+		self.overall_success = None
 		self.state = "UNKNOWN"
 		self.arch = arch
 		self.distribution = distribution

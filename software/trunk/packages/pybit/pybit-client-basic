@@ -68,12 +68,13 @@ if __name__ == '__main__':
 	parser.add_option("--interactive", dest="interactive", default=True,
 		help="Run the basic client in interactive mode.", metavar=META + "INTERACTIVE")
 
+	
 	(options, args) = parser.parse_args()
 	build_client = PyBITClient(options.arch, options.distribution,
 		options.format, options.suite, options.host, options.vhost,
 		options.userid, options.port, options.password, options.insist,
 		options.id, options.interactive)
-
+	
 
 #	try:
 	build_client.chan.basic_consume(queue=build_client.queue_name, no_ack=False, callback=build_client.message_handler, consumer_tag="build_callback")
