@@ -11,13 +11,20 @@ from pybit.models import BuildRequest, CancelRequest
 buildController = None
 
 class Controller:
+	
+	def load_settings_from_file(self,path):
+		settings_file = open(path, 'r')
+		encoded_string = settings_file.read()
+		settings = jsonpickle.decode(encoded_string )
+		return settings
 
 	def __init__(self):
 		print "DEBUG: Controller constructor called."
 		if not buildController: # DONT allow construction of more than 1 controller instance (i.e. none other than the buildController here)
 			print "DEBUG: Controller Singleton constructor called."
 			try:
-				self.conn = amqp.Connection(host="localhost:5672", userid="guest", password="guest", virtual_host="/", insist=False)
+				self.settings = self.load_settings_from_file('configs/controller_settings.json')
+				self.conn = amqp.Connection(host=self.settings['rabbit_url'], userid=self.settings['rabbit_userid'], password=self.settings['rabbit_password'], virtual_host=self.settings['rabbit_virtual_host'], insist=self.settings['rabbit_insist'])
 				self.chan = self.conn.channel()
 				#declare exchange.
 				self.chan.exchange_declare(exchange=pybit.exchange_name, type="direct", durable=True, auto_delete=False)
@@ -57,7 +64,7 @@ class Controller:
 					print "CREATED NEW JOB ID", new_job.id
 					if new_job.id :
 						self.cancel_superceded_jobs(current_packageinstance)
-						build_req = jsonpickle.encode(BuildRequest(new_job,transport,"localhost:8080"))
+						build_req = jsonpickle.encode(BuildRequest(new_job,transport,self.settings['webserver_url']))
 						msg = amqp.Message(build_req)
 						msg.properties["delivery_mode"] = 2
 						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name)
@@ -112,7 +119,7 @@ class Controller:
 
 	def send_cancel_request(self, job):
 		print "SENDING CANCEL REQUEST FOR JOB ID", job.id, job.packageinstance.package.name, job.packageinstance.package.version, job.packageinstance.distribution.name, job.packageinstance.arch.name, job.packageinstance.suite.name, job.packageinstance.format.name
-		cancel_req = jsonpickle.encode(CancelRequest(job,"localhost:8080"))
+		cancel_req = jsonpickle.encode(CancelRequest(job,self.settings['webserver_url']))
 		msg = amqp.Message(cancel_req)
 		msg.properties["delivery_mode"] = 2
 		routing_key = pybit.get_build_route_name(job.packageinstance.distribution.name, job.packageinstance.arch.name, job.packageinstance.suite.name, job.packageinstance.format.name)

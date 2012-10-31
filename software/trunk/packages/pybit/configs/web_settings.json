@@ -1,1 +1,1 @@
-{"debug": true, "host": "localhost", "port": 8080, "reloader": false}
+{"webserver_debug": true, "webserver_hostname": "localhost", "webserver_port": 8080, "webserver_reloader": false}

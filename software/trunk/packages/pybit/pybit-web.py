@@ -49,7 +49,7 @@ def index():
 #/usr/bin/curl -X POST http://localhost:8080/cancel_package_instance --data "job_id=54"
 
 try:
-	debug(settings['debug'])
-	run(host=settings['host'], port=settings['port'], reloader=settings['reloader'])
+	debug(settings['webserver_debug'])
+	run(host=settings['webserver_hostname'], port=settings['webserver_port'], reloader=settings['webserver_reloader'])
 except Exception as e:
 		raise Exception('Error starting web server: ' + str(e))

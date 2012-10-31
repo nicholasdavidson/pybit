@@ -36,7 +36,7 @@ class Database(object):
 	#Connects to DB using settings loaded from file.
 	def connect(self):
 		try:
-			self.conn = psycopg2.connect(database=self.settings['database'], user=self.settings['user'], host=self.settings['host'], port=self.settings['port'])
+			self.conn = psycopg2.connect(database=self.settings['db_databasename'], user=self.settings['db_user'], host=self.settings['db_hostname'], port=self.settings['db_port'])
 			self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			return True
 		except Exception as e:
