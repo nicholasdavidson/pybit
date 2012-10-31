@@ -46,6 +46,7 @@ class PyBITClient(object):
 				self.process = None
 				self.current_msg = None
 				if (overall_success is not None and current_msg is not None) :
+					print "Acking: %s" % current_msg.delivery_tag
 					self.chan.basic_ack(current_msg.delivery_tag)
 					#FIXME: need to post job id
 
