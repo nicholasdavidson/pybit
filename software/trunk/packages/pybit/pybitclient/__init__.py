@@ -164,7 +164,7 @@ class PyBITClient(object):
 		self.move_state("IDLE")
 
 	def message_handler(self, msg):
-		print "message handler got: %s" % repr(msg)
+		print "message handler got: %s" % msg.delivery_tag
 		build_req = jsonpickle.decode(msg.body)
 		if not isinstance(build_req, BuildRequest) :
 			self.chan.basic_ack(msg.delivery_tag)
@@ -174,7 +174,7 @@ class PyBITClient(object):
 		self.state_table[self.state](msg, build_req)
 
 	def command_handler(self, msg):
-		print "message handler got: %s" % repr(msg)
+		print "message handler got: %s" % msg.delivery_tag
 		cmd_req = jsonpickle.decode(msg.body)
 		if (not isinstance(cmd_req, TaskComplete) and
 			not isinstance(cmd_req, CommandRequest)):
