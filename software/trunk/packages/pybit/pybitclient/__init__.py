@@ -164,23 +164,24 @@ class PyBITClient(object):
 		self.move_state("IDLE")
 
 	def message_handler(self, msg):
+		print "message handler got: %s" % repr(msg)
 		build_req = jsonpickle.decode(msg.body)
 		if not isinstance(build_req, BuildRequest) :
-			self.chan.basic_recover(True)
+			self.chan.basic_ack(msg.delivery_tag)
 			return
 		if self.process:
-			self.chan.basic_recover(True)
-			return
+			print "Detected a running process"
 		self.state_table[self.state](msg, build_req)
 
 	def command_handler(self, msg):
+		print "message handler got: %s" % repr(msg)
 		cmd_req = jsonpickle.decode(msg.body)
 		if (not isinstance(cmd_req, TaskComplete) and
 			not isinstance(cmd_req, CommandRequest)):
-			print "Can't handle message type, rejecting."
-			self.chan.basic_recover(True)
-			return
-		self.state_table[self.state](msg, cmd_req)
+			print "Can't handle message type."
+			self.chan.basic_ack(msg.delivery_tag)
+		else:
+			self.state_table[self.state](msg, cmd_req)
 
 	def is_building(self):
 		if self.format_handler.is_building() :
