@@ -129,15 +129,15 @@ class PyBITClient(object):
 		self.port = port
 		self.password = password
 		self.insist = insist
-		self.id = id
+		self.clientid = clientid
 
 		self.routing_key = pybit.get_build_route_name(self.distribution,
-			self.arch, self.suite, self.format)
+			self.arch, self.suite, self.pkg_format)
 
 		self.queue_name = pybit.get_build_queue_name(self.distribution,
-			self.arch, self.suite, self.format)
+			self.arch, self.suite, self.pkg_format)
 
-		self.client_queue_name = pybit.get_client_queue(self.id)
+		self.client_queue_name = pybit.get_client_queue(self.clientid)
 
 		self.conn_info = AMQPConnection(self.client_queue_name,self.host,
 			self.userid, self.password, self.vhost)
