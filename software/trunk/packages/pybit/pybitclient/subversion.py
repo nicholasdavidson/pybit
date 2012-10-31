@@ -54,15 +54,15 @@ class SubversionClient(VersionControlHandler):
 		return self.workdir
 
 	def clean_source (self, buildreq, conn_data) :
-		print "clean_source"
-		retval = "success"
+		retval = None
 		if buildreq.transport.method != "svn":
 			retval = "wrong_method"
 		if not retval :
 			self.cleandir = os.path.join (self.options["buildroot"], buildreq.get_suite())
 			command = "rm -rf %s/*" % (self.cleandir)
-			if not pybitclient.run_cmd (command, self.option["dry_run"]) :
+			if not pybitclient.run_cmd (command, self.options["dry_run"]) :
 				retval = "failed_clean"
+		retval = "success"
 		pybitclient.send_message (conn_data, retval)
 
 	def __init__(self):

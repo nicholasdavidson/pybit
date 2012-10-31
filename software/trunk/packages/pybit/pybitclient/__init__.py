@@ -16,13 +16,13 @@ class PyBITClient(object):
 	def move_state(self, new_state):
 		if (new_state in self.state_table):
 			#FIXME: we can stack state handling in here.
-				
+
 			self.old_state = self.state
 			self.state = new_state
 			print "Moved from %s to %s" % (self.old_state, self.state)
 		else:
 			print "Unhandled state: %s" % (new_state)
-			
+
 
 
 	def idle_handler(self, msg, decoded):
@@ -42,10 +42,10 @@ class PyBITClient(object):
 	def checkout_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
 			self.process.join()
-			
+
 			if decoded.success == True:
 				self.move_state("BUILD")
-				args = (self.vcs_handler.get_srcdir(), self.current_request,self.conn_info)
+				args = (self.current_request,self.conn_info)
 				if self.current_request.job.packageinstance.master == True:
 					self.process = multiprocessing.Process(target=self.format_handler.build_master, args=args)
 				else:
@@ -59,18 +59,18 @@ class PyBITClient(object):
 	def build_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
 			self.process.join()
-			
+
 			if decoded.success == True:
-				args = (self.vcs_handler.get_srcdir(), self.current_request,self.conn_info)
+				args = (self.current_request,self.conn_info)
 				self.move_state("UPLOAD")
 				self.process = multiprocessing.Process(target=self.format_handler.upload, args=args)
-				
+
 			else:
 				args = (self.current_request,self.conn_info)
 				self.move_state("CLEAN")
 				self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
 			self.process.start()
-			
+
 
 	def upload_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
@@ -86,10 +86,10 @@ class PyBITClient(object):
 			self.current_request = None
 			self.process = None
 			if decoded.success == True:
-				self.move_state("IDLE")	
+				self.move_state("IDLE")
 			else:
 				self.move_state("FATAL_ERROR")
-				
+
 		self.chan.basic_ack()
 
 	def __init__(self, arch, distribution, format, suite, host, vhost, userid, port,
@@ -124,10 +124,10 @@ class PyBITClient(object):
 			self.arch, self.suite, self.format)
 
 		self.client_queue_name = pybit.get_client_queue(self.id)
-		
+
 		self.conn_info = AMQPConnection(self.client_queue_name,self.host,
 			self.userid, self.password, self.vhost)
-		
+
 		print "Connecting with... \nhost: " + self.host + "\nuser id: " + self.userid + "\npassword: "  + self.password + "\nvhost: " + self.vhost + "\ninsist: " + str(self.insist)
 		self.conn = amqp.Connection(host=self.host, userid=self.userid, password=self.password, virtual_host=self.vhost, insist= self.insist)
 		self.chan = self.conn.channel()

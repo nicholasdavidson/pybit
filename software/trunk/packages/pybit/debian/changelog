@@ -1,3 +1,11 @@
+pybit (0.0.40) pybit; urgency=low
+
+  * Set the srcdir from the arguments as it cannot be retained between
+    processes
+  * Move dput_dest into the config file
+
+ -- Neil Williams <neilw@toby-churchill.com>  Wed, 31 Oct 2012 16:13:23 +0000
+
 pybit (0.0.39) pybit; urgency=low
 
   * Controller, web and db settings now loaded by nice common module

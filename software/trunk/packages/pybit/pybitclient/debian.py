@@ -37,7 +37,7 @@ class DebianBuildClient(PackageHandler):
 			retval = "build_update"
 		pybitclient.send_message (conn_data, retval)
 
-	def build_master (self, srcdir, buildreq, conn_data):
+	def build_master (self, buildreq, conn_data):
 		print "build_master"
 		retval = None
 		if (not isinstance(buildreq, BuildRequest)):
@@ -45,6 +45,8 @@ class DebianBuildClient(PackageHandler):
 			retval = "misconfigured"
 			pybitclient.send_message (conn_data, retval)
 			return
+		srcdir = os.path.join (self.options["buildroot"],
+				buildreq.get_suite(), buildreq.transport.method)
 		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
 		# FIXME: doesn't make sense to run dpkg-checkbuilddeps outside the chroot!
 		if os.path.isdir(package_dir) :
@@ -73,8 +75,10 @@ class DebianBuildClient(PackageHandler):
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
 
-	def upload (self, srcdir, buildreq, conn_data):
+	def upload (self, buildreq, conn_data):
 		retval = None
+		srcdir = os.path.join (self.options["buildroot"],
+				buildreq.get_suite(), buildreq.transport.method)
 		changes = "%s/%s_%s_%s.changes" % (srcdir, buildreq.get_package(),
 			buildreq.get_version(), buildreq.get_arch())
 		if not os.path.isfile (changes) and not self.options["dry_run"]:
@@ -82,18 +86,20 @@ class DebianBuildClient(PackageHandler):
 			retval = "upload_changes"
 		if not retval :
 			command = "dput -c %s %s %s %s" % (self.dput_cfg,
-				self.options["dput"], self.dput_dest, changes)
+				self.options["dput"], self.options["dput_dest"], changes)
 			if not pybitclient.run_cmd (command, self.options["dry_run"]):
 				retval = "upload_fail"
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
 
-	def build_slave (self, srcdir, buildreq, conn_data):
+	def build_slave (self, buildreq, conn_data):
 		retval = None
+		srcdir = os.path.join (self.options["buildroot"],
+				buildreq.get_suite(), buildreq.transport.method)
 		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
 		if os.path.isdir(package_dir) or self.options["dry_run"]:
-			command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % package_dir
+			command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % (package_dir)
 			if not pybitclient.run_cmd (command, self.options["dry_run"]):
 				retval = "build_dsc"
 			if not retval :
@@ -120,14 +126,7 @@ class DebianBuildClient(PackageHandler):
 			PackageHandler.__init__(self)
 			# Specific buildd options
 			# FIXME: decide how this is managed and packaged
-			self.options =  pybitclient.get_settings(self)
-			if len(self.options) > 0 :
-				dput_opt = self.options["dput"]
-				buildroot = self.options["buildroot"]
-			else :
-				self.options["dry_run"] = True
 			# variables to retrieve from the job object later
-			self.dput_dest = "tcl"
 			self.dput_cfg = "/etc/pybit/client/dput.cf"
 		except Exception as e:
 			raise Exception('Error constructing debian build client: ' + str(e))

@@ -150,11 +150,11 @@ def recv_callback(msg):
 		vcs.fetch_source(pkg)
 		srcdir = vcs.get_srcdir()
 		if role == "master" :
-			client.build_master (srcdir, pkg)
+			client.build_master (pkg)
 			while client.is_building() :
 				wait(self)
 		elif role == "slave":
-			client.build_slave (srcdir, pkg)
+			client.build_slave (pkg)
 			while client.is_building() :
 				wait(self)
 		vcs.clean_source(pkg)

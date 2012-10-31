@@ -68,7 +68,7 @@ def main():
 	pkg.source = "textparser"
 	pkg.uri = "http://svn/svn/lwdev/software/trunk/packages/textparser"
 	vcs.fetch_source (pkg)
-	client.build_slave (srcdir, pkg)
+	client.build_slave (pkg)
 	vcs.clean_source(pkg)
 
 	return 0
