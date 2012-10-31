@@ -94,7 +94,7 @@
 <form class="form" method="POST" action="http://localhost:8080/job">
 					<legend>Submit a Job</legend>
 					<label for="packageinstance_id">Package Instance ID: </label>
-					<select name="packageinstance_id"  id="packageinstance_id"></select>
+					<select name="packageinstance_id"  id="packageinstance_id" size="1" style="width:480px; display:block;"></select>
 					<label for="buildclient_id">Build Client: </label>
 
 					<select name="buildclient_id" id="buildclient_id"></select>
@@ -145,8 +145,7 @@ $().ready(function ()
 	{
 		$.each(json, function(i, field)
 		{
-
-			$("#packageinstance_id").append("<option value='" + field.id + "'>" + field.id + "</option>");
+			$("#packageinstance_id").append("<option value='" + field.id + "'>" + field.id + " - " + field.package.name + " " + field.package.version + "." + field.format.name + " "  + " " + field.distribution.name + "/" + field.suite.name + " (" + field.arch.name + ") </option>");
 		});
 	});
 
@@ -155,7 +154,7 @@ $().ready(function ()
 	{
 		$.each(json, function(i, field)
 		{
-
+			// TODO: Only allow to pick valid ones for packageinstance arch
 			$("#buildclient_id").append("<option value='" + field.id + "'>" + field.name + "</option>");
 		});
 	});
@@ -165,7 +164,7 @@ $().ready(function ()
 	{
 		$.each(json, function(i, field)
 		{
-
+			// TODO: Only allow to pick valid ones for packageinstance
 			$("#architecture_list").append("<option value='" + field.id + "'>" + field.name + "</option>");
 		});
 	});
