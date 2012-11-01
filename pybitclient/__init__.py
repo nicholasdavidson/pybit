@@ -3,6 +3,7 @@ import re
 import os
 import errno
 import json
+import time
 import jsonpickle
 from amqplib import client_0_8 as amqp
 import pybit
@@ -10,14 +11,20 @@ from pybit.models import TaskComplete, PackageInstance, ClientMessage, BuildRequ
 from debian import DebianBuildClient
 from subversion import SubversionClient
 import multiprocessing
+import socket
 
 class PyBITClient(object):
 
 	def wait(self):
-		if self.state == "IDLE":
-			self.message_chan.wait()
-		else:
-			self.command_chan.wait()
+		time.sleep(5)
+		if self.state == "IDLE" :
+			msg = self.message_chan.basic_get()
+			if msg is not None :
+				self.message_handler(msg)
+		
+		cmd = self.command_chan.basic_get()
+		if cmd is not None:
+			self.command_handler(cmd)
 
 	def move_state(self, new_state):
 		if (new_state in self.state_table):
@@ -113,8 +120,7 @@ class PyBITClient(object):
 			else:
 				self.move_state("FATAL_ERROR")
 
-	def __init__(self, arch, distribution, pkg_format, suite, host, vhost, userid, port,
-		password, insist, clientid) :
+	def __init__(self, arch, distribution, pkg_format, suite, conn_info) :
 		self.state_table = {}
 		self.state_table["UNKNOWN"] = self.fatal_error_handler
 		self.state_table["IDLE"] = self.idle_handler
@@ -129,41 +135,22 @@ class PyBITClient(object):
 		self.distribution = distribution
 		self.pkg_format = pkg_format
 		self.suite = suite
-		self.host = host
-		self.vhost = vhost
-		self.userid = userid
-		self.port = port
-		self.password = password
-		self.insist = insist
-		self.clientid = clientid
-
+		self.conn = None
+		self.command_chan = None
+		self.message_chan = None
+		
 		self.routing_key = pybit.get_build_route_name(self.distribution,
 			self.arch, self.suite, self.pkg_format)
 
 		self.queue_name = pybit.get_build_queue_name(self.distribution,
 			self.arch, self.suite, self.pkg_format)
 
-		self.client_queue_name = pybit.get_client_queue(self.clientid)
+		self.conn_info = conn_info
 
-		self.conn_info = AMQPConnection(self.client_queue_name,self.host,
-			self.userid, self.password, self.vhost)
-
-		print "Connecting with... \nhost: " + self.host + "\nuser id: " + self.userid + "\npassword: "  + self.password + "\nvhost: " + self.vhost + "\ninsist: " + str(self.insist)
-		self.conn = amqp.Connection(host=self.host, userid=self.userid, password=self.password, virtual_host=self.vhost, insist= self.insist)
-		self.command_chan = self.conn.channel()
-		self.message_chan = self.conn.channel()
-		self.message_chan.basic_qos(0,1,False)
-
-		print "Creating queue with name:" + self.queue_name
-		self.message_chan.queue_declare(queue=self.queue_name, durable=True, exclusive=False, auto_delete=False)
-		self.message_chan.queue_bind(queue=self.queue_name, exchange=pybit.exchange_name, routing_key=self.routing_key)
-
-		print "Creating private command queue with name:" + self.client_queue_name
-		self.command_chan.queue_declare(queue=self.client_queue_name, durable=False, exclusive=True, auto_delete=False)
-		self.command_chan.queue_bind(queue=self.client_queue_name, exchange=pybit.exchange_name, routing_key=self.client_queue_name)
 		
-		self.message_chan.basic_consume(queue=self.queue_name, no_ack=False, callback=self.message_handler, consumer_tag="build_callback")
-		self.command_chan.basic_consume(queue=self.client_queue_name, no_ack=True, callback=self.command_handler, consumer_tag="cmd_callback")
+		
+		#self.message_chan.basic_consume(queue=self.queue_name, no_ack=False, callback=self.message_handler, consumer_tag="build_callback")
+		#self.command_chan.basic_consume(queue=self.client_queue_name, no_ack=True, callback=self.command_handler, consumer_tag="cmd_callback")
 		
 		
 		
@@ -202,6 +189,49 @@ class PyBITClient(object):
 			# FIXME
 			return True
 		return False
+
+	def connect(self):
+		try:
+			self.conn = amqp.Connection(host=self.conn_info.host,
+				userid=self.conn_info.userid, password=self.conn_info.password,
+				virtual_host=self.conn_info.vhost, insist=False)
+			self.command_chan = self.conn.channel()
+			self.message_chan = self.conn.channel()
+			self.message_chan.basic_qos(0,1,False)
+		except socket.error as e:
+			print "Couldn't connect rabbitmq server with: %s" % repr(self.conn_info)
+			return
+
+		print "Creating queue with name:" + self.queue_name
+		self.message_chan.queue_declare(queue=self.queue_name, durable=True,
+			exclusive=False, auto_delete=False)
+		self.message_chan.queue_bind(queue=self.queue_name,
+			exchange=pybit.exchange_name, routing_key=self.routing_key)
+
+		print "Creating private command queue with name:" + self.conn_info.client_name
+		self.command_chan.queue_declare(queue=self.conn_info.client_name,
+			durable=False, exclusive=True, auto_delete=False)
+		self.command_chan.queue_bind(queue=self.conn_info.client_name, 
+			exchange=pybit.exchange_name, routing_key=self.conn_info.client_name)
+
+
+	def disconnect(self):
+		if self.conn:
+			if self.command_chan:
+				self.command_chan.basic_cancel("build_callback")
+				self.command_chan.close()
+			if self.message_chan:
+				self.message_chan.basic_cancel("build_callback")
+				self.message_chan.close()
+			self.conn.close()
+
+
+	def __enter__(self):
+		self.connect()
+		return self
+	
+	def __exit__(self, type, value, traceback):
+		self.disconnect()
 
 
 def run_cmd (cmd, simulate):

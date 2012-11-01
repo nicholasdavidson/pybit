@@ -1,9 +1,9 @@
 buildd statuses, commands
 reports
+ - job status history
+ - buildd jobs
 jobs by state
 suitearches
-delete etc...
-make cancel buttons work
 deleting things - lookups?
 most of it, really...
-group by - collapsable tables.
+group by in packages list etc...- collapsable tables

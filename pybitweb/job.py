@@ -21,7 +21,7 @@ def vcs_hook():
 			version = request.forms.get('package_version')
 			package_name = request.forms.get('package')
 			suite = request.forms.get('suite')
-			pkg_format = request.forms.get('pkg_format')
+			pkg_format = request.forms.get('format')
 
 			if not uri and not method and not dist and not vcs_id and not architectures and not version and not package_name and not suite and not pkg_format :
 				response.status = "400 - Required fields missing."
@@ -111,26 +111,21 @@ def put_job():
 	try:
 		# Add a new job. Pokes simons controller code with the correct values for uri, method, vcs_id, architecture_list etc...
 		packageinstance_id = request.forms.get('packageinstance_id')
-		buildclient_id =  request.forms.get('buildclient_id')
 		method = request.forms.get('method')
 		vcs_id = request.forms.get('vcs_id')
 		uri = request.forms.get('uri')
 		architecture_list = request.forms.get('architecture_list')
 
-		if  packageinstance_id and buildclient_id and method and vcs_id and uri and architecture_list:
+		if  packageinstance_id and method and vcs_id and uri and architecture_list:
 			packageinstance = myDb.get_packageinstance_id(packageinstance_id)
 			package_version = packageinstance.package.version
 			package_name = packageinstance.package.name
-			buildclient = myDb.get_buildd_id(buildclient_id) #unused?
 			arch =  myDb.get_arch_id(architecture_list).name # TODO: parse list
 			dist = packageinstance.distribution.name
 			suite = packageinstance.suite.name
 			pkg_format = packageinstance.format.name
 
 			print ("Calling Controller.process_job(" + uri + "," + method + "," + dist + "," + vcs_id  + "," + arch + "," + package_version + "," + package_name  + "," + suite + "," + pkg_format + ")")
-
-			# Add to DB
-			#myDb.put_job(packageinstance,buildclient)
 
 			# Pass to controller to queue up
 			transport = Transport(None, method, uri, vcs_id)
