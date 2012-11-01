@@ -2,12 +2,34 @@ import jsonpickle
 import os
 import sys
 from os.path import isfile
-        
+
+#       Copyright 2012:
+#
+#       Nick Davidson <nickd@toby-churchill.com>,
+#       Simon Haswell <simonh@toby-churchill.com>,
+#       Neil Williams <neilw@toby-churchill.com>,
+#       James Bennet <github@james-bennet.com / James.Bennet@toby-churchill.com>
+
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
+
 def load_from_cwd(filename):
     try:
         #print "DEBUG: Opening local file" , filename
         path = "%s/configs/%s" % (os.getcwd(),filename);
-        
+
         if isfile(path): # exists
             settings_file = open(path, 'r')
             if settings_file: # can actually open it
@@ -29,7 +51,7 @@ def load_from_etc(filename):
     try:
         #print "DEBUG: Opening config file" , filename
         path = "/etc/pybit/configs/%s" % (filename);
-        
+
         if isfile(path): # exists
             settings_file = open(path, 'r')
             if settings_file: # can actually open it
@@ -52,9 +74,9 @@ def load_settings_from_file(filename):
         print "DEBUG: Loading settings file:" , filename, "....."
         localsettings = load_from_cwd(filename)
         globalsettings = load_from_etc(filename)
-        
+
         #print "Local settings: " + repr(localsettings) + "Global settings: " + repr(globalsettings)
-        
+
         if localsettings:
             print "DEBUG: Using local settings file"
             return localsettings
