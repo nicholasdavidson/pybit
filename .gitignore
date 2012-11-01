@@ -32,6 +32,18 @@ nosetests.xml
 # Translations
 *.mo
 
+# Debian build
+build-stamp
+configure-stamp
+debian/files
+debian/*.debhelper.log
+debian/*.substvars
+debian/pybit-client/
+debian/pybit-common/
+debian/pybit-svn/
+debian/pybit-web/
+
+
 # Mr Developer
 .mr.developer.cfg
 .project
