@@ -18,9 +18,6 @@ endif
 
 VERSION := $(shell dpkg-parsechangelog | grep '^Version: ' | awk '{print $$2}')
 
-%.py: %.py.in
-	sed -e 's/__CHANGELOG_VERSION__/$(VERSION)/' < $< > $@
-
 PYTHON2:=$(shell pyversions -r)
 pyalldo=set -e; $(foreach py, $(PYTHON2) $(PYTHON3), PYTHONPATH=. $(py) $(1);)
 

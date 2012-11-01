@@ -1,7 +1,7 @@
 Source: pybit
 Section: devel
 Priority: extra
-Maintainer: TCL Build System user <rnd@toby-churchill.com>
+Maintainer: Neil Williams <codehelp@debian.org>
 Uploaders: Nick Davidson <nickd@toby-churchill.com>,
  Simon Haswell <simonh@toby-churchill.com>,
  Neil Williams <neilw@toby-churchill.com>,
@@ -14,6 +14,8 @@ Build-Depends: debhelper (>= 7.0.50~),
  python-amqplib
 X-Python-Version: 2.6
 Standards-Version: 3.9.3
+Vcs-Git: https://github.com/nicholasdavidson/pybit.git
+Vcs-Browser: https://github.com/nicholasdavidson/pybit
 
 Package: pybit-svn
 Architecture: all

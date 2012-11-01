@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       setup.py.in
+#       setup.py
 #
 #       Copyright 2012 Neil Williams <codehelp@debian.org>
 #       Copyright (C) 2006 James Westby <jw+debian@jameswestby.net>
@@ -24,18 +24,20 @@
 from setuptools import setup
 
 setup(name='pybit-common',
-	version='__CHANGELOG_VERSION__',
+	version='0.1.0',
 	description='PyBit common modules',
-	url='http://www.toby-churchill.co.uk',
+	licence='gpl2'
+	url='https://github.com/nicholasdavidson/pybit.git',
 	packages=['pybit'],
 	maintainer='TCL Build System user',
 	maintainer_email='rnd@toby-churchill.com',
 	)
 
 setup(name='pybit-client',
-	version='__CHANGELOG_VERSION__',
+	version='0.1.0',
 	description='PyBit client related modules',
-	url='http://www.toby-churchill.co.uk',
+	licence='gpl2'
+	url='https://github.com/nicholasdavidson/pybit.git',
 	packages=['pybitclient'],
 	maintainer='TCL Build System user',
 	maintainer_email='rnd@toby-churchill.com',
@@ -43,9 +45,10 @@ setup(name='pybit-client',
 	)
 
 setup(name='pybit-web',
-	version='__CHANGELOG_VERSION__',
+	version='0.1.0',
 	description='PyBit controller and RESTful API',
-	url='http://www.toby-churchill.co.uk',
+	licence='gpl2'
+	url='https://github.com/nicholasdavidson/pybit.git',
 	packages=['pybitweb'],
 	maintainer='TCL Build System user',
 	maintainer_email='rnd@toby-churchill.com',
