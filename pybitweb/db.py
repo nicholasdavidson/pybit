@@ -26,7 +26,7 @@
 import psycopg2
 import psycopg2.extras
 import jsonpickle
-from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory
+from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage
 from pybit.common import load_settings_from_file
 
 myDb = None
@@ -643,10 +643,16 @@ class Database(object):
 		try:
 			self.cur.execute("INSERT INTO job (packageinstance_id,buildclient_id) VALUES (%s, %s)  RETURNING id",(packageinstance.id,(buildclient.id if buildclient else None)))
 			res = self.cur.fetchall()
-			self.conn.commit()
+			job_id = res[0]['id']
+			if job_id is not None:
+				self.cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE status.name=%s))",
+					(job_id, ClientMessage.waiting))
+				self.conn.commit()
+			else:
+				self.conn.rollback()
 
-			return Job(res[0]['id'],packageinstance,buildclient)
-		except Exception as e:
+			return Job(job_id,packageinstance,buildclient)
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception('Error adding job:' + str(e))
 			return None

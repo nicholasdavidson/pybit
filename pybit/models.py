@@ -33,6 +33,7 @@ class ClientMessage:
 	building = "Building"
 	done = "Done"
 	blocked = "Blocked"
+	waiting = "Waiting"
 
 
 class Arch(Model):
