@@ -4,3 +4,4 @@ pybitclient/sbuild-cross.sh ./usr/share/pybitclient/
 pybit-client ./usr/bin/
 debian/tmp/usr/local/lib/python*/dist-packages/pybitclient/ ./usr/share/pyshared/
 buildd-test.py ./usr/share/pybitclient/
+debian/pybit-client.1 ./usr/share/man/man1/

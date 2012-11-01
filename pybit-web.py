@@ -88,6 +88,6 @@ def serve_static_package_instances():
     	return static_file("packageinstance.htm", root='./pybitweb/static/')
 try:
 	debug(settings['webserver_debug'])
-	run(host=settings['webserver_hostname'], port=settings['webserver_port'], reloader=settings['webserver_reloader'])
+	run(server=settings['server_app'], host=settings['webserver_hostname'], port=settings['webserver_port'], reloader=settings['webserver_reloader'])
 except Exception as e:
 		raise Exception('Error starting web server: ' + str(e))

@@ -1,9 +1,29 @@
-#!/usr/bin/python
-
-# TODO: Change DB methods and associated HTTP GEThandlers to work on these JSON objects, rather than returning the raw resultsets themselves, which are a pain to deserialise.
-
 import jsonpickle
 
+#       Copyright 2012:
+#
+#       Nick Davidson <nickd@toby-churchill.com>,
+#       Simon Haswell <simonh@toby-churchill.com>,
+#       Neil Williams <neilw@toby-churchill.com>,
+#       James Bennet <github@james-bennet.com / James.Bennet@toby-churchill.com>
+
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
+
+# TODO: Change DB methods and associated HTTP GEThandlers to work on these JSON objects, rather than returning the raw resultsets
+# themselves, which are a pain to deserialise.
 
 # new
 class Model(object):
@@ -121,10 +141,10 @@ class BuildRequest(Model):
 
 	def get_arch(self):
 		return self.job.packageinstance.arch.name
-	
+
 	def get_job_id(self):
 		return self.job.id
-	
+
 
 class AMQPConnection(object):
 	def __init__(self, client_name, host, userid, password, vhost, insist=False):
@@ -139,8 +159,8 @@ class AMQPConnection(object):
 			virtual_host=self.vhost, insist= False )
 	def __repr__(self):
 		return "host: %s user id:%s password:%s vhost:%s insist: %s" % (
-			self.host, self.userid, self.password, self.vhost, self.insist) 
-	
+			self.host, self.userid, self.password, self.vhost, self.insist)
+
 
 
 class CommandRequest(Model):

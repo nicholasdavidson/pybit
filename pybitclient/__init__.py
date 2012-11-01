@@ -1,4 +1,3 @@
-
 import re
 import os
 import errno
@@ -14,16 +13,38 @@ import multiprocessing
 import socket
 import requests
 
+#       Copyright 2012:
+#
+#       Nick Davidson <nickd@toby-churchill.com>,
+#       Simon Haswell <simonh@toby-churchill.com>,
+#       Neil Williams <neilw@toby-churchill.com>,
+#       James Bennet <github@james-bennet.com / James.Bennet@toby-churchill.com>
+
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
+
 class PyBITClient(object):
-	
+
 	def set_status(self, status, request=None):
 		if request is None:
 			request = self.current_request
 		if status is not None and request is not None:
-			print "Marking JOB id: %s as: %s" % (request.get_job_id(), status) 
-			payload = {'status' : status } 
-			job_status_url = "http://%s/job/%s" % (request.web_host, request.get_job_id()) 
-			requests.put(job_status_url, payload) 
+			print "Marking JOB id: %s as: %s" % (request.get_job_id(), status)
+			payload = {'status' : status }
+			job_status_url = "http://%s/job/%s" % (request.web_host, request.get_job_id())
+			requests.put(job_status_url, payload)
 		else:
 			print "Couldn't find status or current_request"
 
@@ -33,7 +54,7 @@ class PyBITClient(object):
 			msg = self.message_chan.basic_get()
 			if msg is not None :
 				self.message_handler(msg)
-		
+
 		cmd = self.command_chan.basic_get()
 		if cmd is not None:
 			self.command_handler(cmd)
@@ -55,7 +76,7 @@ class PyBITClient(object):
 				else:
 					self.process = multiprocessing.Process(target=self.format_handler.build_slave, args=args)
 				self.process.start()
-				self.set_status(ClientMessage.building) 
+				self.set_status(ClientMessage.building)
 			elif self.state == "CLEAN":
 				args = (self.current_request,self.conn_info)
 				self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
@@ -154,7 +175,7 @@ class PyBITClient(object):
 		self.conn = None
 		self.command_chan = None
 		self.message_chan = None
-		
+
 		self.routing_key = pybit.get_build_route_name(self.distribution,
 			self.arch, self.suite, self.pkg_format)
 
@@ -163,13 +184,13 @@ class PyBITClient(object):
 
 		self.conn_info = conn_info
 
-		
-		
+
+
 		#self.message_chan.basic_consume(queue=self.queue_name, no_ack=False, callback=self.message_handler, consumer_tag="build_callback")
 		#self.command_chan.basic_consume(queue=self.client_queue_name, no_ack=True, callback=self.command_handler, consumer_tag="cmd_callback")
-		
-		
-		
+
+
+
 		if (pkg_format == "deb") :
 			self.format_handler = DebianBuildClient()
 		else:
@@ -227,7 +248,7 @@ class PyBITClient(object):
 		print "Creating private command queue with name:" + self.conn_info.client_name
 		self.command_chan.queue_declare(queue=self.conn_info.client_name,
 			durable=False, exclusive=True, auto_delete=False)
-		self.command_chan.queue_bind(queue=self.conn_info.client_name, 
+		self.command_chan.queue_bind(queue=self.conn_info.client_name,
 			exchange=pybit.exchange_name, routing_key=self.conn_info.client_name)
 
 
@@ -245,7 +266,7 @@ class PyBITClient(object):
 	def __enter__(self):
 		self.connect()
 		return self
-	
+
 	def __exit__(self, type, value, traceback):
 		self.disconnect()
 

@@ -18,6 +18,7 @@
 <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
 
   <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <script src="http://malsup.github.com/jquery.form.js"></script> 
   <script src="bootstrap/js/bootstrap.min.js"></script>
 
 <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -93,7 +94,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form" method="POST" action="http://localhost:8080/packageinstance">
+<form class="form" method="POST" action="http://localhost:8080/packageinstance" id="packageinstance_form" name="packageinstance_form">
 					<legend>Create a package instance</legend>
 					<label for="package_id">Package: </label>
 					<select name="package_id" id="package_id"></select><label for="arch_id">Architecture: </label><select name="arch_id" id="arch_id"></select><label for="suite_id">Suite: </label><select name="suite_id"  id="suite_id"></select><label for="dist_id">Distribution: </label><select name="dist_id" id="dist_id"></select><label for="format_id">Package Format: </label><select name="format_id"  id="format_id"></select>
@@ -121,7 +122,6 @@
 
    function delete_click(id)
    {
-        console.log(id);
 $.ajax({
         type: "GET",
         url: "http://localhost:8080/packageinstance/" + id + "/delete",
@@ -133,6 +133,10 @@ $.ajax({
 
 $().ready(function ()
 {
+
+            $('#packageinstance_form').ajaxForm(function() {
+                alert("Added!");
+            });
 
 	var packages = "http://localhost:8080/package"
 	$.getJSON(packages, function(json)

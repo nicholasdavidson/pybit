@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id='pybit-client'>
+<refmeta>
+<refentrytitle>pybit-client</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='source'>November 2012</refmiscinfo>
+<refmiscinfo class='manual'>pybit-client</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>pybit-client</refname>
+<refpurpose>buildd client script to perform build jobs using pybit queues.</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>pybit-client</command>
+    <arg choice='opt'><replaceable>options</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>pybit-client</para>
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+  <varlistentry>
+  <term><option>-h</option>, <option>--help</option></term>
+  <listitem>
+<para>show this help message and exit</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--arch</option>=<emphasis remap='I'>PYBIT_CLIENT_ARCH</emphasis></term>
+  <listitem>
+<para>Architecture to use, defaults to i386</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--distribution</option>=<emphasis remap='I'>PYBIT_CLIENT_DIST</emphasis></term>
+  <listitem>
+<para>Distribution to use, defaults to Debian</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--pkg_format</option>=<emphasis remap='I'>PYBIT_CLIENT_FORMAT</emphasis></term>
+  <listitem>
+<para>Package type to use, defaults to deb</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--suite</option>=<emphasis remap='I'>PYBIT_CLIENT_SUITE</emphasis></term>
+  <listitem>
+<para>Suite to use, defaults to development</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--host</option>=<emphasis remap='I'>PYBIT_CLIENT_HOST</emphasis></term>
+  <listitem>
+<para>host to connect to, defaults to localhost.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--vhost</option>=<emphasis remap='I'>PYBIT_CLIENT_VHOST</emphasis></term>
+  <listitem>
+<para>vhost to connect to, defaults to localhost.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--userid</option>=<emphasis remap='I'>PYBIT_CLIENT_USERID</emphasis></term>
+  <listitem>
+<para>user id to use for AMQP server, defaults to guest.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--port</option>=<emphasis remap='I'>PYBIT_CLIENT_PORT</emphasis></term>
+  <listitem>
+<para>port to use for AMQP server, defaults to 5672</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--password</option>=<emphasis remap='I'>PYBIT_CLIENT_PASSWORD</emphasis></term>
+  <listitem>
+<para>password to use for AMQP server, defaults to guest</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--insist</option>=<emphasis remap='I'>PYBIT_CLIENT_INSIST</emphasis></term>
+  <listitem>
+<para>insist to use for AMQP server, defaults to 5672</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--clientid</option>=<emphasis remap='I'>PYBIT_CLIENT_INSIST</emphasis></term>
+  <listitem>
+<para>id to use for build-client control queue, defaults to
+1 but is unique per amqp server.</para>
+  </listitem>
+  </varlistentry>
+</variablelist>
+</refsect1>
+</refentry>
