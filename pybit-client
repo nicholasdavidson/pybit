@@ -1,79 +1,28 @@
 #!/usr/bin/python
 
 # -*- coding: utf-8 -*-
-#
-#       pybit-client
-#
-#       Copyright 2012 Neil Williams <codehelp@debian.org>
-#
-#       This program is free software; you can redistribute it and/or modify
-#       it under the terms of the GNU General Public License as published by
-#       the Free Software Foundation; either version 2 of the License, or
-#       (at your option) any later version.
-#
-#       This program is distributed in the hope that it will be useful,
-#       but WITHOUT ANY WARRANTY; without even the implied warranty of
-#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#       GNU General Public License for more details.
-#
-#       You should have received a copy of the GNU General Public License
-#       along with this program; if not, write to the Free Software
-#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#       MA 02110-1301, USA.
-
 from amqplib import client_0_8 as amqp
-import signal
+from optparse import OptionParser
+import tty
 import sys
-import re
-import json
-import os.path
+import signal
+import jsonpickle
+import requests
+import pybit
+import os
 import time
-import pybitclient
+from pybitclient import PyBITClient
 from pybitclient.debian import DebianBuildClient
 from pybitclient.subversion import SubversionClient
+from pybit.models import AMQPConnection
 
-try:
-	supported_distributions = [ "debian" ]
-	supported_formats = [ "deb" ]
 
-	conffile = "%s/pybitclient/client.conf" % (os.getcwd());
-	if os.path.isfile (conffile):
-		options = pybitclient.get_settings(conffile)
-	else :
-		options = pybitclient.get_settings(self)
 
-	host_arch = options["host_arch"] # i386
-	use_lvm = options["use_lvm"] # true
-	# FIXME: role is part of the Job.
-	role = options["role"] # master - builds Architecture: all packages.
-	buildroot = options["buildroot"]
-	host_opt = options["host"]
-	port_opt = options["port"]
-	userid_opt = options["userid"]
-	pass_opt = options["password"]
-	vhost_opt = options["virtual_host"]
-	insist_opt = True if options["insist"] == "True" else False
-	addr_opt = host_opt + ":" + port_opt
-	dput_opt = options["dput"]
-	buildd_id = options["idstring"]
 
-	# PyBit setup variables - package content
-	queue_name = "rabbit"
-	report_name = "controller"
-	listening_name = "buildd"
-	dput_cfg = "/etc/pybit/client/dput.cf"
+META = "PYBIT_CLIENT_"
 
-	# variables to retrieve from the job object later
-	dput_dest = "tcl"
 
-	conn = amqp.Connection(host=addr_opt, userid=userid_opt, password=pass_opt, virtual_host=vhost_opt, insist=insist_opt)
-	chan = conn.channel()
-	chan.queue_declare(queue=queue_name, durable=True, exclusive=False, auto_delete=False)
-	chan.exchange_declare(exchange=host_arch, type="direct", durable=True, auto_delete=False,)
-	chan.queue_bind(queue=queue_name, exchange=host_arch, routing_key=listening_name)
-except Exception as e:
-	raise Exception('Error initialising client: ' + str(e))
-
+#register the single handler
 def signal_handler(signal, frame):
 	try:
 		print '\nClosing %s' % os.path.basename(__file__)
@@ -84,92 +33,54 @@ def signal_handler(signal, frame):
 
 try:
 	signal.signal(signal.SIGINT, signal_handler)
+	signal.signal(signal.SIGTERM, signal_handler)
 	print "Hit Ctrl-C to quit."
 except Exception as e:
-	raise Exception('Error enabling signal handler: ' + str(e))
+	raise Exception('Error configuring signal handler: ' + str(e))
 
-def check_attributes (pkg) :
-	required_attr = [ 'format', 'distribution', 'method_type', 'architecture', 'suite' ]
-	if not pkg :
-		print "E: Misconfiguration - could not parse message."
-		return False
-	for chk in required_attr :
-		if not hasattr(pkg, chk):
-			print "E: Invalid message - missing attribute %s" % chk
-			return False
-	if not pkg.format.lower() in supported_formats:
-		print "E: Misconfiguration - format is not for us."
-		return False
-	if not pkg.distribution.lower() in supported_distributions:
-		print "E: Misconfiguration - distribution is not for us."
-		return False
-	return True
 
-def recv_callback(msg):
-	try:
-		pkg = pybitclient.deb_package (msg.body)
-		if not check_attributes (pkg) :
-			return
-		if not buildd_id or buildd_id == "default":
-			print "E: Misconfiguration - refusing to build with a default or empty idstring."
-			return
-		if pkg.method_type == "svn":
-			vcs = SubversionClient (chan)
-		else :
-			print "E: %s method not supported." % (pkg.method_type)
-			return
-		if pkg.format == "deb" and pkg.distribution.lower() == "debian":
-			# check Debian-specific stuff
-			# FIXME : May need more sanity checking here or support for -cross
-			if pkg.architecture != host_arch:
-				print "E: BuildClient %s is not configured to support %s" % (buildd_id, pkg.architecture)
-				return
-			if not dput_dest or dput_dest == "":
-				print "E: Misconfiguration - refusing to upload to default dput destination (Debian ftpmaster)."
-				return
-			client = DebianBuildClient (chan)
-		else:
-			print "W: shouldn't get here"
-			return
-		# FIXME: To check the build-dependencies in advance, we need to ensure the
-		# chroot has an update apt-cache, so can't use apt-update option of
-		# sbuild. The alternative is to update the apt-cache twice per build,
-		# once for the dep check and once before the build. The choice depends
-		# on whether two network trips are more efficient than rewriting the
-		# lvm snapshot before even trying to do any build.
-		if use_lvm :
-			name = pkg.suite + "-source"
-		else:
-			name = pkg.suite
-		client.update_environment (name, pkg)
-		while client.is_building() :
-			wait(self)
-		pkg.buildd = buildd_id
-		pkg.msgtype = "building"
-		client.send_message (chan, pkg, report_name)
-		vcs.fetch_source(pkg)
-		srcdir = vcs.get_srcdir()
-		if role == "master" :
-			client.build_master (pkg)
-			while client.is_building() :
-				wait(self)
-		elif role == "slave":
-			client.build_slave (pkg)
-			while client.is_building() :
-				wait(self)
-		vcs.clean_source(pkg)
-	except Exception as e:
-		raise Exception('Error processing callback: ' + str(e))
-		return
+if __name__ == '__main__':
+	parser = OptionParser()
 
-try:
-	# register the callback to the relevant queue
-	chan.basic_consume(queue='rabbit', no_ack=True, callback=recv_callback, consumer_tag="build_callback")
-	while True:
-		chan.wait()
+	parser.add_option("--arch", dest="arch", default="i386",
+		help="Architecture to use, defaults to i386", metavar= META + "ARCH")
+	parser.add_option("--distribution", dest="distribution",
+		default="Debian", help="Distribution to use, defaults to Debian",
+		metavar= META +"DIST")
+	parser.add_option("--pkg_format", dest="pkg_format", default="deb",
+		help="Package type to use, defaults to deb", metavar= META +"FORMAT")
+	parser.add_option("--suite", dest="suite", default="development",
+		help="Suite to use, defaults to development", metavar= META +"SUITE")
+	parser.add_option("--host", dest="host", default="localhost",
+		help="host to connect to, defaults to localhost.", metavar=META + "HOST")
+	parser.add_option("--vhost", dest="vhost", default="/",
+		help="vhost to connect to, defaults to localhost.", metavar=META + "VHOST")
+	parser.add_option("--userid", dest="userid", default="guest",
+		help="user id to use for AMQP server, defaults to guest.", metavar=META + "USERID")
+	parser.add_option("--port", dest="port", default="5672",
+		help="port to use for AMQP server, defaults to 5672", metavar=META + "PORT")
+	parser.add_option("--password", dest="password", default="guest",
+		help="password to use for AMQP server, defaults to guest", metavar=META + "PASSWORD")
+	parser.add_option("--insist", dest="insist", default=False,
+		help="insist to use for AMQP server, defaults to 5672", metavar=META + "INSIST")
+	parser.add_option("--clientid", dest="clientid", default=1,
+		help="id to use for build-client control queue, defaults to 1 but is unique per amqp server.", metavar=META + "INSIST")
+
+	
+	(options, args) = parser.parse_args()
+	
+	conn_info = AMQPConnection(pybit.get_client_queue(options.clientid),
+				options.host, options.userid, options.password, options.vhost)
+	
+
+#	try:
+	with PyBITClient(options.arch, options.distribution, options.pkg_format, options.suite, conn_info) as build_client:
+		while True:
+			if build_client is not None:
+				build_client.wait()
+			else:
+				os._exit (os.EX_OSERR)
 	# drop registration
-	chan.basic_cancel("build_callback")
-	chan.close()
-	conn.close()
-except Exception as e:
-	raise Exception('Error processing queue: ' + str(e))
+	
+#	except Exception as e:
+#		raise e
