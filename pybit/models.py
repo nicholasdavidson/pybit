@@ -120,6 +120,10 @@ class BuildRequest(Model):
 
 	def get_arch(self):
 		return self.job.packageinstance.arch.name
+	
+	def get_job_id(self):
+		return self.job.id
+	
 
 class AMQPConnection(object):
 	def __init__(self, client_name, host, userid, password, vhost, insist=False):

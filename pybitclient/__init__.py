@@ -12,8 +12,20 @@ from debian import DebianBuildClient
 from subversion import SubversionClient
 import multiprocessing
 import socket
+import requests
 
 class PyBITClient(object):
+	
+	def set_status(self, status, request=None):
+		if request is None:
+			request = self.current_request
+		if status is not None and request is not None:
+			print "Marking JOB id: %s as: %s" % (request.get_job_id(), status) 
+			payload = {'status' : status } 
+			job_status_url = "http://%s/job/%s" % (request.web_host, request.get_job_id()) 
+			requests.put(job_status_url, payload) 
+		else:
+			print "Couldn't find status or current_request"
 
 	def wait(self):
 		time.sleep(5)
@@ -31,6 +43,7 @@ class PyBITClient(object):
 			#FIXME: we can stack state handling in here.
 			self.old_state = self.state
 			self.state = new_state
+
 			if self.state == "CHECKOUT":
 				args = (self.current_request,self.conn_info)
 				self.process = multiprocessing.Process(target=self.vcs_handler.fetch_source,args=args)
@@ -42,6 +55,7 @@ class PyBITClient(object):
 				else:
 					self.process = multiprocessing.Process(target=self.format_handler.build_slave, args=args)
 				self.process.start()
+				self.set_status(ClientMessage.building) 
 			elif self.state == "CLEAN":
 				args = (self.current_request,self.conn_info)
 				self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
@@ -58,9 +72,11 @@ class PyBITClient(object):
 				self.process = None
 				self.current_msg = None
 				if (overall_success is not None and current_msg is not None) :
-					print "Acking: %s" % current_msg.delivery_tag
 					self.message_chan.basic_ack(current_msg.delivery_tag)
-					#FIXME: need to post job id
+					if overall_success == True:
+						self.set_status(ClientMessage.done, current_msg)
+					else:
+						self.set_status(ClientMessage.failed, current_msg)
 
 			print "Moved from %s to %s" % (self.old_state, self.state)
 		else:
@@ -218,10 +234,10 @@ class PyBITClient(object):
 	def disconnect(self):
 		if self.conn:
 			if self.command_chan:
-				self.command_chan.basic_cancel("build_callback")
+				#self.command_chan.basic_cancel("build_callback")
 				self.command_chan.close()
 			if self.message_chan:
-				self.message_chan.basic_cancel("build_callback")
+				#self.message_chan.basic_cancel("build_callback")
 				self.message_chan.close()
 			self.conn.close()
 
