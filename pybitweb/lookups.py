@@ -311,6 +311,19 @@ def put_format():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
+@route('/format/<format_id:int>/delete', method='GET')
+@route('/format/<format_id:int>', method='DELETE')
+def delete_format(format_id):
+	try:
+		# Deletes a specific format
+		# TODO: validation,security
+		response.status = "202 - DELETE request recieved"
+		myDb.delete_format(format_id)
+		return
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
 @route('/suite', method='GET')
 def get_suites():
 	try:

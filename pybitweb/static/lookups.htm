@@ -247,7 +247,8 @@
 $.ajax({
         type: "GET",
         url: "http://localhost:8080/" + target +"/" + id + "/delete",
-        success: function(){
+        error: function(data){
+			alert('Error deleting ' + target + ' with id: ' + id + "\n" + data.responseText );
         }
     });
 }

@@ -130,8 +130,9 @@
 $.ajax({
         type: "GET",
         url: "http://localhost:8080/job/" + id + "/delete",
-        success: function(){
- console.log(id);
+        error: function(data){
+			alert('Error deleting job with id: ' + id + "\n" + data.responseText );
+        }
         }
     });
 }
