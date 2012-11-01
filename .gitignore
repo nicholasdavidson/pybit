@@ -48,3 +48,4 @@ debian/pybit-web/
 .mr.developer.cfg
 .project
 .pydevproject
+.settings

@@ -128,8 +128,9 @@
 $.ajax({
         type: "GET",
         url: "http://localhost:8080/package/" + id + "/delete",
-        success: function(){
- console.log(id);
+        error: function(data){
+			alert('Error deleting package with id: ' + id + "\n" + data.responseText );
+        }
         }
     });
 }
