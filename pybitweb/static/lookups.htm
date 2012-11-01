@@ -18,6 +18,7 @@
 <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
 
   <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <script src="http://malsup.github.com/jquery.form.js"></script> 
   <script src="bootstrap/js/bootstrap.min.js"></script>
 
 <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -94,7 +95,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse in">
       <div class="accordion-inner">
-      <form class="form-inline" method="POST" action="http://localhost:8080/arch">
+      <form class="form-inline" method="POST" action="http://localhost:8080/arch"  id="arch_form" name="arch_form">
 					<legend>Add Package Architectures</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -119,7 +120,7 @@
     </div>
     <div id="collapseTwo" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form-inline" method="POST" action="http://localhost:8080/status">
+<form class="form-inline" method="POST" action="http://localhost:8080/status"  id="status_form" name="status_form">
 					<legend>Add Job Statuses</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -143,7 +144,7 @@
     </div>
     <div id="collapseThree" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form-inline" method="POST" action="http://localhost:8080/dist">
+<form class="form-inline" method="POST" action="http://localhost:8080/dist"  id="dist_form" name="dist_form">
 					<legend>Add Software Distributions</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -167,7 +168,7 @@
     <div id="collapseFour" class="accordion-body collapse">
       <div class="accordion-inner">
 
-	<form class="form-inline" method="POST" action="http://localhost:8080/format">
+	<form class="form-inline" method="POST" action="http://localhost:8080/format"  id="format_form" name="format_form">
 					<legend>Add Package Formats</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -190,7 +191,7 @@
     </div>
     <div id="collapseFive" class="accordion-body collapse">
       <div class="accordion-inner">
-	<form class="form-inline" method="POST" action="http://localhost:8080/suite">
+	<form class="form-inline" method="POST" action="http://localhost:8080/suite"  id="suite_form" name="suite_form">
 					<legend>Add Software Suites</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -255,6 +256,26 @@ $.ajax({
 
 $().ready(function ()
 {
+
+            $('#arch_form').ajaxForm(function() {
+                alert("Added!");
+            });
+
+            $('#status_form').ajaxForm(function() {
+                alert("Added!");
+            });
+
+            $('#dist_form').ajaxForm(function() {
+                alert("Added!");
+            });
+
+            $('#format_form').ajaxForm(function() {
+                alert("Added!");
+            });
+            $('#suite_form').ajaxForm(function() {
+                alert("Added!");
+            });
+
 	var url = "http://localhost:8080/arch"
 	$.getJSON(url, function(json)
 	{
