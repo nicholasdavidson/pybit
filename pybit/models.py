@@ -122,12 +122,20 @@ class BuildRequest(Model):
 		return self.job.packageinstance.arch.name
 
 class AMQPConnection(object):
-	def __init__(self, client_name, host, userid, password, vhost):
+	def __init__(self, client_name, host, userid, password, vhost, insist=False):
 		self.client_name = client_name
 		self.host = host
 		self.userid = userid
 		self.password = password
 		self.vhost = vhost
+		self.insist = insist
+	def as_dict(self):
+		return  dict( host=self.host, userid=self.userid, password=self.password,
+			virtual_host=self.vhost, insist= False )
+	def __repr__(self):
+		return "host: %s user id:%s password:%s vhost:%s insist: %s" % (
+			self.host, self.userid, self.password, self.vhost, self.insist) 
+	
 
 
 class CommandRequest(Model):

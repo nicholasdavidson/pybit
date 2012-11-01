@@ -97,9 +97,6 @@
 					<legend>Submit a Job</legend>
 					<label for="packageinstance_id">Package Instance ID: </label>
 					<select name="packageinstance_id"  id="packageinstance_id" size="1" style="width:480px; display:block;"></select>
-					<label for="buildclient_id">Build Client: </label>
-
-					<select name="buildclient_id" id="buildclient_id"></select>
 		<label for='uri'>URI: </label><input type="text" name="uri"id="uri">
 		<label for='method'>Method: </label><input type="text" name="method"id="method">
 		<label for='revision'>Revision: </label><input type="text" name="vcs_id" id="vcs_id">
@@ -148,16 +145,6 @@ $().ready(function ()
 		$.each(json, function(i, field)
 		{
 			$("#packageinstance_id").append("<option value='" + field.id + "'>" + field.id + " - " + field.package.name + " " + field.package.version + "." + field.format.name + " "  + " " + field.distribution.name + "/" + field.suite.name + " (" + field.arch.name + ") </option>");
-		});
-	});
-
-	var buildds = "http://localhost:8080/buildd"
-	$.getJSON(buildds, function(json)
-	{
-		$.each(json, function(i, field)
-		{
-			// TODO: Only allow to pick valid ones for packageinstance arch
-			$("#buildclient_id").append("<option value='" + field.id + "'>" + field.name + "</option>");
 		});
 	});
 
@@ -227,7 +214,6 @@ $().ready(function ()
 
     </div>
   </div>
-</div>
 
 </body>
 </html>

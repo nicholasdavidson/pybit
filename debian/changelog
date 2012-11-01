@@ -4,6 +4,12 @@ pybit (0.1.0-1) pybit; urgency=low
 
  -- Neil Williams <neilw@toby-churchill.com>  Thu, 01 Nov 2012 12:59:46 +0000
 
+pybit (0.0.42) pybit; urgency=low
+
+  * Tweaked to remove buildd option from job submission form
+
+ -- James Bennet <James.Bennet@toby-churchill.com>  Thu, 01 Nov 2012 12:54:15 +0000
+
 pybit (0.0.41) pybit; urgency=low
 
   * Integrated new static content for HTML GUI, so it is served by

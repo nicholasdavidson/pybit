@@ -69,7 +69,7 @@ if __name__ == '__main__':
 	parser.add_option("--suite", dest="suite", default="development",
 		help="Suite to use, defaults to development", metavar= META +"SUITE")
 	parser.add_option("--host", dest="host", default="localhost",
-		help="vhost to connect to, defaults to localhost.", metavar=META + "HOST")
+		help="host to connect to, defaults to localhost.", metavar=META + "HOST")
 	parser.add_option("--vhost", dest="vhost", default="/",
 		help="vhost to connect to, defaults to localhost.", metavar=META + "VHOST")
 	parser.add_option("--userid", dest="userid", default="guest",
@@ -85,6 +85,7 @@ if __name__ == '__main__':
 
 
 	(options, args) = parser.parse_args()
+<<<<<<< HEAD
 	build_client = PyBITClient(options.arch, options.distribution,
 		options.pkg_format, options.suite, options.host, options.vhost,
 		options.userid, options.port, options.password, options.insist,
@@ -95,11 +96,21 @@ if __name__ == '__main__':
 
 	while True:
 		build_client.wait()
+=======
+	
+	conn_info = AMQPConnection(pybit.get_client_queue(options.clientid),
+				options.host, options.userid, options.password, options.vhost)
+	
+
+#	try:
+	with PyBITClient(options.arch, options.distribution, options.pkg_format, options.suite, conn_info) as build_client:
+		while True:
+			if build_client is not None:
+				build_client.wait()
+			else:
+				os._exit (os.EX_OSERR)
+>>>>>>> bc6098780ea4b4be8c7cfb2e1f7284babea23ae0
 	# drop registration
-	build_client.command_chan.basic_cancel("build_callback")
-	build_client.message_chan.basic_cancel("build_callback")
-	build_client.command_chan.close()
-	build_client.message_chan.close()
-	build_client.conn.close()
+	
 #	except Exception as e:
 #		raise e
