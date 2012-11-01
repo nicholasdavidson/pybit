@@ -42,6 +42,7 @@ debian/pybit-client/
 debian/pybit-common/
 debian/pybit-svn/
 debian/pybit-web/
+debian/*.1
 
 
 # Mr Developer
