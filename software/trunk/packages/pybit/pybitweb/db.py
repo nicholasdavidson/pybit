@@ -474,7 +474,7 @@ class Database(object):
 
 	def get_unfinished_jobs(self):
 		try:
-			self.cur.execute("WITH latest_status AS (SELECT DISTINCT ON (job_id) job_id, status.name FROM jobstatus LEFT JOIN status ON status_id=status.id ORDER BY job_id, time DESC) SELECT job_id, name FROM latest_status WHERE name!='Uploaded' AND name!='Done'");
+			self.cur.execute("WITH latest_status AS (SELECT DISTINCT ON (job_id) job_id, status.name FROM jobstatus LEFT JOIN status ON status_id=status.id ORDER BY job_id, time DESC) SELECT job_id, name FROM latest_status WHERE name!='Uploaded' AND name!='Done' ORDER BY job_id");
 			res = self.cur.fetchall()
 			self.conn.commit()
 
@@ -542,7 +542,7 @@ class Database(object):
 	# UPDATE queries?
 	def get_packages(self):
 		try:
-			self.cur.execute("SELECT id,version,name FROM package ORDER BY name")
+			self.cur.execute("SELECT id,version,name FROM package ORDER BY name,id")
 			res = self.cur.fetchall()
 			self.conn.commit()
 
@@ -646,7 +646,7 @@ class Database(object):
 
 	def get_packageinstances(self):
 		try:
-			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY package_id, id")
+			self.cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id")
 			res = self.cur.fetchall()
 			self.conn.commit()
 
