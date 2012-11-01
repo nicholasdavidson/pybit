@@ -18,6 +18,7 @@
 <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
 
   <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <script src="http://malsup.github.com/jquery.form.js"></script> 
   <script src="bootstrap/js/bootstrap.min.js"></script>
 
 <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -94,7 +95,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form-inline" method="POST" action="http://localhost:8080/buildd">
+<form class="form-inline" method="POST" action="http://localhost:8080/buildd" id="buildbox_form" name="buildbox_form">
 					<legend>Add a Buildbox</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -122,7 +123,6 @@
 
    function delete_click(id)
    {
-        console.log(id);
 $.ajax({
         type: "GET",
         url: "http://localhost:8080/buildd/" + id + "/delete",
@@ -134,6 +134,11 @@ $.ajax({
 
 $().ready(function ()
 {
+
+            $('#buildbox_form').ajaxForm(function() {
+                alert("Added!");
+            });
+
 	var url = "http://localhost:8080/buildd"
 	$.getJSON(url, function(json)
 	{
