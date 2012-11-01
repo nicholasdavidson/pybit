@@ -24,7 +24,7 @@ set -e
 ######## Configuration ############
 
 # Network location of the pybit-web server
-PYBIT_HTTP="http://pybit:3000/job/vcshook"
+PYBIT_HTTP="http://pybit:8080/job/vcshook"
 
 # Anonymous SVN URI stub
 ANON_SVN="http://svn.tcl.office/svn/lwdev"
