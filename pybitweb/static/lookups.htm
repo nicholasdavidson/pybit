@@ -222,6 +222,36 @@
 
 <script>
 
+   function delete_click(id,target)
+   {
+
+	switch (target)
+	{
+		case 1:
+			target = "arch"
+			break;
+		case 2:
+			target = "status"
+			break;
+		case 3:
+			target = "dist"
+			break;
+		case 4:
+			target = "format"
+			break;
+		case 5:
+			target = "suite"
+			break;
+	}
+
+$.ajax({
+        type: "GET",
+        url: "http://localhost:8080/" + target +"/" + id + "/delete",
+        success: function(){
+        }
+    });
+}
+
 $().ready(function ()
 {
 	var url = "http://localhost:8080/arch"
@@ -229,7 +259,7 @@ $().ready(function ()
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_arches").append("<tr><td><a href='http://localhost:8080/arch/" + field.id + "'>" + field.name + "</a></td></tr>");
+			$("#tbl_arches").append("<tr><td><a href='http://localhost:8080/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>");
 		});
 	});
 
@@ -238,7 +268,7 @@ $().ready(function ()
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_statuses").append("<tr><td><a href='http://localhost:8080/status/" + field.id + "'>" + field.name + "</a></td></tr>");
+			$("#tbl_statuses").append("<tr><td><a href='http://localhost:8080/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>");
 		});
 	});
 
@@ -247,7 +277,7 @@ $().ready(function ()
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_dists").append("<tr><td><a href='http://localhost:8080/dist/" + field.id + "'>" + field.name + "</a></td></tr>");
+			$("#tbl_dists").append("<tr><td><a href='http://localhost:8080/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>");
 		});
 	});
 
@@ -256,7 +286,7 @@ $().ready(function ()
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_formats").append("<tr><td><a href='http://localhost:8080/format/" + field.id + "'>" + field.name + "</a></td></tr>");
+			$("#tbl_formats").append("<tr><td><a href='http://localhost:8080/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>");
 		});
 	});
 
@@ -265,7 +295,7 @@ $().ready(function ()
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_suites").append("<tr><td><a href='http://localhost:8080/suite/" + field.id + "'>" + field.name + "</a></td></tr>");
+			$("#tbl_suites").append("<tr><td><a href='http://localhost:8080/suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>");
 		});
 	});
 });

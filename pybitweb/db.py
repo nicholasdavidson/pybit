@@ -132,6 +132,21 @@ class Database(object):
 			raise Exception('Error adding arch:' + name + str(e))
 			return None
 
+	def delete_arch(self,arch_id):
+		try:
+			self.cur.execute("DELETE FROM arch WHERE id=%s RETURNING id",(arch_id,))
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			if res[0]['id'] == arch_id:
+				return True
+			else:
+				return False
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error deleting arch with id:' + str(arch_id) + str(e))
+			return None
+
 	def get_suitearches(self):
 		try:
 			self.cur.execute("SELECT id,suite_id,arch_id FROM suitearches ORDER BY id")
@@ -169,6 +184,21 @@ class Database(object):
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error adding suite arch:' + suite_id + arch_id + str(e))
+			return None
+
+	def delete_suitearch(self,suitearch_id):
+		try:
+			self.cur.execute("DELETE FROM suitearches WHERE id=%s RETURNING id",(suitearch_id,))
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			if res[0]['id'] == suitearch_id:
+				return True
+			else:
+				return False
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error deleting suitearch with id:' + str(suitearch_id) + str(e))
 			return None
 
 	def get_dists(self):
@@ -226,6 +256,21 @@ class Database(object):
 			raise Exception('Error adding dist:' + name + str(e))
 			return None
 
+	def delete_dist(self,dist_id):
+		try:
+			self.cur.execute("DELETE FROM distribution WHERE id=%s RETURNING id",(dist_id,))
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			if res[0]['id'] == dist_id:
+				return True
+			else:
+				return False
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error deleting dist with id:' + str(dist_id) + str(e))
+			return None
+
 	def get_formats(self):
 		try:
 			self.cur.execute("SELECT id,name FROM format ORDER BY name")
@@ -279,6 +324,21 @@ class Database(object):
 			raise Exception('Error adding format:' + name + str(e))
 			return None
 
+	def delete_format(self,format_id):
+		try:
+			self.cur.execute("DELETE FROM format WHERE id=%s RETURNING id",(format_id,))
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			if res[0]['id'] == format_id:
+				return True
+			else:
+				return False
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error deleting format with id:' + str(format_id) + str(e))
+			return None
+
 	def get_statuses(self):
 		try:
 			self.cur.execute("SELECT id,name FROM status ORDER BY name")
@@ -316,6 +376,21 @@ class Database(object):
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error add status:' + name + str(e))
+			return None
+
+	def delete_status(self,status_id):
+		try:
+			self.cur.execute("DELETE FROM status WHERE id=%s RETURNING id",(status_id,))
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			if res[0]['id'] == status_id:
+				return True
+			else:
+				return False
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error deleting status with id:' + str(status_id) + str(e))
 			return None
 
 	def get_suites(self):
@@ -371,6 +446,21 @@ class Database(object):
 		except Exception as e:
 			self.conn.rollback()
 			raise Exception('Error adding suite:' + name + str(e))
+			return None
+
+	def delete_suite(self,suite_id):
+		try:
+			self.cur.execute("DELETE FROM suite WHERE id=%s RETURNING id",(suite_id,))
+			res = self.cur.fetchall()
+			self.conn.commit()
+
+			if res[0]['id'] == suite_id:
+				return True
+			else:
+				return False
+		except Exception as e:
+			self.conn.rollback()
+			raise Exception('Error deleting suite with id:' + str(suite_id) + str(e))
 			return None
 
 	#<<<<<<<< BuildD related database functions >>>>>>>>

@@ -74,6 +74,19 @@ def put_arch():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
+@route('/arch/<arch_id:int>/delete', method='GET')
+@route('/arch/<arch_id:int>', method='DELETE')
+def delete_arch(arch_id):
+	try:
+		# Deletes a specific arch
+		# TODO: validation,security
+		response.status = "202 - DELETE request recieved"
+		myDb.delete_arch(arch_id)
+		return
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
 @route('/suitearch', method='GET')
 def get_suitearch():
 	try:
@@ -116,6 +129,19 @@ def put_suitearch():
 			myDb.put_suitearch(suite_id,arch_id)
 		else:
 			response.status = "400 - Required fields missing."
+		return
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
+@route('/suitearch/<suitearch_id:int>/delete', method='GET')
+@route('/suitearch/<suitearch_id:int>', method='DELETE')
+def delete_suitearch(suitearch_id):
+	try:
+		# Deletes a specific suitearch
+		# TODO: validation,security
+		response.status = "202 - DELETE request recieved"
+		myDb.delete_suitearch(suitearch_id)
 		return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
@@ -167,6 +193,19 @@ def put_status():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
+@route('/status/<status_id:int>/delete', method='GET')
+@route('/status/<status_id:int>', method='DELETE')
+def delete_status(status_id):
+	try:
+		# Deletes a specific status
+		# TODO: validation,security
+		response.status = "202 - DELETE request recieved"
+		myDb.delete_status(status_id)
+		return
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
 @route('/dist', method='GET')
 def get_dists():
 	try:
@@ -208,6 +247,19 @@ def put_dist():
 			myDb.put_dist(name)
 		else:
 			response.status = "400 - Required fields missing."
+		return
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
+@route('/dist/<dist_id:int>/delete', method='GET')
+@route('/dist/<dist_id:int>', method='DELETE')
+def delete_dist(dist_id):
+	try:
+		# Deletes a specific dist
+		# TODO: validation,security
+		response.status = "202 - DELETE request recieved"
+		myDb.delete_dist(dist_id)
 		return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
@@ -300,6 +352,19 @@ def put_suite():
 			myDb.put_suite(name)
 		else:
 			response.status = "400 - Required fields missing."
+		return
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
+@route('/suite/<suite_id:int>/delete', method='GET')
+@route('/suite/<suite_id:int>', method='DELETE')
+def delete_suite(suite_id):
+	try:
+		# Deletes a specific suite
+		# TODO: validation,security
+		response.status = "202 - DELETE request recieved"
+		myDb.delete_suite(suite_id)
 		return
 	except Exception as e:
 		raise Exception('Exception encountered: ' + str(e))
