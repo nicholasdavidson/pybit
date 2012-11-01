@@ -58,7 +58,7 @@ class Controller(object):
 					new_job = myDb.put_job(current_packageinstance,None)
 					print "CREATED NEW JOB ID", new_job.id
 					if new_job.id :
-						self.cancel_superceded_jobs(current_packageinstance)
+						self.cancel_superceded_jobs(new_job)
 						build_req = jsonpickle.encode(BuildRequest(new_job,transport,self.settings['webserver_url']))
 						msg = amqp.Message(build_req)
 						msg.properties["delivery_mode"] = 2
@@ -89,12 +89,12 @@ class Controller(object):
 		if len(matching_package_versions) > 0 :
 			package = matching_package_versions[0]
 			if package.id :
-				print "MATCHING PACKAGE FOUND (", package.id, ")"
+				print "MATCHING PACKAGE FOUND (", package.id, package.name, package.version, ")"
 		else :
 			# add new package to db
 			package = myDb.put_package(version,name)
 			if package.id :
-				print "ADDED NEW PACKAGE (", package.id, ")"
+				print "ADDED NEW PACKAGE (", package.id, package.name, package.version, ")"
 		return package
 
 	def process_packageinstance(self, arch, package, dist, pkg_format, suite) :
@@ -122,8 +122,9 @@ class Controller(object):
 		self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key)
 		return
 
-	def cancel_superceded_jobs(self, packageinstance) :
+	def cancel_superceded_jobs(self, new_job) :
 		# check for unfinished jobs that might be cancellable
+		packageinstance = new_job.packageinstance
 		unfinished_jobs_list = myDb.get_unfinished_jobs()
 		#print "UNFINISHED JOB LIST", unfinished_jobs_list
 		for unfinished_job in unfinished_jobs_list:
@@ -131,18 +132,18 @@ class Controller(object):
 			if unfinished_job_package_name == packageinstance.package.name :
 				unfinished_job_package_version = unfinished_job.packageinstance.package.version
 				command = "dpkg --compare-versions %s '<<' %s" % (packageinstance.package.version, unfinished_job_package_version)
-				if os.system (command) :
-					unfinished_job_dist = unfinished_job.packageinstance.distribution.name
-					unfinished_job_arch = unfinished_job.packageinstance.arch.name
-					unfinished_job_suite = unfinished_job.packageinstance.suite.name
-					if (unfinished_job_dist == packageinstance.distribution) and (unfinished_job_arch == packageinstance.arch) and (unfinished_job_suite == packageinstance.suite) :
+				if (unfinished_job_package_version == packageinstance.package.version) or (os.system (command)) :
+					unfinished_job_dist_id = unfinished_job.packageinstance.distribution.id
+					unfinished_job_arch_id = unfinished_job.packageinstance.arch.id
+					unfinished_job_suite_id = unfinished_job.packageinstance.suite.id
+					if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) :
 						self.send_cancel_request(unfinished_job)
 					else :
-						print "IGNORING UNFINISHED JOB", unfinished_job_package_name, unfinished_job_package_version, unfinished_job_dist, unfinished_job_arch, unfinished_job_suite
+						print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(dist/arch/suite differs)"
 				else :
-					print "IGNORING UNFINISHED JOB", unfinished_job_package_name, unfinished_job_package_version
+					print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(version differs)"
 			else :
-				print "IGNORING UNFINISHED JOB", unfinished_job_package_name
+				print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name
 		return
 
 	def cancel_all_builds(self):
