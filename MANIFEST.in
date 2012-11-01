@@ -1,0 +1,9 @@
+include buildd-test.py
+include pybitclient/dput.cf pybitclient/sbuild-cross.sh
+include configs/* test/*
+include hook/* db/*
+include pybitweb/static/*
+include pybitweb/static/bootstrap/*
+include pybitweb/static/bootstrap/css/*
+include pybitweb/static/bootstrap/img/*
+include pybitweb/static/bootstrap/js/*

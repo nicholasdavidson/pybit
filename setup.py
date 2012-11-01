@@ -28,7 +28,8 @@ setup(name='pybit',
 	description='PyBit buildd integrated toolkit',
 	license='gpl2',
 	url='https://github.com/nicholasdavidson/pybit.git',
-	packages=['pybit', 'pybitclient', 'pybitweb'],
+	packages=['pybit', 'pybitclient', 'pybitweb',],
 	maintainer='TCL Build System user',
 	maintainer_email='rnd@toby-churchill.com',
+	include_package_data = True
 	)
