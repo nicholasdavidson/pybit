@@ -34,6 +34,11 @@ def index():
 def serve_static_res(filepath):
     	return static_file(filepath, root='./pybitweb/static/bootstrap/')
 
+# static HTML index page
+@route('/index.htm', method='GET')
+def serve_static_idex():
+    	return static_file("index.htm", root='./pybitweb/static/')
+
 # static HTML page listing buildboxes
 @route('/buildd.htm', method='GET')
 def serve_static_buildboxes():

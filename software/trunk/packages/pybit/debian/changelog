@@ -1,3 +1,10 @@
+pybit (0.0.41) pybit; urgency=low
+
+  * Integrated new static content for HTML GUI, so it is served by
+    python bottle server
+
+ -- James Bennet <James.Bennet@toby-churchill.com>  Thu, 01 Nov 2012 09:02:55 +0000
+
 pybit (0.0.40) pybit; urgency=low
 
   * Set the srcdir from the arguments as it cannot be retained between
