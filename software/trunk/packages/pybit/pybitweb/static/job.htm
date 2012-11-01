@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
+<META HTTP-EQUIV="Expires" CONTENT="-1">
 <meta charset="utf-8">
   <title>pyBit - Jobs </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -102,7 +104,7 @@
 		<label for='method'>Method: </label><input type="text" name="method"id="method">
 		<label for='revision'>Revision: </label><input type="text" name="vcs_id" id="vcs_id">
 		<label for='architecture_list'>Architecture: </label><select name='architecture_list' id="architecture_list"></select>
-					<br/>
+					<br>
 		<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
 		</form>
       </div>
@@ -215,7 +217,7 @@ $().ready(function ()
 				_class = "warning"
 			}
 
-			$("#tbl_jobs").append("<tr class='" + _class +"'><td><a href='http://localhost:8080/job/" + field.id + "'>" + field.id + "</a></td><td><a href='http://localhost:8080/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a></td><td><a href='http://localhost:8080/buildd/" + bid + "'>" + bname + "</a></td><td>" + jobstatuses[field.id] + "</td><td><a href='http://localhost:8080/job/" + field.id + "/cancel'>Cancel</a></br><a href='http://localhost:8080/job/" + field.id + "/status'>View Status History</a></br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
+			$("#tbl_jobs").append("<tr class='" + _class +"'><td><a href='http://localhost:8080/job/" + field.id + "'>" + field.id + "</a></td><td><a href='http://localhost:8080/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a></td><td><a href='http://localhost:8080/buildd/" + bid + "'>" + bname + "</a></td><td>" + jobstatuses[field.id] + "</td><td><a href='http://localhost:8080/job/" + field.id + "/cancel'>Cancel</a><br><a href='http://localhost:8080/job/" + field.id + "/status'>View Status History</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
 
 	});
 		});
