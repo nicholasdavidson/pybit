@@ -23,33 +23,12 @@
 
 from setuptools import setup
 
-setup(name='pybit-common',
+setup(name='pybit',
 	version='0.1.0',
-	description='PyBit common modules',
-	licence='gpl2'
+	description='PyBit buildd integrated toolkit',
+	license='gpl2',
 	url='https://github.com/nicholasdavidson/pybit.git',
-	packages=['pybit'],
-	maintainer='TCL Build System user',
-	maintainer_email='rnd@toby-churchill.com',
-	)
-
-setup(name='pybit-client',
-	version='0.1.0',
-	description='PyBit client related modules',
-	licence='gpl2'
-	url='https://github.com/nicholasdavidson/pybit.git',
-	packages=['pybitclient'],
-	maintainer='TCL Build System user',
-	maintainer_email='rnd@toby-churchill.com',
-	test_suite='tests'
-	)
-
-setup(name='pybit-web',
-	version='0.1.0',
-	description='PyBit controller and RESTful API',
-	licence='gpl2'
-	url='https://github.com/nicholasdavidson/pybit.git',
-	packages=['pybitweb'],
+	packages=['pybit', 'pybitclient', 'pybitweb'],
 	maintainer='TCL Build System user',
 	maintainer_email='rnd@toby-churchill.com',
 	)

@@ -41,9 +41,10 @@ build-setup: setup.py
 clean:
 	dh_testdir
 	dh_testroot
-	$(RM) build-stamp configure-stamp setup.py
+	$(RM) build-stamp configure-stamp
 	$(RM) -r build pybit_client.egg-info pybit_common.egg-info pybit_web.egg-info
-	$(RM) -r build 	[ ! -f Makefile ] || $(MAKE) clean
+	$(RM) -r build dist
+	[ ! -f Makefile ] || $(MAKE) clean
 	find . -name '*.pyc' -delete
 	dh_clean
 
