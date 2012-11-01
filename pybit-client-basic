@@ -1,5 +1,22 @@
 #!/usr/bin/python
 
+#       Copyright 2012 Nick Davidson <nickd@toby-churchill.com>
+
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
+
 # -*- coding: utf-8 -*-
 from amqplib import client_0_8 as amqp
 from optparse import OptionParser
@@ -66,16 +83,16 @@ if __name__ == '__main__':
 	parser.add_option("--clientid", dest="clientid", default=1,
 		help="id to use for build-client control queue, defaults to 1 but is unique per amqp server.", metavar=META + "INSIST")
 
-	
+
 	(options, args) = parser.parse_args()
 	build_client = PyBITClient(options.arch, options.distribution,
 		options.pkg_format, options.suite, options.host, options.vhost,
 		options.userid, options.port, options.password, options.insist,
 		options.clientid)
-	
+
 
 #	try:
-	
+
 	while True:
 		build_client.wait()
 	# drop registration
