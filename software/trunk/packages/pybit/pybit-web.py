@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import jsonpickle
-from pybitweb.bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request, hook
+from pybitweb.bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request, hook, static_file
 from pybitweb.db import Database,myDb
 from pybitweb import forms, lookups, buildd, job, package, packageinstance
 from pybitweb.controller import Controller,buildController
@@ -27,22 +27,37 @@ def enable_cors():
 
 @route('/', method='GET')
 def index():
-	#main index page for the whole API, composed of forms and reports pages
-	return '''<h1>PyBit - python Buildd Integration Toolkit.</h1>''', forms.index()
+	return template("pybitweb/static/index.htm")
 
-##route('/add', method='POST') (buildController.add) # job.vcs_hook now handles the input, and passes off to myController.process_job
-# example CURL command....
-# /usr/bin/curl -X POST http://localhost:8080/add --data "uri=http://svn.tcl.office/svn/lwdev&directory=software/branches/software_release_chickpea/packages/appbarwidget&method=svn&distribution=Debian&vcs_id=20961&architecture_list=all,any&package_version=0.6.33chickpea47&package=appbarwidget&suite=chickpea&format=deb"
+# static resources like CSS and JS
+@route('/bootstrap/<filepath:path>', method='GET')
+def serve_static_res(filepath):
+    	return static_file(filepath, root='./pybitweb/static/bootstrap/')
 
-##route('/cancel_all', method='POST') (buildController.cancel_all_builds) # moved to job.cancel_jobs
-#/usr/bin/curl -X POST http://localhost:8080/cancel_all"
+# static HTML page listing buildboxes
+@route('/buildd.htm', method='GET')
+def serve_static_buildboxes():
+    	return static_file("buildd.htm", root='./pybitweb/static/')
 
-##route('/cancel_package', method='POST') (buildController.cancel_package) # move to package.cancel
-#/usr/bin/curl -X POST http://localhost:8080/cancel_package --data "package_version=0.6.33chickpea47&package=appbarwidget"
+# static HTML page listing jobs
+@route('/job.htm', method='GET')
+def serve_static_jobs():
+    	return static_file("job.htm", root='./pybitweb/static/')
 
-##route('/cancel_package_instance', method='POST') (buildController.cancel_package_instance)  # moved to job.cancel_job
-#/usr/bin/curl -X POST http://localhost:8080/cancel_package_instance --data "job_id=54"
+# static HTML page listing things
+@route('/lookups.htm', method='GET')
+def serve_static_lookups():
+    	return static_file("lookups.htm", root='./pybitweb/static/')
 
+# static HTML page listing packages
+@route('/package.htm', method='GET')
+def serve_static_packages():
+    	return static_file("package.htm", root='./pybitweb/static/')
+
+# static HTML page listing package instances
+@route('/packageinstance.htm', method='GET')
+def serve_static_package_instances():
+    	return static_file("packageinstance.htm", root='./pybitweb/static/')
 try:
 	debug(settings['webserver_debug'])
 	run(host=settings['webserver_hostname'], port=settings['webserver_port'], reloader=settings['webserver_reloader'])
