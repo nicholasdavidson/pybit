@@ -241,7 +241,7 @@ class PyBITClient(object):
 			if isinstance(cmd_req, CancelRequest) :
 				print "Received CANCEL request for jobid:", cmd_req.get_job_id()
 				self.set_status(ClientMessage.cancelled, cmd_req)
-				if self.process is not None :
+				if (self.current_request.get_job_id() == cmd_req.get_job_id()) and (self.process is not None) :
 					self.process.terminate()
 					self.process.join()
 					self.process = None
