@@ -54,7 +54,7 @@ class ClientMessage:
 	done = "Done"
 	blocked = "Blocked"
 	waiting = "Waiting"
-
+	cancelled = "Cancelled"
 
 class Arch(Model):
 	def __init__(self,arch_id,name):
@@ -167,17 +167,16 @@ class CommandRequest(Model):
 	def __init__(self,job,web_host):
 		self.job = job
 		self.web_host = web_host
-
+	def get_job_id(self):
+		return self.job.id
 
 class CancelRequest(CommandRequest):
 	def  __init__(self,job,web_host):
 		CommandRequest.__init__(self, job, web_host)
 
-
 class StatusRequest(CommandRequest):
 	def  __init__(self,job,web_host):
 		CommandRequest.__init__(self, job, web_host)
-
 
 class TaskComplete(Model):
 	def __init__(self, message, success = True):
