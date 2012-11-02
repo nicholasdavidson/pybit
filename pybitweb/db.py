@@ -616,7 +616,7 @@ class Database(object):
 			raise Exception('Error retrieving job status with:' + str(job_id) + str(e))
 			return None
 
-	def put_job_status(self, jobid, status):
+	def put_job_status(self, jobid, status, client):
 		try:
 			self.cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s)) ",(jobid,status,))
 			self.conn.commit()
