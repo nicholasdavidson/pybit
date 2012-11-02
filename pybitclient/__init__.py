@@ -6,7 +6,8 @@ import time
 import jsonpickle
 from amqplib import client_0_8 as amqp
 import pybit
-from pybit.models import TaskComplete, PackageInstance, ClientMessage, BuildRequest, CommandRequest, AMQPConnection
+from pybit.models import TaskComplete, PackageInstance, ClientMessage, BuildRequest, CommandRequest, AMQPConnection,\
+	CancelRequest
 from debian import DebianBuildClient
 from subversion import SubversionClient
 import multiprocessing
@@ -47,7 +48,7 @@ class PyBITClient(object):
 		if request is None:
 			request = self.current_request
 		if status is not None and request is not None:
-			print "Marking JOB id: %s as: %s" % (request.get_job_id(), status)
+			print "Marking JOB id: %s as: %s" % (request.get_job_id(), status) #FIXME: this clears/resets 'cancelled' state
 			payload = {'status' : status }
 			if client is not None:
 				payload['client']  = client
@@ -124,7 +125,6 @@ class PyBITClient(object):
 
 	def idle_handler(self, msg, decoded):
 		if isinstance(decoded, BuildRequest):
-
 			self.current_msg = msg
 			self.current_request = decoded
 			if (self.current_request.transport.method == "svn" or
@@ -132,8 +132,8 @@ class PyBITClient(object):
 				if self.get_status() == ClientMessage.waiting:
 					self.vcs_handler = SubversionClient()
 					self.move_state("CHECKOUT")
-				else:
-					print "jobid: %s not in state waiting so probably cancelled. Acking." % (self.current_request.get_job_id())
+				elif self.get_status() == ClientMessage.cancelled:
+					print "jobid: %s has been cancelled. Acking." % (self.current_request.get_job_id())
 					self.move_state("IDLE")
 			else:
 				self.overall_success = False
@@ -236,6 +236,12 @@ class PyBITClient(object):
 			not isinstance(cmd_req, CommandRequest)):
 			print "Can't handle message type."
 			self.command_chan.basic_ack(msg.delivery_tag)
+		elif isinstance(cmd_req, CommandRequest) :
+			if isinstance(cmd_req, CancelRequest) :
+				print "Received CANCEL request for jobid: %s.", cmd_req.get_job_id()
+				#self.set_status(ClientMessage.cancelled, cmd_req)
+			else :
+				print "Received COMMAND request for jobid: %s.", cmd_req.get_job_id()
 		else:
 			self.state_table[self.state](msg, cmd_req)
 

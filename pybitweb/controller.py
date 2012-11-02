@@ -153,20 +153,19 @@ class Controller(object):
 				print "ADDED NEW PACKAGE INSTANCE (", packageinstance.id, ")"
 		return packageinstance
 
-	def process_cancel(self, job): #FIXME: rename...
+	def process_cancel(self, job):
 		job_status_history = myDb.get_job_statuses(job.id)
 		last_status = job_status_history[-1].status
-		if (len(job_status_history) > 0) and (last_status == "Building") :  
-			print "UNFINISHED JOB ID", job.id, "STATUS:", last_status, "SENDING CANCEL REQUEST"  
+		build_client = job_status_history[-1].buildclient
+		if (len(job_status_history) > 0) and (last_status == "Building") and (build_client != None) : 
 			cancel_req = jsonpickle.encode(CancelRequest(job,self.settings['webserver_url']))
 			msg = amqp.Message(cancel_req)
 			msg.properties["delivery_mode"] = 2
-			routing_key = pybit.get_build_route_name(job.packageinstance.distribution.name, job.packageinstance.arch.name, job.packageinstance.suite.name, job.packageinstance.format.name)
-			#print "\n____________SENDING", cancel_req, "____________TO____________", routing_key
-			self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key)
+			print "UNFINISHED JOB ID", job.id, "STATUS:", last_status, "SENDING CANCEL REQUEST TO", build_client
+			self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=build_client)
 		else :
 			print "UNFINISHED JOB ID", job.id, "STATUS:", last_status, "UPDATE STATUS TO 'Cancelled'"
-			myDb.put_job_status(job.id, "Cancelled", job_status_history[-1].buildclient)
+			myDb.put_job_status(job.id, "Cancelled", build_client)
 		return
 
 	def cancel_superceded_jobs(self, new_job) :
