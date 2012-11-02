@@ -21,7 +21,7 @@
 #       MA 02110-1301, USA.
 
 import os
-import pybitclient
+import pybit
 from pybitclient.subversion import SubversionClient
 from pybitclient.debian import DebianBuildClient
 from pybitclient import PyBITClient
@@ -30,10 +30,10 @@ from pybit.models import BuildRequest, Transport, PackageInstance, Job, Arch, Su
 def main():
 	conffile = "%s/pybitclient/client.conf" % (os.getcwd());
 	if os.path.isfile (conffile):
-		options = pybitclient.get_settings(conffile)
+		settings = pybit.load_settings(conffile)
 	else :
-		options = pybitclient.get_settings("/etc/pybit/client/client.conf")
-	build_client = PyBITClient(options["host_arch"], "debian", "deb", "pybit", None)
+		settings = pybit.load_settings("/etc/pybit/client/client.conf")
+	build_client = PyBITClient(settings["host_arch"], settings["distribution"], settings["pkg_format"], settings["suite"], None, settings)
 
 	testconf = "%s/buildd-test.conf" % (os.getcwd());
 	if not os.path.isfile (testconf):
@@ -41,14 +41,14 @@ def main():
 		print "I: Copy /usr/share/pybitclient/buildd-test.conf and modify it for your available packages."
 		return 1
 	else :
-		test_options = pybitclient.get_settings(testconf)
+		test_options = pybit.load_settings(testconf)
 
 	count = 0
 	max_count = test_options["count"]
 	tags = [ "vcs_id", "method_type", "suite", "package", "version",
 		"architecture", "source", "uri", "pkg_format", "distribution" ]
-	vcs = SubversionClient ()
-	client = DebianBuildClient ()
+	vcs = SubversionClient (settings)
+	client = DebianBuildClient (settings)
 
 	while count < test_options["count"] and count < 10: # catch typos in the conf file
 		count = count + 1
@@ -95,7 +95,7 @@ def main():
 		# once for the dep check and once before the build. The choice depends
 		# on whether two network trips are more efficient than rewriting the
 		# lvm snapshot before even trying to do any build.
-		if options["use_lvm"] :
+		if settings["use_lvm"] :
 			name = suite + "-source"
 		else:
 			name = suite
