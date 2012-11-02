@@ -105,11 +105,12 @@ def get_jobstatuses():
 @route('/job/<jobid:int>', method='POST')
 def update_job_status(jobid):
 	job_status = request.forms.status
+	job_client = request.forms.client
 	if job_status:
 		job = myDb.get_job(jobid)
 		if job is not None:
 			print "Setting ", job.id, " to ", job_status
-			myDb.put_job_status(job.id, job_status)
+			myDb.put_job_status(job.id, job_status, job_client)
 		else:
 			response.status = "404 - No job found with this ID."
 			return

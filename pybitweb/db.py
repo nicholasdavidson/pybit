@@ -696,10 +696,18 @@ class Database(object):
 			raise Exception('Error retrieving job status with:' + str(job_id) + str(e))
 			return None
 
-	def put_job_status(self, jobid, status, client):
+	def put_job_status(self, jobid, status, client=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s)) ",(jobid,status,))
+			cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s))",
+					 (jobid,status,))
+			if client is not None:
+				#insert the client if it doesn't already exist.
+				cur.execute("INSERT INTO buildclients(name) SELECT name FROM buildclients UNION VALUES('%s') EXCEPT SELECT name FROM buildclients",
+						(client,))
+				
+				cur.execute("UPDATE job SET build_client_id=(SELECT id FROM buildclients WHERE name=%s) WHERE id=%s",
+						 (jobid, client))
 			self.conn.commit()
 			cur.close()
 		except Exception as e:

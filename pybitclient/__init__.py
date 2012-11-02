@@ -43,12 +43,15 @@ class PyBITClient(object):
 		self.current_msg = None
 		self.current_request = None
 	
-	def set_status(self, status, request=None):
+	def set_status(self, status, request=None, client = None):
 		if request is None:
 			request = self.current_request
 		if status is not None and request is not None:
 			print "Marking JOB id: %s as: %s" % (request.get_job_id(), status)
-			payload = {'status' : status }
+			if client is not None:
+				payload = {'status' : status }
+			else:
+				payload = {'status' : status, 'client' : client }
 			job_status_url = "http://%s/job/%s" % (request.web_host, request.get_job_id())
 			requests.put(job_status_url, payload)
 		else:
@@ -75,6 +78,7 @@ class PyBITClient(object):
 				args = (self.current_request,self.conn_info)
 				self.process = multiprocessing.Process(target=self.vcs_handler.fetch_source,args=args)
 				self.process.start()
+				self.set_status(ClientMessage.building,None,self.conn_info.client_name)
 			elif self.state == "BUILD":
 				args = (self.current_request,self.conn_info)
 				if self.current_request.job.packageinstance.master == True:
@@ -82,7 +86,6 @@ class PyBITClient(object):
 				else:
 					self.process = multiprocessing.Process(target=self.format_handler.build_slave, args=args)
 				self.process.start()
-				self.set_status(ClientMessage.building)
 			elif self.state == "CLEAN":
 				args = (self.current_request,self.conn_info)
 				self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
@@ -205,7 +208,6 @@ class PyBITClient(object):
 		self.move_state("IDLE")
 
 	def message_handler(self, msg):
-		print "message handler got: %s" % msg.delivery_tag
 		build_req = jsonpickle.decode(msg.body)
 		if not isinstance(build_req, BuildRequest) :
 			self.message_chan.basic_ack(msg.delivery_tag)
@@ -215,7 +217,6 @@ class PyBITClient(object):
 		self.state_table[self.state](msg, build_req)
 
 	def command_handler(self, msg):
-		print "command handler got: %s" % msg.delivery_tag
 		cmd_req = jsonpickle.decode(msg.body)
 		if (not isinstance(cmd_req, TaskComplete) and
 			not isinstance(cmd_req, CommandRequest)):
