@@ -42,20 +42,20 @@ class PyBITClient(object):
 		self.process = None
 		self.current_msg = None
 		self.current_request = None
-	
+
 	def set_status(self, status, request=None, client = None):
 		if request is None:
 			request = self.current_request
 		if status is not None and request is not None:
 			print "Marking JOB id: %s as: %s" % (request.get_job_id(), status)
-			payload = {'status' : status } 
+			payload = {'status' : status }
 			if client is not None:
 				payload['client']  = client
 			job_status_url = "http://%s/job/%s" % (request.web_host, request.get_job_id())
 			requests.put(job_status_url, payload)
 		else:
 			print "Couldn't find status or current_request"
-			
+
 	def get_status(self, request = None):
 		if request is None:
 			request = self.current_request
@@ -129,7 +129,7 @@ class PyBITClient(object):
 			self.current_request = decoded
 			if (self.current_request.transport.method == "svn" or
 				self.current_request.transport.method == "svn+ssh"):
-				if self.get_status() == ClientMessage.waiting: 
+				if self.get_status() == ClientMessage.waiting:
 					self.vcs_handler = SubversionClient()
 					self.move_state("CHECKOUT")
 				else:
@@ -217,7 +217,7 @@ class PyBITClient(object):
 		else:
 			print "Empty build client"
 			self.format_handler = None
-		
+
 		self._clean_current()
 		self.move_state("IDLE")
 
@@ -299,18 +299,24 @@ def run_cmd (cmd, simulate):
 	return True
 
 def send_message (conn_data, msg) :
-	conn = amqp.Connection(host=conn_data.host, userid=conn_data.userid,
-		password=conn_data.password, virtual_host=conn_data.vhost, insist=True)
-	chan = conn.channel()
+	conn = None
+	chan = None
+	if conn_data is not None:
+		conn = amqp.Connection(host=conn_data.host, userid=conn_data.userid,
+			password=conn_data.password, virtual_host=conn_data.vhost, insist=True)
+		chan = conn.channel()
 	task = None
 	if msg == "success":
 		task = TaskComplete(msg, True)
 	else:
 		task = TaskComplete(msg, False)
-	chan.basic_publish(amqp.Message(task.toJson()),exchange=pybit.exchange_name,
-		routing_key=conn_data.client_name)
-	chan.close()
-	conn.close()
+	if conn and chan:
+		chan.basic_publish(amqp.Message(task.toJson()),exchange=pybit.exchange_name,
+			routing_key=conn_data.client_name)
+		chan.close()
+		conn.close()
+	else :
+		print "I: Simulating sending message: %s " % (msg)
 
 def get_settings(path):
 	try:
