@@ -1,6 +1,7 @@
 configs/client.conf ./etc/pybit/client/
 pybitclient/dput.cf ./etc/pybit/client/
 pybitclient/sbuild-cross.sh ./usr/share/pybitclient/
+configs/buildd-test.conf ./usr/share/pybitclient/
 pybit-client ./usr/bin/
 debian/tmp/usr/local/lib/python*/dist-packages/pybitclient/ ./usr/share/pyshared/
 buildd-test.py ./usr/share/pybitclient/
