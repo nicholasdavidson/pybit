@@ -664,7 +664,7 @@ class Database(object):
 	def get_unfinished_jobs(self):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("WITH latest_status AS (SELECT DISTINCT ON (job_id) job_id, status.name FROM jobstatus LEFT JOIN status ON status_id=status.id ORDER BY job_id, time DESC) SELECT job_id, name FROM latest_status WHERE name!='Uploaded' AND name!='Done' ORDER BY job_id");
+			cur.execute("WITH latest_status AS (SELECT DISTINCT ON (job_id) job_id, status.name FROM jobstatus LEFT JOIN status ON status_id=status.id ORDER BY job_id, time DESC) SELECT job_id, name FROM latest_status WHERE name!='Uploaded' AND name!='Done' AND name!='Cancelled' ORDER BY job_id");
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -940,7 +940,7 @@ class Database(object):
 			return p_i 
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error adding package instance:" + package + arch + suite + dist + pkg_format + master + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			raise Exception("Error adding package instance:" + str(package.id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_packageinstance(self,packageinstance_id):

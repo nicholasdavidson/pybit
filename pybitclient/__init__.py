@@ -133,7 +133,7 @@ class PyBITClient(object):
 					self.vcs_handler = SubversionClient()
 					self.move_state("CHECKOUT")
 				else:
-					print "jobid: %s not in state waiting so probably cancelled. Acking." % (self.current_msg.delivery_tag)
+					print "jobid: %s not in state waiting so probably cancelled. Acking." % (self.current_request.get_job_id())
 					self.move_state("IDLE")
 			else:
 				self.overall_success = False
