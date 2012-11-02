@@ -36,6 +36,10 @@ class DebianBuildClient(PackageHandler):
 		if not pybitclient.run_cmd (command, self.options["dry_run"]) :
 			retval = "build_update"
 		pybitclient.send_message (conn_data, retval)
+		if retval == "success":
+			return 0
+		else :
+			return 1
 
 	def build_master (self, buildreq, conn_data):
 		retval = None
@@ -64,6 +68,10 @@ class DebianBuildClient(PackageHandler):
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
+		if retval == "success":
+			return 0
+		else :
+			return 1
 
 	def upload (self, buildreq, conn_data):
 		retval = None
@@ -82,6 +90,10 @@ class DebianBuildClient(PackageHandler):
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
+		if retval == "success":
+			return 0
+		else :
+			return 1
 
 	def build_slave (self, buildreq, conn_data):
 		retval = None
@@ -108,6 +120,10 @@ class DebianBuildClient(PackageHandler):
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
+		if retval == "success":
+			return 0
+		else :
+			return 1
 
 	def __init__(self):
 		try:
