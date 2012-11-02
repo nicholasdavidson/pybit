@@ -43,16 +43,29 @@ class PyBITClient(object):
 		self.current_msg = None
 		self.current_request = None
 	
-	def set_status(self, status, request=None):
+	def set_status(self, status, request=None, client = None):
 		if request is None:
 			request = self.current_request
 		if status is not None and request is not None:
 			print "Marking JOB id: %s as: %s" % (request.get_job_id(), status)
-			payload = {'status' : status }
+			payload = {'status' : status } 
+			if client is not None:
+				payload['client']  = client
 			job_status_url = "http://%s/job/%s" % (request.web_host, request.get_job_id())
 			requests.put(job_status_url, payload)
 		else:
 			print "Couldn't find status or current_request"
+			
+	def get_status(self, request = None):
+		if request is None:
+			request = self.current_request
+		if request is not None:
+			job_status_get_url = "http://%s/job/%s/status" % (request.web_host, request.get_job_id())
+			r = requests.get(job_status_get_url)
+			if r.status_code == 200 and r.headers['content-type'] == 'application/json':
+				status_list = jsonpickle.decode(r.content)
+				if (len(status_list) > 0):
+					return status_list[-1].status
 
 	def wait(self):
 		time.sleep(5)
@@ -75,6 +88,7 @@ class PyBITClient(object):
 				args = (self.current_request,self.conn_info)
 				self.process = multiprocessing.Process(target=self.vcs_handler.fetch_source,args=args)
 				self.process.start()
+				self.set_status(ClientMessage.building,None,self.conn_info.client_name)
 			elif self.state == "BUILD":
 				args = (self.current_request,self.conn_info)
 				if self.current_request.job.packageinstance.master == True:
@@ -82,7 +96,6 @@ class PyBITClient(object):
 				else:
 					self.process = multiprocessing.Process(target=self.format_handler.build_slave, args=args)
 				self.process.start()
-				self.set_status(ClientMessage.building)
 			elif self.state == "CLEAN":
 				args = (self.current_request,self.conn_info)
 				self.process = multiprocessing.Process(target=self.vcs_handler.clean_source, args=args)
@@ -96,11 +109,11 @@ class PyBITClient(object):
 				current_msg = self.current_msg
 				current_req = self.current_request
 				self._clean_current()
-				if (overall_success is not None and current_msg is not None) :
+				if current_msg is not None :
 					self.message_chan.basic_ack(current_msg.delivery_tag)
 					if overall_success == True:
 						self.set_status(ClientMessage.done, current_req)
-					else:
+					elif overall_success == False:
 						self.set_status(ClientMessage.failed, current_req)
 
 			print "Moved from %s to %s" % (self.old_state, self.state)
@@ -116,8 +129,12 @@ class PyBITClient(object):
 			self.current_request = decoded
 			if (self.current_request.transport.method == "svn" or
 				self.current_request.transport.method == "svn+ssh"):
-				self.vcs_handler = SubversionClient()
-				self.move_state("CHECKOUT")
+				if self.get_status() == ClientMessage.waiting: 
+					self.vcs_handler = SubversionClient()
+					self.move_state("CHECKOUT")
+				else:
+					print "jobid: %s not in state waiting so probably cancelled. Acking." % (self.current_msg.delivery_tag)
+					self.move_state("IDLE")
 			else:
 				self.overall_success = False
 				self.move_state("IDLE")
@@ -205,7 +222,6 @@ class PyBITClient(object):
 		self.move_state("IDLE")
 
 	def message_handler(self, msg):
-		print "message handler got: %s" % msg.delivery_tag
 		build_req = jsonpickle.decode(msg.body)
 		if not isinstance(build_req, BuildRequest) :
 			self.message_chan.basic_ack(msg.delivery_tag)
@@ -215,7 +231,6 @@ class PyBITClient(object):
 		self.state_table[self.state](msg, build_req)
 
 	def command_handler(self, msg):
-		print "command handler got: %s" % msg.delivery_tag
 		cmd_req = jsonpickle.decode(msg.body)
 		if (not isinstance(cmd_req, TaskComplete) and
 			not isinstance(cmd_req, CommandRequest)):
