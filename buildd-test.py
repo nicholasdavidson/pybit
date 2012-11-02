@@ -24,6 +24,8 @@ import os
 import pybitclient
 from pybitclient.subversion import SubversionClient
 from pybitclient.debian import DebianBuildClient
+from pybitclient import PyBITClient
+from pybit.models import BuildRequest, Transport, PackageInstance, Job, Arch, Suite, Package
 
 def main():
 	conffile = "%s/pybitclient/client.conf" % (os.getcwd());
@@ -31,18 +33,27 @@ def main():
 		options = pybitclient.get_settings(conffile)
 	else :
 		options = pybitclient.get_settings("/etc/pybit/client/client.conf")
-	pkg = pybitclient.deb_package ("")
-	pkg.vcs_id = "21094"
-	pkg.method_type = "svn"
-	pkg.suite = "pybit"
-	pkg.package = "pybit"
-	pkg.version = "0.0.25"
-	pkg.architecture = "i386"
-	pkg.source = "pybit"
-	pkg.uri = "http://svn/svn/lwdev/software/trunk/packages/pybit"
+	build_client = PyBITClient(options["host_arch"], "debian", "deb", "pybit", None)
+
+	# Test One
+	vcs_id = "21094"
+	method_type = "svn"
+	suite = "pybit"
+	package = "pybit"
+	version = "0.0.25"
+	architecture = "i386"
+	source = "pybit"
+	uri = "http://svn/svn/lwdev/software/trunk/packages/pybit"
+
+	test_arch = Arch(0, architecture)
+	test_suite = Suite (0, suite)
+	test_transport = Transport (0, method_type, uri, vcs_id)
+	test_package = Package(0, version, package)
+	test_packageinstance = PackageInstance(1, test_package, test_arch, test_suite, "deb", "debian", True)
+	test_job =  Job(2, test_packageinstance,None)
+	test_req = BuildRequest(test_job,test_transport,None)
 	vcs = SubversionClient ()
-	vcs.fetch_source (pkg)
-	srcdir = vcs.get_srcdir()
+	vcs.fetch_source (test_req, None)
 	client = DebianBuildClient ()
 	# To check the build-dependencies in advance, we need to ensure the
 	# chroot has an update apt-cache, so can't use apt-update option of
@@ -51,25 +62,33 @@ def main():
 	# on whether two network trips are more efficient than rewriting the
 	# lvm snapshot before even trying to do any build.
 	if options["use_lvm"] :
-		name = pkg.suite + "-source"
+		name = suite + "-source"
 	else:
-		name = pkg.suite
-	client.update_environment (name, pkg)
+		name = suite
+	client.update_environment (name, test_req, None)
 	while client.is_building() :
 		wait(self)
-	pkg.buildd = options["idstring"]
-	pkg.msgtype = "building"
-	client.build_master (srcdir, pkg)
-	vcs.clean_source(pkg)
-	pkg.vcs_id = ""
-	pkg.package = "textparser"
-	pkg.version = "0.0.13"
-	pkg.architecture = "i386"
-	pkg.source = "textparser"
-	pkg.uri = "http://svn/svn/lwdev/software/trunk/packages/textparser"
-	vcs.fetch_source (pkg)
-	client.build_slave (pkg)
-	vcs.clean_source(pkg)
+	client.build_master (test_req, None)
+	vcs.clean_source(test_req, None)
+	vcs_id = ""
+	package = "textparser"
+	version = "0.0.13"
+	architecture = "i386"
+	source = "textparser"
+	uri = "http://svn/svn/lwdev/software/trunk/packages/textparser"
+
+	# test two
+	test_arch = Arch(0, architecture)
+	test_suite = Suite (0, suite)
+	test_transport = Transport (0, method_type, uri, vcs_id)
+	test_package = Package(0, version, package)
+	test_packageinstance = PackageInstance(1, test_package, test_arch, test_suite, "deb", "debian", True)
+	test_job =  Job(2, test_packageinstance,None)
+	test_req = BuildRequest(test_job,test_transport,None)
+
+	vcs.fetch_source (test_req, None)
+	client.build_slave (test_req, None)
+	vcs.clean_source(test_req, None)
 
 	return 0
 
