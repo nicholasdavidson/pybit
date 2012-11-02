@@ -55,7 +55,7 @@ class Database(object):
 		try:
 			self.conn = psycopg2.connect(database=self.settings['db_databasename'], user=self.settings['db_user'], host=self.settings['db_hostname'], port=self.settings['db_port'])
 			return True
-		except Exception as e:
+		except psycopg2.Error as e:
 			raise Exception("Error connecting to database. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return False
 
@@ -66,7 +66,7 @@ class Database(object):
 				self.conn.commit()
 				self.conn.close()
 			return True
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error disconnecting from database. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return False
@@ -86,7 +86,7 @@ class Database(object):
 				arches.append(Arch(i['id'],i['name']))
 			cur.close()
 			return arches
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving arches list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -100,7 +100,7 @@ class Database(object):
 			arch = Arch(res[0]['id'],res[0]['name'])
 			cur.close()
 			return arch
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving arch with id:" + str(arch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -118,7 +118,7 @@ class Database(object):
 				arches.append(Arch(i['id'],i['name']))
 			cur.close()
 			return arches
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving arch by name:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -132,7 +132,7 @@ class Database(object):
 			arch = Arch(res[0]['id'],name)
 			cur.close()
 			return arch
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error adding arch:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -150,7 +150,7 @@ class Database(object):
 			else:
 				cur.close()
 				return False
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error deleting arch with id:" + str(arch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -167,7 +167,7 @@ class Database(object):
 				suite_arches.append(SuiteArch(i['id'],i['suite_id'],i['arch_id']))
 			cur.close()
 			return suite_arches
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving suite arches list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -181,7 +181,7 @@ class Database(object):
 			suitearch = SuiteArch(res[0]['id'],res[0]['suite_id'],res[0]['arch_id'])
 			cur.close()
 			return suitearch
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving suite arch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -195,7 +195,7 @@ class Database(object):
 			suitearch = SuiteArch(res[0]['id'],suite_id,arch_id)
 			cur.close()
 			return suitearch
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error adding suite arch:" + suite_id + arch_id + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -213,7 +213,7 @@ class Database(object):
 			else:
 				cur.close()
 				return False
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error deleting suitearch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -230,7 +230,7 @@ class Database(object):
 				dists.append(Dist(i['id'],i['name']))
 			cur.close()
 			return dists
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving dist list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -244,7 +244,7 @@ class Database(object):
 			dist = Dist(res[0]['id'],res[0]['name'])
 			cur.close()
 			return dist
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving dist with id:" + str(dist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -262,7 +262,7 @@ class Database(object):
 				dists.append(Dist(i['id'],i['name']))
 			cur.close()
 			return dists
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving dist by name:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -276,7 +276,7 @@ class Database(object):
 			dist = Dist(res[0]['id'],name)
 			cur.close()
 			return dist
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error adding dist:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -294,7 +294,7 @@ class Database(object):
 			else:
 				cur.close()
 				return False
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error deleting dist with id:" + str(dist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -311,7 +311,7 @@ class Database(object):
 				formats.append(Format(i['id'],i['name']))
 			cur.close()
 			return formats
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving formats list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -325,7 +325,7 @@ class Database(object):
 			format = Format(res[0]['id'],res[0]['name'])
 			cur.close()
 			return  format
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving format with id:" + str(format_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -342,7 +342,7 @@ class Database(object):
 				formats.append(Format(i['id'],i['name']))
 			cur.close()
 			return formats
-		except Exception as e:
+		except psycopg2.Error as e:
 			raise Exception("Error retrieving format by name:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
@@ -355,7 +355,7 @@ class Database(object):
 			format = Format(res[0]['id'],name)
 			cur.close()
 			return format
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error adding format:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -373,7 +373,7 @@ class Database(object):
 			else:
 				cur.close()
 				return False
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error deleting format with id:" + str(format_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -390,7 +390,7 @@ class Database(object):
 				statuses.append(Status(i['id'],i['name']))
 			cur.close()
 			return statuses
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving status list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -404,7 +404,7 @@ class Database(object):
 			status = Status(res[0]['id'],res[0]['name'])
 			cur.close()
 			return status
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving status with id:" + str(status_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -418,7 +418,7 @@ class Database(object):
 			status = Status(res[0]['id'],name)
 			cur.close()
 			return status
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error add status:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -436,7 +436,7 @@ class Database(object):
 			else:
 				cur.cloes()
 				return False
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error deleting status with id:" + str(status_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -453,7 +453,7 @@ class Database(object):
 				suites.append(Suite(i['id'],i['name']))
 			cur.close()
 			return suites
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving suite list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -467,7 +467,7 @@ class Database(object):
 			suite = Suite(res[0]['id'],res[0]['name'])
 			cur.close()
 			return suite
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving suite with id:" + str(suite_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -485,7 +485,7 @@ class Database(object):
 				suites.append(Suite(i['id'],i['name']))
 			cur.close()
 			return suites
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving suite with name:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -499,7 +499,7 @@ class Database(object):
 			suite = Suite(res[0]['id'],name)
 			cur.close()
 			return suite
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error adding suite:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -517,7 +517,7 @@ class Database(object):
 			else:
 				cur.close()
 				return False
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error deleting suite with id:" + str(suite_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -536,7 +536,7 @@ class Database(object):
 				build_clients.append(BuildD(i['id'],i['name']))
 			cur.close()
 			return build_clients
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving buildd list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -550,7 +550,7 @@ class Database(object):
 			buildd = BuildD(res[0]['id'],res[0]['name'])
 			cur.close()
 			return buildd
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving buildd with id:" + str(buildd_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -564,7 +564,7 @@ class Database(object):
 			buildd = BuildD(res[0]['id'],name)
 			cur.close()
 			return buildd
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error adding buildd:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -582,7 +582,7 @@ class Database(object):
 			else:
 				cur.close()
 				return False
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error deleting buildd with id:" + str(buildclient_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -600,7 +600,7 @@ class Database(object):
 				jobs.append(jobs.append(Job(i['job_id'],packageinstance,buildclient_id)))
 			cur.close()
 			return jobs
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving jobs on buildd with id:" + str(buildclient_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -620,7 +620,7 @@ class Database(object):
 			job = Job(res[0]['id'],packageinstance,buildclient)
 			cur.close()
 			return job
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving job with id:" + str(job_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -639,7 +639,7 @@ class Database(object):
 				jobs.append(Job(i['id'],packageinstance,buildclient))
 			cur.close()
 			return jobs
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving jobs list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -656,7 +656,7 @@ class Database(object):
 				jobs.append(self.get_job(i['job_id']))
 			cur.close()
 			return jobs
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving jobs list with status:" + status + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -673,7 +673,7 @@ class Database(object):
 				jobs.append(self.get_job(i['job_id']))
 			return jobs
 			cur.close()
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving unfinished jobs. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -690,18 +690,27 @@ class Database(object):
 				jobstatuses.append(JobHistory(i['job_id'],i['status'],i['buildclient'],i['time']))
 			cur.close()
 			return jobstatuses
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving job status with:" + str(job_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def put_job_status(self, jobid, status):
+	def put_job_status(self, jobid, status, client=None):
 		try:
+			print "put_job_status: %s %s %s", (jobid, status, client)
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s)) ",(jobid,status,))
+			cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s))",
+					 (jobid,status,))
+			if client is not None:
+				#insert the client if it doesn't already exist.
+				cur.execute("INSERT INTO buildclients(name) SELECT name FROM buildclients UNION VALUES(%s) EXCEPT SELECT name FROM buildclients",
+						(client,))
+				
+				cur.execute("UPDATE job SET buildclient_id=(SELECT id FROM buildclients WHERE name=%s) WHERE id=%s",
+						 (client,jobid))
 			self.conn.commit()
 			cur.close()
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error setting job status. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -718,7 +727,7 @@ class Database(object):
 			else:
 				cur.close()
 				return False
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error deleting job with:" + str(job_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -759,7 +768,7 @@ class Database(object):
 				packages.append(Package(i['id'],i['version'],i['name']))
 			cur.close()
 			return packages
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving packages list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -776,7 +785,7 @@ class Database(object):
 				packages.append(Package(i['id'],i['version'],i['name']))
 			cur.close()
 			return packages
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving package with name:" + str(name) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -790,7 +799,7 @@ class Database(object):
 			package = Package(res[0]['id'],res[0]['version'],res[0]['name'])
 			cur.close()
 			return package
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving package with id:" + str(package_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -808,7 +817,7 @@ class Database(object):
 				packages.append(Package(i['id'],i['version'],i['name']))
 			cur.close()
 			return packages
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving package by values:" + name + version + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -822,7 +831,7 @@ class Database(object):
 			package = Package(res[0]['id'],version,name)
 			cur.close()
 			return package
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error adding package:" + name + version + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -840,7 +849,7 @@ class Database(object):
 			else:
 				cur.close()
 				return False
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error deleting package with:" + str(package_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -862,7 +871,7 @@ class Database(object):
 			p_i = PackageInstance(res[0]['id'],package,arch,suite,dist,pkg_format,res[0]['master'])
 			cur.close()
 			return p_i 
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving package instance with:" + str(packageinstance_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -879,7 +888,7 @@ class Database(object):
 				packageinstances.append(self.get_packageinstance_id(i['id']))
 			cur.close()
 			return packageinstances
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving package instances list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -896,7 +905,7 @@ class Database(object):
 				packageinstances.append(self.get_packageinstance_id(i['id']))
 			cur.close()
 			return packageinstances
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving package instances by name. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -914,7 +923,7 @@ class Database(object):
 				packageinstances.append(self.get_packageinstance_id(i['id']))
 			cur.close()
 			return packageinstances
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving package instance by value. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -929,7 +938,7 @@ class Database(object):
 			p_i = PackageInstance(res[0]['id'],package,arch,suite,dist,pkg_format,master)
 			cur.close()
 			return p_i 
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error adding package instance:" + package + arch + suite + dist + pkg_format + master + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -947,7 +956,7 @@ class Database(object):
 			else:
 				cur.close()
 				return False
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error deleting package instance with:" + str(packageinstance_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -973,7 +982,7 @@ class Database(object):
 				#Error finding specific package instance
 				cur.close()
 				return False
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error checking package instance exists. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -991,7 +1000,7 @@ class Database(object):
 				package_instances.append(PackageInstance(i['id'], i['package'], i['arch'], i['suite'], i['dist'], i['format'], i['master']))
 			cur.close()
 			return package_instances
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving package instance list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
@@ -1012,7 +1021,7 @@ class Database(object):
 			else:
 				cur.close()
 				return False
-		except Exception as e:
+		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving supported architectures for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
