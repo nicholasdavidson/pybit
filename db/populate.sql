@@ -72,6 +72,7 @@ INSERT INTO buildclients(name) VALUES
 INSERT INTO status(name) VALUES
 	('Waiting'),
 	('Blocked'),
+	('Cancelled'),
 	('Building'),
 	('Failed'),
 	('Uploaded'),
