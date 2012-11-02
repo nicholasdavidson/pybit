@@ -6,7 +6,8 @@ import time
 import jsonpickle
 from amqplib import client_0_8 as amqp
 import pybit
-from pybit.models import TaskComplete, PackageInstance, ClientMessage, BuildRequest, CommandRequest, AMQPConnection
+from pybit.models import TaskComplete, PackageInstance, ClientMessage, BuildRequest, CommandRequest, AMQPConnection,\
+	CancelRequest
 from debian import DebianBuildClient
 from subversion import SubversionClient
 import multiprocessing
@@ -42,20 +43,20 @@ class PyBITClient(object):
 		self.process = None
 		self.current_msg = None
 		self.current_request = None
-	
+
 	def set_status(self, status, request=None, client = None):
 		if request is None:
 			request = self.current_request
 		if status is not None and request is not None:
-			print "Marking JOB id: %s as: %s" % (request.get_job_id(), status)
-			payload = {'status' : status } 
+			print "Marking JOB id: %s as: %s" % (request.get_job_id(), status) #FIXME: this clears/resets 'cancelled' state
+			payload = {'status' : status }
 			if client is not None:
 				payload['client']  = client
 			job_status_url = "http://%s/job/%s" % (request.web_host, request.get_job_id())
 			requests.put(job_status_url, payload)
 		else:
 			print "Couldn't find status or current_request"
-			
+
 	def get_status(self, request = None):
 		if request is None:
 			request = self.current_request
@@ -124,16 +125,15 @@ class PyBITClient(object):
 
 	def idle_handler(self, msg, decoded):
 		if isinstance(decoded, BuildRequest):
-
 			self.current_msg = msg
 			self.current_request = decoded
 			if (self.current_request.transport.method == "svn" or
 				self.current_request.transport.method == "svn+ssh"):
-				if self.get_status() == ClientMessage.waiting: 
+				if self.get_status() == ClientMessage.waiting:
 					self.vcs_handler = SubversionClient()
 					self.move_state("CHECKOUT")
-				else:
-					print "jobid: %s not in state waiting so probably cancelled. Acking." % (self.current_request.get_job_id())
+				elif self.get_status() == ClientMessage.cancelled:
+					print "jobid: %s has been cancelled. Acking." % (self.current_request.get_job_id())
 					self.move_state("IDLE")
 			else:
 				self.overall_success = False
@@ -217,7 +217,7 @@ class PyBITClient(object):
 		else:
 			print "Empty build client"
 			self.format_handler = None
-		
+
 		self._clean_current()
 		self.move_state("IDLE")
 
@@ -236,6 +236,12 @@ class PyBITClient(object):
 			not isinstance(cmd_req, CommandRequest)):
 			print "Can't handle message type."
 			self.command_chan.basic_ack(msg.delivery_tag)
+		elif isinstance(cmd_req, CommandRequest) :
+			if isinstance(cmd_req, CancelRequest) :
+				print "Received CANCEL request for jobid: %s.", cmd_req.get_job_id()
+				#self.set_status(ClientMessage.cancelled, cmd_req)
+			else :
+				print "Received COMMAND request for jobid: %s.", cmd_req.get_job_id()
 		else:
 			self.state_table[self.state](msg, cmd_req)
 
@@ -299,18 +305,24 @@ def run_cmd (cmd, simulate):
 	return True
 
 def send_message (conn_data, msg) :
-	conn = amqp.Connection(host=conn_data.host, userid=conn_data.userid,
-		password=conn_data.password, virtual_host=conn_data.vhost, insist=True)
-	chan = conn.channel()
+	conn = None
+	chan = None
+	if conn_data is not None:
+		conn = amqp.Connection(host=conn_data.host, userid=conn_data.userid,
+			password=conn_data.password, virtual_host=conn_data.vhost, insist=True)
+		chan = conn.channel()
 	task = None
 	if msg == "success":
 		task = TaskComplete(msg, True)
 	else:
 		task = TaskComplete(msg, False)
-	chan.basic_publish(amqp.Message(task.toJson()),exchange=pybit.exchange_name,
-		routing_key=conn_data.client_name)
-	chan.close()
-	conn.close()
+	if conn and chan:
+		chan.basic_publish(amqp.Message(task.toJson()),exchange=pybit.exchange_name,
+			routing_key=conn_data.client_name)
+		chan.close()
+		conn.close()
+	else :
+		print "I: Simulating sending message: %s " % (msg)
 
 def get_settings(path):
 	try:

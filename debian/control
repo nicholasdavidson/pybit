@@ -10,7 +10,7 @@ Uploaders: Nick Davidson <nickd@toby-churchill.com>,
 Build-Depends: debhelper (>= 7.0.50~), docbook-xsl, xsltproc,
  python (>= 2.6.6-3~), python2.6, python-setuptools,
  python-jsonpickle,
- python-requests,
+ python-requests (>=0.10.1-1~),
  python-amqplib
 X-Python-Version: 2.6
 Standards-Version: 3.9.3
@@ -43,7 +43,7 @@ Description: buildd client support for pybit
 
 Package: pybit-web
 Architecture: all
-Depends: python-psycopg2,
+Depends: python-psycopg2 (>= 2.4.2-1~),
  pybit-common, ${python:Depends}, ${misc:Depends}
 Description: pybit web frontend
  This package provides a reporting and custom-build

@@ -67,8 +67,12 @@ def put_packageinstance():
 		suite_id = request.forms.get('suite_id')
 		dist_id = request.forms.get('dist_id')
 		format_id =  request.forms.get('format_id')
+		slave = request.forms.get('slave')
 
-		if package_id and arch_id  and suite_id  and dist_id and format_id:
+		if not slave:
+			slave = "false"
+
+		if package_id and arch_id  and suite_id  and dist_id and format_id and slave:
 
 			package = myDb.get_package_id(package_id)
 			arch = myDb.get_arch_id(arch_id)
@@ -76,7 +80,7 @@ def put_packageinstance():
 			dist = myDb.get_dist_id(dist_id)
 			pkg_format = myDb.get_format_id(format_id)
 
-			myDb.put_packageinstance(package,arch,suite,dist,pkg_format,"false") # TODO: "false" or False?
+			myDb.put_packageinstance(package,arch,suite,dist,pkg_format,slave)
 		else:
 			response.status = "400 - Required fields missing."
 		return

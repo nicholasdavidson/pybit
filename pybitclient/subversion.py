@@ -49,6 +49,10 @@ class SubversionClient(VersionControlHandler):
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
+		if retval == "success":
+			return 0
+		else :
+			return 1
 
 	def get_srcdir (self):
 		return self.workdir
@@ -64,6 +68,10 @@ class SubversionClient(VersionControlHandler):
 				retval = "failed_clean"
 		retval = "success"
 		pybitclient.send_message (conn_data, retval)
+		if retval == "success":
+			return 0
+		else :
+			return 1
 
 	def __init__(self):
 		VersionControlHandler.__init__(self)

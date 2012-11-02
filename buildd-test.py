@@ -24,6 +24,8 @@ import os
 import pybitclient
 from pybitclient.subversion import SubversionClient
 from pybitclient.debian import DebianBuildClient
+from pybitclient import PyBITClient
+from pybit.models import BuildRequest, Transport, PackageInstance, Job, Arch, Suite, Package
 
 def main():
 	conffile = "%s/pybitclient/client.conf" % (os.getcwd());
@@ -31,48 +33,77 @@ def main():
 		options = pybitclient.get_settings(conffile)
 	else :
 		options = pybitclient.get_settings("/etc/pybit/client/client.conf")
-	pkg = pybitclient.deb_package ("")
-	pkg.vcs_id = "21094"
-	pkg.method_type = "svn"
-	pkg.suite = "pybit"
-	pkg.package = "pybit"
-	pkg.version = "0.0.25"
-	pkg.architecture = "i386"
-	pkg.source = "pybit"
-	pkg.uri = "http://svn/svn/lwdev/software/trunk/packages/pybit"
+	build_client = PyBITClient(options["host_arch"], "debian", "deb", "pybit", None)
+
+	testconf = "%s/buildd-test.conf" % (os.getcwd());
+	if not os.path.isfile (testconf):
+		print "E: Unable to find %s - no test data for this buildd" % (testconf)
+		print "I: Copy /usr/share/pybitclient/buildd-test.conf and modify it for your available packages."
+		return 1
+	else :
+		test_options = pybitclient.get_settings(testconf)
+
+	count = 0
+	max_count = test_options["count"]
+	tags = [ "vcs_id", "method_type", "suite", "package", "version",
+		"architecture", "source", "uri", "pkg_format", "distribution" ]
 	vcs = SubversionClient ()
-	vcs.fetch_source (pkg)
-	srcdir = vcs.get_srcdir()
 	client = DebianBuildClient ()
-	# To check the build-dependencies in advance, we need to ensure the
-	# chroot has an update apt-cache, so can't use apt-update option of
-	# sbuild. The alternative is to update the apt-cache twice per build,
-	# once for the dep check and once before the build. The choice depends
-	# on whether two network trips are more efficient than rewriting the
-	# lvm snapshot before even trying to do any build.
-	if options["use_lvm"] :
-		name = pkg.suite + "-source"
-	else:
-		name = pkg.suite
-	client.update_environment (name, pkg)
-	while client.is_building() :
-		wait(self)
-	pkg.buildd = options["idstring"]
-	pkg.msgtype = "building"
-	client.build_master (srcdir, pkg)
-	vcs.clean_source(pkg)
-	pkg.vcs_id = ""
-	pkg.package = "textparser"
-	pkg.version = "0.0.13"
-	pkg.architecture = "i386"
-	pkg.source = "textparser"
-	pkg.uri = "http://svn/svn/lwdev/software/trunk/packages/textparser"
-	vcs.fetch_source (pkg)
-	client.build_slave (pkg)
-	vcs.clean_source(pkg)
+
+	while count < test_options["count"] and count < 10: # catch typos in the conf file
+		count = count + 1
+		print "I: starting test #%s" % count
+		for tag in tags :
+			tag_run = "%s%s" % (tag, count)
+			if tag_run not in test_options :
+				print "E: missing config item in %s \"%s\"" % (testconf, tag_run)
+				return -2
+			if tag == "vcs_id" :
+				vcs_id = test_options[tag_run]
+			elif tag == "method_type" :
+				method_type = test_options[tag_run]
+			elif tag == "suite" :
+				suite = test_options[tag_run]
+			elif tag == "package" :
+				package = test_options[tag_run]
+			elif tag == "version" :
+				version = test_options[tag_run]
+			elif tag == "architecture" :
+				architecture = test_options[tag_run]
+			elif tag == "source" :
+				source = test_options[tag_run]
+			elif tag == "uri" :
+				uri = test_options[tag_run]
+			elif tag == "pkg_format" :
+				pkg_format = test_options[tag_run]
+			elif tag == "distribution" :
+				distribution = test_options[tag_run]
+			else :
+				print "E: unrecognised option: %s" % tag_run
+				return -1
+		test_arch = Arch(0, architecture)
+		test_suite = Suite (0, suite)
+		test_transport = Transport (0, method_type, uri, vcs_id)
+		test_package = Package(0, version, package)
+		test_packageinstance = PackageInstance(1, test_package, test_arch, test_suite, pkg_format, distribution, True)
+		test_job =  Job(2, test_packageinstance,None)
+		test_req = BuildRequest(test_job,test_transport,None)
+		vcs.fetch_source (test_req, None)
+		# To check the build-dependencies in advance, we need to ensure the
+		# chroot has an update apt-cache, so can't use apt-update option of
+		# sbuild. The alternative is to update the apt-cache twice per build,
+		# once for the dep check and once before the build. The choice depends
+		# on whether two network trips are more efficient than rewriting the
+		# lvm snapshot before even trying to do any build.
+		if options["use_lvm"] :
+			name = suite + "-source"
+		else:
+			name = suite
+		client.update_environment (name, test_req, None)
+		client.build_master (test_req, None)
+		vcs.clean_source(test_req, None)
 
 	return 0
 
 if __name__ == '__main__':
 	main()
-
