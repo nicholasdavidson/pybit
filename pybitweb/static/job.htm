@@ -101,7 +101,6 @@
 		<label for='uri'>URI: </label><input type="text" name="uri"id="uri">
 		<label for='method'>Method: </label><input type="text" name="method"id="method">
 		<label for='revision'>Revision: </label><input type="text" name="vcs_id" id="vcs_id">
-		<label for='architecture_list'>Architecture: </label><select name='architecture_list' id="architecture_list"></select>
 					<br>
 		<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
 		</form>
@@ -149,16 +148,6 @@ $().ready(function ()
 		$.each(json, function(i, field)
 		{
 			$("#packageinstance_id").append("<option value='" + field.id + "'>" + field.id + " - " + field.package.name + " " + field.package.version + "." + field.format.name + " "  + " " + field.distribution.name + "/" + field.suite.name + " (" + field.arch.name + ") </option>");
-		});
-	});
-
-	var arches = "http://localhost:8080/arch"
-	$.getJSON(arches, function(json)
-	{
-		$.each(json, function(i, field)
-		{
-			// TODO: Only allow to pick valid ones for packageinstance
-			$("#architecture_list").append("<option value='" + field.id + "'>" + field.name + "</option>");
 		});
 	});
 
