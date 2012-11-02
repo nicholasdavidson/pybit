@@ -22,9 +22,39 @@ import os
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
+import optparse
 
-def get_client_queue(id):
-	return "build_client_%s" % id
+def merge_options(settings, options_group, options):
+	if not isinstance(options_group, optparse.OptionGroup):
+		print "E: options must be an instance of optparse.OptionsGroup."
+		return {}
+	if settings is None:
+		print "E: can't merge a null settings dictionary."
+		return {}
+	verbose = False
+	if hasattr(options,'verbose'):
+		verbose = options.verbose 
+		
+	for option in options_group.option_list :
+		value = getattr(options, option.dest)
+		if value is not None:
+			settings[option.dest] = value
+			if verbose == True:
+				print "Setting %s to %s" % (option.dest, value)
+		else:
+			if verbose == True:
+				if option.dest in settings :
+					print "Leaving %s as %s" % (option.dest, settings[option.dest])
+				else:
+					print "No such value %s" % option.dest
+				
+			
+	return settings
+		
+
+
+def get_client_queue(client_id):
+	return "build_client_%s" % client_id
 
 def get_build_queue_name(dist, arch, suite, package):
 	return "%s_%s_%s_%s" % (dist, arch, suite, package)
@@ -32,19 +62,23 @@ def get_build_queue_name(dist, arch, suite, package):
 def get_build_route_name(dist, arch, suite, package):
 	return "%s.%s.%s.%s" % (dist, arch, suite, package)
 
-def load_settings(file):
-	settings_file = None
-	path = "./configs/%s" % file
+def load_settings(path):
+	opened_file = None
+	#try the unmodified path incase we're being passed an absolute path.
 	try:
-		settings_file = open(path, 'r')
-	except IOError as e:
-		path = "/etc/pybit/%s" % file
+		opened_file = open(path)
+	except IOError:
+		new_path = "./configs/%s" % path
 		try:
-			settings_file = open(path)
-		except IOError as e:
-			pass
-	if settings_file:
-		encoded_string = settings_file.read()
+			opened_file = open(new_path, 'r')
+		except IOError:
+			new_path = "/etc/pybit/%s" % path
+			try:
+				opened_file = open(new_path)
+			except IOError:
+				pass
+	if opened_file:
+		encoded_string = opened_file.read()
 		return jsonpickle.decode(encoded_string )
 	else:
 		return {}
