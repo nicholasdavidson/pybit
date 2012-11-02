@@ -69,7 +69,7 @@ class DebianBuildClient(PackageHandler):
 			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
 				retval = "build_binary"
 		if not retval :
-			changes = "%s/%s_%s_%s.changes" % (srcdir, buildreq.get_package(),
+			changes = "%s/%s_%s_%s.changes" % (os.getcwd(), buildreq.get_package(),
 				buildreq.get_version(), buildreq.get_arch())
 			if not self.settings["dry_run"] and not os.path.isfile (changes) :
 				print "build_master: Failed to find %s file." % (changes)
@@ -86,7 +86,7 @@ class DebianBuildClient(PackageHandler):
 		retval = None
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
-		changes = "%s/%s_%s_%s.changes" % (srcdir, buildreq.get_package(),
+		changes = "%s/%s_%s_%s.changes" % (os.getcwd(), buildreq.get_package(),
 			buildreq.get_version(), buildreq.get_arch())
 		if not os.path.isfile (changes) and not self.settings["dry_run"]:
 			print "upload: Failed to find %s file." % (changes)
@@ -120,7 +120,7 @@ class DebianBuildClient(PackageHandler):
 				if not pybitclient.run_cmd (command, self.settings["dry_run"]):
 					retval = "build_binary"
 			if not retval :
-				changes = "%s/%s_%s_%s.changes" % (srcdir,
+				changes = "%s/%s_%s_%s.changes" % (os.getcwd(),
 					buildreq.get_package(), buildreq.get_version(),
 					buildreq.get_arch())
 				if not self.settings["dry_run"] and not os.path.isfile (changes) :
