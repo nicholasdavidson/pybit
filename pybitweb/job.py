@@ -105,7 +105,9 @@ def get_jobstatuses():
 @route('/job/<jobid:int>', method='POST')
 def update_job_status(jobid):
 	job_status = request.forms.status
-	job_client = request.forms.client
+	job_client = None
+	if hasattr(request.forms, 'client') :
+		job_client = request.forms.client
 	if job_status:
 		job = myDb.get_job(jobid)
 		if job is not None:
