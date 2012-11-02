@@ -56,7 +56,7 @@ class Database(object):
 			self.conn = psycopg2.connect(database=self.settings['db_databasename'], user=self.settings['db_user'], host=self.settings['db_hostname'], port=self.settings['db_port'])
 			return True
 		except Exception as e:
-			raise Exception('Error connecting to database:' + str(e))
+			raise Exception("Error connecting to database. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return False
 
 	#Called by deconstructor
@@ -68,7 +68,7 @@ class Database(object):
 			return True
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error disconnecting from database:' + str(e))
+			raise Exception("Error disconnecting from database. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return False
 
 	#<<<<<<<< Lookup table queries >>>>>>>>
@@ -88,7 +88,7 @@ class Database(object):
 			return arches
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving arches list:' + str(e))
+			raise Exception("Error retrieving arches list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_arch_id(self,arch_id):
@@ -102,7 +102,7 @@ class Database(object):
 			return arch
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving arch with id:' + str(arch_id) + str(e))
+			raise Exception("Error retrieving arch with id:" + str(arch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	# TODO: return single instance instead of list?
@@ -120,7 +120,7 @@ class Database(object):
 			return arches
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving arch by name:' + name + str(e))
+			raise Exception("Error retrieving arch by name:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_arch(self,name):
@@ -134,7 +134,7 @@ class Database(object):
 			return arch
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error adding arch:' + name + str(e))
+			raise Exception("Error adding arch:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_arch(self,arch_id):
@@ -152,7 +152,7 @@ class Database(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting arch with id:' + str(arch_id) + str(e))
+			raise Exception("Error deleting arch with id:" + str(arch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_suitearches(self):
@@ -169,7 +169,7 @@ class Database(object):
 			return suite_arches
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving suite arches list:' + str(e))
+			raise Exception("Error retrieving suite arches list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_suitearch_id(self,suitearch_id):
@@ -183,7 +183,7 @@ class Database(object):
 			return suitearch
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving suite arch with id:' + str(suitearch_id) + str(e))
+			raise Exception("Error retrieving suite arch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_suitearch(self,suite_id,arch_id):
@@ -197,7 +197,7 @@ class Database(object):
 			return suitearch
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error adding suite arch:' + suite_id + arch_id + str(e))
+			raise Exception("Error adding suite arch:" + suite_id + arch_id + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_suitearch(self,suitearch_id):
@@ -215,7 +215,7 @@ class Database(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting suitearch with id:' + str(suitearch_id) + str(e))
+			raise Exception("Error deleting suitearch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_dists(self):
@@ -232,7 +232,7 @@ class Database(object):
 			return dists
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving dist list:' + str(e))
+			raise Exception("Error retrieving dist list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_dist_id(self,dist_id):
@@ -246,7 +246,7 @@ class Database(object):
 			return dist
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving dist with id:' + str(dist_id) + str(e))
+			raise Exception("Error retrieving dist with id:" + str(dist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	# TODO: return single instance instead of list?
@@ -264,7 +264,7 @@ class Database(object):
 			return dists
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving dist by name:' + name + str(e))
+			raise Exception("Error retrieving dist by name:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_dist(self,name):
@@ -278,7 +278,7 @@ class Database(object):
 			return dist
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error adding dist:' + name + str(e))
+			raise Exception("Error adding dist:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_dist(self,dist_id):
@@ -296,7 +296,7 @@ class Database(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting dist with id:' + str(dist_id) + str(e))
+			raise Exception("Error deleting dist with id:" + str(dist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_formats(self):
@@ -313,7 +313,7 @@ class Database(object):
 			return formats
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving formats list:' + str(e))
+			raise Exception("Error retrieving formats list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_format_id(self,format_id):
@@ -327,7 +327,7 @@ class Database(object):
 			return  format
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving format with id:' + str(format_id) + str(e))
+			raise Exception("Error retrieving format with id:" + str(format_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	# TODO: return single instance instead of list?
@@ -343,7 +343,7 @@ class Database(object):
 			cur.close()
 			return formats
 		except Exception as e:
-			raise Exception('Error retrieving format by name:' + name + str(e))
+			raise Exception("Error retrieving format by name:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_format(self,name):
@@ -357,7 +357,7 @@ class Database(object):
 			return format
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error adding format:' + name + str(e))
+			raise Exception("Error adding format:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_format(self,format_id):
@@ -375,7 +375,7 @@ class Database(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting format with id:' + str(format_id) + str(e))
+			raise Exception("Error deleting format with id:" + str(format_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_statuses(self):
@@ -392,7 +392,7 @@ class Database(object):
 			return statuses
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving status list:' + str(e))
+			raise Exception("Error retrieving status list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_status_id(self,status_id):
@@ -406,7 +406,7 @@ class Database(object):
 			return status
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving status with id:' + str(status_id) + str(e))
+			raise Exception("Error retrieving status with id:" + str(status_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_status(self,name):
@@ -420,7 +420,7 @@ class Database(object):
 			return status
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error add status:' + name + str(e))
+			raise Exception("Error add status:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_status(self,status_id):
@@ -438,7 +438,7 @@ class Database(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting status with id:' + str(status_id) + str(e))
+			raise Exception("Error deleting status with id:" + str(status_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_suites(self):
@@ -455,7 +455,7 @@ class Database(object):
 			return suites
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving suite list:' + str(e))
+			raise Exception("Error retrieving suite list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_suite_id(self,suite_id):
@@ -469,7 +469,7 @@ class Database(object):
 			return suite
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving suite with id:' + str(suite_id) + str(e))
+			raise Exception("Error retrieving suite with id:" + str(suite_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	# TODO: return single instance instead of list?
@@ -487,7 +487,7 @@ class Database(object):
 			return suites
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving suite with name:' + name + str(e))
+			raise Exception("Error retrieving suite with name:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_suite(self,name):
@@ -501,7 +501,7 @@ class Database(object):
 			return suite
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error adding suite:' + name + str(e))
+			raise Exception("Error adding suite:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_suite(self,suite_id):
@@ -519,7 +519,7 @@ class Database(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting suite with id:' + str(suite_id) + str(e))
+			raise Exception("Error deleting suite with id:" + str(suite_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	#<<<<<<<< BuildD related database functions >>>>>>>>
@@ -538,7 +538,7 @@ class Database(object):
 			return build_clients
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving buildd list:' + str(e))
+			raise Exception("Error retrieving buildd list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_buildd_id(self,buildd_id):
@@ -552,7 +552,7 @@ class Database(object):
 			return buildd
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving buildd with id:' + str(buildd_id) + str(e))
+			raise Exception("Error retrieving buildd with id:" + str(buildd_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_buildclient(self,name):
@@ -566,7 +566,7 @@ class Database(object):
 			return buildd
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error adding buildd:' + name + str(e))
+			raise Exception("Error adding buildd:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_buildclient(self,buildclient_id):
@@ -584,7 +584,7 @@ class Database(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting buildd with id:' + str(buildclient_id) + str(e))
+			raise Exception("Error deleting buildd with id:" + str(buildclient_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_buildd_jobs(self,buildclient_id):
@@ -602,7 +602,7 @@ class Database(object):
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving jobs on buildd with id:' + str(buildclient_id) + str(e))
+			raise Exception("Error retrieving jobs on buildd with id:" + str(buildclient_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	#<<<<<<<< Job related database functions >>>>>>>>
@@ -622,7 +622,7 @@ class Database(object):
 			return job
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving job with id:' + str(job_id) + str(e))
+			raise Exception("Error retrieving job with id:" + str(job_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_jobs(self):
@@ -641,7 +641,7 @@ class Database(object):
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving jobs list:' + str(e))
+			raise Exception("Error retrieving jobs list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_jobs_by_status(self,status):
@@ -658,7 +658,7 @@ class Database(object):
 			return jobs
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving jobs list with status:' + status + str(e))
+			raise Exception("Error retrieving jobs list with status:" + status + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_unfinished_jobs(self):
@@ -675,7 +675,7 @@ class Database(object):
 			cur.close()
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving unfinished jobs:' + str(e))
+			raise Exception("Error retrieving unfinished jobs. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	# TODO!!!!! - Testme
@@ -693,7 +693,7 @@ class Database(object):
 			return jobstatuses
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving job status with:' + str(job_id) + str(e))
+			raise Exception("Error retrieving job status with:" + str(job_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_job_status(self, jobid, status):
@@ -704,7 +704,7 @@ class Database(object):
 			cur.close()
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error setting job status:' + str(e))
+			raise Exception("Error setting job status. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_job(self,job_id):
@@ -721,7 +721,7 @@ class Database(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting job with:' + str(job_id) + str(e))
+			raise Exception("Error deleting job with:" + str(job_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_job(self,packageinstance,buildclient):
@@ -743,7 +743,7 @@ class Database(object):
 			return job
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception('Error adding job:' + str(e))
+			raise Exception("Error adding job. Database error code: " + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	#<<<<<<<< Package related database functions >>>>>>>>
@@ -762,7 +762,7 @@ class Database(object):
 			return packages
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving packages list:' + str(e))
+			raise Exception("Error retrieving packages list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_packages_byname(self, name):
@@ -779,7 +779,7 @@ class Database(object):
 			return packages
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving package with name:' + str(name) + str(e))
+			raise Exception("Error retrieving package with name:" + str(name) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_package_id(self,package_id):
@@ -793,7 +793,7 @@ class Database(object):
 			return package
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving package with id:' + str(package_id) + str(e))
+			raise Exception("Error retrieving package with id:" + str(package_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	# TODO: return single instance instead of list?
@@ -811,7 +811,7 @@ class Database(object):
 			return packages
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving package by values:' + name + version + str(e))
+			raise Exception("Error retrieving package by values:" + name + version + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_package(self,version,name):
@@ -825,7 +825,7 @@ class Database(object):
 			return package
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error adding package:' + name + version + str(e))
+			raise Exception("Error adding package:" + name + version + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_package(self,package_id):
@@ -843,7 +843,7 @@ class Database(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting package with:' + str(package_id) + str(e))
+			raise Exception("Error deleting package with:" + str(package_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	#<<<<<<<<< Packageinstance related Queries >>>>>>>
@@ -865,7 +865,7 @@ class Database(object):
 			return p_i 
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving package instance with:' + str(packageinstance_id) + str(e))
+			raise Exception("Error retrieving package instance with:" + str(packageinstance_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_packageinstances(self):
@@ -882,7 +882,7 @@ class Database(object):
 			return packageinstances
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving package instances list:' + str(e))
+			raise Exception("Error retrieving package instances list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_packageinstances_byname(self, name):
@@ -899,7 +899,7 @@ class Database(object):
 			return packageinstances
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving package instances by name:' + str(e))
+			raise Exception("Error retrieving package instances by name. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	# TODO: return single instance instead of list?
@@ -917,7 +917,7 @@ class Database(object):
 			return packageinstances
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving package instance by value:' + str(e))
+			raise Exception("Error retrieving package instance by value. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_packageinstance(self,package,arch,suite,dist,pkg_format,master):
@@ -932,7 +932,7 @@ class Database(object):
 			return p_i 
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error adding package instance:' + package + arch + suite + dist + pkg_format + master + str(e))
+			raise Exception("Error adding package instance:" + package + arch + suite + dist + pkg_format + master + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_packageinstance(self,packageinstance_id):
@@ -950,7 +950,7 @@ class Database(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error deleting package instance with:' + str(packageinstance_id) + str(e))
+			raise Exception("Error deleting package instance with:" + str(packageinstance_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	# <<<<< TODO: This is a work in progress!!! >>>>>
@@ -977,7 +977,7 @@ class Database(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error checking package instance exists:' + str(e))
+			raise Exception("Error checking package instance exists. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 	#<<<<<<<<< Report Queries >>>>>>>
 
@@ -995,7 +995,7 @@ class Database(object):
 			return package_instances
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving package instance list:' + str(e))
+			raise Exception("Error retrieving package instance list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_supported_architectures(self,suite) :
@@ -1016,7 +1016,7 @@ class Database(object):
 				return False
 		except Exception as e:
 			self.conn.rollback()
-			raise Exception('Error retrieving supported architectures for:' + suite + str(e))
+			raise Exception("Error retrieving supported architectures for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 myDb = Database() # singleton instance
