@@ -940,7 +940,7 @@ class Database(object):
 			return p_i 
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error adding package instance:" + package + arch + suite + dist + pkg_format + master + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			raise Exception("Error adding package instance:" + str(package.id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_packageinstance(self,packageinstance_id):
