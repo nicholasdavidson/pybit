@@ -43,6 +43,7 @@ class PyBITClient(object):
 		self.process = None
 		self.current_msg = None
 		self.current_request = None
+		self.overall_success = None
 
 	def set_status(self, status, request=None, client = None):
 		if request is None:
@@ -239,10 +240,15 @@ class PyBITClient(object):
 			self.command_chan.basic_ack(msg.delivery_tag)
 		elif isinstance(cmd_req, CommandRequest) :
 			if isinstance(cmd_req, CancelRequest) :
-				print "Received CANCEL request for jobid: %s.", cmd_req.get_job_id()
-				#self.set_status(ClientMessage.cancelled, cmd_req)
+				print "Received CANCEL request for jobid:", cmd_req.get_job_id()
+				self.set_status(ClientMessage.cancelled, cmd_req)
+				if (self.current_request.get_job_id() == cmd_req.get_job_id()) and (self.process is not None) :
+					self.process.terminate()
+					self.process.join()
+					self.process = None
+					self.move_state("IDLE")
 			else :
-				print "Received COMMAND request for jobid: %s.", cmd_req.get_job_id()
+				print "Received COMMAND request for jobid:", cmd_req.get_job_id()
 		else:
 			self.state_table[self.state](msg, cmd_req)
 
