@@ -29,7 +29,7 @@ import jsonpickle
 import os
 import pybit
 from db import myDb
-from pybit.models import BuildRequest, CancelRequest
+from pybit.models import BuildRequest, CancelRequest, JobHistory
 from pybit.common import load_settings_from_file
 
 buildController = None
@@ -153,14 +153,20 @@ class Controller(object):
 				print "ADDED NEW PACKAGE INSTANCE (", packageinstance.id, ")"
 		return packageinstance
 
-	def send_cancel_request(self, job):
-		print "SENDING CANCEL REQUEST FOR JOB ID", job.id, job.packageinstance.package.name, job.packageinstance.package.version, job.packageinstance.distribution.name, job.packageinstance.arch.name, job.packageinstance.suite.name, job.packageinstance.format.name
-		cancel_req = jsonpickle.encode(CancelRequest(job,self.settings['webserver_url']))
-		msg = amqp.Message(cancel_req)
-		msg.properties["delivery_mode"] = 2
-		routing_key = pybit.get_build_route_name(job.packageinstance.distribution.name, job.packageinstance.arch.name, job.packageinstance.suite.name, job.packageinstance.format.name)
-		#print "\n____________SENDING", cancel_req, "____________TO____________", routing_key
-		self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key)
+	def process_cancel(self, job): #FIXME: rename...
+		job_status_history = myDb.get_job_statuses(job.id)
+		last_status = job_status_history[-1].status
+		if (len(job_status_history) > 0) and (last_status == "Building") :  
+			print "UNFINISHED JOB ID", job.id, "STATUS:", last_status, "SENDING CANCEL REQUEST"  
+			cancel_req = jsonpickle.encode(CancelRequest(job,self.settings['webserver_url']))
+			msg = amqp.Message(cancel_req)
+			msg.properties["delivery_mode"] = 2
+			routing_key = pybit.get_build_route_name(job.packageinstance.distribution.name, job.packageinstance.arch.name, job.packageinstance.suite.name, job.packageinstance.format.name)
+			#print "\n____________SENDING", cancel_req, "____________TO____________", routing_key
+			self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key)
+		else :
+			print "UNFINISHED JOB ID", job.id, "STATUS:", last_status, "UPDATE STATUS TO 'Cancelled'"
+			myDb.put_job_status(job.id, "Cancelled", job_status_history[-1].buildclient)
 		return
 
 	def cancel_superceded_jobs(self, new_job) :
@@ -179,7 +185,7 @@ class Controller(object):
 						unfinished_job_arch_id = unfinished_job.packageinstance.arch.id
 						unfinished_job_suite_id = unfinished_job.packageinstance.suite.id
 						if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) :
-							self.send_cancel_request(unfinished_job)
+							self.process_cancel(unfinished_job)
 #						else :
 #							print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(dist/arch/suite differs)"
 #					else :
@@ -194,7 +200,7 @@ class Controller(object):
 		# cancels all packages/jobs
 		unfinished_jobs_list = myDb.get_unfinished_jobs()
 		for unfinished_job in unfinished_jobs_list:
-			self.send_cancel_request(unfinished_job)
+			self.process_cancel(unfinished_job)
 		return
 
 	def cancel_package(self, package_id):
@@ -206,10 +212,10 @@ class Controller(object):
 			unfinished_jobs_list = myDb.get_unfinished_jobs()
 			for unfinished_job in unfinished_jobs_list:
 				if (unfinished_job.packageinstance.package.name == package.name) and (unfinished_job.packageinstance.package.version == package.version):
-					self.send_cancel_request(unfinished_job)
+					self.process_cancel(unfinished_job)
 		return
 
-	def cancel_package_instance(self,job_id):
+	def cancel_package_instance(self,job_id): #FIXME: rename...
 		# cancels a specific job/package instance
 		try:
 			if not job_id :
@@ -220,7 +226,7 @@ class Controller(object):
 				if not job_to_cancel :
 					response.status = "404 - no job matching id"
 				else :
-					self.send_cancel_request(job_to_cancel)
+					self.process_cancel(job_to_cancel)
 		except Exception as e:
 			raise Exception('Error parsing job information: ' + str(e))
 			response.status = "500 - Error parsing job information"
