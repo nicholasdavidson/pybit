@@ -35,48 +35,29 @@ class VersionControlHandler(object):
 
 	# support test cases
 	def is_dry_run (self):
-		if (not hasattr(self, 'options')) :
-			return False
-		if (not "dry_run" in self.options) :
-			return False
-		return self.options["dry_run"]
+		return self.settings["dry_run"]
 
-	def __init__(self):
+	def __init__(self, settings):
 		self.workdir = ""
-		self.options = {}
-		try:
-			self.options =  pybit.load_settings("client.conf")
-			if not "dry_run" in self.options:
-				self.options["dry_run"] = True
-			if not "buildroot" in self.options:
-				self.options["buildroot"] = "/tmp/buildd"
-		except Exception as e:
-			raise Exception('Error constructing subversion build client: ' + str(e))
-			return
+		self.settings = settings
+		if not "dry_run" in self.settings:
+			self.settings["dry_run"] = True
+		if not "buildroot" in self.settings:
+			self.settings["buildroot"] = "/tmp/buildd"
 
 class PackageHandler(object):
 
 	chan = None
 
-	def __init__(self):
-		self.build_process = None
-		try:
-			self.options = pybit.load_settings("client.conf")
-			if not "dry_run" in self.options:
-				self.options["dry_run"] = True
-			if not "buildroot" in self.options:
-				self.options["buildroot"] = "/tmp/buildd"
-		except Exception as e:
-			raise Exception('Error constructing subversion build client: ' + str(e))
-			return
-		return
+	def __init__(self, settings):
+		self.settings = settings
+		if not "dry_run" in self.settings:
+			self.settings["dry_run"] = True
+		if not "buildroot" in self.settings:
+			self.settings["buildroot"] = "/tmp/buildd"
 
 	def is_dry_run (self):
-		if (not hasattr(self, 'options')) :
-			return False
-		if (not "dry_run" in self.options) :
-			return False
-		return self.options["dry_run"]
+		return self.settings["dry_run"]
 
 	def build_master (self, buildroot):
 		pass
@@ -89,20 +70,3 @@ class PackageHandler(object):
 
 	def upload (self, dirname, changes, pkg) :
 		pass
-
-	def is_building (self) :
-		if not self.build_process :
-			return False
-		if self.build_process.poll() == None :
-			return False
-		return True
-
-	def cancel (self) :
-		try:
-			if not self.build_process :
-				return
-			if self.build_process.poll() == None : # None if still running
-				self.build_process.terminate()
-		except Exception as e:
-			raise Exception('Error cancelling: ' + str(e))
-			return

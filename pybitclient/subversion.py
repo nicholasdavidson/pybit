@@ -31,8 +31,8 @@ class SubversionClient(VersionControlHandler):
 		if buildreq.transport.method != "svn":
 			retval = "wrong_method"
 		if not retval :
-			self.workdir = os.path.join (self.options["buildroot"],
-				buildreq.get_suite(), buildreq.transport.method)
+			self.workdir = os.path.join (self.settings["buildroot"],
+				buildreq.get_suite(), buildreq.transport.method, buildreq.get_package())
 			if (buildreq.transport.vcs_id is not None):
 				command = "svn export %s@%s %s" % (buildreq.transport.uri,
 					buildreq.transport.vcs_id, self.workdir)
@@ -42,7 +42,7 @@ class SubversionClient(VersionControlHandler):
 				print "Could not fetch source, no method URI found"
 				retval = "unrecognised uri"
 		if not retval :
-			if not pybitclient.run_cmd (command, self.options["dry_run"]) :
+			if not pybitclient.run_cmd (command, self.settings["dry_run"]) :
 				retval = "fetch_source"
 		#except Exception as e:
 		#	retval = str(e)
@@ -62,9 +62,9 @@ class SubversionClient(VersionControlHandler):
 		if buildreq.transport.method != "svn":
 			retval = "wrong_method"
 		if not retval :
-			self.cleandir = os.path.join (self.options["buildroot"], buildreq.get_suite())
+			self.cleandir = os.path.join (self.settings["buildroot"], buildreq.get_suite())
 			command = "rm -rf %s/*" % (self.cleandir)
-			if not pybitclient.run_cmd (command, self.options["dry_run"]) :
+			if not pybitclient.run_cmd (command, self.settings["dry_run"]) :
 				retval = "failed_clean"
 		retval = "success"
 		pybitclient.send_message (conn_data, retval)
@@ -73,5 +73,5 @@ class SubversionClient(VersionControlHandler):
 		else :
 			return 1
 
-	def __init__(self):
-		VersionControlHandler.__init__(self)
+	def __init__(self, settings):
+		VersionControlHandler.__init__(self, settings)

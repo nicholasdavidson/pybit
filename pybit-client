@@ -38,11 +38,7 @@ from pybitclient.debian import DebianBuildClient
 from pybitclient.subversion import SubversionClient
 from pybit.models import AMQPConnection
 
-
-
-
 META = "PYBIT_CLIENT_"
-
 
 #register the single handler
 def signal_handler(signal, frame):
@@ -68,70 +64,70 @@ if __name__ == '__main__':
 		"Config File Defaults","All the options which have defaults read from a config file.")
 	parser.add_option("--host_arch", dest="host_arch",
 		help="Architecture to use, defaults to i386", metavar= META + "ARCH")
-	
+
 	groupConfigFile.add_option("--distribution",
 		help="Distribution to use, defaults to Debian",
 		metavar= META +"DIST")
-	
+
 	groupConfigFile.add_option("--pkg_format", dest="pkg_format",
 		help="Package type to use, defaults to deb", metavar= META +"FORMAT")
-	
+
 	groupConfigFile.add_option("--suite", dest="suite",
 		help="Suite to use, defaults to development", metavar= META +"SUITE")
-	
+
 	groupConfigFile.add_option("--host", dest="host",
 		help="host to connect to, defaults to localhost.",
 		metavar=META + "HOST")
-	
+
 	groupConfigFile.add_option("--vhost", dest="vhost",
 		help="vhost to connect to, defaults to localhost.",
 		metavar=META + "VHOST")
-	
+
 	groupConfigFile.add_option("--userid", dest="userid",
 		help="user id to use for AMQP server, defaults to guest.",
 		metavar=META + "USERID")
-	
+
 	groupConfigFile.add_option("--port", dest="port",
 		help="port to use for AMQP server, defaults to 5672",
 		metavar=META + "PORT")
-	
+
 	groupConfigFile.add_option("--password", dest="password",
 		help="password to use for AMQP server, defaults to guest",
 		metavar=META + "PASSWORD")
-	
+
 	groupConfigFile.add_option("--clientid", dest="clientid",
 		help="id to use for build-client control queue, defaults to 1 but is unique per amqp server.",
 		metavar=META + "CLIENTID")
-	
+
 
 	parser.add_option_group(groupConfigFile)
-	
+
 	parser.add_option("--conf_file", dest="conf_file", default="client.conf",
 		help="Config file to read settings from, defaults to client.conf which will be read from configs/client.conf and /etc/pybit/client.conf in turn.",
 		metavar=META + "CONF_FILE")
-	
+
 	parser.add_option("-v", dest="verbose", action="store_true", default=False,
 		help="Turn on verbose messages.", metavar=META+"VERBOSE")
-	
-	
+
+
 
 
 	(options, args) = parser.parse_args()
-	settings = pybit.load_settings(options.conf_file) 
-	
+	settings = pybit.load_settings(options.conf_file)
+
 	settings = pybit.merge_options(settings, groupConfigFile, options)
 	if settings == {}:
 		os._exit(os.EX_OSERR)
 	if 'configured'  in settings and settings.configured == False:
 		print "Please configure your client."
 		os._exit(os.EX_OK)
-		
+
 	conn_info = AMQPConnection(pybit.get_client_queue(settings['clientid']),
 				settings['host'], settings['userid'], settings['password'], settings['vhost'])
 
 
 #	try:
-	with PyBITClient(settings['host_arch'], settings['distribution'], settings['pkg_format'], settings['suite'], conn_info) as build_client:
+	with PyBITClient(settings['host_arch'], settings['distribution'], settings['pkg_format'], settings['suite'], conn_info, settings) as build_client:
 		while True:
 			if build_client is not None:
 				build_client.wait()

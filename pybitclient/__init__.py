@@ -130,7 +130,7 @@ class PyBITClient(object):
 			if (self.current_request.transport.method == "svn" or
 				self.current_request.transport.method == "svn+ssh"):
 				if self.get_status() == ClientMessage.waiting:
-					self.vcs_handler = SubversionClient()
+					self.vcs_handler = SubversionClient(self.settings)
 					self.move_state("CHECKOUT")
 				elif self.get_status() == ClientMessage.cancelled:
 					print "jobid: %s has been cancelled. Acking." % (self.current_request.get_job_id())
@@ -178,7 +178,7 @@ class PyBITClient(object):
 			else:
 				self.move_state("FATAL_ERROR")
 
-	def __init__(self, arch, distribution, pkg_format, suite, conn_info) :
+	def __init__(self, arch, distribution, pkg_format, suite, conn_info, settings) :
 		self.state_table = {}
 		self.state_table["UNKNOWN"] = self.fatal_error_handler
 		self.state_table["IDLE"] = self.idle_handler
@@ -196,6 +196,7 @@ class PyBITClient(object):
 		self.conn = None
 		self.command_chan = None
 		self.message_chan = None
+		self.settings = settings
 
 		self.routing_key = pybit.get_build_route_name(self.distribution,
 			self.arch, self.suite, self.pkg_format)
@@ -213,7 +214,7 @@ class PyBITClient(object):
 
 
 		if (pkg_format == "deb") :
-			self.format_handler = DebianBuildClient()
+			self.format_handler = DebianBuildClient(self.settings)
 		else:
 			print "Empty build client"
 			self.format_handler = None
@@ -300,7 +301,9 @@ def run_cmd (cmd, simulate):
 		print "Simulating: %s" % cmd
 		return True
 	else:
-		if not os.system (cmd) :
+		print "Running: %s" % cmd
+		if os.system (cmd) :
+			print "%s returned error" % cmd
 			return False
 	return True
 
