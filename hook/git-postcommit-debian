@@ -1,0 +1,12 @@
+
+# for a client side post-commit hook, each client needs to work in a different branch
+# otherwise one commit will cancel the build of the previous commit
+# for a server side post-receive hook, the server needs access to the pybit webapi
+
+# http://stackoverflow.com/questions/3616648/git-post-commit-hook-script-on-committed-files
+
+# post-commit takes no parameters
+# git log -1 HEAD
+
+# post-receive hook:
+# https://gist.github.com/585746
