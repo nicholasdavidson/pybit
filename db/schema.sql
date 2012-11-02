@@ -31,22 +31,22 @@ DROP TABLE IF EXISTS Suite CASCADE
 DROP TABLE IF EXISTS SuiteArches CASCADE
 ;
 
---  Create Tables 
+--  Create Tables - Changed to add NOT NULLs
 CREATE TABLE Arch ( 
-	id SERIAL PRIMARY KEY,
-	Name text
+	id SERIAL PRIMARY KEY NOT NULL,
+	Name text NOT NULL
 )
 ;
 
 CREATE TABLE BuildClients ( 
-	id SERIAL PRIMARY KEY,
-	Name text
+	id SERIAL PRIMARY KEY NOT NULL,
+	Name text NOT NULL
 )
 ;
 
 CREATE TABLE Distribution ( 
-	id SERIAL PRIMARY KEY,
-	Name text
+	id SERIAL PRIMARY KEY NOT NULL,
+	Name text NOT NULL
 )
 ;
 COMMENT ON TABLE Distribution
@@ -54,8 +54,8 @@ COMMENT ON TABLE Distribution
 ;
 
 CREATE TABLE Format ( 
-	id SERIAL PRIMARY KEY,
-	Name text
+	id SERIAL PRIMARY KEY NOT NULL,
+	Name text NOT NULL
 )
 ;
 COMMENT ON TABLE Format
@@ -63,8 +63,8 @@ COMMENT ON TABLE Format
 ;
 
 CREATE TABLE Job ( 
-	id SERIAL PRIMARY KEY,
-	PackageInstance_id bigint,
+	id SERIAL PRIMARY KEY NOT NULL,
+	PackageInstance_id bigint NOT NULL,
 	BuildClient_id bigint
 )
 ;
@@ -73,27 +73,27 @@ COMMENT ON TABLE Job
 ;
 
 CREATE TABLE JobStatus ( 
-	id SERIAL PRIMARY KEY,
-	Job_id bigint,
-	Status_id bigint,
+	id SERIAL PRIMARY KEY NOT NULL,
+	Job_id bigint NOT NULL,
+	Status_id bigint NOT NULL,
 	time timestamp NOT NULL DEFAULT now()
 )
 ;
 
 CREATE TABLE Package ( 
-	id SERIAL PRIMARY KEY,
-	Version text,
-	Name text
+	id SERIAL PRIMARY KEY NOT NULL,
+	Version text NOT NULL,
+	Name text NOT NULL
 )
 ;
 
 CREATE TABLE PackageInstance ( 
-	id SERIAL PRIMARY KEY,
-	Package_id bigint,
-	Arch_id bigint,
-	Suite_id bigint,
-	Dist_id bigint,
-	Format_id bigint,
+	id SERIAL PRIMARY KEY NOT NULL,
+	Package_id bigint NOT NULL,
+	Arch_id bigint NOT NULL,
+	Suite_id bigint NOT NULL,
+	Dist_id bigint NOT NULL,
+	Format_id bigint NOT NULL,
 	master boolean NOT NULL DEFAULT false   --  Master tell us if this instance is the first submitted for a given package, this information is acted on by certain build clients 
 )
 ;
@@ -102,25 +102,25 @@ COMMENT ON COLUMN PackageInstance.master
 ;
 
 CREATE TABLE Status ( 
-	id SERIAL PRIMARY KEY,
-	Name text
+	id SERIAL PRIMARY KEY NOT NULL,
+	Name text NOT NULL
 )
 ;
 
 CREATE TABLE Suite ( 
-	id SERIAL PRIMARY KEY,
-	Name text
+	id SERIAL PRIMARY KEY NOT NULL,
+	Name text NOT NULL
 )
 ;
 
 CREATE TABLE SuiteArches (
-	id SERIAL PRIMARY KEY,
-	Suite_id bigint,
-	Arch_id bigint
+	id SERIAL PRIMARY KEY NOT NULL,
+	Suite_id bigint NOT NULL,
+	Arch_id bigint NOT NULL
 )
 ;
 
---  Create Indexes 
+--  Create Indexes
 ALTER TABLE Arch
 	ADD CONSTRAINT UQ_Arch_id UNIQUE (id)
 ;
@@ -156,6 +156,28 @@ ALTER TABLE SuiteArches
 	ADD CONSTRAINT UQ_Stuite_Arches_id UNIQUE (id)
 ;
 
+--  Create Constraints for uniqueness of some fields
+ALTER TABLE Arch
+	ADD CONSTRAINT UQ_Arch_name UNIQUE (name)
+;
+ALTER TABLE BuildClients
+	ADD CONSTRAINT UQ_BuildClients_name UNIQUE (name)
+;
+ALTER TABLE Distribution
+	ADD CONSTRAINT UQ_Distribution_name UNIQUE (name)
+;
+ALTER TABLE Format
+	ADD CONSTRAINT UQ_Format_name UNIQUE (name)
+;
+ALTER TABLE Package
+	ADD CONSTRAINT UQ_Package_name_version UNIQUE (name,version)
+;
+ALTER TABLE Status
+	ADD CONSTRAINT UQ_Status_name UNIQUE (name)
+;
+ALTER TABLE Suite
+	ADD CONSTRAINT UQ_Suite_name UNIQUE (name)
+;
 --  Create Foreign Key Constraints 
 ALTER TABLE Job ADD CONSTRAINT FK_Job_BuildClients 
 	FOREIGN KEY (BuildClient_id) REFERENCES BuildClients (id)
