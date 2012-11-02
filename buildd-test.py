@@ -46,7 +46,7 @@ def main():
 	count = 0
 	max_count = test_options["count"]
 	tags = [ "vcs_id", "method_type", "suite", "package", "version",
-		"architecture", "source", "uri", "pkg_format", "distribution" ]
+		"architecture", "source", "uri", "pkg_format", "distribution", "role" ]
 	vcs = SubversionClient (settings)
 	client = DebianBuildClient (settings)
 
@@ -78,6 +78,8 @@ def main():
 				pkg_format = test_options[tag_run]
 			elif tag == "distribution" :
 				distribution = test_options[tag_run]
+			elif tag == "role" :
+				role = test_options[tag_run]
 			else :
 				print "E: unrecognised option: %s" % tag_run
 				return -1
@@ -100,9 +102,12 @@ def main():
 		else:
 			name = suite
 		client.update_environment (name, test_req, None)
-		client.build_master (test_req, None)
+		if (role == "slave"):
+			client.build_slave (test_req, None)
+		else :
+			client.build_master (test_req, None)
+		client.upload (test_req, None)
 		vcs.clean_source(test_req, None)
-
 	return 0
 
 if __name__ == '__main__':
