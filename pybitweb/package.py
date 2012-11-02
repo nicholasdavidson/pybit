@@ -115,7 +115,6 @@ def get_packages_filtered():
 @route('/package/details/:name', method='GET')
 def get_package_versions(name):
 	try:
-		#TODO - TESTME
 		res = myDb.get_packages_byname(name)
 		# check results returned
 		if res:
@@ -132,7 +131,6 @@ def get_package_versions(name):
 @route('/package/details/:name/:version', method='GET')
 def get_package_details(name,version):
 	try:
-		#TODO - TESTME
 		res = myDb.get_package_byvalues(name,version)
 		# check results returned
 		if res:

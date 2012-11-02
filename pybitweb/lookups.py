@@ -62,7 +62,7 @@ def get_arch_id(arch_id):
 @route('/arch', method='PUT')
 def put_arch():
 	try:
-		# Add a new arch. TODO: TESTME
+		# Add a new arch.
 		name = request.forms.get('name')
 
 		if name:
@@ -121,7 +121,7 @@ def get_suitearch_id(suitearch_id):
 @route('/suitearch', method='PUT')
 def put_suitearch():
 	try:
-		# Add a new suitearch. TODO: TESTME
+		# Add a new suitearch.
 		suite_id = request.forms.get('suite_id')
 		arch_id =  request.forms.get('arch_id')
 
@@ -181,7 +181,7 @@ def get_status_id(status_id):
 @route('/status', method='PUT')
 def put_status():
 	try:
-		# Add a new status. TODO: TESTME
+		# Add a new status.
 		name = request.forms.get('name')
 
 		if name:
@@ -240,7 +240,7 @@ def get_dist_id(dist_id):
 @route('/dist', method='PUT')
 def put_dist():
 	try:
-		# Add a new dist. TODO: TESTME
+		# Add a new dist.
 		name = request.forms.get('name')
 
 		if name:
@@ -299,7 +299,7 @@ def get_format_id(format_id):
 @route('/format', method='PUT')
 def put_format():
 	try:
-		# Add a new format. TODO: TESTME
+		# Add a new format.
 		name = request.forms.get('name')
 
 		if name:
@@ -358,7 +358,7 @@ def get_suite_id(suite_id):
 @route('/suite', method='PUT')
 def put_suite():
 	try:
-		# Add a new suite. TODO: TESTME
+		# Add a new suite.
 		name = request.forms.get('name')
 
 		if name:

@@ -105,7 +105,7 @@ class Database(object):
 			raise Exception("Error retrieving arch with id:" + str(arch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	# TODO: return single instance instead of list?
+
 	def get_arch_byname(self,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -249,7 +249,7 @@ class Database(object):
 			raise Exception("Error retrieving dist with id:" + str(dist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	# TODO: return single instance instead of list?
+
 	def get_dist_byname(self,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -330,7 +330,7 @@ class Database(object):
 			raise Exception("Error retrieving format with id:" + str(format_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	# TODO: return single instance instead of list?
+
 	def get_format_byname(self,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -472,7 +472,7 @@ class Database(object):
 			raise Exception("Error retrieving suite with id:" + str(suite_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	# TODO: return single instance instead of list?
+
 	def get_suite_byname(self,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -678,7 +678,6 @@ class Database(object):
 			raise Exception("Error retrieving unfinished jobs. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	# TODO!!!!! - Testme
 	def get_job_statuses(self,job_id):
 	#gets job status *history*
 		try:
@@ -796,7 +795,7 @@ class Database(object):
 			raise Exception("Error retrieving package with id:" + str(package_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	# TODO: return single instance instead of list?
+
 	def get_package_byvalues(self,name,version):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -902,7 +901,7 @@ class Database(object):
 			raise Exception("Error retrieving package instances by name. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	# TODO: return single instance instead of list?
+
 	def get_packageinstance_byvalues(self,package,arch,suite,dist,pkg_format):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -953,7 +952,6 @@ class Database(object):
 			raise Exception("Error deleting package instance with:" + str(packageinstance_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	# <<<<< TODO: This is a work in progress!!! >>>>>
 	def check_specific_packageinstance_exists(self,arch,package,distribution,pkg_format,suite):
 		try:
 			if arch and distribution and pkg_format and package and suite:

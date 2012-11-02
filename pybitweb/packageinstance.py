@@ -110,7 +110,6 @@ def get_packageinstances_filtered():
 @route('/packageinstance/details/:name', method='GET')
 def get_packageinstance_versions(name):
 	try:
-		#TODO - TESTME
 		res = myDb.get_packageinstances_byname(name)
 		# lists all instances of a package by name
 		if res:
