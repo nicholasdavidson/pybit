@@ -192,7 +192,6 @@ def del_jobid(jobid):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-# TODO!!!!! - Testme
 @route('/job/<jobid:int>/status', method='GET')
 def get_jobstatus(jobid):
 	try:
