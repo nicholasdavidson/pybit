@@ -33,12 +33,10 @@ class GitClient(VersionControlHandler):
 		if not retval :
 			self.workdir = os.path.join (self.options["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
+			# vcs_id for git is a branch identifier
 			if (buildreq.transport.vcs_id is not None):
-				# this needs multiple commands
-				# git clone
-				# git checkout <rev>
-				command = "git clone %s@%s %s" % (buildreq.transport.uri,
-					buildreq.transport.vcs_id, self.workdir)
+				command = "git clone -b %s %s %s" % (buildreq.transport.vcs_id,
+					buildreq.transport.uri, self.workdir)
 			elif (buildreq.transport.uri is not None):
 				command = "git clone %s %s" % (buildreq.transport.uri, self.workdir)
 			else:
@@ -47,8 +45,6 @@ class GitClient(VersionControlHandler):
 		if not retval :
 			if not pybitclient.run_cmd (command, self.options["dry_run"]) :
 				retval = "fetch_source"
-		#except Exception as e:
-		#	retval = str(e)
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
