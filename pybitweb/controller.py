@@ -171,20 +171,23 @@ class Controller(object):
 		for unfinished_job in unfinished_jobs_list:
 			unfinished_job_package_name = unfinished_job.packageinstance.package.name
 			if unfinished_job_package_name == packageinstance.package.name :
-				unfinished_job_package_version = unfinished_job.packageinstance.package.version
-				command = "dpkg --compare-versions %s '<<' %s" % (packageinstance.package.version, unfinished_job_package_version)
-				if (unfinished_job_package_version == packageinstance.package.version) or (os.system (command)) :
-					unfinished_job_dist_id = unfinished_job.packageinstance.distribution.id
-					unfinished_job_arch_id = unfinished_job.packageinstance.arch.id
-					unfinished_job_suite_id = unfinished_job.packageinstance.suite.id
-					if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) :
-						self.send_cancel_request(unfinished_job)
-					else :
-						print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(dist/arch/suite differs)"
-				else :
-					print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(version differs)"
-			else :
-				print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name
+				if new_job.id != unfinished_job.id :
+					unfinished_job_package_version = unfinished_job.packageinstance.package.version
+					command = "dpkg --compare-versions %s '<<' %s" % (packageinstance.package.version, unfinished_job_package_version)
+					if (unfinished_job_package_version == packageinstance.package.version) or (os.system (command)) :
+						unfinished_job_dist_id = unfinished_job.packageinstance.distribution.id
+						unfinished_job_arch_id = unfinished_job.packageinstance.arch.id
+						unfinished_job_suite_id = unfinished_job.packageinstance.suite.id
+						if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) :
+							self.send_cancel_request(unfinished_job)
+#						else :
+#							print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(dist/arch/suite differs)"
+#					else :
+#						print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(version differs)"
+#				else :
+#					print "IGNORING NEW JOB", unfinished_job.id
+#			else :
+#				print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name
 		return
 
 	def cancel_all_builds(self):
