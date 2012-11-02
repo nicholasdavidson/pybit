@@ -37,6 +37,12 @@ import requests
 
 class PyBITClient(object):
 
+	def _clean_current(self):
+		self.vcs_handler = None
+		self.process = None
+		self.current_msg = None
+		self.current_request = None
+	
 	def set_status(self, status, request=None):
 		if request is None:
 			request = self.current_request
@@ -88,16 +94,14 @@ class PyBITClient(object):
 			elif self.state == "IDLE":
 				overall_success = self.overall_success
 				current_msg = self.current_msg
-				self.overall_success = None
-				self.current_request = None
-				self.process = None
-				self.current_msg = None
+				current_req = self.current_request
+				self._clean_current()
 				if (overall_success is not None and current_msg is not None) :
 					self.message_chan.basic_ack(current_msg.delivery_tag)
 					if overall_success == True:
-						self.set_status(ClientMessage.done, current_msg)
+						self.set_status(ClientMessage.done, current_req)
 					else:
-						self.set_status(ClientMessage.failed, current_msg)
+						self.set_status(ClientMessage.failed, current_req)
 
 			print "Moved from %s to %s" % (self.old_state, self.state)
 		else:
@@ -196,9 +200,8 @@ class PyBITClient(object):
 		else:
 			print "Empty build client"
 			self.format_handler = None
-		self.vcs_handler = None
-		self.process = None
-		self.current_msg = None
+		
+		self._clean_current()
 		self.move_state("IDLE")
 
 	def message_handler(self, msg):

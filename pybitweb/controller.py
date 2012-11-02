@@ -56,11 +56,9 @@ class Controller(object):
 
 	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport) :
 		try:
-			supported_arches = myDb.get_supported_architectures(suite)
-			print "SUPPORTED ARCHITECTURES:", supported_arches
-
-			if (len(supported_arches) == 0):
-				response.status = "404 - no supported architectures for this suite."
+			build_arches = self.process_achitectures(architectures, suite)
+			if (len(build_arches) == 0):
+				response.status = "404 - no build architectures for this suite."
 				return
 		except Exception as e:
 			raise Exception('Error parsing arch information: ' + str(e))
@@ -74,7 +72,8 @@ class Controller(object):
 			current_suite = myDb.get_suite_byname(suite)[0]
 			current_dist = myDb.get_dist_byname(dist)[0]
 			current_format = myDb.get_format_byname(pkg_format)[0]
-			for arch in supported_arches:
+			#for arch in supported_arches:
+			for arch in build_arches:
 				current_arch = myDb.get_arch_byname(arch)[0]
 				current_packageinstance = self.process_packageinstance(current_arch, current_package, current_dist, current_format, current_suite)
 				if current_packageinstance.id :
@@ -89,10 +88,6 @@ class Controller(object):
 						print "SENDING BUILD REQUEST FOR JOB ID", new_job.id, new_job.packageinstance.package.name, new_job.packageinstance.package.version, new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name
 						#print "\n____________SENDING", build_req, "____________TO____________", routing_key
 						self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key)
-						if (architectures == "all"):
-							# this is an arch-all request so we only need to build for the first supported arch
-							print "ARCH-ALL REQUEST SO WE ONLY NEED TO BUILD FOR FIRST SUPPORTED ARCH..."
-							return
 					else :
 						print "FAILED TO ADD JOB"
 						response.status = "404 - failed to add job."
@@ -104,6 +99,29 @@ class Controller(object):
 			response.status = "500 - Error submitting job"
 			return
 		return
+
+	def process_achitectures(self, requested_arches, suite) :
+#		print "REQUESTED ARCHITECTURES:", requested_arches
+		arches_to_build = list()
+		supported_arches = myDb.get_supported_architectures(suite)
+		if (len(supported_arches) == 0):
+			response.status = "404 - no build architectures for this suite."
+		else :
+#			print "SUPPORTED ARCHITECTURES:", supported_arches
+			if ("all" in requested_arches) and ("any" not in requested_arches) :
+				# this is an arch-all request so we only need to build for the first supported arch
+				arches_to_build.append(supported_arches[0])
+				print "ARCH-ALL REQUEST, ONLY NEED TO BUILD FOR FIRST SUPPORTED ARCH...", arches_to_build
+			elif ("any" in requested_arches) :
+				# build for all supported arches
+				arches_to_build = supported_arches
+				print "ARCH-ALL-ANY REQUEST, BUILDING FOR ALL SUPPORTED ARCHES...", arches_to_build
+			else :
+				for arch in supported_arches :
+					if arch in requested_arches :
+						arches_to_build.append(arch)
+				print "ARCHES TO BUILD:", arches_to_build
+		return arches_to_build
 
 	def process_package(self, name, version) :
 		# retrieve existing package or try to add a new one
@@ -153,20 +171,23 @@ class Controller(object):
 		for unfinished_job in unfinished_jobs_list:
 			unfinished_job_package_name = unfinished_job.packageinstance.package.name
 			if unfinished_job_package_name == packageinstance.package.name :
-				unfinished_job_package_version = unfinished_job.packageinstance.package.version
-				command = "dpkg --compare-versions %s '<<' %s" % (packageinstance.package.version, unfinished_job_package_version)
-				if (unfinished_job_package_version == packageinstance.package.version) or (os.system (command)) :
-					unfinished_job_dist_id = unfinished_job.packageinstance.distribution.id
-					unfinished_job_arch_id = unfinished_job.packageinstance.arch.id
-					unfinished_job_suite_id = unfinished_job.packageinstance.suite.id
-					if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) :
-						self.send_cancel_request(unfinished_job)
-					else :
-						print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(dist/arch/suite differs)"
-				else :
-					print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(version differs)"
-			else :
-				print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name
+				if new_job.id != unfinished_job.id :
+					unfinished_job_package_version = unfinished_job.packageinstance.package.version
+					command = "dpkg --compare-versions %s '<<' %s" % (packageinstance.package.version, unfinished_job_package_version)
+					if (unfinished_job_package_version == packageinstance.package.version) or (os.system (command)) :
+						unfinished_job_dist_id = unfinished_job.packageinstance.distribution.id
+						unfinished_job_arch_id = unfinished_job.packageinstance.arch.id
+						unfinished_job_suite_id = unfinished_job.packageinstance.suite.id
+						if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) :
+							self.send_cancel_request(unfinished_job)
+#						else :
+#							print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(dist/arch/suite differs)"
+#					else :
+#						print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(version differs)"
+#				else :
+#					print "IGNORING NEW JOB", unfinished_job.id
+#			else :
+#				print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name
 		return
 
 	def cancel_all_builds(self):
