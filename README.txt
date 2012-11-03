@@ -17,7 +17,7 @@ We use a well known interchange format (JSON, with the JSONPickle library). We w
 Note that we proxy POST and PUT, and map /[object]/[id]/delete to DELETE. This is as HTML forms, in most browsers can only do GET and POST (JQuery can do more using its AJAX functions).
 
 Requirements
-Note that bottle.py, althogh in the debian repos as python-bottle, does not depend on any external libraries. Therefore, we include our own bottle.py from upstream. We need this as the new route rule syntax, amongst other things, was introduced in Bottle 0.10. Debian squeeze has 0.8x.
+Note that bottle.py, although in the debian repos as python-bottle, does not depend on any external libraries. Therefore, we include our own bottle.py from upstream. We need this as the new route rule syntax, amongst other things, was introduced in Bottle 0.10. Debian squeeze has 0.8x.
 
 python-requests is available from squeeze-backports, as is python-psycopg2. Do NOT use the version of psycopg2 from squeeze/main, if you intend to use a multi-threaded web server, this is unsupported.
 
