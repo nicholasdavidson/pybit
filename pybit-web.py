@@ -50,12 +50,12 @@ def enable_cors():
 
 @route('/', method='GET')
 def index():
-	return template("pybitweb/static/index.htm")
+	return template("pybitweb/static/index.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
 
 @route('/settings.json', method='GET')
 def js_settings():
 	response.content_type = "application/json"
-	return template("pybitweb/static/settings.json")
+	return static_file("settings.json", root='./pybitweb/static/')
 
 # static resources like CSS and JS
 @route('/bootstrap/<filepath:path>', method='GET')
@@ -65,32 +65,34 @@ def serve_static_res(filepath):
 # static HTML index page
 @route('/index.htm', method='GET')
 def serve_static_idex():
-    	return static_file("index.htm", root='./pybitweb/static/')
+    	return template("pybitweb/static/index.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
 
 # static HTML page listing buildboxes
 @route('/buildd.htm', method='GET')
 def serve_static_buildboxes():
-    	return static_file("buildd.htm", root='./pybitweb/static/')
+    	return template("pybitweb/static/buildd.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
 
 # static HTML page listing jobs
 @route('/job.htm', method='GET')
 def serve_static_jobs():
-    	return static_file("job.htm", root='./pybitweb/static/')
+    	return template("pybitweb/static/job.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
 
 # static HTML page listing things
 @route('/lookups.htm', method='GET')
 def serve_static_lookups():
-    	return static_file("lookups.htm", root='./pybitweb/static/')
+    	return template("pybitweb/static/lookups.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
 
 # static HTML page listing packages
 @route('/package.htm', method='GET')
 def serve_static_packages():
-    	return static_file("package.htm", root='./pybitweb/static/')
+    	return template("pybitweb/static/package.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
 
 # static HTML page listing package instances
 @route('/packageinstance.htm', method='GET')
 def serve_static_package_instances():
-    	return static_file("packageinstance.htm", root='./pybitweb/static/')
+    	return template("pybitweb/static/packageinstance.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+
+#start the server
 try:
 	debug(settings['webserver_debug'])
 	run(server=settings['server_app'], host=settings['webserver_hostname'], port=settings['webserver_port'], reloader=settings['webserver_reloader'])
