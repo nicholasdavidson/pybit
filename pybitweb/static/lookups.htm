@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script type="text/javascript" src="settings.json"></script>
 <META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
 <META HTTP-EQUIV="Expires" CONTENT="-1">
 <meta charset="utf-8">
@@ -95,7 +96,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse in">
       <div class="accordion-inner">
-      <form class="form-inline" method="POST" action="http://localhost:8080/arch"  id="arch_form" name="arch_form">
+      <form class="form-inline" method="POST" action="http://" + webserver_hostname + ":" + webserver_port + "/arch"  id="arch_form" name="arch_form">
 					<legend>Add Package Architectures</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -120,7 +121,7 @@
     </div>
     <div id="collapseTwo" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form-inline" method="POST" action="http://localhost:8080/status"  id="status_form" name="status_form">
+<form class="form-inline" method="POST" action="http://" + webserver_hostname + ":" + webserver_port + "/status"  id="status_form" name="status_form">
 					<legend>Add Job Statuses</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -144,7 +145,7 @@
     </div>
     <div id="collapseThree" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form-inline" method="POST" action="http://localhost:8080/dist"  id="dist_form" name="dist_form">
+<form class="form-inline" method="POST" action="http://" + webserver_hostname + ":" + webserver_port + "/dist"  id="dist_form" name="dist_form">
 					<legend>Add Software Distributions</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -168,7 +169,7 @@
     <div id="collapseFour" class="accordion-body collapse">
       <div class="accordion-inner">
 
-	<form class="form-inline" method="POST" action="http://localhost:8080/format"  id="format_form" name="format_form">
+	<form class="form-inline" method="POST" action="http://" + webserver_hostname + ":" + webserver_port + "/format"  id="format_form" name="format_form">
 					<legend>Add Package Formats</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -191,7 +192,7 @@
     </div>
     <div id="collapseFive" class="accordion-body collapse">
       <div class="accordion-inner">
-	<form class="form-inline" method="POST" action="http://localhost:8080/suite"  id="suite_form" name="suite_form">
+	<form class="form-inline" method="POST" action="http://" + webserver_hostname + ":" + webserver_port + "/suite"  id="suite_form" name="suite_form">
 					<legend>Add Software Suites</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -247,7 +248,7 @@
 
 $.ajax({
         type: "GET",
-        url: "http://localhost:8080/" + target +"/" + id + "/delete",
+        url: "http://" + webserver_hostname + ":" + webserver_port + "/" + target +"/" + id + "/delete",
         error: function(data){
 			alert('Error deleting ' + target + ' with id: ' + id + "\n" + data.responseText );
         }
@@ -276,48 +277,48 @@ $().ready(function ()
                 alert("Added!");
             });
 
-	var url = "http://localhost:8080/arch"
+	var url = "http://" + webserver_hostname + ":" + webserver_port + "/arch"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_arches").append("<tr><td><a href='http://localhost:8080/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>");
+			$("#tbl_arches").append("<tr><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>");
 		});
 	});
 
-	var url = "http://localhost:8080/status"
+	var url = "http://" + webserver_hostname + ":" + webserver_port + "/status"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_statuses").append("<tr><td><a href='http://localhost:8080/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>");
+			$("#tbl_statuses").append("<tr><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>");
 		});
 	});
 
-	var url = "http://localhost:8080/dist"
+	var url = "http://" + webserver_hostname + ":" + webserver_port + "/dist"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_dists").append("<tr><td><a href='http://localhost:8080/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>");
+			$("#tbl_dists").append("<tr><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>");
 		});
 	});
 
-	var url = "http://localhost:8080/format"
+	var url = "http://" + webserver_hostname + ":" + webserver_port + "/format"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_formats").append("<tr><td><a href='http://localhost:8080/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>");
+			$("#tbl_formats").append("<tr><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>");
 		});
 	});
 
-	var url = "http://localhost:8080/suite"
+	var url = "http://" + webserver_hostname + ":" + webserver_port + "/suite"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_suites").append("<tr><td><a href='http://localhost:8080/suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>");
+			$("#tbl_suites").append("<tr><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>");
 		});
 	});
 });

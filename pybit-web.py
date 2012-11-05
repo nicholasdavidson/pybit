@@ -52,6 +52,11 @@ def enable_cors():
 def index():
 	return template("pybitweb/static/index.htm")
 
+@route('/settings.json', method='GET')
+def js_settings():
+	response.content_type = "application/json"
+	return template("pybitweb/static/settings.json")
+
 # static resources like CSS and JS
 @route('/bootstrap/<filepath:path>', method='GET')
 def serve_static_res(filepath):
