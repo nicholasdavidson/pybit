@@ -95,7 +95,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form" method="POST" action="http://" + webserver_hostname + ":" + webserver_port + "/package" id="package_form" name="package_form">
+<form class="form" method="POST" action="http://localhost:8080/package" id="package_form" name="package_form">
 					<legend>Add a Package</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -128,7 +128,7 @@
    {
 $.ajax({
         type: "GET",
-        url: "http://" + webserver_hostname + ":" + webserver_port + "/package/" + id + "/delete",
+        url: "http://localhost:8080/package/" + id + "/delete",
         error: function(data){
 			alert('Error deleting package with id: ' + id + "\n" + data.responseText );
         }
@@ -142,12 +142,12 @@ $().ready(function ()
                 alert("Added!");
             });
 
-	var url = "http://" + webserver_hostname + ":" + webserver_port + "/package"
+	var url = "http://localhost:8080/package"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_packages").append("<tr><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/package/" + field.id + "'>" + field.id + "</a></td><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/package/" + field.id + "/cancel'>Cancel</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
+			$("#tbl_packages").append("<tr><td><a href='http://localhost:8080/package/" + field.id + "'>" + field.id + "</a></td><td><a href='http://localhost:8080/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='http://localhost:8080/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td><a href='http://localhost:8080/package/" + field.id + "/cancel'>Cancel</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
 		});
 	});
 });

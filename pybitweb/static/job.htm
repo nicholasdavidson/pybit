@@ -95,7 +95,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form" method="POST" action="http://" + webserver_hostname + ":" + webserver_port + "/job"  id="job_form" name="job_form">
+<form class="form" method="POST" action="http://localhost:8080/job"  id="job_form" name="job_form">
 					<legend>Submit a Job</legend>
 					<label for="packageinstance_id">Package Instance ID: </label>
 					<select name="packageinstance_id"  id="packageinstance_id" size="1" style="width:480px; display:block;"></select>
@@ -129,7 +129,7 @@
    {
 $.ajax({
         type: "GET",
-        url: "http://" + webserver_hostname + ":" + webserver_port + "/job/" + id + "/delete",
+        url: "http://localhost:8080/job/" + id + "/delete",
         error: function(data){
 			alert('Error deleting job with id: ' + id + "\n" + data.responseText );
         }
@@ -143,7 +143,7 @@ $().ready(function ()
                 alert("Added!");
             });
 
-	var packageinstances = "http://" + webserver_hostname + ":" + webserver_port + "/packageinstance"
+	var packageinstances = "http://localhost:8080/packageinstance"
 	$.getJSON(packageinstances, function(json)
 	{
 		$.each(json, function(i, field)
@@ -153,7 +153,7 @@ $().ready(function ()
 	});
 
 	var jobstatuses = new Object()
-	var url = "http://" + webserver_hostname + ":" + webserver_port + "/job/status"
+	var url = "http://localhost:8080/job/status"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
@@ -161,7 +161,7 @@ $().ready(function ()
 		bid = ""
 		bname = "Unassigned"
 
-	var url2 = "http://" + webserver_hostname + ":" + webserver_port + "/job/" + field.id + "/status"
+	var url2 = "http://localhost:8080/job/" + field.id + "/status"
 	$.getJSON(url2, function(json2)
 	{
 		var statuses = new Array()
@@ -198,7 +198,7 @@ $().ready(function ()
 				_class = "warning"
 			}
 
-			$("#tbl_jobs").append("<tr class='" + _class +"'><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/job/" + field.id + "'>" + field.id + "</a></td><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a></td><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/buildd/" + bid + "'>" + bname + "</a></td><td>" + jobstatuses[field.id] + "</td><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/job/" + field.id + "/cancel'>Cancel</a><br><a href='http://" + webserver_hostname + ":" + webserver_port + "/job/" + field.id + "/status'>View Status History</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
+			$("#tbl_jobs").append("<tr class='" + _class +"'><td><a href='http://localhost:8080/job/" + field.id + "'>" + field.id + "</a></td><td><a href='http://localhost:8080/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a></td><td><a href='http://localhost:8080/buildd/" + bid + "'>" + bname + "</a></td><td>" + jobstatuses[field.id] + "</td><td><a href='http://localhost:8080/job/" + field.id + "/cancel'>Cancel</a><br><a href='http://localhost:8080/job/" + field.id + "/status'>View Status History</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
 
 	});
 		});

@@ -96,7 +96,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form-inline" method="POST" action="http://" + webserver_hostname + ":" + webserver_port + "/buildd" id="buildbox_form" name="buildbox_form">
+<form class="form-inline" method="POST" action="http://localhost:8080/buildd" id="buildbox_form" name="buildbox_form">
 					<legend>Add a Buildbox</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -126,7 +126,7 @@
    {
 $.ajax({
         type: "GET",
-        url: "http://" + webserver_hostname + ":" + webserver_port + "/buildd/" + id + "/delete",
+        url: "http://localhost:8080/buildd/" + id + "/delete",
         error: function(data){
 			alert('Error deleting buildd with id: ' + id + "\n" + data.responseText );
         }
@@ -140,12 +140,12 @@ $().ready(function ()
                 alert("Added!");
             });
 
-	var url = "http://" + webserver_hostname + ":" + webserver_port + "/buildd"
+	var url = "http://localhost:8080/buildd"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_buildds").append("<tr><td><a href='http://" + webserver_hostname + ":" + webserver_port + "/buildd/" + field.id + "'>" + field.name + "</a></td><td><a  href='" + "http://" + webserver_hostname + ":" + webserver_port + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + "http://" + webserver_hostname + ":" + webserver_port + "/buildd/" + field.id + "/status'>View Status</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
+			$("#tbl_buildds").append("<tr><td><a href='http://localhost:8080/buildd/" + field.id + "'>" + field.name + "</a></td><td><a  href='" + "http://localhost:8080/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + "http://localhost:8080/buildd/" + field.id + "/status'>View Status</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
 		});
 	});
 
