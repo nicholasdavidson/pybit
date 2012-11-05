@@ -7,9 +7,9 @@ The system consists of two parts, a single server, and one to many clients. pybi
 
 The web GUI queries the back-end controller API using the jQuery Javascript library. The web GUI is not coupled otherwise to the system, as it does not speak to the queue or database directly.
 
-Likewise, the client only speaks to the controller using the queue, queue and the HTTP API, never the database. By loosely coupling components, we aim to make it easy to extend the system to support a variety of different configurations and scenarios.
+Likewise, the client only speaks to the controller using the queue, and the HTTP API, never the database. By loosely coupling components, we aim to make it easy to extend the system to support a variety of different configurations and scenarios.
 
-We aim to be flexible enough to build any combination of package type (i.e. DEB, RPM) for any arch, for any system (even, say .MSI installers for MS Windows). Currently however, we are mostly concerned with building ARM and i386 packages Debian GNU/Linux 'Squeeze', and above, as this is what we develop on/for internally.
+We aim to be flexible enough to build any combination of package type (i.e. DEB, RPM) for any arch, for any system (even, say .MSI installers for MS Windows). Currently however, we are mostly concerned with building ARM and i386 packages targeting Debian GNU/Linux 'Squeeze', and above, as this is what we develop on/for internally.
 
 Data Exchange
 We use a well known interchange format (JSON, with the JSONPickle library). We will present a RESTful HTTP based API. i.e. using the GET verb on http://[server]/job shall return a list of all running build jobs, while http://[server]/job/1 shall return the specific job instance with the ID 1.
@@ -25,7 +25,7 @@ Installation
 In /db, there are schema.sql and populate.sql, which will create and populate a (pre-existing) database so the system can run.
 
 Running the software
-The connection string, hostname, etc.... are stored in /configs/*. You must configure these appropriately. Then simply start the server first, then the client. The client will pick up any suitable queued jobs when it comes up.
+The connection string, hostname, etc.... are stored in /configs/*. You must configure these appropriately. You must also set the hostname and port in the (static) WebUI settings.json file. Then simply start the server first, then the client(s) second. The client will pick up any suitable queued jobs when it comes up.
 
 For support:
 IRC - #pybit on irc.oftc.net irc://irc.oftc.org/pybit (Or use github issues)
