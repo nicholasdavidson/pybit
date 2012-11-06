@@ -36,12 +36,12 @@ buildController = None
 
 class Controller(object):
 
-	def __init__(self):
+	def __init__(self, settings):
 		print "DEBUG: Controller constructor called."
 		if not buildController: # DONT allow construction of more than 1 controller instance (i.e. none other than the buildController here)
 			print "DEBUG: Controller Singleton constructor called."
 			try:
-				self.settings = load_settings_from_file('controller_settings.json')
+				self.settings = settings
 				self.conn = amqp.Connection(host=self.settings['rabbit_url'], userid=self.settings['rabbit_userid'], password=self.settings['rabbit_password'], virtual_host=self.settings['rabbit_virtual_host'], insist=self.settings['rabbit_insist'])
 				self.chan = self.conn.channel()
 				#declare exchange.
@@ -232,4 +232,3 @@ class Controller(object):
 			return
 		return
 
-buildController = Controller() # singleton instance

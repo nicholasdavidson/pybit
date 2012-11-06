@@ -51,7 +51,9 @@ def enable_cors():
 
 @route('/', method='GET')
 def index():
-	return template("pybitweb/static/index.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+	return template("pybitweb/static/index.htm",
+                    host=settings['web']['webserver_hostname'],
+                    port=settings['web']['webserver_port'])
 
 @route('/settings.json', method='GET')
 def js_settings():
@@ -66,37 +68,50 @@ def serve_static_res(filepath):
 # static HTML index page
 @route('/index.htm', method='GET')
 def serve_static_idex():
-    	return template("pybitweb/static/index.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+    	return template("pybitweb/static/index.htm",
+                        host=settings['web']['webserver_hostname'],
+                        port=settings['web']['webserver_port'])
 
 # static HTML page listing buildboxes
 @route('/buildd.htm', method='GET')
 def serve_static_buildboxes():
-    	return template("pybitweb/static/buildd.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+    	return template("pybitweb/static/buildd.htm",
+                        host=settings['web']['webserver_hostname'],
+                        port=settings['web']['webserver_port'])
 
 # static HTML page listing jobs
 @route('/job.htm', method='GET')
 def serve_static_jobs():
-    	return template("pybitweb/static/job.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+    	return template("pybitweb/static/job.htm",
+                        host=settings['web']['webserver_hostname'],
+                        port=settings['web']['webserver_port'])
 
 # static HTML page listing things
 @route('/lookups.htm', method='GET')
 def serve_static_lookups():
-    	return template("pybitweb/static/lookups.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+    	return template("pybitweb/static/lookups.htm",
+                        host=settings['web']['webserver_hostname'],
+                        port=settings['web']['webserver_port'])
 
 # static HTML page listing packages
 @route('/package.htm', method='GET')
 def serve_static_packages():
-    	return template("pybitweb/static/package.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+    	return template("pybitweb/static/package.htm",
+                        host=settings['web']['webserver_hostname'],
+                        port=settings['web']['webserver_port'])
 
 # static HTML page listing package instances
 @route('/packageinstance.htm', method='GET')
 def serve_static_package_instances():
-    	return template("pybitweb/static/packageinstance.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+    	return template("pybitweb/static/packageinstance.htm",
+                        host=settings['web']['webserver_hostname'],
+                        port=settings['web']['webserver_port'])
 
 if __name__ == '__main__':
     parser = optparse.OptionParser()
     #options we can override in the config file.
-    groupConfigFile = optparse.OptionGroup(parser,"Config File Defaults","All the options which have defaults read from a config file.")
+    groupConfigFile = optparse.OptionGroup(parser,
+        "Config File Defaults","All the options which have defaults read from a config file.")
     parser.add_option_group(groupConfigFile)
     parser.add_option_group(groupConfigFile)
 
@@ -110,8 +125,8 @@ if __name__ == '__main__':
     settings = pybit.load_settings(options.conf_file)
     settings = pybit.merge_options(settings, groupConfigFile, options)
     
-    myDb = Database(settings["db"]) # singleton instance
-    
+    myDb = Database(settings['db']) # singleton instance
+    buildController = Controller(settings['controller']) # singleton instance
 #    try:
     debug(options.verbose)
     run(server=settings['web']['server_app'],
