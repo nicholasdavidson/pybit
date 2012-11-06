@@ -23,7 +23,7 @@
 import os
 import pybit
 from pybitclient.subversion import SubversionClient
-from pybitclient.debian import DebianBuildClient
+from pybitclient.debianclient import DebianBuildClient
 from pybitclient import PyBITClient
 from pybit.models import BuildRequest, Transport, PackageInstance, Job, Arch, Suite, Package
 

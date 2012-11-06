@@ -34,7 +34,7 @@ import pybit
 import os
 import time
 from pybitclient import PyBITClient
-from pybitclient.debian import DebianBuildClient
+from pybitclient.debianclient import DebianBuildClient
 from pybitclient.subversion import SubversionClient
 from pybit.models import AMQPConnection
 

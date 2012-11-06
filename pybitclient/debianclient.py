@@ -21,6 +21,7 @@
 #       MA 02110-1301, USA.
 
 import os
+from debian.changelog import Changelog, Version
 import pybitclient
 from buildclient import PackageHandler
 from pybit.models import BuildRequest
@@ -59,6 +60,27 @@ class DebianBuildClient(PackageHandler):
 				 dep_check, os.path.realpath(control))
 			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
 				retval = "build-dep-wait"
+		# need an extra uscan stage to deal with non-native packages
+		changelog = Changelog(file('./debian/changelog', 'r'))
+		package = str(changelog.package)
+		version = str(changelog.version)
+		if '-' in version:
+			print "%s is not a native package" % (package)
+			offset = version.find('-')
+			origversion = version[0:offset]
+			origtar = os.path.join (srcdir, "%s_%s.orig.tar.gz" % (package, origversion))
+			if not os.path.isfile (origtar) :
+				# check for .tar.bz2
+				origtar = os.path.join (srcdir, "%s_%s.orig.tar.bz2" % (package, origversion))
+				if not os.path.isfile (origtar) :
+					if os.path.isfile ("./debian/watch") :
+						command = "uscan --destdir ../ --repack --download-current-version"
+						if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+							retval = "watch-failed"
+						else :
+							retval = "missing-upstream-source"
+				# have .bz2
+			# have .gz
 		if not retval :
 			command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % (package_dir)
 			if not pybitclient.run_cmd (command, self.settings["dry_run"]):

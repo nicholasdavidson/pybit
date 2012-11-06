@@ -8,7 +8,7 @@ from amqplib import client_0_8 as amqp
 import pybit
 from pybit.models import TaskComplete, PackageInstance, ClientMessage, BuildRequest, CommandRequest, AMQPConnection,\
 	CancelRequest
-from debian import DebianBuildClient
+from debianclient import DebianBuildClient
 from subversion import SubversionClient
 import multiprocessing
 import socket

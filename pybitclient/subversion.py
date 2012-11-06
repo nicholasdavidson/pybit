@@ -27,7 +27,6 @@ from buildclient import VersionControlHandler
 class SubversionClient(VersionControlHandler):
 	def fetch_source(self, buildreq, conn_data):
 		retval = None
-		#try:
 		if buildreq.transport.method != "svn":
 			retval = "wrong_method"
 		if not retval :
@@ -44,8 +43,6 @@ class SubversionClient(VersionControlHandler):
 		if not retval :
 			if not pybitclient.run_cmd (command, self.settings["dry_run"]) :
 				retval = "fetch_source"
-		#except Exception as e:
-		#	retval = str(e)
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)

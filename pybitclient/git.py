@@ -27,13 +27,11 @@ from buildclient import VersionControlHandler
 class GitClient(VersionControlHandler):
 	def fetch_source(self, buildreq, conn_data):
 		retval = None
-		#try:
 		if buildreq.transport.method != "git":
 			retval = "wrong_method"
 		if not retval :
-			self.workdir = os.path.join (self.options["buildroot"],
-				buildreq.get_suite(), buildreq.transport.method)
-			# vcs_id for git is a branch identifier
+			self.workdir = os.path.join (self.settings["buildroot"],
+				buildreq.get_suite(), buildreq.transport.method, buildreq.get_package())
 			if (buildreq.transport.vcs_id is not None):
 				command = "git clone -b %s %s %s" % (buildreq.transport.vcs_id,
 					buildreq.transport.uri, self.workdir)
@@ -43,11 +41,15 @@ class GitClient(VersionControlHandler):
 				print "Could not fetch source, no method URI found"
 				retval = "unrecognised uri"
 		if not retval :
-			if not pybitclient.run_cmd (command, self.options["dry_run"]) :
+			if not pybitclient.run_cmd (command, self.settings["dry_run"]) :
 				retval = "fetch_source"
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
+		if retval == "success":
+			return 0
+		else :
+			return 1
 
 	def get_srcdir (self):
 		return self.workdir
@@ -57,12 +59,16 @@ class GitClient(VersionControlHandler):
 		if buildreq.transport.method != "git":
 			retval = "wrong_method"
 		if not retval :
-			self.cleandir = os.path.join (self.options["buildroot"], buildreq.get_suite())
+			self.cleandir = os.path.join (self.settings["buildroot"], buildreq.get_suite())
 			command = "rm -rf %s/*" % (self.cleandir)
-			if not pybitclient.run_cmd (command, self.options["dry_run"]) :
+			if not pybitclient.run_cmd (command, self.settings["dry_run"]) :
 				retval = "failed_clean"
 		retval = "success"
 		pybitclient.send_message (conn_data, retval)
+		if retval == "success":
+			return 0
+		else :
+			return 1
 
-	def __init__(self):
-		VersionControlHandler.__init__(self)
+	def __init__(self, settings):
+		VersionControlHandler.__init__(self, settings)
