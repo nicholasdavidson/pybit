@@ -18,12 +18,12 @@
     </style>
 <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
 
-  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <script src="js/jquery-latest.js"></script>
   <script src="bootstrap/js/bootstrap.min.js"></script>
 
 <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="js/html5.js"></script>
     <![endif]-->
 
 </head>
@@ -84,7 +84,7 @@
           <div class="well">
             <h1>PyBit</h1><h2>Python Buildd Integration Toolkit.</h2>
             <p>A new build system using python and RabbitMQ, providing a RESTful HTTP based API.</p>
-            <p><a class="btn btn-success btn-large" href='http://dekiwiki/R_and_D/Software/Build_Queues'>Learn more &raquo;</a></p>
+            <p><a class="btn btn-success btn-large" href='{{protocol}}dekiwiki/R_and_D/Software/Build_Queues'>Learn more &raquo;</a></p>
           </div>
 
 
@@ -100,22 +100,22 @@
     <div id="collapseTwo" class="accordion-body collapse in">
       <div class="accordion-inner">
 
-					<h4><a href='http://{{host}}:{{port}}/forms'>WebAPI Endpoints (JSON format)</a></h4>
+					<h4><a href='{{protocol}}{{host}}:{{port}}/forms'>WebAPI Endpoints (JSON format)</a></h4>
             <div class="span5">
 					<ul>
-					<li><a href='http://{{host}}:{{port}}/buildd'>Build Boxes</a> (Specify ~/[id] to go to a specific one, and ~/[id]/status or ~/[id]/jobs 					to see its jobs)</li>
-					<li><a href='http://{{host}}:{{port}}/job'>Build Jobs</a> (Specify ~/status to see all unfinished jobs, ~/status/[status] to see all of 					a specified state, or ~/[id] to go to a specific one. </li>
-					<li><a href='http://{{host}}:{{port}}/package'>Packages</a> (Specify ~/[id] to go to a specific one)</li>
-					<li><a href='http://{{host}}:{{port}}/packageinstance'>Package Instances</a>  (Specify ~/[id] to go to a specific one)</li>
+					<li><a href='{{protocol}}{{host}}:{{port}}/buildd'>Build Boxes</a> (Specify ~/[id] to go to a specific one, and ~/[id]/status or ~/[id]/jobs 					to see its jobs)</li>
+					<li><a href='{{protocol}}{{host}}:{{port}}/job'>Build Jobs</a> (Specify ~/status to see all unfinished jobs, ~/status/[status] to see all of 					a specified state, or ~/[id] to go to a specific one. </li>
+					<li><a href='{{protocol}}{{host}}:{{port}}/package'>Packages</a> (Specify ~/[id] to go to a specific one)</li>
+					<li><a href='{{protocol}}{{host}}:{{port}}/packageinstance'>Package Instances</a>  (Specify ~/[id] to go to a specific one)</li>
 					</ul>
             </div><!--/span-->
             <div class="span5">
 					<ul>
-					<li><a href='http://{{host}}:{{port}}/arch'>Package Architectures</a> (Specify ~/[id] to go to a specific one)</li>
-					<li><a href='http://{{host}}:{{port}}/status'>Job Statuses</a> (Specify ~/[id] to go to a specific one)</li>
-					<li><a href='http://{{host}}:{{port}}/dist'>Software Distributions</a> (Specify ~/[id] to go to a specific one)</li>
-					<li><a href='http://{{host}}:{{port}}/format'>Package Formats</a> (Specify ~/[id] to go to a specific one)</li>
-					<li><a href='http://{{host}}:{{port}}/suite'>Software Suites</a> (Specify ~/[id] to go to a specific one)</li>
+					<li><a href='{{protocol}}{{host}}:{{port}}/arch'>Package Architectures</a> (Specify ~/[id] to go to a specific one)</li>
+					<li><a href='{{protocol}}{{host}}:{{port}}/status'>Job Statuses</a> (Specify ~/[id] to go to a specific one)</li>
+					<li><a href='{{protocol}}{{host}}:{{port}}/dist'>Software Distributions</a> (Specify ~/[id] to go to a specific one)</li>
+					<li><a href='{{protocol}}{{host}}:{{port}}/format'>Package Formats</a> (Specify ~/[id] to go to a specific one)</li>
+					<li><a href='{{protocol}}{{host}}:{{port}}/suite'>Software Suites</a> (Specify ~/[id] to go to a specific one)</li>
 					</ul>
             </div><!--/span-->
       </div>
