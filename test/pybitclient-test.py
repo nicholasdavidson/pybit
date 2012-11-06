@@ -28,7 +28,7 @@ import unittest
 # needs PYTHONPATH=.:..
 import pybit
 from pybitclient.buildclient import PackageHandler, VersionControlHandler
-from pybitclient.debian import DebianBuildClient
+from pybitclient.debianclient import DebianBuildClient
 from pybitclient.subversion import SubversionClient
 
 class TestClient(unittest.TestCase) :
