@@ -27,9 +27,10 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import Database,myDb
 from controller import Controller,buildController
+from pybit.common import app
 
 
-@route('/package', method='GET')
+@app.route('/package', method='GET')
 def get_all_packages():
 	try:
 		# Returning list of all packages
@@ -41,7 +42,7 @@ def get_all_packages():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/package/<package_id:int>', method='GET')
+@app.route('/package/<package_id:int>', method='GET')
 def get_package_id(package_id):
 	try:
 		# Returns all information about a specific package
@@ -59,8 +60,8 @@ def get_package_id(package_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/package', method='POST')
-@route('/package', method='PUT')
+@app.route('/package', method='POST')
+@app.route('/package', method='PUT')
 def put_package():
 	try:
 		# Add a new package.
@@ -76,8 +77,8 @@ def put_package():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/package/<package_id:int>/delete', method='GET')
-@route('/package/<package_id:int>', method='DELETE')
+@app.route('/package/<package_id:int>/delete', method='GET')
+@app.route('/package/<package_id:int>', method='DELETE')
 def delete_package(package_id):
 	try:
 		# Deletes a specific buildd
@@ -90,7 +91,7 @@ def delete_package(package_id):
 		return None
 
 #NEW: Have controller cancel all jobs for this package.
-@route('/package/<package_id:int>/cancel', method='GET')
+@app.route('/package/<package_id:int>/cancel', method='GET')
 def cancel_package(package_id):
 	try:
 		response.status = "202 - CANCEL PACKAGE request recieved"
@@ -101,7 +102,7 @@ def cancel_package(package_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/package/list', method='GET') # TODO, filter by paramater (request.query.[x])
+@app.route('/package/list', method='GET') # TODO, filter by paramater (request.query.[x])
 def get_packages_filtered():
 	try:
 		response.content_type = "application/json"
@@ -112,7 +113,7 @@ def get_packages_filtered():
 		return None
 
 # Gets package versions (not instances!) by name.
-@route('/package/details/:name', method='GET')
+@app.route('/package/details/:name', method='GET')
 def get_package_versions(name):
 	try:
 		res = myDb.get_packages_byname(name)
@@ -128,7 +129,7 @@ def get_package_versions(name):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/package/details/:name/:version', method='GET')
+@app.route('/package/details/:name/:version', method='GET')
 def get_package_details(name,version):
 	try:
 		res = myDb.get_package_byvalues(name,version)

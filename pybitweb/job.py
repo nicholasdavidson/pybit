@@ -29,10 +29,11 @@ from db import Database,myDb
 import job
 from controller import Controller,buildController
 from pybit.models import Transport,JobHistory
+from pybit.common import app
 
 #NEW: proxy to class method controller.add
-@route('/job/vcshook', method='POST')
-@route('/job/vcshook', method='PUT')
+@app.route('/job/vcshook', method='POST')
+@app.route('/job/vcshook', method='PUT')
 def vcs_hook():
 	try:
 			response.status = "200 - Version control poke recieved"
@@ -58,7 +59,7 @@ def vcs_hook():
 		response.status = "500 - Exception encountered in vcs_hook"
 		return None
 
-@route('/job', method='GET')
+@app.route('/job', method='GET')
 def get_jobs():
 	try:
 		response.content_type = "application/json"
@@ -69,7 +70,7 @@ def get_jobs():
 		return None
 
 #NEW: Have controller cancel all jobs.
-@route('/job', method='DELETE')
+@app.route('/job', method='DELETE')
 def cancel_jobs():
 	try:
 		response.status = "202 - CANCEL ALL request recieved"
@@ -80,7 +81,7 @@ def cancel_jobs():
 		return None
 
 #NEW: Have controller cancel a specific job.
-@route('/job/<jobid:int>/cancel', method='GET')
+@app.route('/job/<jobid:int>/cancel', method='GET')
 def cancel_job(jobid):
 	try:
 		response.status = "202 - CANCEL JOB request recieved"
@@ -90,7 +91,7 @@ def cancel_job(jobid):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/job/status', method='GET')
+@app.route('/job/status', method='GET')
 def get_jobstatuses():
 	try:
 		response.content_type = "application/json"
@@ -101,8 +102,8 @@ def get_jobstatuses():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/job/<jobid:int>', method='PUT')
-@route('/job/<jobid:int>', method='POST')
+@app.route('/job/<jobid:int>', method='PUT')
+@app.route('/job/<jobid:int>', method='POST')
 def update_job_status(jobid):
 	job_status = request.forms.status
 	job_client = None
@@ -120,7 +121,7 @@ def update_job_status(jobid):
 		response.status = "400 - Required fields missing."
 		return
 
-@route('/job/status/<status>', method='GET')
+@app.route('/job/status/<status>', method='GET')
 def get_jobs_bystatus(status):
 	try:
 		response.content_type = "application/json"
@@ -131,8 +132,8 @@ def get_jobs_bystatus(status):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/job', method='POST')
-@route('/job', method='PUT')
+@app.route('/job', method='POST')
+@app.route('/job', method='PUT')
 def put_job():
 	try:
 		# Add a new job. Pokes simons controller code with the correct values for uri, method, vcs_id etc...
@@ -162,7 +163,7 @@ def put_job():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/job/<jobid:int>', method='GET')
+@app.route('/job/<jobid:int>', method='GET')
 def get_jobid(jobid):
 	try:
 		# Return details for specified job ID
@@ -180,8 +181,8 @@ def get_jobid(jobid):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/job/<jobid:int>/delete', method='GET')
-@route('/job/<jobid:int>', method='DELETE')
+@app.route('/job/<jobid:int>/delete', method='GET')
+@app.route('/job/<jobid:int>', method='DELETE')
 def del_jobid(jobid):
 	try:
 		# Deletes a specific job
@@ -193,7 +194,7 @@ def del_jobid(jobid):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/job/<jobid:int>/status', method='GET')
+@app.route('/job/<jobid:int>/status', method='GET')
 def get_jobstatus(jobid):
 	try:
 		# Return status history for specified job ID

@@ -26,8 +26,9 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import Database,myDb
+from pybit.common import app
 
-@route('/packageinstance', method='GET')
+@app.route('/packageinstance', method='GET')
 def get_all_packageinstances():
 	try:
 		# Returning list of all packageinstances
@@ -39,7 +40,7 @@ def get_all_packageinstances():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/packageinstance/<packageinstance_id:int>', method='GET')
+@app.route('/packageinstance/<packageinstance_id:int>', method='GET')
 def get_packageinstance_id(packageinstance_id):
 	try:
 		# Returns all information about a specific packageinstance
@@ -57,8 +58,8 @@ def get_packageinstance_id(packageinstance_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/packageinstance', method='POST')
-@route('/packageinstance', method='PUT')
+@app.route('/packageinstance', method='POST')
+@app.route('/packageinstance', method='PUT')
 def put_packageinstance():
 	try:
 		# Add a new packageinstance.
@@ -88,8 +89,8 @@ def put_packageinstance():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/packageinstance/<packageinstance_id:int>/delete', method='GET')
-@route('/packageinstance/<packageinstance_id:int>', method='DELETE')
+@app.route('/packageinstance/<packageinstance_id:int>/delete', method='GET')
+@app.route('/packageinstance/<packageinstance_id:int>', method='DELETE')
 def delete_packageinstance(packageinstance_id):
 	try:
 		# Deletes a specific package instance
@@ -101,7 +102,7 @@ def delete_packageinstance(packageinstance_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/packageinstance/list', method='GET')
+@app.route('/packageinstance/list', method='GET')
 def get_packageinstances_filtered():
 	try:
 		response.content_type = "application/json"
@@ -111,7 +112,7 @@ def get_packageinstances_filtered():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/packageinstance/details/:name', method='GET')
+@app.route('/packageinstance/details/:name', method='GET')
 def get_packageinstance_versions(name):
 	try:
 		res = myDb.get_packageinstances_byname(name)

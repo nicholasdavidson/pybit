@@ -29,8 +29,9 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import Database,myDb
 import buildd
+from pybit.common import app
 
-@route('/buildd', method='GET')
+@app.route('/buildd', method='GET')
 def get_buildd():
 	try:
 		# Return list of BuildDs
@@ -42,8 +43,8 @@ def get_buildd():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/buildd', method='POST')
-@route('/buildd', method='PUT')
+@app.route('/buildd', method='POST')
+@app.route('/buildd', method='PUT')
 def put_buildd():
 	try:
 		# Register a new BuildD.
@@ -58,7 +59,7 @@ def put_buildd():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/buildd/<buildd_id:int>', method='GET')
+@app.route('/buildd/<buildd_id:int>', method='GET')
 def get_buildd_id(buildd_id):
 	try:
 		# Returns all information about a specific buildd
@@ -76,8 +77,8 @@ def get_buildd_id(buildd_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/buildd/<buildd_id:int>/delete', method='GET')
-@route('/buildd/<buildd_id:int>', method='DELETE')
+@app.route('/buildd/<buildd_id:int>/delete', method='GET')
+@app.route('/buildd/<buildd_id:int>', method='DELETE')
 def delete_buildd_id(buildd_id):
 	try:
 		# Deletes a specific buildd
@@ -89,7 +90,7 @@ def delete_buildd_id(buildd_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/buildd/<buildd_id:int>/status', method='GET')
+@app.route('/buildd/<buildd_id:int>/status', method='GET')
 def get_buildd_status(buildd_id):
 	try:
 		response.content_type = "application/json"
@@ -99,7 +100,7 @@ def get_buildd_status(buildd_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/buildd/<buildclient_id:int>/jobs', method='GET')
+@app.route('/buildd/<buildclient_id:int>/jobs', method='GET')
 def get_buildd_jobs(buildclient_id):
 	try:
 		#Returns jobs for specified buildd
@@ -118,7 +119,7 @@ def get_buildd_jobs(buildclient_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/buildd/<buildd_id:int>/:command', method='POST')
+@app.route('/buildd/<buildd_id:int>/:command', method='POST')
 def post_command(buildd_id,command):
 	try:
 		response.status = "202 - Command sent"
