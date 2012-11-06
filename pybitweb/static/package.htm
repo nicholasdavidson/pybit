@@ -18,13 +18,13 @@
     </style>
 <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
 
-  <script src="http://code.jquery.com/jquery-latest.js"></script>
-  <script src="http://malsup.github.com/jquery.form.js"></script>
+  <script src="js/jquery-latest.js"></script>
+  <script src="js/jquery.form.js"></script>
   <script src="bootstrap/js/bootstrap.min.js"></script>
 
 <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="js/html5.js"></script>
     <![endif]-->
 
 </head>
@@ -95,7 +95,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form" method="POST" action="http://{{host}}:{{port}}/package" id="package_form" name="package_form">
+<form class="form" method="POST" action="{{protocol}}{{host}}:{{port}}/package" id="package_form" name="package_form">
 					<legend>Add a Package</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -128,7 +128,7 @@
    {
 $.ajax({
         type: "GET",
-        url: "http://{{host}}:{{port}}/package/" + id + "/delete",
+        url: "{{protocol}}{{host}}:{{port}}/package/" + id + "/delete",
         error: function(data){
 			alert('Error deleting package with id: ' + id + "\n" + data.responseText );
       location.reload();
@@ -136,7 +136,7 @@ $.ajax({
         success: function(data) {
            alert('OK deleting package with id: ' + id);
            location.reload();
-        } 
+        }
     });
 }
 
@@ -148,12 +148,12 @@ $().ready(function ()
                 location.reload();
             });
 
-	var url = "http://{{host}}:{{port}}/package"
+	var url = "{{protocol}}{{host}}:{{port}}/package"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_packages").append("<tr><td><a href='http://{{host}}:{{port}}/package/" + field.id + "'>" + field.id + "</a></td><td><a href='http://{{host}}:{{port}}/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='http://{{host}}:{{port}}/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td><a href='http://{{host}}:{{port}}/package/" + field.id + "/cancel'>Cancel</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
+			$("#tbl_packages").append("<tr><td><a href='{{protocol}}{{host}}:{{port}}/package/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}{{host}}:{{port}}/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='{{protocol}}{{host}}:{{port}}/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td><a href='{{protocol}}{{host}}:{{port}}/package/" + field.id + "/cancel'>Cancel</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
 		});
 	});
 });

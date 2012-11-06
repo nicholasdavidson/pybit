@@ -50,7 +50,7 @@ def enable_cors():
 
 @app.route('/', method='GET')
 def index():
-	return template("pybitweb/static/index.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+	return template("pybitweb/static/index.htm", host=settings['webserver_hostname'], port=settings['webserver_port'],protocol=settings['webserver_protocol'])
 
 @app.route('/settings.json', method='GET')
 def js_settings():
@@ -62,39 +62,45 @@ def js_settings():
 def serve_static_res(filepath):
     	return static_file(filepath, root='./pybitweb/static/bootstrap/')
 
+# static resources like CSS and JS
+@app.route('/js/<filepath:path>', method='GET')
+def serve_static_res(filepath):
+    	return static_file(filepath, root='./pybitweb/static/js/')
+
 # static HTML index page
 @app.route('/index.htm', method='GET')
 def serve_static_idex():
-    	return template("pybitweb/static/index.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+    	return template("pybitweb/static/index.htm", host=settings['webserver_hostname'], port=settings['webserver_port'],protocol=settings['webserver_protocol'])
 
 # static HTML page listing buildboxes
 @app.route('/buildd.htm', method='GET')
 def serve_static_buildboxes():
-    	return template("pybitweb/static/buildd.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+    	return template("pybitweb/static/buildd.htm", host=settings['webserver_hostname'], port=settings['webserver_port'],protocol=settings['webserver_protocol'])
 
 # static HTML page listing jobs
 @app.route('/job.htm', method='GET')
 def serve_static_jobs():
-    	return template("pybitweb/static/job.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+    	return template("pybitweb/static/job.htm", host=settings['webserver_hostname'], port=settings['webserver_port'],protocol=settings['webserver_protocol'])
 
 # static HTML page listing things
 @app.route('/lookups.htm', method='GET')
 def serve_static_lookups():
-    	return template("pybitweb/static/lookups.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+    	return template("pybitweb/static/lookups.htm", host=settings['webserver_hostname'], port=settings['webserver_port'],protocol=settings['webserver_protocol'])
 
 # static HTML page listing packages
 @app.route('/package.htm', method='GET')
 def serve_static_packages():
-    	return template("pybitweb/static/package.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+    	return template("pybitweb/static/package.htm", host=settings['webserver_hostname'], port=settings['webserver_port'],protocol=settings['webserver_protocol'])
 
 # static HTML page listing package instances
 @app.route('/packageinstance.htm', method='GET')
 def serve_static_package_instances():
-    	return template("pybitweb/static/packageinstance.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
+    	return template("pybitweb/static/packageinstance.htm", host=settings['webserver_hostname'], port=settings['webserver_port'],protocol=settings['webserver_protocol'])
 
 #start the server
 try:
 	debug(settings['webserver_debug'])
+	print("DEBUG: Starting " + settings['server_app'] + " on " + settings['webserver_protocol'] + settings['webserver_hostname'] + ":" + str(settings['webserver_port']) + ". Debug mode is: " + str(settings['webserver_debug']) + " and auto-reload is: " + str(settings['webserver_reloader']) + ".")
 	run(app,server=settings['server_app'], host=settings['webserver_hostname'], port=settings['webserver_port'], reloader=settings['webserver_reloader'])
 except Exception as e:
 		raise Exception('Error starting web server: ' + str(e))
