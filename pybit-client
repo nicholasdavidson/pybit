@@ -62,7 +62,7 @@ if __name__ == '__main__':
 	#options we can override in the config file.
 	groupConfigFile = optparse.OptionGroup(parser,
 		"Config File Defaults","All the options which have defaults read from a config file.")
-	parser.add_option("--host_arch", dest="host_arch",
+	groupConfigFile.add_option("--host_arch", dest="host_arch",
 		help="Architecture to use, defaults to i386", metavar= META + "ARCH")
 
 	groupConfigFile.add_option("--distribution",
