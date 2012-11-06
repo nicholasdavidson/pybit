@@ -26,7 +26,7 @@ import sys
 import json
 import unittest
 # needs PYTHONPATH=.:..
-import pybitclient
+import pybit
 from pybitclient.buildclient import PackageHandler, VersionControlHandler
 from pybitclient.debian import DebianBuildClient
 from pybitclient.subversion import SubversionClient
@@ -40,12 +40,16 @@ class TestClient(unittest.TestCase) :
 	def test_01_client_config (self) :
 		log = logging.getLogger( "testCase" )
 		log.debug(" ")
-		conffile = "%s/pybitclient/client.conf" % (os.getcwd());
+		conffile = "%s/configs/client.conf" % (os.getcwd());
 		self.assertTrue (os.path.isfile(conffile), "could not find %s" % conffile)
 		log.debug("I: reading %s" % (os.path.relpath(conffile, os.getcwd())))
-		self.options = pybitclient.get_settings(conffile)
+		self.options = pybit.load_settings(conffile)
 		if not "dry_run" in self.options :
 			msg = "I: asserting dry_run for test cases"
+			log.debug (msg)
+			self.options["dry_run"] = True
+		elif self.options["dry_run"] == False :
+			msg = "I: overriding dry_run for test cases"
 			log.debug (msg)
 			self.options["dry_run"] = True
 		else :
@@ -54,14 +58,13 @@ class TestClient(unittest.TestCase) :
 
 	def test_02_build_client (self) :
 		log = logging.getLogger( "testCase" )
-		log.debug("\n")
-		base_client = PackageHandler()
+		base_client = PackageHandler(self.options)
 		self.assertTrue (base_client)
-		self.assertFalse (base_client.is_dry_run())
-		deb_client = DebianBuildClient()
+		self.assertTrue (base_client.is_dry_run())
+		deb_client = DebianBuildClient(self.options)
 		self.assertTrue (deb_client)
 		self.assertTrue (deb_client.is_dry_run())
-		svn_client = SubversionClient()
+		svn_client = SubversionClient(self.options)
 		self.assertTrue (svn_client)
 		self.assertTrue (svn_client.is_dry_run())
 
