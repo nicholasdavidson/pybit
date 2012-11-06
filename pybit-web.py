@@ -122,14 +122,14 @@ if __name__ == '__main__':
     parser.add_option_group(groupConfigFile)
     parser.add_option_group(groupConfigFile)
 
-    parser.add_option("--conf_file", dest="conf_file", default="web.conf",
-        help="Config file to read settings from, defaults to web.conf which will be read from configs/client.conf and /etc/pybit/client.conf in turn.",
+    parser.add_option("--config", dest="config", default="web.conf",
+        help="Config file to read settings from, defaults to web.conf which will be read from configs/ and /etc/pybit/ in turn.",
         metavar=META + "CONF_FILE")
 
     parser.add_option("-v", dest="verbose", action="store_true", default=False,
         help="Turn on verbose messages.", metavar=META+"VERBOSE")
     (options, args) = parser.parse_args()
-    settings = pybit.load_settings(options.conf_file)
+    settings = pybit.load_settings(options.config)
     settings = pybit.merge_options(settings, groupConfigFile, options)
     
     myDb = Database(settings['db']) # singleton instance
