@@ -128,7 +128,12 @@ $.ajax({
         url: "http://{{host}}:{{port}}/packageinstance/" + id + "/delete",
         error: function(data){
 			alert('Error deleting packageinstance with id: ' + id + "\n" + data.responseText );
-        }
+      location.reload();
+        },
+        success: function(data) {
+           alert('OK deleting packageinstance with id: ' + id);
+           location.reload();
+        } 
     });
 }
 
@@ -136,7 +141,8 @@ $().ready(function ()
 {
 
             $('#packageinstance_form').ajaxForm(function() {
-                alert("Added!");
+                alert("Packageinstance Added!");
+                location.reload();
             });
 
 	var packages = "http://{{host}}:{{port}}/package"

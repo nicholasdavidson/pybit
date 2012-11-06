@@ -128,8 +128,13 @@ $.ajax({
         type: "GET",
         url: "http://{{host}}:{{port}}/buildd/" + id + "/delete",
         error: function(data){
-			alert('Error deleting buildd with id: ' + id + "\n" + data.responseText );
-        }
+			     alert('Error deleting buildd with id: ' + id + "\n" + data.responseText );
+           location.reload();
+          },
+        success: function(data) {
+           alert('OK deleting buildd with id: ' + id);
+           location.reload();
+        } 
     });
 }
 
@@ -137,7 +142,8 @@ $().ready(function ()
 {
 
             $('#buildbox_form').ajaxForm(function() {
-                alert("Added!");
+                alert("Added buildd OK!");
+                location.reload();
             });
 
 	var url = "http://{{host}}:{{port}}/buildd"

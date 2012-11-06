@@ -131,7 +131,12 @@ $.ajax({
         url: "http://{{host}}:{{port}}/package/" + id + "/delete",
         error: function(data){
 			alert('Error deleting package with id: ' + id + "\n" + data.responseText );
-        }
+      location.reload();
+        },
+        success: function(data) {
+           alert('OK deleting package with id: ' + id);
+           location.reload();
+        } 
     });
 }
 
@@ -139,7 +144,8 @@ $().ready(function ()
 {
 
             $('#package_form').ajaxForm(function() {
-                alert("Added!");
+                alert("Package Added!");
+                location.reload();
             });
 
 	var url = "http://{{host}}:{{port}}/package"

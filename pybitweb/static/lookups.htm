@@ -251,7 +251,12 @@ $.ajax({
         url: "http://{{host}}:{{port}}/" + target +"/" + id + "/delete",
         error: function(data){
 			alert('Error deleting ' + target + ' with id: ' + id + "\n" + data.responseText );
-        }
+      location.reload();
+        },
+        success: function(data) {
+           alert('OK deleting ' + target + ' with id: ' + id);
+           location.reload();
+        }         
     });
 }
 
@@ -259,22 +264,27 @@ $().ready(function ()
 {
 
             $('#arch_form').ajaxForm(function() {
-                alert("Added!");
+                alert("Arch Added!");
+                location.reload();
             });
 
             $('#status_form').ajaxForm(function() {
-                alert("Added!");
+                alert("Status Added!");
+                location.reload();
             });
 
             $('#dist_form').ajaxForm(function() {
-                alert("Added!");
+                alert("Dist Added!");
+                location.reload();
             });
 
             $('#format_form').ajaxForm(function() {
-                alert("Added!");
+                alert("Format Added!");
+                location.reload();
             });
             $('#suite_form').ajaxForm(function() {
-                alert("Added!");
+                alert("Suite Added!");
+                location.reload();
             });
 
 	var url = "http://{{host}}:{{port}}/arch"
