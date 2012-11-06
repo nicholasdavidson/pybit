@@ -27,8 +27,9 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import Database,myDb
 from pybit.models import Arch,Dist,Format,Status,Suite,SuiteArch
+from pybit.common import app
 
-@route('/arch', method='GET')
+@app.route('/arch', method='GET')
 def get_arch():
 	try:
 		#return list of arches
@@ -40,7 +41,7 @@ def get_arch():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/arch/<arch_id:int>', method='GET')
+@app.route('/arch/<arch_id:int>', method='GET')
 def get_arch_id(arch_id):
 	try:
 		# Returns all information about a specific arch
@@ -58,8 +59,8 @@ def get_arch_id(arch_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/arch', method='POST')
-@route('/arch', method='PUT')
+@app.route('/arch', method='POST')
+@app.route('/arch', method='PUT')
 def put_arch():
 	try:
 		# Add a new arch.
@@ -74,8 +75,8 @@ def put_arch():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/arch/<arch_id:int>/delete', method='GET')
-@route('/arch/<arch_id:int>', method='DELETE')
+@app.route('/arch/<arch_id:int>/delete', method='GET')
+@app.route('/arch/<arch_id:int>', method='DELETE')
 def delete_arch(arch_id):
 	try:
 		# Deletes a specific arch
@@ -87,7 +88,7 @@ def delete_arch(arch_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/suitearch', method='GET')
+@app.route('/suitearch', method='GET')
 def get_suitearch():
 	try:
 		#return list of suitearch
@@ -99,7 +100,7 @@ def get_suitearch():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/suitearch/<suitearch_id:int>', method='GET')
+@app.route('/suitearch/<suitearch_id:int>', method='GET')
 def get_suitearch_id(suitearch_id):
 	try:
 		# Returns all information about a specific suitearch
@@ -117,8 +118,8 @@ def get_suitearch_id(suitearch_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/suitearch', method='POST')
-@route('/suitearch', method='PUT')
+@app.route('/suitearch', method='POST')
+@app.route('/suitearch', method='PUT')
 def put_suitearch():
 	try:
 		# Add a new suitearch.
@@ -134,8 +135,8 @@ def put_suitearch():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/suitearch/<suitearch_id:int>/delete', method='GET')
-@route('/suitearch/<suitearch_id:int>', method='DELETE')
+@app.route('/suitearch/<suitearch_id:int>/delete', method='GET')
+@app.route('/suitearch/<suitearch_id:int>', method='DELETE')
 def delete_suitearch(suitearch_id):
 	try:
 		# Deletes a specific suitearch
@@ -147,7 +148,7 @@ def delete_suitearch(suitearch_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/status', method='GET')
+@app.route('/status', method='GET')
 def get_statuses():
 	try:
 		#return list of statuses
@@ -159,7 +160,7 @@ def get_statuses():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/status/<status_id:int>', method='GET')
+@app.route('/status/<status_id:int>', method='GET')
 def get_status_id(status_id):
 	try:
 		# Returns all information about a specific status
@@ -177,8 +178,8 @@ def get_status_id(status_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/status', method='POST')
-@route('/status', method='PUT')
+@app.route('/status', method='POST')
+@app.route('/status', method='PUT')
 def put_status():
 	try:
 		# Add a new status.
@@ -193,8 +194,8 @@ def put_status():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/status/<status_id:int>/delete', method='GET')
-@route('/status/<status_id:int>', method='DELETE')
+@app.route('/status/<status_id:int>/delete', method='GET')
+@app.route('/status/<status_id:int>', method='DELETE')
 def delete_status(status_id):
 	try:
 		# Deletes a specific status
@@ -206,7 +207,7 @@ def delete_status(status_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/dist', method='GET')
+@app.route('/dist', method='GET')
 def get_dists():
 	try:
 		#return list of distributions
@@ -218,7 +219,7 @@ def get_dists():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/dist/<dist_id:int>', method='GET')
+@app.route('/dist/<dist_id:int>', method='GET')
 def get_dist_id(dist_id):
 	try:
 		# Returns all information about a specific dist
@@ -236,8 +237,8 @@ def get_dist_id(dist_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/dist', method='POST')
-@route('/dist', method='PUT')
+@app.route('/dist', method='POST')
+@app.route('/dist', method='PUT')
 def put_dist():
 	try:
 		# Add a new dist.
@@ -252,8 +253,8 @@ def put_dist():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/dist/<dist_id:int>/delete', method='GET')
-@route('/dist/<dist_id:int>', method='DELETE')
+@app.route('/dist/<dist_id:int>/delete', method='GET')
+@app.route('/dist/<dist_id:int>', method='DELETE')
 def delete_dist(dist_id):
 	try:
 		# Deletes a specific dist
@@ -265,7 +266,7 @@ def delete_dist(dist_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/format', method='GET')
+@app.route('/format', method='GET')
 def get_formats():
 	try:
 		#return list of package formats
@@ -277,7 +278,7 @@ def get_formats():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/format/<format_id:int>', method='GET')
+@app.route('/format/<format_id:int>', method='GET')
 def get_format_id(format_id):
 	try:
 		# Returns all information about a specific format
@@ -295,8 +296,8 @@ def get_format_id(format_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/format', method='POST')
-@route('/format', method='PUT')
+@app.route('/format', method='POST')
+@app.route('/format', method='PUT')
 def put_format():
 	try:
 		# Add a new format.
@@ -311,8 +312,8 @@ def put_format():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/format/<format_id:int>/delete', method='GET')
-@route('/format/<format_id:int>', method='DELETE')
+@app.route('/format/<format_id:int>/delete', method='GET')
+@app.route('/format/<format_id:int>', method='DELETE')
 def delete_format(format_id):
 	try:
 		# Deletes a specific format
@@ -324,7 +325,7 @@ def delete_format(format_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/suite', method='GET')
+@app.route('/suite', method='GET')
 def get_suites():
 	try:
 		#return list of suites
@@ -336,7 +337,7 @@ def get_suites():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/suite/<suite_id:int>', method='GET')
+@app.route('/suite/<suite_id:int>', method='GET')
 def get_suite_id(suite_id):
 	try:
 		# Returns all information about a specific suite
@@ -354,8 +355,8 @@ def get_suite_id(suite_id):
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/suite', method='POST')
-@route('/suite', method='PUT')
+@app.route('/suite', method='POST')
+@app.route('/suite', method='PUT')
 def put_suite():
 	try:
 		# Add a new suite.
@@ -370,8 +371,8 @@ def put_suite():
 		raise Exception('Exception encountered: ' + str(e))
 		return None
 
-@route('/suite/<suite_id:int>/delete', method='GET')
-@route('/suite/<suite_id:int>', method='DELETE')
+@app.route('/suite/<suite_id:int>/delete', method='GET')
+@app.route('/suite/<suite_id:int>', method='DELETE')
 def delete_suite(suite_id):
 	try:
 		# Deletes a specific suite
