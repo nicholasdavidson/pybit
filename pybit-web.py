@@ -28,9 +28,10 @@ from pybitweb.bottle import Bottle,route,run,template,debug,HTTPError,response,e
 from pybitweb.db import Database,myDb
 from pybitweb import lookups, buildd, job, package, packageinstance
 from pybitweb.controller import Controller,buildController
-from pybit.common import load_settings_from_file
+import pybit
+import optparse
 
-settings = load_settings_from_file('web_settings.json')
+META="PYBIT_WEB_"
 
 @error(404)
 def error404(error):
@@ -92,9 +93,30 @@ def serve_static_packages():
 def serve_static_package_instances():
     	return template("pybitweb/static/packageinstance.htm", host=settings['webserver_hostname'], port=settings['webserver_port'])
 
-#start the server
-try:
-	debug(settings['webserver_debug'])
-	run(server=settings['server_app'], host=settings['webserver_hostname'], port=settings['webserver_port'], reloader=settings['webserver_reloader'])
-except Exception as e:
-		raise Exception('Error starting web server: ' + str(e))
+if __name__ == '__main__':
+    parser = optparse.OptionParser()
+    #options we can override in the config file.
+    groupConfigFile = optparse.OptionGroup(parser,"Config File Defaults","All the options which have defaults read from a config file.")
+    parser.add_option_group(groupConfigFile)
+    parser.add_option_group(groupConfigFile)
+
+    parser.add_option("--conf_file", dest="conf_file", default="web.conf",
+        help="Config file to read settings from, defaults to web.conf which will be read from configs/client.conf and /etc/pybit/client.conf in turn.",
+        metavar=META + "CONF_FILE")
+
+    parser.add_option("-v", dest="verbose", action="store_true", default=False,
+        help="Turn on verbose messages.", metavar=META+"VERBOSE")
+    (options, args) = parser.parse_args()
+    settings = pybit.load_settings(options.conf_file)
+    settings = pybit.merge_options(settings, groupConfigFile, options)
+    
+    myDb = Database(settings["db"]) # singleton instance
+    
+#    try:
+    debug(options.verbose)
+    run(server=settings['web']['server_app'],
+        host=settings['web']['webserver_hostname'],
+        port=settings['web']['webserver_port'],
+        reloader=settings['web']['webserver_reloader'])
+ #   except Exception as e:
+  #  		raise Exception('Error starting web server: ' + str(e))

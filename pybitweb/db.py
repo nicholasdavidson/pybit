@@ -27,7 +27,6 @@ import psycopg2
 import psycopg2.extras
 import jsonpickle
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage
-from pybit.common import load_settings_from_file
 
 myDb = None
 
@@ -39,11 +38,11 @@ class Database(object):
 
 	#Constructor, connects on initialisation.
 
-	def __init__(self):
+	def __init__(self, settings):
 		print "DEBUG: DB constructor called."
 		if not myDb: # DONT allow construction of more than 1 db instance (i.e. none other than the myDb here)
 			print "DEBUG: DB Singleton constructor called."
-			self.settings = load_settings_from_file('db_settings.json')
+			self.settings = settings
 			self.connect()
 
 	#Deconstructor, disconnects on disposal.
@@ -53,7 +52,9 @@ class Database(object):
 	#Connects to DB using settings loaded from file.
 	def connect(self):
 		try:
-			self.conn = psycopg2.connect(database=self.settings['db_databasename'], user=self.settings['db_user'], host=self.settings['db_hostname'], port=self.settings['db_port'])
+			self.conn = psycopg2.connect(database=self.settings['db_databasename'],
+				user=self.settings['db_user'], host=self.settings['db_hostname'],
+				port=self.settings['db_port'], password=self.settings['db_password'])
 			return True
 		except psycopg2.Error as e:
 			raise Exception("Error connecting to database. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
@@ -1026,4 +1027,4 @@ class Database(object):
 			raise Exception("Error retrieving supported architectures for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-myDb = Database() # singleton instance
+
