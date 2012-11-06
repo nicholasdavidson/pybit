@@ -29,8 +29,9 @@ from pybitweb.db import Database,myDb
 from pybitweb import lookups, buildd, job, package, packageinstance
 from pybitweb.controller import Controller,buildController
 from pybit.common import load_settings_from_file,app
+import optparse
 
-settings = load_settings_from_file('web_settings.json')
+META="PYBIT_WEB_"
 
 @app.error(404)
 def error404(error):
@@ -92,10 +93,30 @@ def serve_static_packages():
 def serve_static_package_instances():
     	return template("pybitweb/static/packageinstance.htm", host=settings['webserver_hostname'], port=settings['webserver_port'],protocol=settings['webserver_protocol'])
 
-#start the server
-try:
-	debug(settings['webserver_debug'])
-	print("DEBUG: Starting " + settings['server_app'] + " on " + settings['webserver_protocol'] + settings['webserver_hostname'] + ":" + str(settings['webserver_port']) + ". Debug mode is: " + str(settings['webserver_debug']) + " and auto-reload is: " + str(settings['webserver_reloader']) + ".")
-	run(app,server=settings['server_app'], host=settings['webserver_hostname'], port=settings['webserver_port'], reloader=settings['webserver_reloader'])
-except Exception as e:
-		raise Exception('Error starting web server: ' + str(e))
+if __name__ == '__main__':
+    parser = optparse.OptionParser()
+    #options we can override in the config file.
+    groupConfigFile = optparse.OptionGroup(parser,"Config File Defaults","All the options which have defaults read from a config file.")
+    parser.add_option_group(groupConfigFile)
+    parser.add_option_group(groupConfigFile)
+
+    parser.add_option("--conf_file", dest="conf_file", default="web.conf",
+        help="Config file to read settings from, defaults to web.conf which will be read from configs/client.conf and /etc/pybit/client.conf in turn.",
+        metavar=META + "CONF_FILE")
+
+    parser.add_option("-v", dest="verbose", action="store_true", default=False,
+        help="Turn on verbose messages.", metavar=META+"VERBOSE")
+    (options, args) = parser.parse_args()
+    settings = pybit.load_settings(options.conf_file)
+    settings = pybit.merge_options(settings, groupConfigFile, options)
+    
+    myDb = Database(settings["db"]) # singleton instance
+    
+#    try:
+    debug(options.verbose)
+    run(server=settings['web']['server_app'],
+        host=settings['web']['webserver_hostname'],
+        port=settings['web']['webserver_port'],
+        reloader=settings['web']['webserver_reloader'])
+ #   except Exception as e:
+  #  		raise Exception('Error starting web server: ' + str(e))
