@@ -1,3 +1,9 @@
+pybit (0.1.1-1) unstable; urgency=low
+
+  * Update from initial upstream tag.
+
+ -- Neil Williams <neilw@toby-churchill.com>  Tue, 06 Nov 2012 17:30:48 +0000
+
 pybit (0.1.0-1) unstable; urgency=low
 
   * Switch from a native package to the github upstream
