@@ -65,10 +65,17 @@ class TestClient(unittest.TestCase) :
 		self.assertTrue (svn_client)
 		self.assertTrue (svn_client.is_dry_run())
 
-if __name__ == '__main__':
+def main():
 	FORMAT = '%(msg)s'
 	logging.basicConfig(format=FORMAT)
 	logging.basicConfig( stream=sys.stderr )
 	logging.getLogger( "testCase" ).setLevel( logging.DEBUG )
 	suite = unittest.TestLoader().loadTestsFromTestCase(TestClient)
-	unittest.TextTestRunner(verbosity=2).run(suite)
+	runner = unittest.TextTestRunner(verbosity=2)
+	res = runner.run(suite)
+	if not res.wasSuccessful() :
+		sys.exit (1)
+	return 0
+
+if __name__ == '__main__':
+	main()
