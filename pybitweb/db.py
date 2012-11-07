@@ -37,10 +37,10 @@ def remove_nasties(nastystring):
 	try:
 		if isinstance(nastystring, basestring):
 			escaped_string = cgi.escape(nastystring,True) # Escapes <, > , &, and "
-			print "Escaped the string " + nastystring + " to " + escaped_string
+			#print "Escaped the string " + nastystring + " to " + escaped_string
 			return escaped_string
 		else:
-			print "Not escaping: " + str(nastystring) + " as it is not a string."
+			#print "Not escaping: " + str(nastystring) + " as it is not a string."
 			return nastystring;
 	except Exception as e:
 		raise Exception("Error escaping string: " + str(nastystring))

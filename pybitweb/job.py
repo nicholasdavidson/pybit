@@ -141,6 +141,7 @@ def put_job():
 		method = request.forms.get('method')
 		vcs_id = request.forms.get('vcs_id')
 		uri = request.forms.get('uri')
+		commands = request.forms.get('commands') # NEW: Any additional build commands
 
 		if  packageinstance_id and method and vcs_id and uri:
 			packageinstance = myDb.get_packageinstance_id(packageinstance_id)
@@ -151,11 +152,11 @@ def put_job():
 			suite = packageinstance.suite.name
 			pkg_format = packageinstance.format.name
 
-			print ("Calling Controller.process_job(" + uri + "," + method + "," + dist + "," + vcs_id  + "," + arch + "," + package_version + "," + package_name  + "," + suite + "," + pkg_format + ")")
+			print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + commands + ")")
 
 			# Pass to controller to queue up
 			transport = Transport(None, method, uri, vcs_id)
-			buildController.process_job(dist, arch, package_version, package_name, suite, pkg_format, transport)
+			buildController.process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,commands)
 		else:
 			response.status = "400 - Required fields missing."
 		return

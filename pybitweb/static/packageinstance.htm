@@ -151,7 +151,7 @@ $().ready(function ()
 		$.each(json, function(i, field)
 		{
 
-			$("#package_id").append("<option value='" + field.id + "'>" + field.name + "</option>");
+			$("#package_id").append("<option value='" + field.id + "'>" + field.name + " " + field.version + "</option>");
 		});
 	});
 

@@ -125,10 +125,11 @@ class SuiteArch(Model):
 
 
 class BuildRequest(Model):
-	def __init__(self,job,transport,web_host):
+	def __init__(self,job,transport,web_host,commands = None):
 		self.job = job
 		self.transport = transport
 		self.web_host = web_host
+		self.commands = commands # NEW: Any additional build commands
 
 	def get_suite(self):
 		return self.job.packageinstance.suite.name

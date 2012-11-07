@@ -54,7 +54,7 @@ class Controller(object):
 				raise Exception('Error creating controller (Maybe we cannot connect to queue?) - ' + str(e))
 				return
 
-	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport) :
+	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport, commands = None) :
 		try:
 			build_arches = self.process_achitectures(architectures, suite)
 			if (len(build_arches) == 0):
@@ -81,7 +81,7 @@ class Controller(object):
 					print "CREATED NEW JOB ID", new_job.id
 					if new_job.id :
 						self.cancel_superceded_jobs(new_job)
-						build_req = jsonpickle.encode(BuildRequest(new_job,transport,self.settings['webserver_url']))
+						build_req = jsonpickle.encode(BuildRequest(new_job,transport,self.settings['webserver_url'],commands))
 						msg = amqp.Message(build_req)
 						msg.properties["delivery_mode"] = 2
 						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name)
