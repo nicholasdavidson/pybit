@@ -23,6 +23,7 @@
 import os
 import pybit
 from pybitclient.subversion import SubversionClient
+from pybitclient.git import GitClient
 from pybitclient.debianclient import DebianBuildClient
 from pybitclient import PyBITClient
 from pybit.models import BuildRequest, Transport, PackageInstance, Job, Arch, Suite, Package
@@ -46,18 +47,20 @@ def main():
 	count = 0
 	max_count = test_options["count"]
 	tags = [ "vcs_id", "method_type", "suite", "package", "version",
-		"architecture", "source", "uri", "pkg_format", "distribution", "role" ]
-	vcs = SubversionClient (settings)
+		"architecture", "source", "uri", "pkg_format", "distribution", "role", "commands" ]
+	svn_vcs = SubversionClient (settings)
+	git_vcs = GitClient(settings)
 	client = DebianBuildClient (settings)
 
 	while count < test_options["count"] and count < 10: # catch typos in the conf file
 		count = count + 1
-		print "I: starting test #%s" % count
 		for tag in tags :
 			tag_run = "%s%s" % (tag, count)
 			if tag_run not in test_options :
 				print "E: missing config item in %s \"%s\"" % (testconf, tag_run)
 				return -2
+			if test_options[tag_run] == '' :
+				test_options[tag_run] = None
 			if tag == "vcs_id" :
 				vcs_id = test_options[tag_run]
 			elif tag == "method_type" :
@@ -78,19 +81,27 @@ def main():
 				pkg_format = test_options[tag_run]
 			elif tag == "distribution" :
 				distribution = test_options[tag_run]
+			elif tag == "commands" :
+				commands = test_options[tag_run]
 			elif tag == "role" :
 				role = test_options[tag_run]
 			else :
 				print "E: unrecognised option: %s" % tag_run
 				return -1
+		print "I: starting test #%s (%s)" % (count, role)
+		if commands is not None :
+			print "I: test #%s requires a custom build command: '%s'" % (count, commands)
 		test_arch = Arch(0, architecture)
 		test_suite = Suite (0, suite)
 		test_transport = Transport (0, method_type, uri, vcs_id)
 		test_package = Package(0, version, package)
 		test_packageinstance = PackageInstance(1, test_package, test_arch, test_suite, pkg_format, distribution, True)
 		test_job =  Job(2, test_packageinstance,None)
-		test_req = BuildRequest(test_job,test_transport,None)
-		vcs.fetch_source (test_req, None)
+		test_req = BuildRequest(test_job,test_transport,None,commands)
+		if (method_type == "svn") :
+			svn_vcs.fetch_source (test_req, None)
+		if (method_type == "git") :
+			git_vcs.fetch_source (test_req, None)
 		# To check the build-dependencies in advance, we need to ensure the
 		# chroot has an update apt-cache, so can't use apt-update option of
 		# sbuild. The alternative is to update the apt-cache twice per build,
@@ -107,7 +118,10 @@ def main():
 		else :
 			client.build_master (test_req, None)
 		client.upload (test_req, None)
-		vcs.clean_source(test_req, None)
+		if (method_type == "svn") :
+			svn_vcs.clean_source(test_req, None)
+		if (method_type == "git") :
+			git_vcs.clean_source(test_req, None)
 	return 0
 
 if __name__ == '__main__':

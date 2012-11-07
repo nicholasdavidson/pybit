@@ -27,7 +27,6 @@
 # svn-buildpackage & git-buildpackage respectively, instead of sbuild.
 
 import os
-from debian.changelog import Changelog, Version
 import pybitclient
 from buildclient import PackageHandler
 from pybit.models import BuildRequest
@@ -47,8 +46,63 @@ class DebianBuildClient(PackageHandler):
 		else :
 			return 1
 
+	def build_command_handler (self, buildreq, conn_data) :
+		retval = None
+		# expect fakeroot debian/rules rules-target
+		package_dir = os.path.join (self.settings["buildroot"],
+				buildreq.get_suite(), buildreq.transport.method, buildreq.get_package())
+		parts = buildreq.commands.split(' ')
+		if len(parts) != 3 :
+			retval = "failed-custom-command-len"
+		if retval :
+			return retval
+		# only allow debian/rules targets, specified in full
+		if parts[0] != "fakeroot" or parts[1] != "debian/rules" or parts[2] is None :
+			retval = "failed-custom-command-parts"
+		if retval :
+			return retval
+		# debian/rules targets must be run in the package_dir
+		command = "(cd %s ; %s)" % (package_dir, buildreq.commands)
+		if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+			retval = "custom-command-error"
+		return retval
+
+	def orig_source_handler (self, buildreq, conn_data) :
+		retval = None
+		srcdir = os.path.join (self.settings["buildroot"],
+				buildreq.get_suite(), buildreq.transport.method)
+		version = buildreq.get_version()
+		if '-' not in version :
+			# native package, nothing to do for the orig source.
+			return retval
+		if self.settings["dry_run"] :
+			print "I: %s (%s) is not a native package - need original source" % (buildreq.get_package(), version)
+		offset = version.find('-')
+		# strip the debian packaging part of the version string
+		origversion = version[0:offset]
+		origtar = os.path.join (srcdir, "%s_%s.orig.tar.gz" % (buildreq.get_package(), origversion))
+		if os.path.isfile (origtar) :
+			# have .gz
+			return retval
+		# check for .tar.bz2
+		origtar = os.path.join (srcdir, "%s_%s.orig.tar.bz2" % (buildreq.get_package(), origversion))
+		if os.path.isfile (origtar) :
+			# have .bz2
+			return retval
+		# use a debian/watch file and uscan
+		if os.path.isfile ("./debian/watch") :
+			command = "uscan --destdir ../ --repack --download-current-version"
+			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+				retval = "watch-failed"
+				return retval
+		# fall back to apt-get source
+		else :
+			command = "(cd ../ ; apt-get -d source %s/%s)" % (buildreq.get_package(), buildreq.get_suite())
+			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+				retval = "apt-get-source-failed"
+		return retval
+
 	def build_master (self, buildreq, conn_data):
-		print "build_master"
 		retval = None
 		if (not isinstance(buildreq, BuildRequest)):
 			print "E: not able to identify package name."
@@ -59,7 +113,7 @@ class DebianBuildClient(PackageHandler):
 				buildreq.get_suite(), buildreq.transport.method)
 		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
 		# FIXME: doesn't make sense to run dpkg-checkbuilddeps outside the chroot!
-		if os.path.isdir(package_dir) :
+		if os.path.isdir(package_dir) or self.settings["dry_run"] :
 			control = os.path.join (package_dir, 'debian', 'control')
 			dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
 			command = "schroot -u root -c %s -- %s %s" % (buildreq.get_suite(),
@@ -70,31 +124,10 @@ class DebianBuildClient(PackageHandler):
 		# this requires the upstream release to be accessible to the client.
 		# i.e. unreleased versions of non-native packages cannot be built this way.
 		# See #18 for the unreleased build support issue.
-		changelog = Changelog(file('./debian/changelog', 'r'))
-		version = str(changelog.version)
-		if '-' in version:
-			if self.settings["dry_run"] :
-				print "%s is not a native package" % (buildreq.get_package())
-			offset = version.find('-')
-			origversion = version[0:offset]
-			origtar = os.path.join (srcdir, "%s_%s.orig.tar.gz" % (buildreq.get_package(), origversion))
-			if not os.path.isfile (origtar) :
-				# check for .tar.bz2
-				origtar = os.path.join (srcdir, "%s_%s.orig.tar.bz2" % (buildreq.get_package(), origversion))
-				if not os.path.isfile (origtar) :
-					if os.path.isfile ("./debian/watch") :
-						command = "uscan --destdir ../ --repack --download-current-version"
-						if not pybitclient.run_cmd (command, self.settings["dry_run"]):
-							retval = "watch-failed"
-						else :
-							retval = "missing-upstream-source"
-					else :
-						# fall back to apt-get source
-						command = "(cd ../ ; apt-get -d source %s/%s)" % (buildreq.get_package(), buildreq.get_suite())
-						if not pybitclient.run_cmd (command, self.settings["dry_run"]):
-							retval = "apt-get-source-failed"
-				# have .bz2
-			# have .gz
+		if hasattr (buildreq, 'commands') and buildreq.commands :
+			retval = self.build_command_handler (buildreq, conn_data)
+		else :
+			retval = self.orig_source_handler (buildreq, conn_data)
 		if not retval :
 			command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % (package_dir)
 			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
@@ -146,6 +179,14 @@ class DebianBuildClient(PackageHandler):
 				buildreq.get_suite(), buildreq.transport.method)
 		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
 		if os.path.isdir(package_dir) or self.settings["dry_run"]:
+			# need an extra uscan stage to deal with non-native packages
+			# this requires the upstream release to be accessible to the client.
+			# i.e. unreleased versions of non-native packages cannot be built this way.
+			# See #18 for the unreleased build support issue.
+			if hasattr (buildreq, 'commands') and buildreq.commands :
+				retval = self.build_command_handler (buildreq, conn_data)
+			else :
+				retval = self.orig_source_handler (buildreq, conn_data)
 			command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % (package_dir)
 			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
 				retval = "build_dsc"
