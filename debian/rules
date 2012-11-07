@@ -53,7 +53,8 @@ clean:
 
 sdist-orig:
 	python setup.py sdist
-	cp -v dist/pybit-$(VERSION).tar.gz ../pybit_$(VERSION).orig.tar.gz
+	mv -v dist/pybit-$(VERSION).tar.gz ../pybit_$(VERSION).orig.tar.gz
+	$(RM) -r pybit.egg-info
 
 install: build
 	dh_testdir
