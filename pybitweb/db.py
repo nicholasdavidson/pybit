@@ -26,10 +26,25 @@
 import psycopg2
 import psycopg2.extras
 import jsonpickle
+import cgi
+
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage
 from pybit.common import load_settings_from_file
 
 myDb = None
+
+def remove_nasties(nastystring):
+	try:
+		if isinstance(nastystring, basestring):
+			escaped_string = cgi.escape(nastystring,True) # Escapes <, > , &, and "
+			print "Escaped the string " + nastystring + " to " + escaped_string
+			return escaped_string
+		else:
+			print "Not escaping: " + str(nastystring) + " as it is not a string."
+			return nastystring;
+	except Exception as e:
+		raise Exception("Error escaping string: " + str(nastystring))
+		return None
 
 class Database(object):
 
@@ -126,7 +141,7 @@ class Database(object):
 	def put_arch(self,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into arch(name) VALUES (%s) RETURNING id",(name,))
+			cur.execute("INSERT into arch(name) VALUES (%s) RETURNING id",(remove_nasties(name),))
 			res = cur.fetchall()
 			self.conn.commit()
 			arch = Arch(res[0]['id'],name)
@@ -189,7 +204,7 @@ class Database(object):
 	def put_suitearch(self,suite_id,arch_id):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into suitearches(suite_id,arch_id) VALUES (%s, %s) RETURNING id",(suite_id,arch_id))
+			cur.execute("INSERT into suitearches(suite_id,arch_id) VALUES (%s, %s) RETURNING id",(remove_nasties(suite_id),remove_nasties(arch_id)))
 			res = cur.fetchall()
 			self.conn.commit()
 			suitearch = SuiteArch(res[0]['id'],suite_id,arch_id)
@@ -270,7 +285,7 @@ class Database(object):
 	def put_dist(self,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into distribution(name) VALUES (%s)  RETURNING id",(name,))
+			cur.execute("INSERT into distribution(name) VALUES (%s)  RETURNING id",(remove_nasties(name),))
 			res = cur.fetchall()
 			self.conn.commit()
 			dist = Dist(res[0]['id'],name)
@@ -349,7 +364,7 @@ class Database(object):
 	def put_format(self,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into format(name) VALUES (%s)  RETURNING id",(name,))
+			cur.execute("INSERT into format(name) VALUES (%s)  RETURNING id",(remove_nasties(name),))
 			res = cur.fetchall()
 			self.conn.commit()
 			format = Format(res[0]['id'],name)
@@ -412,7 +427,7 @@ class Database(object):
 	def put_status(self,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into status(name) VALUES (%s)  RETURNING id",(name,))
+			cur.execute("INSERT into status(name) VALUES (%s)  RETURNING id",(remove_nasties(name),))
 			res = cur.fetchall()
 			self.conn.commit()
 			status = Status(res[0]['id'],name)
@@ -493,7 +508,7 @@ class Database(object):
 	def put_suite(self,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into suite(name) VALUES (%s)  RETURNING id",(name,))
+			cur.execute("INSERT into suite(name) VALUES (%s)  RETURNING id",(remove_nasties(name),))
 			res = cur.fetchall()
 			self.conn.commit()
 			suite = Suite(res[0]['id'],name)
@@ -558,7 +573,7 @@ class Database(object):
 	def put_buildclient(self,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into buildclients(name) VALUES (%s)  RETURNING id",(name,))
+			cur.execute("INSERT into buildclients(name) VALUES (%s)  RETURNING id",(remove_nasties(name),))
 			res = cur.fetchall()
 			self.conn.commit()
 			buildd = BuildD(res[0]['id'],name)
@@ -700,14 +715,14 @@ class Database(object):
 			print "put_job_status: %s %s %s", (jobid, status, client)
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s))",
-					 (jobid,status,))
+					 (remove_nasties(jobid),remove_nasties(status),))
 			if client is not None:
 				#insert the client if it doesn't already exist.
 				cur.execute("INSERT INTO buildclients(name) SELECT name FROM buildclients UNION VALUES(%s) EXCEPT SELECT name FROM buildclients",
-						(client,))
+						(remove_nasties(client),))
 				
 				cur.execute("UPDATE job SET buildclient_id=(SELECT id FROM buildclients WHERE name=%s) WHERE id=%s",
-						 (client,jobid))
+						 (remove_nasties(client),remove_nasties(jobid)))
 			self.conn.commit()
 			cur.close()
 		except psycopg2.Error as e:
@@ -734,14 +749,19 @@ class Database(object):
 
 	def put_job(self,packageinstance,buildclient):
 		try:
+			if buildclient:
+				buildclient_id = remove_nasties(buildclient.id)
+			else:
+				buildclient_id = None
+
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT INTO job (packageinstance_id,buildclient_id) VALUES (%s, %s)  RETURNING id",(packageinstance.id,(buildclient.id if buildclient else None)))
+			cur.execute("INSERT INTO job (packageinstance_id,buildclient_id) VALUES (%s, %s)  RETURNING id",(remove_nasties(packageinstance.id),(buildclient_id)))
 			res = cur.fetchall()
 
 			job_id = res[0]['id']
 			if job_id is not None:
 				cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE status.name=%s))",
-					(job_id, ClientMessage.waiting))
+					(remove_nasties(job_id), remove_nasties(ClientMessage.waiting)))
 				self.conn.commit()
 			else:
 				self.conn.rollback()
@@ -825,7 +845,7 @@ class Database(object):
 	def put_package(self,version,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into package(version,name) VALUES (%s, %s)  RETURNING id",(version,name))
+			cur.execute("INSERT into package(version,name) VALUES (%s, %s)  RETURNING id",(remove_nasties(version),remove_nasties(name)))
 			res = cur.fetchall()
 			self.conn.commit()
 			package = Package(res[0]['id'],version,name)
@@ -931,7 +951,7 @@ class Database(object):
 	def put_packageinstance(self,package,arch,suite,dist,pkg_format,master):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)  RETURNING id",(package.id,arch.id,suite.id,dist.id,pkg_format.id,master))
+			cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)  RETURNING id",(remove_nasties(package.id),remove_nasties(arch.id),remove_nasties(suite.id),remove_nasties(dist.id),remove_nasties(pkg_format.id),remove_nasties(master)))
 			self.conn.commit()
 			res = cur.fetchall()
 			self.conn.commit()
