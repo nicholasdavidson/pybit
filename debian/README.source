@@ -18,3 +18,8 @@ $ python setup.py sdist
 $ cp dist/pybit-0.1.0.tar.gz ../pybit_0.1.0.orig.tar.gz
 $ debuild -uc -us
 
+If the debian/changelog version is already correct, this
+can be done using debian/rules:
+
+$ fakeroot debian/rules sdist-orig
+$ debuild -uc -us

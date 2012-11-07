@@ -20,6 +20,12 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+# If using with the git vcs handler, see also http://wiki.debian.org/GitSrc
+
+# There could also be merit in renaming this as DebianSbuild and
+# then supporting DebianSVN and DebianGit which would use
+# svn-buildpackage & git-buildpackage respectively, instead of sbuild.
+
 import os
 from debian.changelog import Changelog, Version
 import pybitclient
@@ -61,17 +67,20 @@ class DebianBuildClient(PackageHandler):
 			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
 				retval = "build-dep-wait"
 		# need an extra uscan stage to deal with non-native packages
+		# this requires the upstream release to be accessible to the client.
+		# i.e. unreleased versions of non-native packages cannot be built this way.
+		# See #18 for the unreleased build support issue.
 		changelog = Changelog(file('./debian/changelog', 'r'))
-		package = str(changelog.package)
 		version = str(changelog.version)
 		if '-' in version:
-			print "%s is not a native package" % (package)
+			if self.settings["dry_run"] :
+				print "%s is not a native package" % (buildreq.get_package())
 			offset = version.find('-')
 			origversion = version[0:offset]
-			origtar = os.path.join (srcdir, "%s_%s.orig.tar.gz" % (package, origversion))
+			origtar = os.path.join (srcdir, "%s_%s.orig.tar.gz" % (buildreq.get_package(), origversion))
 			if not os.path.isfile (origtar) :
 				# check for .tar.bz2
-				origtar = os.path.join (srcdir, "%s_%s.orig.tar.bz2" % (package, origversion))
+				origtar = os.path.join (srcdir, "%s_%s.orig.tar.bz2" % (buildreq.get_package(), origversion))
 				if not os.path.isfile (origtar) :
 					if os.path.isfile ("./debian/watch") :
 						command = "uscan --destdir ../ --repack --download-current-version"
@@ -79,6 +88,11 @@ class DebianBuildClient(PackageHandler):
 							retval = "watch-failed"
 						else :
 							retval = "missing-upstream-source"
+					else :
+						# fall back to apt-get source
+						command = "(cd ../ ; apt-get -d source %s/%s)" % (buildreq.get_package(), buildreq.get_suite())
+						if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+							retval = "apt-get-source-failed"
 				# have .bz2
 			# have .gz
 		if not retval :

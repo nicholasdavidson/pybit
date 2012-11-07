@@ -16,7 +16,8 @@ ifneq (,$(findstring verbose,$(DEB_BUILD_OPTIONS)))
 	VERBOSE="VERBOSE=1"
 endif
 
-VERSION := $(shell dpkg-parsechangelog | grep '^Version: ' | awk '{print $$2}')
+# get upstream version for get-orig-source target
+VERSION:= $(shell dpkg-parsechangelog | grep '^Version: ' | sed -e 's/^Version: //' | sed -e 's/\-.*$$//')
 
 PYTHON2:=$(shell pyversions -r)
 pyalldo=set -e; $(foreach py, $(PYTHON2) $(PYTHON3), PYTHONPATH=. $(py) $(1);)
@@ -50,6 +51,10 @@ clean:
 	find . -name '*.pyc' -delete
 	dh_clean
 
+sdist-orig:
+	python setup.py sdist
+	cp -v dist/pybit-$(VERSION).tar.gz ../pybit_$(VERSION).orig.tar.gz
+
 install: build
 	dh_testdir
 	dh_testroot
@@ -77,4 +82,4 @@ binary-indep: build install
 binary-arch: build install
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install configure
+.PHONY: build clean binary-indep binary-arch binary install configure sdist-orig
