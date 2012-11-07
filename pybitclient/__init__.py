@@ -304,7 +304,7 @@ class PyBITClient(object):
 
 def run_cmd (cmd, simulate):
 	if simulate == True :
-		print "Simulating: %s" % cmd
+		print "I: Simulating: %s" % cmd
 		return True
 	else:
 		print "Running: %s" % cmd
