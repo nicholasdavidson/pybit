@@ -35,6 +35,7 @@ nosetests.xml
 # Debian build
 build-stamp
 configure-stamp
+buildd-test.conf
 debian/files
 debian/*.debhelper.log
 debian/*.substvars
