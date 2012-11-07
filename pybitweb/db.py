@@ -720,7 +720,7 @@ class Database(object):
 				#insert the client if it doesn't already exist.
 				cur.execute("INSERT INTO buildclients(name) SELECT name FROM buildclients UNION VALUES(%s) EXCEPT SELECT name FROM buildclients",
 						(remove_nasties(client),))
-				
+
 				cur.execute("UPDATE job SET buildclient_id=(SELECT id FROM buildclients WHERE name=%s) WHERE id=%s",
 						 (remove_nasties(client),remove_nasties(jobid)))
 			self.conn.commit()
@@ -733,6 +733,8 @@ class Database(object):
 	def delete_job(self,job_id):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("DELETE FROM jobstatus WHERE job_id=%s  RETURNING id",(job_id,))
+			self.conn.commit()
 			cur.execute("DELETE FROM job WHERE id=%s  RETURNING id",(job_id,))
 			res = cur.fetchall()
 			self.conn.commit()
@@ -890,7 +892,7 @@ class Database(object):
 			pkg_format = self.get_format_id(res[0]['format_id'])
 			p_i = PackageInstance(res[0]['id'],package,arch,suite,dist,pkg_format,res[0]['master'])
 			cur.close()
-			return p_i 
+			return p_i
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving package instance with:" + str(packageinstance_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
@@ -957,7 +959,7 @@ class Database(object):
 			self.conn.commit()
 			p_i = PackageInstance(res[0]['id'],package,arch,suite,dist,pkg_format,master)
 			cur.close()
-			return p_i 
+			return p_i
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error adding package instance:" + str(package.id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
