@@ -4,4 +4,6 @@ reports
  - buildd jobs
 jobs by state
 suitearches
+fix autorefresh
+security
 group by in packages list etc...- collapsable tables
