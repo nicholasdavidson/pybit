@@ -33,8 +33,7 @@ class GitClient(VersionControlHandler):
 			self.workdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method, buildreq.get_package())
 			if (buildreq.transport.vcs_id is not None):
-				command = "git clone -b %s %s %s" % (buildreq.transport.vcs_id,
-					buildreq.transport.uri, self.workdir)
+				command = "(git clone %s %s ; cd %s ; git checkout %s)" % (buildreq.transport.uri, self.workdir, self.workdir, buildreq.transport.vcs_id)
 			elif (buildreq.transport.uri is not None):
 				command = "git clone %s %s" % (buildreq.transport.uri, self.workdir)
 			else:
@@ -59,8 +58,9 @@ class GitClient(VersionControlHandler):
 		if buildreq.transport.method != "git":
 			retval = "wrong_method"
 		if not retval :
-			self.cleandir = os.path.join (self.settings["buildroot"], buildreq.get_suite())
-			command = "rm -rf %s/*" % (self.cleandir)
+			self.cleandir = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method,
+				buildreq.get_package())
+			command = "rm -rf %s*" % (self.cleandir)
 			if not pybitclient.run_cmd (command, self.settings["dry_run"]) :
 				retval = "failed_clean"
 		retval = "success"
