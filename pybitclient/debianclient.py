@@ -62,7 +62,8 @@ class DebianBuildClient(PackageHandler):
 		if retval :
 			return retval
 		# debian/rules targets must be run in the package_dir
-		command = "(cd %s ; %s)" % (package_dir, buildreq.commands)
+		command = "schroot -u root -c %s -- /usr/share/pybitclient/sbuild-orig.sh %s %s" % (buildreq.get_suite(),
+			package_dir, parts[2])
 		if not pybitclient.run_cmd (command, self.settings["dry_run"]):
 			retval = "custom-command-error"
 		return retval
@@ -91,7 +92,8 @@ class DebianBuildClient(PackageHandler):
 			return retval
 		# use a debian/watch file and uscan
 		if os.path.isfile ("./debian/watch") :
-			command = "uscan --destdir ../ --repack --download-current-version"
+			command = "(cd %s ; uscan --destdir ../ --repack --force-download --download-version %s)" % (os.path.join(srcdir,
+				buildreq.get_package()), origversion)
 			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
 				retval = "watch-failed"
 				return retval
@@ -112,14 +114,6 @@ class DebianBuildClient(PackageHandler):
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
 		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
-		# FIXME: doesn't make sense to run dpkg-checkbuilddeps outside the chroot!
-		if os.path.isdir(package_dir) or self.settings["dry_run"] :
-			control = os.path.join (package_dir, 'debian', 'control')
-			dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
-			command = "schroot -u root -c %s -- %s %s" % (buildreq.get_suite(),
-				 dep_check, os.path.realpath(control))
-			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
-				retval = "build-dep-wait"
 		# need an extra uscan stage to deal with non-native packages
 		# this requires the upstream release to be accessible to the client.
 		# i.e. unreleased versions of non-native packages cannot be built this way.
@@ -127,11 +121,18 @@ class DebianBuildClient(PackageHandler):
 		if hasattr (buildreq, 'commands') and buildreq.commands :
 			retval = self.build_command_handler (buildreq, conn_data)
 		else :
+			if os.path.isdir(package_dir) or self.settings["dry_run"] :
+				control = os.path.join (package_dir, 'debian', 'control')
+				dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
+				command = "schroot -u root -c %s -- %s %s" % (buildreq.get_suite(),
+					 dep_check, os.path.realpath(control))
+				if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+					retval = "build-dep-wait"
 			retval = self.orig_source_handler (buildreq, conn_data)
-		if not retval :
-			command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % (package_dir)
-			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
-				retval = "build_dsc"
+			if not retval :
+				command = "(cd %s ; dpkg-buildpackage -nc -S -d -uc -us)" % (package_dir)
+				if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+					retval = "build_dsc"
 		if not retval :
 			command = "sbuild -A -s -d %s %s/%s_%s.dsc" % (buildreq.get_suite(),
 				srcdir, buildreq.get_package(), buildreq.get_version())
@@ -187,7 +188,7 @@ class DebianBuildClient(PackageHandler):
 				retval = self.build_command_handler (buildreq, conn_data)
 			else :
 				retval = self.orig_source_handler (buildreq, conn_data)
-			command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % (package_dir)
+			command = "(cd %s ; dpkg-buildpackage -nc -S -d -uc -us)" % (package_dir)
 			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
 				retval = "build_dsc"
 			if not retval :
