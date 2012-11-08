@@ -101,11 +101,9 @@ def main():
 		# clean up in case the last test failed.
 		if (method_type == "svn") :
 			svn_vcs.clean_source(test_req, None)
-		if (method_type == "git") :
-			git_vcs.clean_source(test_req, None)
-		if (method_type == "svn") :
 			svn_vcs.fetch_source (test_req, None)
 		if (method_type == "git") :
+			git_vcs.clean_source(test_req, None)
 			git_vcs.fetch_source (test_req, None)
 		# To check the build-dependencies in advance, we need to ensure the
 		# chroot has an update apt-cache, so can't use apt-update option of
