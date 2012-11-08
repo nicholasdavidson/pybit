@@ -54,7 +54,10 @@ class PyBITClient(object):
 			if client is not None:
 				payload['client']  = client
 			job_status_url = "http://%s/job/%s" % (request.web_host, request.get_job_id())
-			requests.put(job_status_url, payload)
+			try:
+				requests.put(job_status_url, payload)
+			except requests.exceptions.ConnectionError :
+				pass
 		else:
 			print "Couldn't find status or current_request"
 
@@ -130,11 +133,15 @@ class PyBITClient(object):
 			self.current_request = decoded
 			if (self.current_request.transport.method == "svn" or
 				self.current_request.transport.method == "svn+ssh"):
-				if self.get_status() == ClientMessage.waiting:
-					self.vcs_handler = SubversionClient(self.settings)
-					self.move_state("CHECKOUT")
-				elif self.get_status() == ClientMessage.cancelled:
-					print "jobid: %s has been cancelled. Acking." % (self.current_request.get_job_id())
+				try:
+					if self.get_status() == ClientMessage.waiting:
+						self.vcs_handler = SubversionClient(self.settings)
+						self.move_state("CHECKOUT")
+					elif self.get_status() == ClientMessage.cancelled:
+						print "jobid: %s has been cancelled. Acking." % (self.current_request.get_job_id())
+						self.move_state("IDLE")
+				except Exception as requests.exceptions.ConnectionError:
+					self.overall_success = False
 					self.move_state("IDLE")
 			else:
 				self.overall_success = False
@@ -287,11 +294,20 @@ class PyBITClient(object):
 		if self.conn:
 			if self.command_chan:
 				#self.command_chan.basic_cancel("build_callback")
-				self.command_chan.close()
+				try:
+					self.command_chan.close()
+				except socket.error :
+					pass
 			if self.message_chan:
 				#self.message_chan.basic_cancel("build_callback")
-				self.message_chan.close()
-			self.conn.close()
+				try:
+					self.message_chan.close()
+				except socket.error :
+					pass
+			try :
+				self.conn.close()
+			except socket.error :
+				pass
 
 
 	def __enter__(self):
