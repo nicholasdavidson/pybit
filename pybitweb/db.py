@@ -53,7 +53,6 @@ class Database(object):
 		print "DEBUG: DB constructor called."
 		self.settings = settings
 		self.connect()
-
 	#Deconstructor, disconnects on disposal.
 	def __del__(self):
 		self.disconnect()
@@ -70,6 +69,7 @@ class Database(object):
 				self.conn = psycopg2.connect(database=self.settings['databasename'],
 					user=self.settings['user'], host=self.settings['hostname'],
 					port=self.settings['port'])
+
 			return True
 		except psycopg2.Error as e:
 			raise Exception("Error connecting to database. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
