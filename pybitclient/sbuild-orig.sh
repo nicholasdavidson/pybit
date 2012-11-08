@@ -21,5 +21,14 @@ set -e
 DIR=$1
 TGT=$2
 /usr/lib/pbuilder/pbuilder-satisfydepends-classic --control ${1}/debian/control
+# non-native packages commonly need a customised command to prepare the
+# released tarball (which is what dpkg-buildpackage needs) from the
+# VCS export/clone (from which the tarball was originally built).
+# Building the tarball from VCS commonly requires the build-dependencies
+# of the package to be installed, so this needs to happen inside the chroot.
+# If the custom command is not available in debian/rules, clone the
+# debian/ directory to a new repo and add it, then add any extra build-deps
+# to debian/control and point the build at the new repo. Add or fix the
+# debian/watch file if necessary.
 (cd $1 ; fakeroot debian/rules $2 )
 (cd $1 ; fakeroot dpkg-buildpackage -nc -S -d -uc -us)

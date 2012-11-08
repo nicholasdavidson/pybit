@@ -61,8 +61,11 @@ class DebianBuildClient(PackageHandler):
 			retval = "failed-custom-command-parts"
 		if retval :
 			return retval
-		# debian/rules targets must be run in the package_dir
-		command = "schroot -u root -c %s -- /usr/share/pybitclient/sbuild-orig.sh %s %s" % (buildreq.get_suite(),
+		# debian/rules targets must be run in the package_dir and
+		# a command passed to schroot needs to be accessible inside the
+		# chroot and therefore copied to ${HOME} so that schroot copies it again,
+		# into the chroot itself.
+		command = "(cp /usr/share/pybitclient/sbuild-orig.sh . ; schroot -u root -c %s -- ./sbuild-orig.sh %s %s )" % (buildreq.get_suite(),
 			package_dir, parts[2])
 		if not pybitclient.run_cmd (command, self.settings["dry_run"]):
 			retval = "custom-command-error"
