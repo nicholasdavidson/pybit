@@ -212,3 +212,4 @@ def get_job_app(settings, db, controller) :
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
+	return app
