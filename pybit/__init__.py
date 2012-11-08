@@ -72,7 +72,7 @@ def load_settings(path):
 		try:
 			opened_file = open(new_path, 'r')
 		except IOError:
-			new_path = "/etc/pybit/client/%s" % path
+			new_path = "/etc/pybit/%s" % path
 			try:
 				opened_file = open(new_path)
 			except IOError:

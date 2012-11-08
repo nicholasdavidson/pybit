@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 #       pybit-web
 #       Copyright 2012:
 #
@@ -29,9 +27,6 @@ import jsonpickle
 import cgi
 
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage
-from pybit.common import load_settings_from_file
-
-myDb = None
 
 def remove_nasties(nastystring):
 	try:
@@ -54,13 +49,10 @@ class Database(object):
 
 	#Constructor, connects on initialisation.
 
-	def __init__(self):
+	def __init__(self, settings):
 		print "DEBUG: DB constructor called."
-		if not myDb: # DONT allow construction of more than 1 db instance (i.e. none other than the myDb here)
-			print "DEBUG: DB Singleton constructor called."
-			self.settings = load_settings_from_file('db_settings.json')
-			self.connect()
-
+		self.settings = settings
+		self.connect()
 	#Deconstructor, disconnects on disposal.
 	def __del__(self):
 		self.disconnect()
@@ -68,7 +60,16 @@ class Database(object):
 	#Connects to DB using settings loaded from file.
 	def connect(self):
 		try:
-			self.conn = psycopg2.connect(database=self.settings['db_databasename'], user=self.settings['db_user'], host=self.settings['db_hostname'], port=self.settings['db_port'])
+			if ('password' in self.settings and 
+				self.settings['password'] is not None):
+				self.conn = psycopg2.connect(database=self.settings['databasename'],
+					user=self.settings['user'], host=self.settings['hostname'],
+					port=self.settings['port'], password=self.settings['password'])
+			else:
+				self.conn = psycopg2.connect(database=self.settings['databasename'],
+					user=self.settings['user'], host=self.settings['hostname'],
+					port=self.settings['port'])
+
 			return True
 		except psycopg2.Error as e:
 			raise Exception("Error connecting to database. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
@@ -965,6 +966,26 @@ class Database(object):
 			raise Exception("Error adding package instance:" + str(package.id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	def update_packageinstance_masterflag(self,packageinstance_id,master):
+		try:
+			if master == 1:
+				master = True
+			elif master == 0:
+				master = False
+			else:
+				return None;
+
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("UPDATE packageinstance SET master=%s WHERE id=%s",(remove_nasties(master),remove_nasties(packageinstance_id)))
+			self.conn.commit()
+			self.conn.commit()
+			cur.close()
+			return
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error updating package instance master flag:" + str(packageinstance_id) + " to " + str(master) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def delete_packageinstance(self,packageinstance_id):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -1048,4 +1069,4 @@ class Database(object):
 			raise Exception("Error retrieving supported architectures for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-myDb = Database() # singleton instance
+

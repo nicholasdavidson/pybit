@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
 	parser.add_option_group(groupConfigFile)
 
-	parser.add_option("--conf_file", dest="conf_file", default="client.conf",
+	parser.add_option("--conf_file", dest="conf_file", default="client/client.conf",
 		help="Config file to read settings from, defaults to client.conf which will be read from configs/client.conf and /etc/pybit/client.conf in turn.",
 		metavar=META + "CONF_FILE")
 

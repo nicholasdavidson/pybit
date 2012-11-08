@@ -1,1 +1,0 @@
-{"rabbit_url": "cayenne.tcl.office:5672", "rabbit_userid": "guest", "rabbit_password": "guest", "rabbit_virtual_host": "/", "rabbit_insist": "False", "webserver_url": "localhost:8080"}

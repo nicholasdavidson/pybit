@@ -91,7 +91,26 @@
 </div>	<table id="tbl_jobs"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Jobs</th></tr>
 	<tr><th>ID</th><th>Package Instance</th><th>Buildclient</th><th>Status</th><th>Operations</th></tr>
-	</table>      <hr>      <footer>
+	</table>
+
+
+	<div class="accordion" id="accordion2">
+<div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+       Click here to show the admin tools
+      </a>
+    </div>
+        <div id="collapseTwo" class="accordion-body collapse">
+      <div class="accordion-inner">
+	<form class="form" method="GET" action="{{protocol}}{{host}}:{{port}}/job/cancel">
+	<button id="deleteall" name = "deleteall" type="submit" class="btn btn-danger"><a href="/job/delete">DANGER: CANCEL *ALL* RUNNING JOBS</a></button>
+	</form>
+		    </div>
+		    	    </div>
+	    </div>
+	        </div>
+      <hr>      <footer>
         <p>&copy; TCL 2012</p>
       </footer>    </div><!--/.fluid-container--><script>   function delete_click(id)
    {
@@ -111,7 +130,8 @@ $.ajax({
 {            $('#job_form').ajaxForm(function() {
                 alert("Added job OK!")
                 location.reload();
-            });	var packageinstances = "{{protocol}}{{host}}:{{port}}/packageinstance"
+            });
+	var packageinstances = "{{protocol}}{{host}}:{{port}}/packageinstance";
 	$.getJSON(packageinstances, function(json)
 	{
 		$.each(json, function(i, field)
@@ -124,16 +144,18 @@ $.ajax({
 	{
 		$.each(json, function(i, field)
 		{
-		bid = ""
-		bname = "Unassigned"	var url2 = "{{protocol}}{{host}}:{{port}}/job/" + field.id + "/status"
+		bid = "";
+		bname = "Unassigned";
+		var url2 = "{{protocol}}{{host}}:{{port}}/job/" + field.id + "/status";
 	$.getJSON(url2, function(json2)
 	{
 		var statuses = new Array()
 		$.each(json2, function(i, field2)
 		{
-			statuses.push(field2.status)
+			statuses.push(field2.status);
 		});
-		jobstatuses[field.id] = statuses[statuses.length - 1]		if (field.buildclient)
+		jobstatuses[field.id] = statuses[statuses.length - 1];
+		if (field.buildclient)
 			{
 				bid = field.buildclient.id
 				bname = field.buildclient.name
