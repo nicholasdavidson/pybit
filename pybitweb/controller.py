@@ -28,9 +28,7 @@ from amqplib import client_0_8 as amqp
 import jsonpickle
 import os
 import pybit
-from db import myDb
 from pybit.models import BuildRequest, CancelRequest, JobHistory
-from pybit.common import load_settings_from_file
 
 buildController = None
 

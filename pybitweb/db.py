@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 #       pybit-web
 #       Copyright 2012:
 #
@@ -30,8 +28,6 @@ import cgi
 
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage
 
-myDb = None
-
 def remove_nasties(nastystring):
 	try:
 		if isinstance(nastystring, basestring):
@@ -55,10 +51,8 @@ class Database(object):
 
 	def __init__(self, settings):
 		print "DEBUG: DB constructor called."
-		if not myDb: # DONT allow construction of more than 1 db instance (i.e. none other than the myDb here)
-			print "DEBUG: DB Singleton constructor called."
-			self.settings = settings
-			self.connect()
+		self.settings = settings
+		self.connect()
 
 	#Deconstructor, disconnects on disposal.
 	def __del__(self):
@@ -67,9 +61,15 @@ class Database(object):
 	#Connects to DB using settings loaded from file.
 	def connect(self):
 		try:
-			self.conn = psycopg2.connect(database=self.settings['db_databasename'],
-				user=self.settings['db_user'], host=self.settings['db_hostname'],
-				port=self.settings['db_port'], password=self.settings['db_password'])
+			if ('password' in self.settings and 
+				self.settings['password'] is not None):
+				self.conn = psycopg2.connect(database=self.settings['databasename'],
+					user=self.settings['user'], host=self.settings['hostname'],
+					port=self.settings['port'], password=self.settings['password'])
+			else:
+				self.conn = psycopg2.connect(database=self.settings['databasename'],
+					user=self.settings['user'], host=self.settings['hostname'],
+					port=self.settings['port'])
 			return True
 		except psycopg2.Error as e:
 			raise Exception("Error connecting to database. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
