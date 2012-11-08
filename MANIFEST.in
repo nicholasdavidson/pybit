@@ -9,5 +9,5 @@ include pybitweb/static/bootstrap/img/*
 include pybitweb/static/bootstrap/js/*
 include pybitweb/static/js/*
 include pybit-client
-include pybit-web.py
+include pybit_web.py
 include pybitclient/README

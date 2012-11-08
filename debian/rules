@@ -70,6 +70,7 @@ binary-indep: build install
 	dh_installchangelogs
 	dh_installdocs
 	dh_installexamples
+	dh_installinit
 	dh_install $(exclusions) --exclude=.git
 	dh_compress
 	dh_python2
