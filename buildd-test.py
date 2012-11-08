@@ -29,7 +29,7 @@ from pybitclient import PyBITClient
 from pybit.models import BuildRequest, Transport, PackageInstance, Job, Arch, Suite, Package
 
 def main():
-	conffile = "%s/pybitclient/client.conf" % (os.getcwd());
+	conffile = "%s/configs/client/client.conf" % (os.getcwd());
 	if os.path.isfile (conffile):
 		settings = pybit.load_settings(conffile)
 	else :
