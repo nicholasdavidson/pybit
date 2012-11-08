@@ -68,7 +68,7 @@ def load_settings(path):
 	try:
 		opened_file = open(path)
 	except IOError:
-		new_path = "./configs/client/%s" % path
+		new_path = "./configs/%s" % path
 		try:
 			opened_file = open(new_path, 'r')
 		except IOError:
