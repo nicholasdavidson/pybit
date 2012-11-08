@@ -26,12 +26,12 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import Database
-from controller import Controller,buildController
+from controller import Controller
 from pybit.models import Transport,JobHistory
 
 #NEW: proxy to class method controller.add
-def get_job_app(settings, db) :
-	app = Bottle(config={'settings':settings, 'db':db})
+def get_job_app(settings, db, controller) :
+	app = Bottle(config={'settings':settings, 'db':db, 'controller': controller})
 	@app.route('/vcshook', method='POST')
 	@app.route('/vcshook', method='PUT')
 	def vcs_hook():
@@ -52,7 +52,7 @@ def get_job_app(settings, db) :
 					return None
 				else :
 					print "RECEIVED BUILD REQUEST FOR", package_name, version, suite, architectures
-					buildController.process_job(dist, architectures, version, package_name, suite, pkg_format, Transport(None, method, uri, vcs_id))
+					app.config['controller'].process_job(dist, architectures, version, package_name, suite, pkg_format, Transport(None, method, uri, vcs_id))
 					return
 		except Exception as e:
 			raise Exception('Exception encountered in vcs_hook: ' + str(e))
@@ -74,7 +74,7 @@ def get_job_app(settings, db) :
 	def cancel_jobs():
 		try:
 			response.status = "202 - CANCEL ALL request recieved"
-			buildController.cancel_all_builds()
+			app.config['controller'].cancel_all_builds()
 			return
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
@@ -85,7 +85,7 @@ def get_job_app(settings, db) :
 	def cancel_job(jobid):
 		try:
 			response.status = "202 - CANCEL JOB request recieved"
-			buildController.cancel_package_instance(jobid)
+			app.config['controller'].cancel_package_instance(jobid)
 			return
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
@@ -156,7 +156,7 @@ def get_job_app(settings, db) :
 	
 				# Pass to controller to queue up
 				transport = Transport(None, method, uri, vcs_id)
-				buildController.process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,commands)
+				app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,commands)
 			else:
 				response.status = "400 - Required fields missing."
 			return

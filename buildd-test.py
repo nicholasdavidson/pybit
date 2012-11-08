@@ -29,7 +29,7 @@ from pybitclient import PyBITClient
 from pybit.models import BuildRequest, Transport, PackageInstance, Job, Arch, Suite, Package
 
 def main():
-	conffile = "%s/pybitclient/client.conf" % (os.getcwd());
+	conffile = "%s/configs/client/client.conf" % (os.getcwd());
 	if os.path.isfile (conffile):
 		settings = pybit.load_settings(conffile)
 	else :
@@ -101,11 +101,9 @@ def main():
 		# clean up in case the last test failed.
 		if (method_type == "svn") :
 			svn_vcs.clean_source(test_req, None)
-		if (method_type == "git") :
-			git_vcs.clean_source(test_req, None)
-		if (method_type == "svn") :
 			svn_vcs.fetch_source (test_req, None)
 		if (method_type == "git") :
+			git_vcs.clean_source(test_req, None)
 			git_vcs.fetch_source (test_req, None)
 		# To check the build-dependencies in advance, we need to ensure the
 		# chroot has an update apt-cache, so can't use apt-update option of

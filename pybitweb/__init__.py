@@ -6,8 +6,8 @@ import buildd
 import package
 import packageinstance
 
-def get_app(settings, db):
-    app = Bottle(config={'settings' : settings, 'db' : db})
+def get_app(settings, db, controller):
+    app = Bottle(config={'settings' : settings, 'db' : db, 'controller' : controller})
     @app.error(404)
     def error404(error):
         return 'HTTP Error 404 - Not Found.'
@@ -88,7 +88,7 @@ def get_app(settings, db):
                             host=settings['web']['hostname'],
                             port=settings['web']['port'],
                         protocol=settings['web']['protocol'])
-    app.mount('/job', job.get_job_app(settings, db))
+    app.mount('/job', job.get_job_app(settings, db, controller))
     app.mount('/suite', lookups.get_suite_app(settings, db))
     app.mount('/suitearch', lookups.get_suite_app(settings, db))
     app.mount('/dist', lookups.get_dist_app(settings, db))
@@ -96,6 +96,6 @@ def get_app(settings, db):
     app.mount('/arch',lookups.get_arch_app(settings, db))
     app.mount('/format', lookups.get_format_app(settings, db))
     app.mount('/buildd', buildd.get_buildd_app(settings, db))
-    app.mount('/package', package.get_packages_app(settings, db))
+    app.mount('/package', package.get_packages_app(settings, db, controller))
     app.mount('/packageinstance', packageinstance.get_packageinstance_app(settings, db))
     return app

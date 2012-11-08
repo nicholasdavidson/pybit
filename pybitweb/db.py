@@ -966,6 +966,26 @@ class Database(object):
 			raise Exception("Error adding package instance:" + str(package.id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	def update_packageinstance_masterflag(self,packageinstance_id,master):
+		try:
+			if master == 1:
+				master = True
+			elif master == 0:
+				master = False
+			else:
+				return None;
+
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("UPDATE packageinstance SET master=%s WHERE id=%s",(remove_nasties(master),remove_nasties(packageinstance_id)))
+			self.conn.commit()
+			self.conn.commit()
+			cur.close()
+			return
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error updating package instance master flag:" + str(packageinstance_id) + " to " + str(master) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def delete_packageinstance(self,packageinstance_id):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)

@@ -24,7 +24,6 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-from db import Database
 
 def get_buildd_app(settings, db):
 	app = Bottle(config= {'settings' : settings, 'db' : db})

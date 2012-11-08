@@ -26,7 +26,7 @@
 import jsonpickle
 from pybitweb.db import Database
 from pybitweb import lookups, buildd, job, package, packageinstance
-from pybitweb.controller import Controller,buildController
+from pybitweb.controller import Controller
 import optparse
 import pybitweb
 from pybitweb import bottle
@@ -53,14 +53,12 @@ if __name__ == '__main__':
     settings = pybit.merge_options(settings, groupConfigFile, options)
     
     myDb = Database(settings['db']) # singleton instance
-    buildController = Controller(settings['controller']) # singleton instance
+    buildController = Controller(settings['controller'], myDb) # singleton instance
 #    try:
-    app = pybitweb.get_app(settings, myDb)
+    app = pybitweb.get_app(settings, myDb, buildController)
     bottle.debug(options.verbose)
     bottle.run(app=app,
 		server=settings['web']['app'],
         host=settings['web']['hostname'],
         port=settings['web']['port'],
         reloader=settings['web']['reloader'])
- #   except Exception as e:
-  #  		raise Exception('Error starting web server: ' + str(e))

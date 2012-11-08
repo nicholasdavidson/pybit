@@ -24,10 +24,10 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import Database
-from controller import Controller,buildController
+from controller import Controller
 
-def get_packages_app(settings, db):
-	app = Bottle(config={'settings':settings,'db':db})
+def get_packages_app(settings, db, controller):
+	app = Bottle(config={'settings':settings,'db':db, 'controller' : controller})
 	@app.route('/', method='GET')
 	def get_all_packages():
 		try:
@@ -94,7 +94,7 @@ def get_packages_app(settings, db):
 		try:
 			response.status = "202 - CANCEL PACKAGE request recieved"
 	
-			buildController.cancel_package(package_id)
+			app.config['controller'].cancel_package(package_id)
 			return
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
