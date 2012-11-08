@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script type="text/javascript" src="settings.json"></script>
+
 <META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
 <META HTTP-EQUIV="Expires" CONTENT="-1">
 <meta charset="utf-8">
@@ -16,21 +16,10 @@
 	padding-bottom: 40px;
       }
     </style>
-<link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-
-  <script src="js/jquery-latest.js"></script>
-  <script src="js/jquery.form.js"></script>
-  <script src="bootstrap/js/bootstrap.min.js"></script>
-
-<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="js/html5.js"></script>
-    <![endif]-->
-
-</head>
-<body>
-
-<div class="container-fluid">
+<link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">  <script src="{{protocol}}ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+  <script src="{{protocol}}malsup.github.com/jquery.form.js"></script>
+  <script src="bootstrap/js/bootstrap.min.js"></script></head>
+<body><div class="container-fluid">
   <div class="row-fluid">
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -75,20 +64,10 @@
               <li><a href="buildd.htm">BuildBoxes</a></li>
             </ul>
           </div><!--/.well -->
-</div>
-
-    <div class="span10">
-      <!--Body content-->
-
-    <div class="container-fluid">
-
-      <h1>PyBit - python Buildd Integration Toolkit.</h1>
+</div>    <div class="span10">
+      <!--Body content-->    <div class="container-fluid">      <h1>PyBit - python Buildd Integration Toolkit.</h1>
       <h3>Lookups</h3>
-
-
-<div class="accordion" id="accordion1">
-
-<div class="accordion-group">
+<div class="accordion" id="accordion1"><div class="accordion-group">
     <div class="accordion-heading">
       <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
         Package Architectures
@@ -101,19 +80,13 @@
 					<label for="name">Name</label>
 					<input name="name" type="text" />
 					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
-					</form>
-
-	<a id="arches"></a>
+					</form>	<a id="arches"></a>
 	<table id="tbl_arches"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Architectures</th></tr>
 	</table>
       </div>
     </div>
-  </div>
-
-
-
-<div class="accordion-group">
+  </div><div class="accordion-group">
     <div class="accordion-heading">
       <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseTwo">
         Job Statuses
@@ -126,18 +99,12 @@
 					<label for="name">Name</label>
 					<input name="name" type="text" />
 					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
-					</form>
-
-	<a id="statuses"></a>
+					</form>	<a id="statuses"></a>
 	<table id="tbl_statuses"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Statuses</th></tr>
-	</table>
-
-      </div>
+	</table>      </div>
     </div>
-  </div>
-
-<div class="accordion-group">
+  </div><div class="accordion-group">
     <div class="accordion-heading">
       <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree">
         Software Distributions
@@ -150,41 +117,31 @@
 					<label for="name">Name</label>
 					<input name="name" type="text" />
 					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
-					</form>
-
-	<a id="dists"></a>
+					</form>	<a id="dists"></a>
 	<table id="tbl_dists"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Distributions</th></tr>
 	</table>
       </div>
     </div>
-  </div>
-
-<div class="accordion-group">
+  </div><div class="accordion-group">
     <div class="accordion-heading">
       <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour">
         Package Formats
       </a>
     </div>
     <div id="collapseFour" class="accordion-body collapse">
-      <div class="accordion-inner">
-
-	<form class="form-inline" method="POST" action="{{protocol}}{{host}}:{{port}}/format"  id="format_form" name="format_form">
+      <div class="accordion-inner">	<form class="form-inline" method="POST" action="{{protocol}}{{host}}:{{port}}/format"  id="format_form" name="format_form">
 					<legend>Add Package Formats</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
 					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
-					</form>
-
-	<a id="formats"></a>
+					</form>	<a id="formats"></a>
 	<table id="tbl_formats"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Formats</th></tr>
 	</table>
       </div>
     </div>
-  </div>
-
-<div class="accordion-group">
+  </div><div class="accordion-group">
     <div class="accordion-heading">
       <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseFive">
         Software Suites
@@ -197,37 +154,17 @@
 					<label for="name">Name</label>
 					<input name="name" type="text" />
 					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
-					</form>
-
-	<a id="suites"></a>
+					</form>	<a id="suites"></a>
 	<table id="tbl_suites"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Formats</th></tr>
-	</table>
-
-      </div>
+	</table>      </div>
     </div>
   </div>
-
-
-
-
-
-
 </div>
-      <hr>
-
-      <footer>
+      <hr>      <footer>
         <p>&copy; TCL 2012</p>
-      </footer>
-
-    </div><!--/.fluid-container-->
-
-<script>
-
-   function delete_click(id,target)
-   {
-
-	switch (target)
+      </footer>    </div><!--/.fluid-container--><script>   function delete_click(id,target)
+   {	switch (target)
 	{
 		case 1:
 			target = "arch"
@@ -244,9 +181,7 @@
 		case 5:
 			target = "suite"
 			break;
-	}
-
-$.ajax({
+	}$.ajax({
         type: "GET",
         url: "{{protocol}}{{host}}:{{port}}/" + target +"/" + id + "/delete",
         error: function(data){
@@ -258,72 +193,52 @@ $.ajax({
            location.reload();
         }
     });
-}
-
-$().ready(function ()
-{
-
-            $('#arch_form').ajaxForm(function() {
+}$().ready(function ()
+{            $('#arch_form').ajaxForm(function() {
                 alert("Arch Added!");
                 location.reload();
-            });
-
-            $('#status_form').ajaxForm(function() {
+            });            $('#status_form').ajaxForm(function() {
                 alert("Status Added!");
                 location.reload();
-            });
-
-            $('#dist_form').ajaxForm(function() {
+            });            $('#dist_form').ajaxForm(function() {
                 alert("Dist Added!");
                 location.reload();
-            });
-
-            $('#format_form').ajaxForm(function() {
+            });            $('#format_form').ajaxForm(function() {
                 alert("Format Added!");
                 location.reload();
             });
             $('#suite_form').ajaxForm(function() {
                 alert("Suite Added!");
                 location.reload();
-            });
-
-	var url = "{{protocol}}{{host}}:{{port}}/arch"
+            });	var url = "{{protocol}}{{host}}:{{port}}/arch"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
 			$("#tbl_arches").append("<tr><td><a href='{{protocol}}{{host}}:{{port}}/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>");
 		});
-	});
-
-	var url = "{{protocol}}{{host}}:{{port}}/status"
+	});	var url = "{{protocol}}{{host}}:{{port}}/status"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
 			$("#tbl_statuses").append("<tr><td><a href='{{protocol}}{{host}}:{{port}}/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>");
 		});
-	});
-
-	var url = "{{protocol}}{{host}}:{{port}}/dist"
+	});	var url = "{{protocol}}{{host}}:{{port}}/dist"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
 			$("#tbl_dists").append("<tr><td><a href='{{protocol}}{{host}}:{{port}}/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>");
 		});
-	});
-
-	var url = "{{protocol}}{{host}}:{{port}}/format"
+	});	var url = "{{protocol}}{{host}}:{{port}}/format"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
 			$("#tbl_formats").append("<tr><td><a href='{{protocol}}{{host}}:{{port}}/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>");
 		});
-	});
-
-	var url = "{{protocol}}{{host}}:{{port}}/suite"
+	});	var url = "{{protocol}}{{host}}:{{port}}/suite"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
@@ -332,10 +247,6 @@ $().ready(function ()
 		});
 	});
 });
-</script>
-
-    </div>
-  </div>
-
-</body>
+</script>    </div>
+  </div></body>
 </html>

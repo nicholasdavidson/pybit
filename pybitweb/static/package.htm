@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script type="text/javascript" src="settings.json"></script>
+
 <META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
 <META HTTP-EQUIV="Expires" CONTENT="-1">
 <meta charset="utf-8">
@@ -16,21 +16,10 @@
 	padding-bottom: 40px;
       }
     </style>
-<link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-
-  <script src="js/jquery-latest.js"></script>
-  <script src="js/jquery.form.js"></script>
-  <script src="bootstrap/js/bootstrap.min.js"></script>
-
-<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="js/html5.js"></script>
-    <![endif]-->
-
-</head>
-<body>
-
-<div class="container-fluid">
+<link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">  <script src="{{protocol}}ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+  <script src="{{protocol}}malsup.github.com/jquery.form.js"></script>
+  <script src="bootstrap/js/bootstrap.min.js"></script></head>
+<body><div class="container-fluid">
   <div class="row-fluid">
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -75,17 +64,9 @@
               <li><a href="buildd.htm">BuildBoxes</a></li>
             </ul>
           </div><!--/.well -->
-</div>
-
-    <div class="span10">
-      <!--Body content-->
-
-    <div class="container-fluid">
-
-      <h1>PyBit - python Buildd Integration Toolkit.</h1>
+</div>    <div class="span10">
+      <!--Body content-->    <div class="container-fluid">      <h1>PyBit - python Buildd Integration Toolkit.</h1>
       <h3>Packages</h3>
-
-
 <div class="accordion" id="accordion1">
 <div class="accordion-group">
     <div class="accordion-heading">
@@ -107,24 +88,12 @@
       </div>
     </div>
   </div>
-</div>
-
-	<table id="tbl_packages"  class="table table-bordered table-condensed">
+</div>	<table id="tbl_packages"  class="table table-bordered table-condensed">
 	<tr><th colspan='2'>Packages</th></tr>
 	<tr><th>ID</th><th>Name</th><th>Version</th><th>Operations</th></tr>
-	</table>
-
-      <hr>
-
-      <footer>
+	</table>      <hr>      <footer>
         <p>&copy; TCL 2012</p>
-      </footer>
-
-    </div><!--/.fluid-container-->
-
-<script>
-
-   function delete_click(id)
+      </footer>    </div><!--/.fluid-container--><script>   function delete_click(id)
    {
 $.ajax({
         type: "GET",
@@ -138,17 +107,11 @@ $.ajax({
            location.reload();
         }
     });
-}
-
-$().ready(function ()
-{
-
-            $('#package_form').ajaxForm(function() {
+}$().ready(function ()
+{            $('#package_form').ajaxForm(function() {
                 alert("Package Added!");
                 location.reload();
-            });
-
-	var url = "{{protocol}}{{host}}:{{port}}/package"
+            });	var url = "{{protocol}}{{host}}:{{port}}/package"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
@@ -157,10 +120,6 @@ $().ready(function ()
 		});
 	});
 });
-</script>
-
-    </div>
-  </div>
-
-</body>
+</script>    </div>
+  </div></body>
 </html>

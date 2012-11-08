@@ -57,15 +57,10 @@ def js_settings():
 	response.content_type = "application/json"
 	return static_file("settings.json", root='./pybitweb/static/')
 
-# static resources like CSS and JS
+# static resources like CSS
 @app.route('/bootstrap/<filepath:path>', method='GET')
 def serve_static_res(filepath):
     	return static_file(filepath, root='./pybitweb/static/bootstrap/')
-
-# static resources like CSS and JS
-@app.route('/js/<filepath:path>', method='GET')
-def serve_static_res(filepath):
-    	return static_file(filepath, root='./pybitweb/static/js/')
 
 # static HTML index page
 @app.route('/index.htm', method='GET')

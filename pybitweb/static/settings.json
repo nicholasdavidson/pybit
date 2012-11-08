@@ -1,2 +1,0 @@
-var webserver_hostname = "localhost"
-var webserver_port = 8080
