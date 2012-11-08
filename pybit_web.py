@@ -59,6 +59,6 @@ if __name__ == '__main__':
     bottle.debug(options.verbose)
     bottle.run(app=app,
 		server=settings['web']['app'],
-        host=settings['web']['hostname'],
+        host=settings['web']['interface'],
         port=settings['web']['port'],
         reloader=settings['web']['reloader'])
