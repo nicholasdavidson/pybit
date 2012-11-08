@@ -1,8 +1,8 @@
 #!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          pybit-client
-# Required-Start:    $network $local_fs
-# Required-Stop:
+# Required-Start:    $network $remote_fs
+# Required-Stop:     $remote_fs
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Pybit buildd client
@@ -16,7 +16,7 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC=pybit-client            # Introduce a short description here
 NAME=pybit-client            # Introduce the short server's name here
 DAEMON=/usr/bin/pybit-client # Introduce the server's location here
-DAEMON_ARGS=""               # Arguments to run the daemon with
+DAEMON_ARGS="-d"               # Arguments to run the daemon with
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
