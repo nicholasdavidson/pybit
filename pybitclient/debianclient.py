@@ -27,6 +27,7 @@
 # svn-buildpackage & git-buildpackage respectively, instead of sbuild.
 
 import os
+import logging
 import pybitclient
 from buildclient import PackageHandler
 from pybit.models import BuildRequest
@@ -73,6 +74,7 @@ class DebianBuildClient(PackageHandler):
 
 	def orig_source_handler (self, buildreq, conn_data) :
 		retval = None
+		log = logging.getLogger( "pybit-client" )
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
 		version = buildreq.get_version()
@@ -80,7 +82,7 @@ class DebianBuildClient(PackageHandler):
 			# native package, nothing to do for the orig source.
 			return retval
 		if self.settings["dry_run"] :
-			print "I: %s (%s) is not a native package - need original source" % (buildreq.get_package(), version)
+			log.debug("I: %s (%s) is not a native package - need original source" % (buildreq.get_package(), version))
 		offset = version.find('-')
 		# strip the debian packaging part of the version string
 		origversion = version[0:offset]
@@ -109,6 +111,7 @@ class DebianBuildClient(PackageHandler):
 
 	def build_master (self, buildreq, conn_data):
 		retval = None
+		log = logging.getLogger( "pybit-client" )
 		if (not isinstance(buildreq, BuildRequest)):
 			print "E: not able to identify package name."
 			retval = "misconfigured"
@@ -145,7 +148,7 @@ class DebianBuildClient(PackageHandler):
 			changes = "%s/%s_%s_%s.changes" % (os.getcwd(), buildreq.get_package(),
 				buildreq.get_version(), buildreq.get_arch())
 			if not self.settings["dry_run"] and not os.path.isfile (changes) :
-				print "build_master: Failed to find %s file." % (changes)
+				log.debug("build_master: Failed to find %s file." % (changes))
 				retval = "build_changes"
 		if not retval :
 			retval = "success"
@@ -157,12 +160,13 @@ class DebianBuildClient(PackageHandler):
 
 	def upload (self, buildreq, conn_data):
 		retval = None
+		log = logging.getLogger( "pybit-client" )
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
 		changes = "%s/%s_%s_%s.changes" % (os.getcwd(), buildreq.get_package(),
 			buildreq.get_version(), buildreq.get_arch())
 		if not os.path.isfile (changes) and not self.settings["dry_run"]:
-			print "upload: Failed to find %s file." % (changes)
+			log.debug("upload: Failed to find %s file." % (changes))
 			retval = "upload_changes"
 		if not retval :
 			command = "dput -c %s %s %s %s" % (self.dput_cfg,

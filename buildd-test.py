@@ -21,7 +21,9 @@
 #       MA 02110-1301, USA.
 
 import os
+import sys
 import pybit
+import logging
 from pybitclient.subversion import SubversionClient
 from pybitclient.git import GitClient
 from pybitclient.debianclient import DebianBuildClient
@@ -29,6 +31,10 @@ from pybitclient import PyBITClient
 from pybit.models import BuildRequest, Transport, PackageInstance, Job, Arch, Suite, Package
 
 def main():
+	FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
+	logging.basicConfig( stream=sys.stderr, level=logging.DEBUG)
+	logging.basicConfig( format=FORMAT )
+	log = logging.getLogger( "pybit-client" )
 	conffile = "%s/configs/client/client.conf" % (os.getcwd());
 	if os.path.isfile (conffile):
 		settings = pybit.load_settings(conffile)
@@ -88,9 +94,9 @@ def main():
 			else :
 				print "E: unrecognised option: %s" % tag_run
 				return -1
-		print "I: starting test #%s (%s)" % (count, role)
+		log.debug("I: starting test #%s (%s)" % (count, role))
 		if commands is not None :
-			print "I: test #%s requires a custom build command: '%s'" % (count, commands)
+			log.debug("I: test #%s requires a custom build command: '%s'" % (count, commands))
 		test_arch = Arch(0, architecture)
 		test_suite = Suite (0, suite)
 		test_transport = Transport (0, method_type, uri, vcs_id)

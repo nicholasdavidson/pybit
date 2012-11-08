@@ -54,7 +54,6 @@ def signal_handler(signal, frame):
 try:
 	signal.signal(signal.SIGINT, signal_handler)
 	signal.signal(signal.SIGTERM, signal_handler)
-	print "Hit Ctrl-C to quit."
 except Exception as e:
 	raise Exception('Error configuring signal handler: ' + str(e))
 
@@ -125,12 +124,11 @@ if __name__ == '__main__':
 	(options, args) = parser.parse_args()
 
 	if options.daemonise :
-		FORMAT = '%(asctime)s %(msg)s'
-		logging.basicConfig(format=FORMAT)
-		logging.basicConfig( filename="/var/log/pybitclient.log" )
-		logging.getLogger( "pybit-client" ).setLevel( logging.DEBUG )
+		FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
+		logging.basicConfig(filename='/tmp/pybitclient.log', level=logging.DEBUG)
+		logging.basicConfig( format=FORMAT )
 		log = logging.getLogger( "pybit-client" )
-		log.debug ("I: Daemonising.")
+		log.debug ("I: Daemonised")
 
 	settings = pybit.load_settings(options.conf_file)
 
@@ -143,6 +141,8 @@ if __name__ == '__main__':
 
 	if options.daemonise:
 		with daemon.DaemonContext():
+			log.debug ("I: Running build client.")
 			run(settings)
 	else :
+		print "Hit Ctrl-C to quit."
 		run(settings)

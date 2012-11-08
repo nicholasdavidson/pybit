@@ -3,6 +3,7 @@ import os
 import errno
 import json
 import time
+import logging
 import jsonpickle
 from amqplib import client_0_8 as amqp
 import pybit
@@ -319,13 +320,14 @@ class PyBITClient(object):
 
 
 def run_cmd (cmd, simulate):
+	log = logging.getLogger( "pybit-client" )
 	if simulate == True :
-		print "I: Simulating: %s" % cmd
+		log.debug ("I: Simulating: %s" % cmd)
 		return True
 	else:
-		print "Running: %s" % cmd
+		log.debug("Running: %s" % cmd)
 		if os.system (cmd) :
-			print "%s returned error" % cmd
+			log.debug("%s returned error" % cmd)
 			return False
 	return True
 
@@ -347,7 +349,8 @@ def send_message (conn_data, msg) :
 		chan.close()
 		conn.close()
 	else :
-		print "I: Simulating sending message: %s " % (msg)
+		log = logging.getLogger( "pybit-client" )
+		log.debug("I: Simulating sending message: %s " % (msg))
 
 def get_settings(path):
 	try:
