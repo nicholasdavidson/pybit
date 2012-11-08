@@ -72,10 +72,11 @@ class Controller(object):
 			current_suite = myDb.get_suite_byname(suite)[0]
 			current_dist = myDb.get_dist_byname(dist)[0]
 			current_format = myDb.get_format_byname(pkg_format)[0]
+			master = True
 			#for arch in supported_arches:
 			for arch in build_arches:
 				current_arch = myDb.get_arch_byname(arch)[0]
-				current_packageinstance = self.process_packageinstance(current_arch, current_package, current_dist, current_format, current_suite)
+				current_packageinstance = self.process_packageinstance(current_arch, current_package, current_dist, current_format, current_suite, master)
 				if current_packageinstance.id :
 					new_job = myDb.put_job(current_packageinstance,None)
 					print "CREATED NEW JOB ID", new_job.id
@@ -91,6 +92,7 @@ class Controller(object):
 					else :
 						print "FAILED TO ADD JOB"
 						response.status = "404 - failed to add job."
+					master = False
 				else :
 					print "PACKAGE INSTANCE ERROR"
 					response.status = "404 - failed to add/retrieve package instance."
@@ -138,7 +140,7 @@ class Controller(object):
 				print "ADDED NEW PACKAGE (", package.id, package.name, package.version, ")"
 		return package
 
-	def process_packageinstance(self, arch, package, dist, pkg_format, suite) :
+	def process_packageinstance(self, arch, package, dist, pkg_format, suite, master) :
 		# check & retrieve existing package or try to add a new one
 		packageinstance = None
 		if myDb.check_specific_packageinstance_exists(arch, package, dist, pkg_format, suite) :
@@ -146,9 +148,13 @@ class Controller(object):
 			packageinstance = myDb.get_packageinstance_byvalues(package, arch, suite, dist, pkg_format)[0]
 			if packageinstance.id :
 				print "MATCHING PACKAGE INSTANCE FOUND (", packageinstance.id, ")"
+				if packageinstance.master != master :
+					print "UPDATING PACKAGE INSTANCE MASTER FLAG (", master, ")"
+					myDb.update_packageinstance_masterflag(packageinstance.id,master)
+					packageinstance.master = master
 		else :
 			# add new package instance to db
-			packageinstance = myDb.put_packageinstance(package, arch, suite, dist, pkg_format, False)
+			packageinstance = myDb.put_packageinstance(package, arch, suite, dist, pkg_format, master)
 			if packageinstance.id :
 				print "ADDED NEW PACKAGE INSTANCE (", packageinstance.id, ")"
 		return packageinstance
