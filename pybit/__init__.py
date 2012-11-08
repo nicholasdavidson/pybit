@@ -33,8 +33,8 @@ def merge_options(settings, options_group, options):
 		return {}
 	verbose = False
 	if hasattr(options,'verbose'):
-		verbose = options.verbose 
-		
+		verbose = options.verbose
+
 	for option in options_group.option_list :
 		value = getattr(options, option.dest)
 		if value is not None:
@@ -47,10 +47,10 @@ def merge_options(settings, options_group, options):
 					print "Leaving %s as %s" % (option.dest, settings[option.dest])
 				else:
 					print "No such value %s" % option.dest
-				
-			
+
+
 	return settings
-		
+
 
 
 def get_client_queue(client_id):
@@ -72,7 +72,7 @@ def load_settings(path):
 		try:
 			opened_file = open(new_path, 'r')
 		except IOError:
-			new_path = "/etc/pybit/%s" % path
+			new_path = "/etc/pybit/client/%s" % path
 			try:
 				opened_file = open(new_path)
 			except IOError:
