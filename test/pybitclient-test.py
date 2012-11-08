@@ -40,7 +40,7 @@ class TestClient(unittest.TestCase) :
 	def test_01_client_config (self) :
 		log = logging.getLogger( "testCase" )
 		log.debug(" ")
-		conffile = "%s/configs/client.conf" % (os.getcwd());
+		conffile = "%s/configs/client/client.conf" % (os.getcwd());
 		self.assertTrue (os.path.isfile(conffile), "could not find %s" % conffile)
 		log.debug("I: reading %s" % (os.path.relpath(conffile, os.getcwd())))
 		self.options = pybit.load_settings(conffile)
