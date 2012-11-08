@@ -33,6 +33,7 @@ import requests
 import pybit
 import os
 import time
+import logging
 from pybitclient import PyBITClient
 from pybitclient.debianclient import DebianBuildClient
 from pybitclient.subversion import SubversionClient
@@ -109,10 +110,17 @@ if __name__ == '__main__':
 	parser.add_option("-v", dest="verbose", action="store_true", default=False,
 		help="Turn on verbose messages.", metavar=META+"VERBOSE")
 
-
-
+	parser.add_option("-d", dest="daemonise", action="store_true", default=False,
+		help="Daemonise with output going to /var/log/pybit", metavar=META+"DAEMONISE")
 
 	(options, args) = parser.parse_args()
+
+	if options.daemonise :
+		FORMAT = '%(msg)s'
+		logging.basicConfig(format=FORMAT)
+		logging.basicConfig( filename="/var/log/pybit.log" )
+		logging.getLogger( "pybit-client" ).setLevel( logging.DEBUG )
+
 	settings = pybit.load_settings(options.conf_file)
 
 	settings = pybit.merge_options(settings, groupConfigFile, options)
