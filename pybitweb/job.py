@@ -70,6 +70,7 @@ def get_jobs():
 		return None
 
 #NEW: Have controller cancel all jobs.
+@app.route('/job/delete', method='GET')
 @app.route('/job', method='DELETE')
 def cancel_jobs():
 	try:

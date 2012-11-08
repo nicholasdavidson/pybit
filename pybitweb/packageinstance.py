@@ -28,6 +28,16 @@ import jsonpickle
 from db import Database,myDb
 from pybitweb.common import app
 
+@app.route('/packageinstance/<packageinstance_id:int>/togglemaster/<master:int>', method='GET')
+def update_packageinstance_masterflag(packageinstance_id,master):
+	try:
+		myDb.update_packageinstance_masterflag(packageinstance_id,master)
+		response.status = "202 - Master flag changed."
+		return
+	except Exception as e:
+		raise Exception('Exception encountered: ' + str(e))
+		return None
+
 @app.route('/packageinstance', method='GET')
 def get_all_packageinstances():
 	try:
