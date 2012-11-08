@@ -1,1 +1,0 @@
-{"server_app": "wsgiref", "webserver_debug": true, "webserver_protocol":"http://", "webserver_hostname": "localhost", "webserver_port": 8080, "webserver_reloader": false}
