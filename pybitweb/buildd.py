@@ -29,7 +29,7 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import Database,myDb
 import buildd
-from pybit.common import app
+from pybitweb.common import app
 
 @app.route('/buildd', method='GET')
 def get_buildd():

@@ -27,7 +27,7 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import Database,myDb
 from controller import Controller,buildController
-from pybit.common import app
+from pybitweb.common import app
 
 
 @app.route('/package', method='GET')

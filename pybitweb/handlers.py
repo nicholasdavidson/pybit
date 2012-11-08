@@ -23,12 +23,8 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import jsonpickle
 from pybitweb.bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request, hook, static_file
-from pybitweb.db import Database,myDb
-from pybitweb import lookups, buildd, job, package, packageinstance
-from pybitweb.controller import Controller,buildController
-from pybit.common import load_settings_from_file,app
+from pybitweb.common import load_settings_from_file,app
 
 settings = load_settings_from_file('web_settings.json')
 
@@ -91,11 +87,3 @@ def serve_static_packages():
 @app.route('/packageinstance.htm', method='GET')
 def serve_static_package_instances():
     	return template("pybitweb/static/packageinstance.htm", host=settings['webserver_hostname'], port=settings['webserver_port'],protocol=settings['webserver_protocol'])
-
-#start the server
-try:
-	debug(settings['webserver_debug'])
-	print("DEBUG: Starting " + settings['server_app'] + " on " + settings['webserver_protocol'] + settings['webserver_hostname'] + ":" + str(settings['webserver_port']) + ". Debug mode is: " + str(settings['webserver_debug']) + " and auto-reload is: " + str(settings['webserver_reloader']) + ".")
-	run(app,server=settings['server_app'], host=settings['webserver_hostname'], port=settings['webserver_port'], reloader=settings['webserver_reloader'])
-except Exception as e:
-		raise Exception('Error starting web server: ' + str(e))

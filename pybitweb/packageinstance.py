@@ -26,7 +26,7 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import Database,myDb
-from pybit.common import app
+from pybitweb.common import app
 
 @app.route('/packageinstance', method='GET')
 def get_all_packageinstances():

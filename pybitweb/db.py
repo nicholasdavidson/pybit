@@ -29,7 +29,7 @@ import jsonpickle
 import cgi
 
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage
-from pybit.common import load_settings_from_file
+from pybitweb.common import load_settings_from_file
 
 myDb = None
 

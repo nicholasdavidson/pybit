@@ -27,7 +27,7 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import Database,myDb
 from pybit.models import Arch,Dist,Format,Status,Suite,SuiteArch
-from pybit.common import app
+from pybitweb.common import app
 
 @app.route('/arch', method='GET')
 def get_arch():

@@ -30,7 +30,7 @@ import os
 import pybit
 from db import myDb
 from pybit.models import BuildRequest, CancelRequest, JobHistory
-from pybit.common import load_settings_from_file
+from pybitweb.common import load_settings_from_file
 
 buildController = None
 
@@ -157,7 +157,7 @@ class Controller(object):
 		job_status_history = myDb.get_job_statuses(job.id)
 		last_status = job_status_history[-1].status
 		build_client = job_status_history[-1].buildclient
-		if (len(job_status_history) > 0) and (last_status == "Building") and (build_client != None) : 
+		if (len(job_status_history) > 0) and (last_status == "Building") and (build_client != None) :
 			cancel_req = jsonpickle.encode(CancelRequest(job,self.settings['webserver_url']))
 			msg = amqp.Message(cancel_req)
 			msg.properties["delivery_mode"] = 2

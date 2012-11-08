@@ -29,7 +29,7 @@ from db import Database,myDb
 import job
 from controller import Controller,buildController
 from pybit.models import Transport,JobHistory
-from pybit.common import app
+from pybitweb.common import app
 
 #NEW: proxy to class method controller.add
 @app.route('/job/vcshook', method='POST')
