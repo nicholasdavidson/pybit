@@ -1,5 +1,5 @@
 include buildd-test.py
-include pybitclient/dput.cf pybitclient/sbuild-cross.sh
+include pybitclient/dput.cf pybitclient/sbuild-cross.sh pybitclient/sbuild-orig.sh
 include configs/* test/*
 include hook/* db/*
 include pybitweb/static/*
