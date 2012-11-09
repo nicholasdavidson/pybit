@@ -79,7 +79,10 @@ def load_settings(path):
 				pass
 	if opened_file:
 		encoded_string = opened_file.read()
-		return jsonpickle.decode(encoded_string )
+		try:
+			return jsonpickle.decode(encoded_string )
+		except ValueError :
+			return {}
 	else:
 		return {}
 

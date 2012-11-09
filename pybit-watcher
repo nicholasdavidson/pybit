@@ -1,0 +1,100 @@
+#!/usr/bin/python
+
+#       Copyright 2012:
+#
+#       Nick Davidson <nickd@toby-churchill.com>,
+#       Simon Haswell <simonh@toby-churchill.com>,
+#       Neil Williams <neilw@toby-churchill.com>,
+#       James Bennet <github@james-bennet.com / James.Bennet@toby-churchill.com>
+#
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
+
+# -*- coding: utf-8 -*-
+
+import optparse
+import pyinotify
+import daemon
+import pybit
+import os
+import sys
+
+settings= {}
+
+META="PYBIT_WATCHER_"
+
+class EventHandler(pyinotify.ProcessEvent):
+	def process_IN_CREATE(self, event):
+		if os.path.isfile(event.pathname) and event.pathname.endswith(".changes"):
+			cmd = "reprepro -b %s processincomming  %s" % (settings['repobase'], settings['rule'])
+			if settings['dryrun'] == True: 
+				loging.debug(cmd)
+			else:
+				 os.system (cmd)
+
+if __name__ == '__main__':
+	parser = optparse.OptionParser()
+	#options we can override in the config file.
+	groupConfigFile = optparse.OptionGroup(parser,
+		"Config File Defaults","All the options which have defaults read from a config file.")
+	
+	groupConfigFile.add_option("--path", dest="path",
+		help="Path to listen on.", metavar=META + "PATH")
+	
+	groupConfigFile.add_option("--repobase", dest="repobase",
+		help="Base of the repository.", metavar=META + "REPOBASE")
+	
+	groupConfigFile.add_option("--dry-run", dest="dryrun", action="store_true", default=False,
+		help="Controls if we simulate or do we actually run.", metavar=META + "DRYRUN")
+
+	parser.add_option("--conf_file", dest="conf_file", default="watcher/watcher.conf",
+		help="Config file to read settings from, defaults to client.conf which will be read from configs/client.conf and /etc/pybit/client.conf in turn.",
+		metavar=META + "CONF_FILE")
+
+	parser.add_option("-v", dest="verbose", action="store_true", default=False,
+		help="Turn on verbose messages.", metavar=META+"VERBOSE")
+
+	parser.add_option("-d", dest="daemonise", action="store_true", default=False,
+		help="Daemonise with output going to /var/log/pybit-watcher", metavar=META+"DAEMONISE")
+		
+	
+	
+	(options, args) = parser.parse_args()
+	
+	settings = pybit.load_settings(options.conf_file)
+	if settings == {}:
+		logging.debug("Couldn't load configuration from %s" % options.conf_file)
+		sys.exit(-1)
+	settings = pybit.merge_options(settings, groupConfigFile, options)
+	
+	wm = pyinotify.WatchManager()
+	mask = pyinotify.IN_CREATE
+	
+	handler = EventHandler()
+	notifier = pyinotify.Notifier(wm, handler)
+	wdd = wm.add_watch(settings['path'], mask, rec=True)
+	
+	
+	if options.daemonise:
+		with daemon.DaemonContext():
+			FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
+			logging.basicConfig(filename='/tmp/pybitclient.log', level=logging.DEBUG)
+			logging.basicConfig( format=FORMAT )
+			log = logging.getLogger( "pybit-client" )
+			log.debug ("I: Daemonised")
+			log.debug ("I: Running build client.")
+			notifier.loop()
+	else:
+		notifier.loop()
