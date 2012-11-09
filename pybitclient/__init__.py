@@ -276,6 +276,8 @@ class PyBITClient(object):
 			self.command_chan = self.conn.channel()
 			self.message_chan = self.conn.channel()
 			self.message_chan.basic_qos(0,1,False)
+			self.command_chan.exchange_declare(exchange=pybit.exchange_name, type="direct", durable=True, auto_delete=False)
+
 		except socket.error as e:
 			logging.debug ("Couldn't connect rabbitmq server with: %s" % repr(self.conn_info))
 			return
