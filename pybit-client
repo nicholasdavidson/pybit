@@ -43,6 +43,8 @@ from pybit.models import AMQPConnection
 
 META = "PYBIT_CLIENT_"
 
+PIDFILE = "var/run/pybit-client"
+
 #register the single handler
 def signal_handler(signal, frame):
 	try:
@@ -69,7 +71,7 @@ def run(settings) :
 				sys.exit (os.EX_OSERR)
 
 def getDaemonLogger (filePath, format = None) :
-	FORMAT = format or '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
+	FORMAT = format or '%(asctime)s %(msg)s'
 	logging.basicConfig(filename=filePath, format=FORMAT, level=logging.DEBUG)
 	logging.debug ("I: Daemonised")
 	return logging.getLogger()
@@ -139,6 +141,10 @@ if __name__ == '__main__':
 		context.stdout_logger = stdoutLogger
 		context.stderr_logger = stderrLogger
 		logging.debug ("I: Daemonised")
+	else :
+#		FORMAT = format or '%(asctime)s %(msg)s'
+		logging.basicConfig(level=logging.DEBUG)
+		logging.debug ("I: Not daemonised")
 
 	settings = pybit.load_settings(options.conf_file)
 
@@ -150,9 +156,10 @@ if __name__ == '__main__':
 		logging.debug ("Please configure your client.")
 		sys.exit(os.EX_OK)
 
-
 	if options.daemonise:
 		with context :
+			pid = str(os.getpid())
+			file(PIDFILE, 'w').write(pid)
 			logging.debug ("I: Running build client.")
 			run(settings)
 	else :
