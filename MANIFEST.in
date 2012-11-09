@@ -11,3 +11,5 @@ include pybitweb/static/js/*
 include pybit-client
 include pybit_web.py
 include pybitclient/README
+include apache_config.txt
+include application.wsgi
