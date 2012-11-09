@@ -58,6 +58,11 @@ class TestClient(unittest.TestCase) :
 
 	def test_02_build_client (self) :
 		log = logging.getLogger( "testCase" )
+		log.debug(" ")
+		if not "dry_run" in self.options :
+			msg = "I: asserting dry_run for test cases"
+			log.debug (msg)
+			self.options["dry_run"] = True
 		base_client = PackageHandler(self.options)
 		self.assertTrue (base_client)
 		self.assertTrue (base_client.is_dry_run())
