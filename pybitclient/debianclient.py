@@ -39,7 +39,7 @@ class DebianBuildClient(PackageHandler):
 	def update_environment(self,name,pkg, conn_data):
 		retval = "success"
 		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
-		if not pybitclient.run_cmd (command, self.settings["dry_run"]) :
+		if not pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 			retval = "build_update"
 		pybitclient.send_message (conn_data, retval)
 		if retval == "success":
@@ -49,6 +49,7 @@ class DebianBuildClient(PackageHandler):
 
 	def build_command_handler (self, buildreq, conn_data) :
 		retval = None
+		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		# expect fakeroot debian/rules rules-target
 		package_dir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method, buildreq.get_package())
@@ -68,13 +69,14 @@ class DebianBuildClient(PackageHandler):
 		# into the chroot itself.
 		command = "(cp /usr/share/pybitclient/sbuild-orig.sh . ; schroot -u root -c %s -- ./sbuild-orig.sh %s %s )" % (buildreq.get_suite(),
 			package_dir, parts[2])
-		if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+		if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 			retval = "custom-command-error"
 		return retval
 
 	def orig_source_handler (self, buildreq, conn_data) :
 		retval = None
 		log = logging.getLogger( "pybit-client" )
+		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
 		version = buildreq.get_version()
@@ -99,19 +101,20 @@ class DebianBuildClient(PackageHandler):
 		if os.path.isfile ("./debian/watch") :
 			command = "(cd %s ; uscan --destdir ../ --repack --force-download --download-version %s)" % (os.path.join(srcdir,
 				buildreq.get_package()), origversion)
-			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "watch-failed"
 				return retval
 		# fall back to apt-get source
 		else :
 			command = "(cd ../ ; apt-get -d source %s/%s)" % (buildreq.get_package(), buildreq.get_suite())
-			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "apt-get-source-failed"
 		return retval
 
 	def build_master (self, buildreq, conn_data):
 		retval = None
 		log = logging.getLogger( "pybit-client" )
+		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		if (not isinstance(buildreq, BuildRequest)):
 			print "E: not able to identify package name."
 			retval = "misconfigured"
@@ -132,17 +135,17 @@ class DebianBuildClient(PackageHandler):
 				dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
 				command = "schroot -u root -c %s -- %s %s" % (buildreq.get_suite(),
 					 dep_check, os.path.realpath(control))
-				if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 					retval = "build-dep-wait"
 			retval = self.orig_source_handler (buildreq, conn_data)
 			if not retval :
 				command = "(cd %s ; dpkg-buildpackage -nc -S -d -uc -us)" % (package_dir)
-				if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 					retval = "build_dsc"
 		if not retval :
 			command = "sbuild -A -s -d %s %s/%s_%s.dsc" % (buildreq.get_suite(),
 				srcdir, buildreq.get_package(), buildreq.get_version())
-			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "build_binary"
 		if not retval :
 			changes = "%s/%s_%s_%s.changes" % (os.getcwd(), buildreq.get_package(),
@@ -160,6 +163,7 @@ class DebianBuildClient(PackageHandler):
 
 	def upload (self, buildreq, conn_data):
 		retval = None
+		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		log = logging.getLogger( "pybit-client" )
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
@@ -171,7 +175,7 @@ class DebianBuildClient(PackageHandler):
 		if not retval :
 			command = "dput -c %s %s %s %s" % (self.dput_cfg,
 				self.settings["dput"], self.settings["dput_dest"], changes)
-			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "upload_fail"
 		if not retval :
 			retval = "success"
@@ -183,6 +187,7 @@ class DebianBuildClient(PackageHandler):
 
 	def build_slave (self, buildreq, conn_data):
 		retval = None
+		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
 		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
@@ -196,13 +201,13 @@ class DebianBuildClient(PackageHandler):
 			else :
 				retval = self.orig_source_handler (buildreq, conn_data)
 			command = "(cd %s ; dpkg-buildpackage -nc -S -d -uc -us)" % (package_dir)
-			if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "build_dsc"
 			if not retval :
 				command = "sbuild --apt-update -d %s %s/%s_%s.dsc" % (
 					buildreq.get_suite(), srcdir,
 					buildreq.get_package(), buildreq.get_version())
-				if not pybitclient.run_cmd (command, self.settings["dry_run"]):
+				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 					retval = "build_binary"
 			if not retval :
 				changes = "%s/%s_%s_%s.changes" % (os.getcwd(),

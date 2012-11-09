@@ -130,6 +130,13 @@ class BuildRequest(Model):
 		self.transport = transport
 		self.web_host = web_host
 		self.commands = commands # NEW: Any additional build commands
+		self.timestamp = None
+
+	def stamp_request (self) :
+		self.timestamp = int(time.time())
+
+	def get_buildstamp (self) :
+		return self.timestamp
 
 	def get_suite(self):
 		return self.job.packageinstance.suite.name

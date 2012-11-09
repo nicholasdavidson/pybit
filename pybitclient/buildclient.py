@@ -56,6 +56,14 @@ class PackageHandler(object):
 		if not "buildroot" in self.settings:
 			self.settings["buildroot"] = "/tmp/buildd"
 
+	def get_buildlog (self, buildroot, buildreq) :
+		logfile = None
+		stamp = buildreq.get_buildstamp()
+		if (stamp is not None) :
+			log = "%s_%s-%s-%s" % (buildreq.get_package(), buildreq.get_version(), buildreq.get_arch(), buildreq.get_buildstamp())
+			logfile = os.path.join (buildroot, log)
+	return logfile
+
 	def is_dry_run (self):
 		return self.settings["dry_run"]
 

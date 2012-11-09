@@ -96,6 +96,8 @@ class PyBITClient(object):
 				self.process.start()
 				self.set_status(ClientMessage.building,None,self.conn_info.client_name)
 			elif self.state == "BUILD":
+				# mark this as the moment that the build starts
+				self.current_request.stamp_request()
 				args = (self.current_request,self.conn_info)
 				if self.current_request.job.packageinstance.master == True:
 					self.process = multiprocessing.Process(target=self.format_handler.build_master, args=args)
@@ -319,13 +321,16 @@ class PyBITClient(object):
 		self.disconnect()
 
 
-def run_cmd (cmd, simulate):
+def run_cmd (cmd, simulate, logfile):
 	log = logging.getLogger( "pybit-client" )
 	if simulate == True :
 		log.debug ("I: Simulating: %s" % cmd)
 		return True
 	else:
 		log.debug("Running: %s" % cmd)
+		if logfile is not None :
+			command = cmd
+			cmd = "%s >> %s 2>&1" % (command, logfile)
 		if os.system (cmd) :
 			log.debug("%s returned error" % cmd)
 			return False

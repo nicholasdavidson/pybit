@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
 	if options.daemonise :
 		FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
-		logging.basicConfig(filename='/tmp/pybitclient.log', level=logging.DEBUG)
+		logging.basicConfig(filename='/var/log/pybitclient.log', level=logging.DEBUG)
 		logging.basicConfig( format=FORMAT )
 		log = logging.getLogger( "pybit-client" )
 		log.debug ("I: Daemonised")
