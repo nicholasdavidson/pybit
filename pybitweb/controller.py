@@ -41,10 +41,6 @@ class Controller(object):
 			self.chan = self.conn.channel()
 			#declare exchange.
 			self.chan.exchange_declare(exchange=pybit.exchange_name, type="direct", durable=True, auto_delete=False)
-			#declare command queue.
-			self.chan.queue_declare(queue=pybit.status_queue, durable=True, exclusive=False, auto_delete=False)
-			#bind routing from exchange to command queue based on routing key.
-			self.chan.queue_bind(queue=pybit.status_queue, exchange=pybit.exchange_name, routing_key=pybit.status_route)
 		except Exception as e:
 			raise Exception('Error creating controller (Maybe we cannot connect to queue?) - ' + str(e))
 			return
@@ -81,9 +77,11 @@ class Controller(object):
 						msg = amqp.Message(build_req)
 						msg.properties["delivery_mode"] = 2
 						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name)
-						print "SENDING BUILD REQUEST FOR JOB ID", new_job.id, new_job.packageinstance.package.name, new_job.packageinstance.package.version, new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name
-						#print "\n____________SENDING", build_req, "____________TO____________", routing_key
-						self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key)
+						if self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True) :
+							#print "\n____________SENDING", build_req, "____________TO____________", routing_key
+							print "SENDING BUILD REQUEST FOR JOB ID", new_job.id, new_job.packageinstance.package.name, new_job.packageinstance.package.version, new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name
+						else :
+							print "UNABLE TO ROUTE BUILD REQUEST TO", routing_key
 					else :
 						print "FAILED TO ADD JOB"
 						response.status = "404 - failed to add job."
