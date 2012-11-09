@@ -60,8 +60,11 @@ class PackageHandler(object):
 		logfile = None
 		stamp = buildreq.get_buildstamp()
 		if (stamp is not None) :
+			logdir = os.path.join(buildroot, "logs")
+			if not os.path.isdir (logdir) :
+				os.mkdir (logdir)
 			log = "%s_%s-%s-%s" % (buildreq.get_package(), buildreq.get_version(), buildreq.get_arch(), buildreq.get_buildstamp())
-			logfile = os.path.join (buildroot, log)
+			logfile = os.path.join (logdir, log)
 		return logfile
 
 	def is_dry_run (self):
