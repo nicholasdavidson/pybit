@@ -100,7 +100,7 @@ def get_packages_app(settings, db, controller):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 	
-	@app.route('/list', method='GET') # TODO, filter by paramater (request.query.[x])
+	@app.route('/list', method='GET') # TODO, filter by parameter (request.query.[x])
 	def get_packages_filtered():
 		try:
 			response.content_type = "application/json"

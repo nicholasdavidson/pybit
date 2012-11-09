@@ -79,7 +79,7 @@ def get_buildd_app(settings, db):
 		try:
 			# Deletes a specific buildd
 			# TODO: validation,security
-			response.status = "202 - DELETE request recieved"
+			response.status = "202 - DELETE request received"
 			app.config['db'].delete_buildclient(buildd_id)
 			return
 		except Exception as e:

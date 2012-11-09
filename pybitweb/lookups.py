@@ -73,7 +73,7 @@ def get_arch_app(settings, db):
 		try:
 			# Deletes a specific arch
 			# TODO: validation,security
-			response.status = "202 - DELETE request recieved"
+			response.status = "202 - DELETE request received"
 			app.config['db'].delete_arch(arch_id)
 			return
 		except Exception as e:
@@ -136,7 +136,7 @@ def get_suitearch_app(settings, db):
 		try:
 			# Deletes a specific suitearch
 			# TODO: validation,security
-			response.status = "202 - DELETE request recieved"
+			response.status = "202 - DELETE request received"
 			app.config['db'].delete_suitearch(suitearch_id)
 			return
 		except Exception as e:
@@ -198,7 +198,7 @@ def get_status_app(settings, db):
 		try:
 			# Deletes a specific status
 			# TODO: validation,security
-			response.status = "202 - DELETE request recieved"
+			response.status = "202 - DELETE request received"
 			app.config['db'].delete_status(status_id)
 			return
 		except Exception as e:
@@ -260,7 +260,7 @@ def get_dist_app(settings, db):
 		try:
 			# Deletes a specific dist
 			# TODO: validation,security
-			response.status = "202 - DELETE request recieved"
+			response.status = "202 - DELETE request received"
 			app.config['db'].delete_dist(dist_id)
 			return
 		except Exception as e:
@@ -322,7 +322,7 @@ def get_format_app(settings, db):
 		try:
 			# Deletes a specific format
 			# TODO: validation,security
-			response.status = "202 - DELETE request recieved"
+			response.status = "202 - DELETE request received"
 			app.config['db'].delete_format(format_id)
 			return
 		except Exception as e:
@@ -383,7 +383,7 @@ def get_suite_app(settings, db):
 		try:
 			# Deletes a specific suite
 			# TODO: validation,security
-			response.status = "202 - DELETE request recieved"
+			response.status = "202 - DELETE request received"
 			app.config['db'].delete_suite(suite_id)
 			return
 		except Exception as e:
