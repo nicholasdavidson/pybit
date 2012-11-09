@@ -67,7 +67,7 @@ class DebianBuildClient(PackageHandler):
 		# a command passed to schroot needs to be accessible inside the
 		# chroot and therefore copied to ${HOME} so that schroot copies it again,
 		# into the chroot itself.
-		command = "(cp /usr/share/pybitclient/sbuild-orig.sh . ; schroot -u root -c %s -- ./sbuild-orig.sh %s %s )" % (buildreq.get_suite(),
+		command = "(cp /usr/share/pybitclient/sbuild-orig.sh . ; schroot -u root -c %s -- ./sbuild-orig.sh %s %s ; rm ./sbuild-orig.sh)" % (buildreq.get_suite(),
 			package_dir, parts[2])
 		if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 			retval = "custom-command-error"
@@ -116,7 +116,7 @@ class DebianBuildClient(PackageHandler):
 		log = logging.getLogger( "pybit-client" )
 		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		if (not isinstance(buildreq, BuildRequest)):
-			print "E: not able to identify package name."
+			log.debug ()"E: not able to identify package name.")
 			retval = "misconfigured"
 			pybitclient.send_message (conn_data, retval)
 			return
@@ -178,7 +178,11 @@ class DebianBuildClient(PackageHandler):
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "upload_fail"
 		if not retval :
-			retval = "success"
+			command = "dcmd rm %s" % (changes)
+			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
+				retval = "post-upload-clean-fail"
+			else :
+				retval = "success"
 		pybitclient.send_message (conn_data, retval)
 		if retval == "success":
 			return 0
@@ -187,6 +191,7 @@ class DebianBuildClient(PackageHandler):
 
 	def build_slave (self, buildreq, conn_data):
 		retval = None
+		log = logging.getLogger( "pybit-client" )
 		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
@@ -214,7 +219,7 @@ class DebianBuildClient(PackageHandler):
 					buildreq.get_package(), buildreq.get_version(),
 					buildreq.get_arch())
 				if not self.settings["dry_run"] and not os.path.isfile (changes) :
-					print "build_slave: Failed to find %s file." % (changes)
+					log.debug ("build_slave: Failed to find %s file." % (changes))
 					retval = "build_changes"
 		else:
 			retval = "Can't find build dir."
