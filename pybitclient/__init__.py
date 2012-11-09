@@ -82,7 +82,7 @@ class PyBITClient(object):
 				self.message_handler(msg)
 
 		if self.command_chan is not None :
-			cmd = self.command_chan.basic_get()
+			cmd = self.command_chan.basic_get(no_ack=True)
 		if cmd is not None:
 			self.command_handler(cmd)
 
@@ -297,7 +297,7 @@ class PyBITClient(object):
 		logging.debug ("Creating private command queue with name:" + self.conn_info.client_name)
 		try:
 			self.command_chan.queue_declare(queue=self.conn_info.client_name,
-				durable=False, exclusive=True, auto_delete=False)
+				durable=False, exclusive=True, auto_delete=True)
 			self.command_chan.queue_bind(queue=self.conn_info.client_name,
 				exchange=pybit.exchange_name, routing_key=self.conn_info.client_name)
 		except amqp.exceptions.AMQPChannelException :
