@@ -116,7 +116,7 @@ class DebianBuildClient(PackageHandler):
 		log = logging.getLogger( "pybit-client" )
 		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		if (not isinstance(buildreq, BuildRequest)):
-			log.debug ()"E: not able to identify package name.")
+			log.debug ("E: not able to identify package name.")
 			retval = "misconfigured"
 			pybitclient.send_message (conn_data, retval)
 			return
