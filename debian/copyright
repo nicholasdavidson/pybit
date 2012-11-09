@@ -32,9 +32,6 @@ Licence: BSD
    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-On Debian systems, the complete text of the BSD License
-can be found in `/usr/share/common-licenses/BSD'.
-
 Files: *
 Copyright: 2012 Neil Williams <linux@codehelp.co.uk>
            2012 Nick Davidson <nickd@toby-churchill.com>,
