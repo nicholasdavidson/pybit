@@ -1,6 +1,6 @@
 include buildd-test.py
 include pybitclient/dput.cf pybitclient/sbuild-cross.sh pybitclient/sbuild-orig.sh
-include configs/* test/* configs/client/*
+include configs/* test/* configs/client/* configs/watcher/*
 include hook/* db/*
 include pybitweb/static/*
 include pybitweb/static/bootstrap/*
@@ -13,3 +13,4 @@ include pybit_web.py
 include pybitclient/README
 include apache_config.txt
 include application.wsgi
+include pybit-watcher

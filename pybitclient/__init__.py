@@ -76,11 +76,13 @@ class PyBITClient(object):
 	def wait(self):
 		time.sleep(5)
 		if self.state == "IDLE" :
-			msg = self.message_chan.basic_get()
+			if self.message_chan is not None:
+				msg = self.message_chan.basic_get()
 			if msg is not None :
 				self.message_handler(msg)
 
-		cmd = self.command_chan.basic_get()
+		if self.command_chan is not None :
+			cmd = self.command_chan.basic_get()
 		if cmd is not None:
 			self.command_handler(cmd)
 
@@ -283,16 +285,24 @@ class PyBITClient(object):
 			return
 
 		logging.debug("Creating queue with name:" + self.queue_name)
-		self.message_chan.queue_declare(queue=self.queue_name, durable=True,
-			exclusive=False, auto_delete=False)
-		self.message_chan.queue_bind(queue=self.queue_name,
-			exchange=pybit.exchange_name, routing_key=self.routing_key)
+		try:
+			self.message_chan.queue_declare(queue=self.queue_name, durable=True,
+				exclusive=False, auto_delete=False)
+			self.message_chan.queue_bind(queue=self.queue_name,
+				exchange=pybit.exchange_name, routing_key=self.routing_key)
+		except amqp.exceptions.AMQPChannelException :
+			logging.debug ("Unable to declare or bind to message channel.")
+			pass
 
 		logging.debug ("Creating private command queue with name:" + self.conn_info.client_name)
-		self.command_chan.queue_declare(queue=self.conn_info.client_name,
-			durable=False, exclusive=True, auto_delete=False)
-		self.command_chan.queue_bind(queue=self.conn_info.client_name,
-			exchange=pybit.exchange_name, routing_key=self.conn_info.client_name)
+		try:
+			self.command_chan.queue_declare(queue=self.conn_info.client_name,
+				durable=False, exclusive=True, auto_delete=False)
+			self.command_chan.queue_bind(queue=self.conn_info.client_name,
+				exchange=pybit.exchange_name, routing_key=self.conn_info.client_name)
+		except amqp.exceptions.AMQPChannelException :
+			logging.debug ("Unable to declare or bind to command channel.")
+			pass
 
 
 	def disconnect(self):

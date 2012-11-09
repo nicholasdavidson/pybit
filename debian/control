@@ -65,12 +65,11 @@ Description: Common objects for pybit
  Contains object definitions to common
  Python objects between Pybit services
  and the Postgres database schema for PyBit.
- 
+
 Package: pybit-watcher
 Architecture: all
-Depends: python-inotify, python-daemon, pybit-common,
+Depends: python-inotify, python-daemon, pybit-common, reprepro,
  ${python:Depends}, ${misc:Depends}
-Description: pybit-watcher can watch incomming directories for reprepro
+Description: watches incomming directories for reprepro
  This package provides a watcher which runs as a daemon and monitors a
  directory for changes files then runs the appropriate reprepro rule.
- 
