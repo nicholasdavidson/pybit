@@ -77,6 +77,11 @@ if __name__ == '__main__':
 	if settings == {}:
 		logging.debug("Couldn't load configuration from %s" % options.conf_file)
 		sys.exit(-1)
+		
+	if 'configured'  in settings and settings.configured == False:
+		logging.debug ("Please configure your client.")
+		sys.exit(os.EX_OK)
+	
 	settings = pybit.merge_options(settings, groupConfigFile, options)
 	
 	wm = pyinotify.WatchManager()
@@ -89,6 +94,8 @@ if __name__ == '__main__':
 	
 	if options.daemonise:
 		with daemon.DaemonContext():
+			pid = str(os.getpid())
+			file(PIDFILE, 'w').write(pid)
 			FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
 			logging.basicConfig(filename='/tmp/pybitclient.log', level=logging.DEBUG)
 			logging.basicConfig( format=FORMAT )
