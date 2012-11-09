@@ -34,7 +34,6 @@ def main():
 	FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
 	logging.basicConfig( stream=sys.stderr, level=logging.DEBUG)
 	logging.basicConfig( format=FORMAT )
-	log = logging.getLogger( "pybit-client" )
 	conffile = "%s/configs/client/client.conf" % (os.getcwd());
 	if os.path.isfile (conffile):
 		settings = pybit.load_settings(conffile)
@@ -94,9 +93,9 @@ def main():
 			else :
 				print "E: unrecognised option: %s" % tag_run
 				return -1
-		log.debug("I: starting test #%s (%s)" % (count, role))
+		logging.debug("I: starting test #%s (%s)" % (count, role))
 		if commands is not None :
-			log.debug("I: test #%s requires a custom build command: '%s'" % (count, commands))
+			logging.debug("I: test #%s requires a custom build command: '%s'" % (count, commands))
 		test_arch = Arch(0, architecture)
 		test_suite = Suite (0, suite)
 		test_transport = Transport (0, method_type, uri, vcs_id)

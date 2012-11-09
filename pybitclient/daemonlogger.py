@@ -2,6 +2,8 @@
 #
 #       Copyright 2010 Bud P. Bruegger <bud@sistema.it>
 #       Created on Mon, 25 Oct 2010
+#       http://code.activestate.com/recipes/577442-logging-support-for-python-daemon/
+#
 #       BSD Licence
 #
 #       Redistribution and use in source and binary forms, with or without

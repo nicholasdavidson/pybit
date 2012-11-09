@@ -75,7 +75,6 @@ class DebianBuildClient(PackageHandler):
 
 	def orig_source_handler (self, buildreq, conn_data) :
 		retval = None
-		log = logging.getLogger( "pybit-client" )
 		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
@@ -84,7 +83,7 @@ class DebianBuildClient(PackageHandler):
 			# native package, nothing to do for the orig source.
 			return retval
 		if self.settings["dry_run"] :
-			log.debug("I: %s (%s) is not a native package - need original source" % (buildreq.get_package(), version))
+			logging.debug("I: %s (%s) is not a native package - need original source" % (buildreq.get_package(), version))
 		offset = version.find('-')
 		# strip the debian packaging part of the version string
 		origversion = version[0:offset]
@@ -113,10 +112,9 @@ class DebianBuildClient(PackageHandler):
 
 	def build_master (self, buildreq, conn_data):
 		retval = None
-		log = logging.getLogger( "pybit-client" )
 		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		if (not isinstance(buildreq, BuildRequest)):
-			log.debug ("E: not able to identify package name.")
+			logging.debug ("E: not able to identify package name.")
 			retval = "misconfigured"
 			pybitclient.send_message (conn_data, retval)
 			return
@@ -151,7 +149,7 @@ class DebianBuildClient(PackageHandler):
 			changes = "%s/%s_%s_%s.changes" % (os.getcwd(), buildreq.get_package(),
 				buildreq.get_version(), buildreq.get_arch())
 			if not self.settings["dry_run"] and not os.path.isfile (changes) :
-				log.debug("build_master: Failed to find %s file." % (changes))
+				logging.debug("build_master: Failed to find %s file." % (changes))
 				retval = "build_changes"
 		if not retval :
 			retval = "success"
@@ -164,13 +162,12 @@ class DebianBuildClient(PackageHandler):
 	def upload (self, buildreq, conn_data):
 		retval = None
 		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
-		log = logging.getLogger( "pybit-client" )
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
 		changes = "%s/%s_%s_%s.changes" % (os.getcwd(), buildreq.get_package(),
 			buildreq.get_version(), buildreq.get_arch())
 		if not os.path.isfile (changes) and not self.settings["dry_run"]:
-			log.debug("upload: Failed to find %s file." % (changes))
+			logging.debug("upload: Failed to find %s file." % (changes))
 			retval = "upload_changes"
 		if not retval :
 			command = "dput -c %s %s %s %s" % (self.dput_cfg,
@@ -191,7 +188,6 @@ class DebianBuildClient(PackageHandler):
 
 	def build_slave (self, buildreq, conn_data):
 		retval = None
-		log = logging.getLogger( "pybit-client" )
 		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
@@ -219,7 +215,7 @@ class DebianBuildClient(PackageHandler):
 					buildreq.get_package(), buildreq.get_version(),
 					buildreq.get_arch())
 				if not self.settings["dry_run"] and not os.path.isfile (changes) :
-					log.debug ("build_slave: Failed to find %s file." % (changes))
+					logging.debug ("build_slave: Failed to find %s file." % (changes))
 					retval = "build_changes"
 		else:
 			retval = "Can't find build dir."
