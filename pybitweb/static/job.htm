@@ -110,9 +110,56 @@
 		    	    </div>
 	    </div>
 	        </div>
+
+ 
+<!-- Modal status dialog-->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header" id="history_header" name="history_header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  </div>
+  <div class="modal-body">
+
+
+<table class="table table-bordered table-condensed">
+	<tr><th colspan='2'>Jobs</th></tr>
+	<tr><th>Status</th><th>Buildclient</th><th>Time</th></tr>
+	<tbody id="history_body" name="history_body">
+	</tbody>
+	</table>
+
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+
+
+
       <hr>      <footer>
         <p>&copy; TCL 2012</p>
-      </footer>    </div><!--/.fluid-container--><script>   function delete_click(id)
+      </footer>    </div><!--/.fluid-container-->
+
+<script>
+
+function show_history(id)
+{
+	var url = "{{protocol}}{{host}}:{{port}}/job/" + id + "/status"
+$.getJSON(url, function(json)
+{
+$("#history_header").empty();
+$("#history_body").empty();
+$("#history_header").append("<h3 id='myModalLabel'>Job History for #" + id + "</h3>");
+
+$.each(json, function(i, field)
+		{
+$("#history_body").append("<tr><td>" + field.status + "</td><td>" + field.buildclient + "</td><td>" + field.time + "</td></tr>");
+		});
+
+    });
+}
+
+function delete_click(id)
    {
 $.ajax({
         type: "GET",
@@ -178,7 +225,8 @@ $.ajax({
 			else
 			{
 				_class = "warning"
-			}			$("#tbl_jobs").append("<tr class='" + _class +"'><td><a href='{{protocol}}{{host}}:{{port}}/job/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}{{host}}:{{port}}/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + " (" +  field.packageinstance.arch.name + " " +  field.packageinstance.format.name + ")" + "</td><td><a href='{{protocol}}{{host}}:{{port}}/buildd/" + bid + "'>" + bname + "</a></td><td>" + jobstatuses[field.id] + "<br> Master Flag: " + field.packageinstance.master +"</td><td><a href='{{protocol}}{{host}}:{{port}}/job/" + field.id + "/cancel'>Cancel</a><br><a href='{{protocol}}{{host}}:{{port}}/job/" + field.id + "/status'>View Status History</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");	});
+			}
+			$("#tbl_jobs").append("<tr class='" + _class +"'><td><a href='{{protocol}}{{host}}:{{port}}/job/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}{{host}}:{{port}}/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + " (" +  field.packageinstance.arch.name + " " +  field.packageinstance.format.name + ")" + "</td><td><a href='{{protocol}}{{host}}:{{port}}/buildd/" + bid + "'>" + bname + "</a></td><td>" + jobstatuses[field.id] + "<br> Master Flag: " + field.packageinstance.master +"</td><td><a href='{{protocol}}{{host}}:{{port}}/job/" + field.id + "/cancel'>Cancel</a><br><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id +")'>View Status History</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");	});
 		});
 	});
 });
