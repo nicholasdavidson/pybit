@@ -104,6 +104,7 @@ def main():
 		test_packageinstance = PackageInstance(1, test_package, test_arch, test_suite, pkg_format, distribution, True)
 		test_job =  Job(2, test_packageinstance,None)
 		test_req = BuildRequest(test_job,test_transport,None,commands)
+		test_req.stamp_request()
 		# clean up in case the last test failed.
 		if (method_type == "svn") :
 			svn_vcs.clean_source(test_req, None)
