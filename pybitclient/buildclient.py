@@ -62,7 +62,7 @@ class PackageHandler(object):
 		if (stamp is not None) :
 			log = "%s_%s-%s-%s" % (buildreq.get_package(), buildreq.get_version(), buildreq.get_arch(), buildreq.get_buildstamp())
 			logfile = os.path.join (buildroot, log)
-	return logfile
+		return logfile
 
 	def is_dry_run (self):
 		return self.settings["dry_run"]
