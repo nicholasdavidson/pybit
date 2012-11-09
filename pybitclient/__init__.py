@@ -76,11 +76,12 @@ class PyBITClient(object):
 	def wait(self):
 		time.sleep(5)
 		if self.state == "IDLE" :
+			msg = None
 			if self.message_chan is not None:
 				msg = self.message_chan.basic_get()
 			if msg is not None :
 				self.message_handler(msg)
-
+		cmd = None
 		if self.command_chan is not None :
 			cmd = self.command_chan.basic_get(no_ack=True)
 		if cmd is not None:
