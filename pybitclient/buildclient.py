@@ -48,6 +48,7 @@ class VersionControlHandler(object):
 class PackageHandler(object):
 
 	chan = None
+	logdir = None
 
 	def __init__(self, settings):
 		self.settings = settings
@@ -55,16 +56,16 @@ class PackageHandler(object):
 			self.settings["dry_run"] = True
 		if not "buildroot" in self.settings:
 			self.settings["buildroot"] = "/tmp/buildd"
+		self.logdir = os.path.join(self.settings["buildroot"], "logs")
+		if not os.path.isdir (self.logdir) :
+			os.mkdir (self.logdir)
 
 	def get_buildlog (self, buildroot, buildreq) :
 		logfile = None
 		stamp = buildreq.get_buildstamp()
 		if (stamp is not None) :
-			logdir = os.path.join(buildroot, "logs")
-			if not os.path.isdir (logdir) :
-				os.mkdir (logdir)
 			log = "%s_%s-%s-%s" % (buildreq.get_package(), buildreq.get_version(), buildreq.get_arch(), buildreq.get_buildstamp())
-			logfile = os.path.join (logdir, log)
+			logfile = os.path.join (self.logdir, log)
 		return logfile
 
 	def is_dry_run (self):
