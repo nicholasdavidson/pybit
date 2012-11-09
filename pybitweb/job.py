@@ -36,7 +36,7 @@ def get_job_app(settings, db, controller) :
 	@app.route('/vcshook', method='PUT')
 	def vcs_hook():
 		try:
-				response.status = "200 - Version control poke recieved"
+				response.status = "200 - Version control poke received"
 				uri = request.forms.get('uri')
 				method = request.forms.get('method')
 				dist = request.forms.get('distribution')
@@ -73,7 +73,7 @@ def get_job_app(settings, db, controller) :
 	@app.route('/', method='DELETE')
 	def cancel_jobs():
 		try:
-			response.status = "202 - CANCEL ALL request recieved"
+			response.status = "202 - CANCEL ALL request received"
 			app.config['controller'].cancel_all_builds()
 			return
 		except Exception as e:
@@ -84,7 +84,7 @@ def get_job_app(settings, db, controller) :
 	@app.route('/<jobid:int>/cancel', method='GET')
 	def cancel_job(jobid):
 		try:
-			response.status = "202 - CANCEL JOB request recieved"
+			response.status = "202 - CANCEL JOB request received"
 			app.config['controller'].cancel_package_instance(jobid)
 			return
 		except Exception as e:
@@ -188,7 +188,7 @@ def get_job_app(settings, db, controller) :
 		try:
 			# Deletes a specific job
 			# TODO: validation,security
-			response.status = "202 - DELETE request recieved"
+			response.status = "202 - DELETE request received"
 			app.config['db'].delete_job(jobid)
 			return
 		except Exception as e:

@@ -104,7 +104,7 @@ def get_packageinstance_app(settings, db):
 		try:
 			# Deletes a specific package instance
 			# TODO: validation,security
-			response.status = "202 - DELETE request recieved"
+			response.status = "202 - DELETE request received"
 			app.config['db'].delete_packageinstance(packageinstance_id)
 			return
 		except Exception as e:
@@ -115,7 +115,7 @@ def get_packageinstance_app(settings, db):
 	def get_packageinstances_filtered():
 		try:
 			response.content_type = "application/json"
-			#TODO - CODEME, filter by paramater (request.query.[x])
+			#TODO - CODEME, filter by parameter (request.query.[x])
 			return "Returning packageinstances by filter"
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))

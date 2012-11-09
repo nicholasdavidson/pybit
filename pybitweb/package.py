@@ -81,7 +81,7 @@ def get_packages_app(settings, db, controller):
 		try:
 			# Deletes a specific buildd
 			# TODO: validation,security
-			response.status = "202 - DELETE request recieved"
+			response.status = "202 - DELETE request received"
 			app.config['db'].delete_package(package_id)
 			return
 		except Exception as e:
@@ -92,7 +92,7 @@ def get_packages_app(settings, db, controller):
 	@app.route('/<package_id:int>/cancel', method='GET')
 	def cancel_package(package_id):
 		try:
-			response.status = "202 - CANCEL PACKAGE request recieved"
+			response.status = "202 - CANCEL PACKAGE request received"
 	
 			app.config['controller'].cancel_package(package_id)
 			return
@@ -100,7 +100,7 @@ def get_packages_app(settings, db, controller):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 	
-	@app.route('/list', method='GET') # TODO, filter by paramater (request.query.[x])
+	@app.route('/list', method='GET') # TODO, filter by parameter (request.query.[x])
 	def get_packages_filtered():
 		try:
 			response.content_type = "application/json"
