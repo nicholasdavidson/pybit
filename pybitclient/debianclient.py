@@ -146,7 +146,7 @@ class DebianBuildClient(PackageHandler):
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "build_binary"
 		if not retval :
-			changes = "%s/%s_%s_%s.changes" % (os.getcwd(), buildreq.get_package(),
+			changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"], buildreq.get_package(),
 				buildreq.get_version(), buildreq.get_arch())
 			if not self.settings["dry_run"] and not os.path.isfile (changes) :
 				logging.debug("build_master: Failed to find %s file." % (changes))
@@ -164,7 +164,7 @@ class DebianBuildClient(PackageHandler):
 		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
-		changes = "%s/%s_%s_%s.changes" % (os.getcwd(), buildreq.get_package(),
+		changes = "%s/%s_%s_%s.changes" % (srcdir, buildreq.get_package(),
 			buildreq.get_version(), buildreq.get_arch())
 		if not os.path.isfile (changes) and not self.settings["dry_run"]:
 			logging.debug("upload: Failed to find %s file." % (changes))
@@ -211,7 +211,7 @@ class DebianBuildClient(PackageHandler):
 				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 					retval = "build_binary"
 			if not retval :
-				changes = "%s/%s_%s_%s.changes" % (os.getcwd(),
+				changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"],
 					buildreq.get_package(), buildreq.get_version(),
 					buildreq.get_arch())
 				if not self.settings["dry_run"] and not os.path.isfile (changes) :
@@ -233,3 +233,5 @@ class DebianBuildClient(PackageHandler):
 		# FIXME: decide how this is managed and packaged
 		# variables to retrieve from the job object later
 		self.dput_cfg = "/etc/pybit/client/dput.cf"
+		if not settings["dry_run"] :
+			os.chdir (settings["buildroot"])
