@@ -50,7 +50,7 @@ class PyBITClient(object):
 		if request is None:
 			request = self.current_request
 		if status is not None and request is not None:
-			print "Marking JOB id: %s as: %s" % (request.get_job_id(), status) #FIXME: this clears/resets 'cancelled' state
+			logging.debug ("Marking JOB id: %s as: %s" % (request.get_job_id(), status)) #FIXME: this clears/resets 'cancelled' state
 			payload = {'status' : status }
 			if client is not None:
 				payload['client']  = client
@@ -60,7 +60,7 @@ class PyBITClient(object):
 			except requests.exceptions.ConnectionError :
 				pass
 		else:
-			print "Couldn't find status or current_request"
+			logging.debug ("Couldn't find status or current_request")
 
 	def get_status(self, request = None):
 		if request is None:
@@ -124,9 +124,9 @@ class PyBITClient(object):
 					elif overall_success == False:
 						self.set_status(ClientMessage.failed, current_req)
 
-			print "Moved from %s to %s" % (self.old_state, self.state)
+			logging.debug ("Moved from %s to %s" % (self.old_state, self.state))
 		else:
-			print "Unhandled state: %s" % (new_state)
+			logging.debug ("Unhandled state: %s" % (new_state))
 
 
 
@@ -141,7 +141,7 @@ class PyBITClient(object):
 						self.vcs_handler = SubversionClient(self.settings)
 						self.move_state("CHECKOUT")
 					elif self.get_status() == ClientMessage.cancelled:
-						print "jobid: %s has been cancelled. Acking." % (self.current_request.get_job_id())
+						logging.debug ("jobid: %s has been cancelled. Acking." % (self.current_request.get_job_id()))
 						self.move_state("IDLE")
 				except Exception as requests.exceptions.ConnectionError:
 					self.overall_success = False
@@ -151,7 +151,7 @@ class PyBITClient(object):
 				self.move_state("IDLE")
 
 	def fatal_error_handler(self, msg, decoded):
-		print "Fatal Error handler"
+		logging.debug ("Fatal Error handler")
 
 	def checkout_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
@@ -227,7 +227,7 @@ class PyBITClient(object):
 		if (pkg_format == "deb") :
 			self.format_handler = DebianBuildClient(self.settings)
 		else:
-			print "Empty build client"
+			logging.debug ("Empty build client")
 			self.format_handler = None
 
 		self._clean_current()
@@ -239,18 +239,18 @@ class PyBITClient(object):
 			self.message_chan.basic_ack(msg.delivery_tag)
 			return
 		if self.process:
-			print "Detected a running process"
+			logging.debug ("Detected a running process")
 		self.state_table[self.state](msg, build_req)
 
 	def command_handler(self, msg):
 		cmd_req = jsonpickle.decode(msg.body)
 		if (not isinstance(cmd_req, TaskComplete) and
 			not isinstance(cmd_req, CommandRequest)):
-			print "Can't handle message type."
+			logging.debug ("Can't handle message type.")
 			self.command_chan.basic_ack(msg.delivery_tag)
 		elif isinstance(cmd_req, CommandRequest) :
 			if isinstance(cmd_req, CancelRequest) :
-				print "Received CANCEL request for jobid:", cmd_req.get_job_id()
+				logging.debug ("Received CANCEL request for jobid:", cmd_req.get_job_id())
 				self.set_status(ClientMessage.cancelled, cmd_req)
 				if (self.current_request.get_job_id() == cmd_req.get_job_id()) and (self.process is not None) :
 					self.process.terminate()
@@ -258,7 +258,7 @@ class PyBITClient(object):
 					self.process = None
 					self.move_state("IDLE")
 			else :
-				print "Received COMMAND request for jobid:", cmd_req.get_job_id()
+				logging.debug ("Received COMMAND request for jobid:", cmd_req.get_job_id())
 		else:
 			self.state_table[self.state](msg, cmd_req)
 
@@ -277,16 +277,16 @@ class PyBITClient(object):
 			self.message_chan = self.conn.channel()
 			self.message_chan.basic_qos(0,1,False)
 		except socket.error as e:
-			print "Couldn't connect rabbitmq server with: %s" % repr(self.conn_info)
+			logging.debug ("Couldn't connect rabbitmq server with: %s" % repr(self.conn_info))
 			return
 
-		print "Creating queue with name:" + self.queue_name
+		logging.debug("Creating queue with name:" + self.queue_name)
 		self.message_chan.queue_declare(queue=self.queue_name, durable=True,
 			exclusive=False, auto_delete=False)
 		self.message_chan.queue_bind(queue=self.queue_name,
 			exchange=pybit.exchange_name, routing_key=self.routing_key)
 
-		print "Creating private command queue with name:" + self.conn_info.client_name
+		logging.debug ("Creating private command queue with name:" + self.conn_info.client_name)
 		self.command_chan.queue_declare(queue=self.conn_info.client_name,
 			durable=False, exclusive=True, auto_delete=False)
 		self.command_chan.queue_bind(queue=self.conn_info.client_name,
@@ -322,17 +322,16 @@ class PyBITClient(object):
 
 
 def run_cmd (cmd, simulate, logfile):
-	log = logging.getLogger( "pybit-client" )
 	if simulate == True :
-		log.debug ("I: Simulating: %s" % cmd)
+		logging.debug ("I: Simulating: %s" % cmd)
 		return True
 	else:
-		log.debug("Running: %s" % cmd)
+		logging.debug("Running: %s" % cmd)
 		if logfile is not None :
 			command = cmd
 			cmd = "%s >> %s 2>&1" % (command, logfile)
 		if os.system (cmd) :
-			log.debug("%s returned error" % cmd)
+			logging.debug("%s returned error" % cmd)
 			return False
 	return True
 
@@ -354,8 +353,7 @@ def send_message (conn_data, msg) :
 		chan.close()
 		conn.close()
 	else :
-		log = logging.getLogger( "pybit-client" )
-		log.debug("I: Simulating sending message: %s " % (msg))
+		logging.debug("I: Simulating sending message: %s " % (msg))
 
 def get_settings(path):
 	try:

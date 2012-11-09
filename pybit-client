@@ -33,6 +33,7 @@ import requests
 import pybit
 import os
 import daemon
+from pybitclient.daemonlogger import LoggingDaemonContext, FileLikeLogger
 import time
 import logging
 from pybitclient import PyBITClient
@@ -66,6 +67,12 @@ def run(settings) :
 				build_client.wait()
 			else:
 				os._exit (os.EX_OSERR)
+
+def getDaemonLogger (filePath, format = None) :
+	FORMAT = format or '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
+	logging.basicConfig(filename=filePath, format=FORMAT, level=logging.DEBUG)
+	logging.debug ("I: Daemonised")
+	return logging.getLogger()
 
 if __name__ == '__main__':
 	parser = optparse.OptionParser()
@@ -119,28 +126,33 @@ if __name__ == '__main__':
 		help="Turn on verbose messages.", metavar=META+"VERBOSE")
 
 	parser.add_option("-d", dest="daemonise", action="store_true", default=False,
-		help="Daemonise with output going to /var/log/pybit", metavar=META+"DAEMONISE")
+		help="Daemonise with output going to /var/log/pybitclient.log", metavar=META+"DAEMONISE")
 
 	(options, args) = parser.parse_args()
 
 	if options.daemonise :
-		FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
-		logging.basicConfig(filename='/var/log/pybitclient.log', format=FORMAT, level=logging.DEBUG)
-		log = logging.getLogger( "pybit-client" )
-		log.debug ("I: Daemonised")
+		testLogger = getDaemonLogger('/var/log/pybitclient.log')
+		stdoutLogger = getDaemonLogger('/dev/null')
+		stderrLogger = getDaemonLogger('/dev/null')
+		context = LoggingDaemonContext()
+		context.loggers_preserve=[testLogger]
+		context.stdout_logger = stdoutLogger
+		context.stderr_logger = stderrLogger
+		logging.debug ("I: Daemonised")
 
 	settings = pybit.load_settings(options.conf_file)
 
 	settings = pybit.merge_options(settings, groupConfigFile, options)
 	if settings == {}:
+		logging.debug ("No settings found - exiting")
 		os._exit(os.EX_OSERR)
 	if 'configured'  in settings and settings.configured == False:
-		print "Please configure your client."
+		logging.debug ("Please configure your client.")
 		os._exit(os.EX_OK)
 
 	if options.daemonise:
-		with daemon.DaemonContext():
-			log.debug ("I: Running build client.")
+		with context :
+			logging.debug ("I: Running build client.")
 			run(settings)
 	else :
 		print "Hit Ctrl-C to quit."

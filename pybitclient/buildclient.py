@@ -20,6 +20,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os
 import pybitclient
 import pybit
 
@@ -57,7 +58,7 @@ class PackageHandler(object):
 		if not "buildroot" in self.settings:
 			self.settings["buildroot"] = "/tmp/buildd"
 		self.logdir = os.path.join(self.settings["buildroot"], "logs")
-		if not os.path.isdir (self.logdir) :
+		if not os.path.isdir (self.logdir) and not self.settings["dry_run"] :
 			os.mkdir (self.logdir)
 
 	def get_buildlog (self, buildroot, buildreq) :
