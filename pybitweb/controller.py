@@ -76,7 +76,11 @@ class Controller(object):
 						build_req = jsonpickle.encode(BuildRequest(new_job,transport,self.settings['webserver_url'],commands))
 						msg = amqp.Message(build_req)
 						msg.properties["delivery_mode"] = 2
-						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name)
+						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name, 
+																new_job.packageinstance.arch.name, 
+																new_job.packageinstance.suite.name, 
+																new_job.packageinstance.format.name)
+						self.check_queue(new_job)
 						if self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True) :
 							#print "\n____________SENDING", build_req, "____________TO____________", routing_key
 							print "SENDING BUILD REQUEST FOR JOB ID", new_job.id, new_job.packageinstance.package.name, new_job.packageinstance.package.version, new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name
@@ -93,6 +97,22 @@ class Controller(object):
 			raise Exception('Error submitting job: ' + str(e))
 			response.status = "500 - Error submitting job"
 			return
+		return
+
+	def check_queue(self, job):
+		routing_key = pybit.get_build_route_name(job.packageinstance.distribution.name, 
+												job.packageinstance.arch.name, 
+												job.packageinstance.suite.name, 
+												job.packageinstance.format.name)
+		build_queue = pybit.get_build_queue_name(job.packageinstance.distribution.name, 
+												job.packageinstance.arch.name, 
+												job.packageinstance.suite.name, 
+												job.packageinstance.format.name)
+		if not self.chan.queue_declare(queue=build_queue, passive=True) :
+			print "CREATED", self.chan.queue_declare(queue=build_queue, durable=True,
+										exclusive=False, auto_delete=False)
+			print "BINDING", build_queue, routing_key, self.chan.queue_bind(queue=build_queue,
+										exchange=pybit.exchange_name, routing_key=routing_key)
 		return
 
 	def process_achitectures(self, requested_arches, suite) :
