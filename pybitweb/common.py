@@ -26,9 +26,36 @@ import jsonpickle
 import os
 import sys
 from os.path import isfile
-from pybitweb.bottle import Bottle
+from pybitweb.bottle import Bottle,request,response
 
+# TODO: Query the DB for this!
+def check_auth(username, password):
+    if username == 'admin' and password == 'pass':
+        return True
+    else:
+        return False
 
+def authenticate(msg_string = "Authenticate."):
+    response.content_type = "application/json"
+    message = {'message': msg_string}
+    resp = jsonpickle.encode(message)
+    response.status = "401 - Unauthorized"
+    response.headers['WWW-Authenticate'] = 'Basic realm="PyBit"'
+
+    return resp
+
+def requires_auth(f):
+    def decorated(*args, **kwargs):
+        print request.auth
+        auth = request.auth
+        if not auth: 
+            return authenticate()
+        elif not check_auth(auth[0],auth[1]):
+            response.status = "401 - Unauthorized"
+            return authenticate("HTTP Authentication Failed.")
+        else:
+            return f(*args, **kwargs)
+    return decorated
 
 def load_from_cwd(filename):
     try:

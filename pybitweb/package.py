@@ -25,6 +25,8 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import Database
 from controller import Controller
+import common
+from common import requires_auth
 
 def get_packages_app(settings, db, controller):
 	app = Bottle(config={'settings':settings,'db':db, 'controller' : controller})
@@ -60,6 +62,7 @@ def get_packages_app(settings, db, controller):
 	
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
+	@requires_auth
 	def put_package():
 		try:
 			# Add a new package.
@@ -77,10 +80,10 @@ def get_packages_app(settings, db, controller):
 	
 	@app.route('/<package_id:int>/delete', method='GET')
 	@app.route('/<package_id:int>', method='DELETE')
+	@requires_auth
 	def delete_package(package_id):
 		try:
 			# Deletes a specific buildd
-			# TODO: validation,security
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_package(package_id)
 			return
@@ -90,6 +93,7 @@ def get_packages_app(settings, db, controller):
 	
 	#NEW: Have controller cancel all jobs for this package.
 	@app.route('/<package_id:int>/cancel', method='GET')
+	@requires_auth
 	def cancel_package(package_id):
 		try:
 			response.status = "202 - CANCEL PACKAGE request received"

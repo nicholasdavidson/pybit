@@ -26,6 +26,8 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import Database
+import common
+from common import requires_auth
 from controller import Controller
 from pybit.models import Transport,JobHistory
 
@@ -34,6 +36,7 @@ def get_job_app(settings, db, controller) :
 	app = Bottle(config={'settings':settings, 'db':db, 'controller': controller})
 	@app.route('/vcshook', method='POST')
 	@app.route('/vcshook', method='PUT')
+	@requires_auth
 	def vcs_hook():
 		try:
 				response.status = "200 - Version control poke received"
@@ -58,7 +61,7 @@ def get_job_app(settings, db, controller) :
 			raise Exception('Exception encountered in vcs_hook: ' + str(e))
 			response.status = "500 - Exception encountered in vcs_hook"
 			return None
-	
+
 	@app.route('/', method='GET')
 	def get_jobs():
 		try:
@@ -71,6 +74,7 @@ def get_job_app(settings, db, controller) :
 	
 	#NEW: Have controller cancel all jobs.
 	@app.route('/', method='DELETE')
+	@requires_auth
 	def cancel_jobs():
 		try:
 			response.status = "202 - CANCEL ALL request received"
@@ -82,6 +86,7 @@ def get_job_app(settings, db, controller) :
 	
 	#NEW: Have controller cancel a specific job.
 	@app.route('/<jobid:int>/cancel', method='GET')
+	@requires_auth
 	def cancel_job(jobid):
 		try:
 			response.status = "202 - CANCEL JOB request received"
@@ -104,6 +109,7 @@ def get_job_app(settings, db, controller) :
 	
 	@app.route('/<jobid:int>', method='PUT')
 	@app.route('/<jobid:int>', method='POST')
+	@requires_auth
 	def update_job_status(jobid):
 		job_status = request.forms.status
 		job_client = None
@@ -134,6 +140,7 @@ def get_job_app(settings, db, controller) :
 	
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
+	@requires_auth
 	def put_job():
 		try:
 			# Add a new job. Pokes simons controller code with the correct values for uri, method, vcs_id etc...
@@ -184,10 +191,10 @@ def get_job_app(settings, db, controller) :
 	
 	@app.route('/<jobid:int>/delete', method='GET')
 	@app.route('/<jobid:int>', method='DELETE')
+	@requires_auth
 	def del_jobid(jobid):
 		try:
 			# Deletes a specific job
-			# TODO: validation,security
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_job(jobid)
 			return

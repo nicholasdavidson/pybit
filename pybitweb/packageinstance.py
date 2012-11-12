@@ -25,6 +25,8 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
+import common
+from common import requires_auth
 
 def get_packageinstance_app(settings, db):
 	app = Bottle(config = { 'settings': settings, 'db': db})
@@ -69,6 +71,7 @@ def get_packageinstance_app(settings, db):
 	
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
+	@requires_auth
 	def put_packageinstance():
 		try:
 			# Add a new packageinstance.
@@ -100,10 +103,10 @@ def get_packageinstance_app(settings, db):
 	
 	@app.route('/<packageinstance_id:int>/delete', method='GET')
 	@app.route('/<packageinstance_id:int>', method='DELETE')
+	@requires_auth
 	def delete_packageinstance(packageinstance_id):
 		try:
 			# Deletes a specific package instance
-			# TODO: validation,security
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_packageinstance(packageinstance_id)
 			return

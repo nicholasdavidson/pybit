@@ -24,6 +24,8 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
+import common
+from common import requires_auth
 
 def get_buildd_app(settings, db):
 	app = Bottle(config= {'settings' : settings, 'db' : db})
@@ -41,6 +43,7 @@ def get_buildd_app(settings, db):
 	
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
+	@requires_auth
 	def put_buildd():
 		try:
 			# Register a new BuildD.
@@ -75,10 +78,10 @@ def get_buildd_app(settings, db):
 	
 	@app.route('/<buildd_id:int>/delete', method='GET')
 	@app.route('/<buildd_id:int>', method='DELETE')
+	@requires_auth
 	def delete_buildd_id(buildd_id):
 		try:
 			# Deletes a specific buildd
-			# TODO: validation,security
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_buildclient(buildd_id)
 			return
@@ -116,6 +119,7 @@ def get_buildd_app(settings, db):
 			return None
 	
 	@app.route('/<buildd_id:int>/:command', method='POST')
+	@requires_auth
 	def post_command(buildd_id,command):
 		try:
 			response.status = "202 - Command sent"

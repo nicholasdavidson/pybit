@@ -14,6 +14,7 @@ from subversion import SubversionClient
 import multiprocessing
 import socket
 import requests
+from requests.auth import HTTPBasicAuth
 
 #       Copyright 2012:
 #
@@ -56,7 +57,7 @@ class PyBITClient(object):
 				payload['client']  = client
 			job_status_url = "http://%s/job/%s" % (request.web_host, request.get_job_id())
 			try:
-				requests.put(job_status_url, payload)
+				requests.put(job_status_url, payload, auth=HTTPBasicAuth('admin', 'pass'))
 			except requests.exceptions.ConnectionError :
 				pass
 		else:

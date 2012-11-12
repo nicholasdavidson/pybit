@@ -25,6 +25,8 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import Database
 from pybit.models import Arch,Dist,Format,Status,Suite,SuiteArch
+import common
+from common import requires_auth
 
 def get_arch_app(settings, db):
 	app = Bottle(config={'settings':settings, 'db':db})
@@ -53,6 +55,7 @@ def get_arch_app(settings, db):
 
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
+	@requires_auth
 	def put_arch():
 		try:
 			# Add a new arch.
@@ -69,10 +72,10 @@ def get_arch_app(settings, db):
 	
 	@app.route('/<arch_id:int>/delete', method='GET')
 	@app.route('/<arch_id:int>', method='DELETE')
+	@requires_auth
 	def delete_arch(arch_id):
 		try:
 			# Deletes a specific arch
-			# TODO: validation,security
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_arch(arch_id)
 			return
@@ -115,6 +118,7 @@ def get_suitearch_app(settings, db):
 	
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
+	@requires_auth
 	def put_suitearch():
 		try:
 			# Add a new suitearch.
@@ -132,10 +136,10 @@ def get_suitearch_app(settings, db):
 	
 	@app.route('/<suitearch_id:int>/delete', method='GET')
 	@app.route('/<suitearch_id:int>', method='DELETE')
+	@requires_auth
 	def delete_suitearch(suitearch_id):
 		try:
 			# Deletes a specific suitearch
-			# TODO: validation,security
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_suitearch(suitearch_id)
 			return
@@ -178,6 +182,7 @@ def get_status_app(settings, db):
 	
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
+	@requires_auth
 	def put_status():
 		try:
 			# Add a new status.
@@ -194,10 +199,10 @@ def get_status_app(settings, db):
 	
 	@app.route('/<status_id:int>/delete', method='GET')
 	@app.route('/<status_id:int>', method='DELETE')
+	@requires_auth
 	def delete_status(status_id):
 		try:
 			# Deletes a specific status
-			# TODO: validation,security
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_status(status_id)
 			return
@@ -240,6 +245,7 @@ def get_dist_app(settings, db):
 	
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
+	@requires_auth
 	def put_dist():
 		try:
 			# Add a new dist.
@@ -256,10 +262,10 @@ def get_dist_app(settings, db):
 	
 	@app.route('/<dist_id:int>/delete', method='GET')
 	@app.route('/<dist_id:int>', method='DELETE')
+	@requires_auth
 	def delete_dist(dist_id):
 		try:
 			# Deletes a specific dist
-			# TODO: validation,security
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_dist(dist_id)
 			return
@@ -302,6 +308,7 @@ def get_format_app(settings, db):
 	
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
+	@requires_auth
 	def put_format():
 		try:
 			# Add a new format.
@@ -318,10 +325,10 @@ def get_format_app(settings, db):
 	
 	@app.route('/<format_id:int>/delete', method='GET')
 	@app.route('/<format_id:int>', method='DELETE')
+	@requires_auth
 	def delete_format(format_id):
 		try:
 			# Deletes a specific format
-			# TODO: validation,security
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_format(format_id)
 			return
@@ -363,6 +370,7 @@ def get_suite_app(settings, db):
 	
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
+	@requires_auth
 	def put_suite():
 		try:
 			# Add a new suite.
@@ -379,10 +387,10 @@ def get_suite_app(settings, db):
 	
 	@app.route('/<suite_id:int>/delete', method='GET')
 	@app.route('/<suite_id:int>', method='DELETE')
+	@requires_auth
 	def delete_suite(suite_id):
 		try:
 			# Deletes a specific suite
-			# TODO: validation,security
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_suite(suite_id)
 			return
