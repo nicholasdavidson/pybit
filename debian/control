@@ -44,8 +44,8 @@ Description: buildd client support for Pybit
 
 Package: pybit-web
 Architecture: all
-Depends: python-psycopg2 (>= 2.4.2-1~), libjs-jquery-form,
- pybit-common, ${python:Depends}, ${misc:Depends}
+Depends: python-psycopg2 (>= 2.4.2-1~), pybit-common,
+ ${python:Depends}, ${misc:Depends}
 Description: pybit web frontend
  This package provides a reporting and custom-build
  request interface for the data managed by pybit-controller.
@@ -68,7 +68,7 @@ Description: Common objects for pybit
 
 Package: pybit-watcher
 Architecture: all
-Depends: python-inotify, python-daemon, pybit-common, reprepro,
+Depends: python-pyinotify, python-daemon, pybit-common, reprepro,
  ${python:Depends}, ${misc:Depends}
 Description: watches incomming directories for reprepro
  This package provides a watcher which runs as a daemon and monitors a
