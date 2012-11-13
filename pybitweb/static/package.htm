@@ -76,7 +76,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form" method="POST" action="{{protocol}}{{host}}:{{port}}/package" id="package_form" name="package_form">
+<form class="form" method="POST" action="{{protocol}}" + window.location.host.toString() + "/package" id="package_form" name="package_form">
 					<legend>Add a Package</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -97,7 +97,7 @@
    {
 $.ajax({
         type: "GET",
-        url: "{{protocol}}{{host}}:{{port}}/package/" + id + "/delete",
+        url: "{{protocol}}" + window.location.host.toString() + "/package/" + id + "/delete",
         error: function(data){
 			alert('Error deleting package with id: ' + id + "\n" + data.responseText );
       location.reload();
@@ -111,12 +111,12 @@ $.ajax({
 {            $('#package_form').ajaxForm(function() {
                 alert("Package Added!");
                 location.reload();
-            });	var url = "{{protocol}}{{host}}:{{port}}/package"
+            });	var url = "{{protocol}}" + window.location.host.toString() + "/package"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_packages").append("<tr><td><a href='{{protocol}}{{host}}:{{port}}/package/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}{{host}}:{{port}}/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='{{protocol}}{{host}}:{{port}}/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td><a href='{{protocol}}{{host}}:{{port}}/package/" + field.id + "/cancel'>Cancel</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
+			$("#tbl_packages").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/package/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/" + field.id + "/cancel'>Cancel</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
 		});
 	});
 });

@@ -77,7 +77,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form" method="POST" action="{{protocol}}{{host}}:{{port}}/job"  id="job_form" name="job_form">
+<form class="form" method="POST" action="{{protocol}}" + window.location.host.toString() + "/job"  id="job_form" name="job_form">
 					<legend>Submit a Job</legend>
 					<label for="packageinstance_id">Package Instance ID: </label>
 					<select name="packageinstance_id"  id="packageinstance_id" size="1" style="width:480px; display:block;"></select>
@@ -104,7 +104,7 @@
     </div>
         <div id="collapseTwo" class="accordion-body collapse">
       <div class="accordion-inner">
-	<form class="form" method="GET" action="{{protocol}}{{host}}:{{port}}/job/cancel">
+	<form class="form" method="GET" action="{{protocol}}" + window.location.host.toString() + "/job/cancel">
 	<button id="deleteall" name = "deleteall" type="submit" class="btn btn-danger"><a href="/job/delete">DANGER: CANCEL *ALL* RUNNING JOBS</a></button>
 	</form>
 		    </div>
@@ -112,7 +112,7 @@
 	    </div>
 	        </div>
 
- 
+
 <!-- Modal status dialog-->
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header" id="history_header" name="history_header">
@@ -145,7 +145,7 @@
 
 function show_history(id)
 {
-	var url = "{{protocol}}{{host}}:{{port}}/job/" + id + "/status"
+	var url = "{{protocol}}" + window.location.host.toString() + "/job/" + id + "/status"
 $.getJSON(url, function(json)
 {
 $("#history_header").empty();
@@ -164,7 +164,7 @@ function delete_click(id)
    {
 $.ajax({
         type: "GET",
-        url: "{{protocol}}{{host}}:{{port}}/job/" + id + "/delete",
+        url: "{{protocol}}" + window.location.host.toString() + "/job/" + id + "/delete",
         error: function(data){
 			   alert('Error deleting job with id: ' + id + "\n" + data.responseText );
          location.reload();
@@ -179,7 +179,7 @@ $.ajax({
                 alert("Added job OK!")
                 location.reload();
             });
-	var packageinstances = "{{protocol}}{{host}}:{{port}}/packageinstance";
+	var packageinstances = "{{protocol}}" + window.location.host.toString() + "/packageinstance";
 	$.getJSON(packageinstances, function(json)
 	{
 		$.each(json, function(i, field)
@@ -187,14 +187,14 @@ $.ajax({
 			$("#packageinstance_id").append("<option value='" + field.id + "'>" + field.id + " - " + field.package.name + " " + field.package.version + "." + field.format.name + " "  + " " + field.distribution.name + "/" + field.suite.name + " (" + field.arch.name + ") </option>");
 		});
 	});	var jobstatuses = new Object()
-	var url = "{{protocol}}{{host}}:{{port}}/job/status"
+	var url = "{{protocol}}" + window.location.host.toString() + "/job/status"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
 		bid = "";
 		bname = "Unassigned";
-		var url2 = "{{protocol}}{{host}}:{{port}}/job/" + field.id + "/status";
+		var url2 = "{{protocol}}" + window.location.host.toString() + "/job/" + field.id + "/status";
 	$.getJSON(url2, function(json2)
 	{
 		var statuses = new Array()
@@ -227,7 +227,7 @@ $.ajax({
 			{
 				_class = "warning"
 			}
-			$("#tbl_jobs").append("<tr class='" + _class +"'><td><a href='{{protocol}}{{host}}:{{port}}/job/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}{{host}}:{{port}}/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + " (" +  field.packageinstance.arch.name + " " +  field.packageinstance.format.name + ")" + "</td><td><a href='{{protocol}}{{host}}:{{port}}/buildd/" + bid + "'>" + bname + "</a></td><td>" + jobstatuses[field.id] + "<br> Master Flag: " + field.packageinstance.master +"</td><td><a href='{{protocol}}{{host}}:{{port}}/job/" + field.id + "/cancel'>Cancel</a><br><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id +")'>View Status History</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");	});
+			$("#tbl_jobs").append("<tr class='" + _class +"'><td><a href='{{protocol}}" + window.location.host.toString() + "/job/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + " (" +  field.packageinstance.arch.name + " " +  field.packageinstance.format.name + ")" + "</td><td><a href='{{protocol}}" + window.location.host.toString() + "/buildd/" + bid + "'>" + bname + "</a></td><td>" + jobstatuses[field.id] + "<br> Master Flag: " + field.packageinstance.master +"</td><td><a href='{{protocol}}" + window.location.host.toString() + "/job/" + field.id + "/cancel'>Cancel</a><br><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id +")'>View Status History</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");	});
 		});
 	});
 });
