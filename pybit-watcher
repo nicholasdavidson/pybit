@@ -30,6 +30,7 @@ import daemon
 import pybit
 import os
 import sys
+import logging
 
 settings= {}
 
