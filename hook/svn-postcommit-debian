@@ -24,13 +24,16 @@ set -e
 ######## Configuration ############
 
 # Network location of the pybit-web server
-PYBIT_HTTP="http://pybit:8080/job/vcshook"
+PYBIT_HTTP="http://buildmaster/job/vcshook"
 
 # Anonymous SVN URI stub
-ANON_SVN="http://svn.tcl.office/svn/lwdev"
+ANON_SVN="http://buildmaster.tcl.office/svn/lwdev"
 
 # Distribution
 DISTRO_NAME="Debian"
+
+USERNAME="admin"
+PASSWORD="pass"
 
 ####### End Configuration #########
 
@@ -110,4 +113,4 @@ DATASTR="${DATASTR}&package_version=${VERSION}"
 DATASTR="${DATASTR}&package=${PKG}"
 DATASTR="${DATASTR}&suite=${DISTRIBUTION}"
 DATASTR="${DATASTR}&format=deb"
-echo /usr/bin/curl -X POST ${PYBIT_HTTP} --data ${DATASTR}
+echo /usr/bin/curl -i -X POST ${PYBIT_HTTP} --data ${DATASTR} --user "${USERNAME}:${PASSWORD}"
