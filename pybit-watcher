@@ -86,7 +86,7 @@ if __name__ == '__main__':
 	(options, args) = parser.parse_args()
 	
 	(settings, opened_path) = pybit.load_settings(options.conf_file)
-	
+	context = None
 	if options.daemonise :
 		testLogger = getDaemonLogger('/var/log/pybitwatcher.log')
 		stdoutLogger = getDaemonLogger('/dev/null')
