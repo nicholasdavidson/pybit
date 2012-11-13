@@ -43,7 +43,7 @@ class TestClient(unittest.TestCase) :
 		conffile = "%s/configs/client/client.conf" % (os.getcwd());
 		self.assertTrue (os.path.isfile(conffile), "could not find %s" % conffile)
 		log.debug("I: reading %s" % (os.path.relpath(conffile, os.getcwd())))
-		self.options = pybit.load_settings(conffile)
+		(self.options, opened_path) = pybit.load_settings(conffile)
 		if not "dry_run" in self.options :
 			msg = "I: asserting dry_run for test cases"
 			log.debug (msg)

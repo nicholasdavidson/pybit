@@ -146,7 +146,7 @@ if __name__ == '__main__':
 		logging.basicConfig(level=logging.DEBUG)
 		logging.debug ("I: Not daemonised")
 
-	settings = pybit.load_settings(options.conf_file)
+	(settings, opened_path) = pybit.load_settings(options.conf_file)
 
 	settings = pybit.merge_options(settings, groupConfigFile, options)
 	if settings == {}:

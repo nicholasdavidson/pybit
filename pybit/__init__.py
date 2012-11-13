@@ -64,27 +64,28 @@ def get_build_route_name(dist, arch, suite, package):
 
 def load_settings(path):
 	opened_file = None
+	opened_path = path
 	#try the unmodified path incase we're being passed an absolute path.
 	try:
 		opened_file = open(path)
 	except IOError:
-		new_path = "./configs/%s" % path
+		opened_path = "./configs/%s" % path
 		try:
-			opened_file = open(new_path, 'r')
+			opened_file = open(opened_path, 'r')
 		except IOError:
-			new_path = "/etc/pybit/%s" % path
+			opened_path = "/etc/pybit/%s" % path
 			try:
-				opened_file = open(new_path)
+				opened_file = open(opened_path)
 			except IOError:
 				pass
 	if opened_file:
 		encoded_string = opened_file.read()
 		try:
-			return jsonpickle.decode(encoded_string )
+			return (jsonpickle.decode(encoded_string ), opened_path)
 		except ValueError :
-			return {}
+			return ({}, opened_path)
 	else:
-		return {}
+		return ({}, opened_path)
 
 exchange_name="pybit"
 status_route="pybit.control.status"

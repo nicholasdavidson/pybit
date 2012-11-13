@@ -32,9 +32,17 @@ import os
 import sys
 import logging
 
+from pybitclient.daemonlogger import LoggingDaemonContext, FileLikeLogger
+
 settings= {}
 
 META="PYBIT_WATCHER_"
+
+def getDaemonLogger (filePath, format = None) :
+	FORMAT = format or '%(asctime)s %(msg)s'
+	logging.basicConfig(filename=filePath, format=FORMAT, level=logging.DEBUG)
+	logging.debug ("I: Daemonised")
+	return logging.getLogger()
 
 class EventHandler(pyinotify.ProcessEvent):
 	def process_IN_CREATE(self, event):
@@ -74,13 +82,29 @@ if __name__ == '__main__':
 	
 	(options, args) = parser.parse_args()
 	
-	settings = pybit.load_settings(options.conf_file)
+	(settings, opened_path) = pybit.load_settings(options.conf_file)
+	
+	if options.daemonise :
+		testLogger = getDaemonLogger('/var/log/pybitclient.log')
+		stdoutLogger = getDaemonLogger('/dev/null')
+		stderrLogger = getDaemonLogger('/dev/null')
+		context = LoggingDaemonContext()
+		context.loggers_preserve=[testLogger]
+		context.stdout_logger = stdoutLogger
+		context.stderr_logger = stderrLogger
+		logging.debug ("I: Daemonised")
+	else :
+#		FORMAT = format or '%(asctime)s %(msg)s'
+		logging.basicConfig(level=logging.DEBUG)
+		logging.debug ("I: Not daemonised")
+	
+	
 	if settings == {}:
-		logging.debug("Couldn't load configuration from %s" % options.conf_file)
+		logging.debug("Couldn't load configuration from %s" % opened_path)
 		sys.exit(-1)
 		
 	if 'configured'  in settings and settings['configured'] == False:
-		logging.debug ("Please configure your client.")
+		logging.debug ("Please configure your client. Edit %s" % opened_path)
 		sys.exit(os.EX_OK)
 	
 	settings = pybit.merge_options(settings, groupConfigFile, options)
@@ -93,16 +117,12 @@ if __name__ == '__main__':
 	wdd = wm.add_watch(settings['path'], mask, rec=True)
 	
 	
-	if options.daemonise:
+	
+	if options.daemonise == True:
 		with daemon.DaemonContext():
 			pid = str(os.getpid())
 			file(PIDFILE, 'w').write(pid)
-			FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
-			logging.basicConfig(filename='/tmp/pybitclient.log', level=logging.DEBUG)
-			logging.basicConfig( format=FORMAT )
-			log = logging.getLogger( "pybit-client" )
-			log.debug ("I: Daemonised")
-			log.debug ("I: Running build client.")
 			notifier.loop()
 	else:
+		logging.debug ("I: Running watcher")
 		notifier.loop()

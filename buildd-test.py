@@ -36,9 +36,9 @@ def main():
 	logging.basicConfig( format=FORMAT )
 	conffile = "%s/configs/client/client.conf" % (os.getcwd());
 	if os.path.isfile (conffile):
-		settings = pybit.load_settings(conffile)
+		(settings, opened_path) = pybit.load_settings(conffile)
 	else :
-		settings = pybit.load_settings("/etc/pybit/client/client.conf")
+		(settings, opened_path) = pybit.load_settings("/etc/pybit/client/client.conf")
 	build_client = PyBITClient(settings["host_arch"], settings["distribution"], settings["pkg_format"], settings["suite"], None, settings)
 
 	testconf = "%s/buildd-test.conf" % (os.getcwd());
@@ -47,7 +47,7 @@ def main():
 		print "I: Copy /usr/share/pybitclient/buildd-test.conf and modify it for your available packages."
 		return 1
 	else :
-		test_options = pybit.load_settings(testconf)
+		(test_options, opened_path) = pybit.load_settings(testconf)
 
 	count = 0
 	max_count = test_options["count"]

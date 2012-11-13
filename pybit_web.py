@@ -49,7 +49,7 @@ if __name__ == '__main__':
 	parser.add_option("-v", dest="verbose", action="store_true", default=False,
 		help="Turn on verbose messages.", metavar=META+"VERBOSE")
 	(options, args) = parser.parse_args()
-	settings = pybit.load_settings(options.config)
+	(settings, opened_file) = pybit.load_settings(options.config)
 	settings = pybit.merge_options(settings, groupConfigFile, options)
 	
 	myDb = Database(settings['db']) # singleton instance
