@@ -78,7 +78,7 @@ if __name__ == '__main__':
 		logging.debug("Couldn't load configuration from %s" % options.conf_file)
 		sys.exit(-1)
 		
-	if 'configured'  in settings and settings.configured == False:
+	if 'configured'  in settings and settings['configured'] == False:
 		logging.debug ("Please configure your client.")
 		sys.exit(os.EX_OK)
 	
