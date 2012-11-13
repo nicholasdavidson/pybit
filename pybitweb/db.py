@@ -613,7 +613,7 @@ class Database(object):
 			jobs = []
 			for i in res:
 				packageinstance = self.get_packageinstance_id(i['packageinstance_id'])
-				jobs.append(jobs.append(Job(i['job_id'],packageinstance,buildclient_id)))
+				jobs.append(Job(i['job_id'],packageinstance,buildclient_id))
 			cur.close()
 			return jobs
 		except psycopg2.Error as e:
@@ -1068,5 +1068,3 @@ class Database(object):
 			self.conn.rollback()
 			raise Exception("Error retrieving supported architectures for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
-
-
