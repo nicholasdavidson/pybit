@@ -41,7 +41,6 @@ META="PYBIT_WATCHER_"
 def getDaemonLogger (filePath, format = None) :
 	FORMAT = format or '%(asctime)s %(msg)s'
 	logging.basicConfig(filename=filePath, format=FORMAT, level=logging.DEBUG)
-	logging.debug ("I: Daemonised")
 	return logging.getLogger()
 
 class EventHandler(pyinotify.ProcessEvent):
