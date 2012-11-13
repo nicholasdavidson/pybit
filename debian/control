@@ -69,6 +69,6 @@ Package: pybit-watcher
 Architecture: all
 Depends: python-pyinotify, python-daemon, pybit-common, reprepro,
  ${python:Depends}, ${misc:Depends}
-Description: watches incomming directories for reprepro
+Description: watches incoming directories for reprepro
  This package provides a watcher which runs as a daemon and monitors a
  directory for changes files then runs the appropriate reprepro rule.
