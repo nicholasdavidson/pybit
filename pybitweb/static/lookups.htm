@@ -75,7 +75,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse in">
       <div class="accordion-inner">
-      <form class="form-inline" method="POST" action="{{protocol}}" + window.location.host.toString() + "/arch"  id="arch_form" name="arch_form">
+      <form class="form-inline" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch"  id="arch_form" name="arch_form">
 					<legend>Add Package Architectures</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -94,7 +94,7 @@
     </div>
     <div id="collapseTwo" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form-inline" method="POST" action="{{protocol}}" + window.location.host.toString() + "/status"  id="status_form" name="status_form">
+<form class="form-inline" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/status"  id="status_form" name="status_form">
 					<legend>Add Job Statuses</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -112,7 +112,7 @@
     </div>
     <div id="collapseThree" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form-inline" method="POST" action="{{protocol}}" + window.location.host.toString() + "/dist"  id="dist_form" name="dist_form">
+<form class="form-inline" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/dist"  id="dist_form" name="dist_form">
 					<legend>Add Software Distributions</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -130,7 +130,7 @@
       </a>
     </div>
     <div id="collapseFour" class="accordion-body collapse">
-      <div class="accordion-inner">	<form class="form-inline" method="POST" action="{{protocol}}" + window.location.host.toString() + "/format"  id="format_form" name="format_form">
+      <div class="accordion-inner">	<form class="form-inline" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/format"  id="format_form" name="format_form">
 					<legend>Add Package Formats</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -149,7 +149,7 @@
     </div>
     <div id="collapseFive" class="accordion-body collapse">
       <div class="accordion-inner">
-	<form class="form-inline" method="POST" action="{{protocol}}" + window.location.host.toString() + "/suite"  id="suite_form" name="suite_form">
+	<form class="form-inline" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/suite"  id="suite_form" name="suite_form">
 					<legend>Add Software Suites</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -183,7 +183,7 @@
 			break;
 	}$.ajax({
         type: "GET",
-        url: "{{protocol}}" + window.location.host.toString() + "/" + target +"/" + id + "/delete",
+        url: "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/" + target +"/" + id + "/delete",
         error: function(data){
 			alert('Error deleting ' + target + ' with id: ' + id + "\n" + data.responseText );
       location.reload();
@@ -210,35 +210,35 @@
             $('#suite_form').ajaxForm(function() {
                 alert("Suite Added!");
                 location.reload();
-            });	var url = "{{protocol}}" + window.location.host.toString() + "/arch"
+            });	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
 			$("#tbl_arches").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>");
 		});
-	});	var url = "{{protocol}}" + window.location.host.toString() + "/status"
+	});	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/status"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
 			$("#tbl_statuses").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>");
 		});
-	});	var url = "{{protocol}}" + window.location.host.toString() + "/dist"
+	});	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/dist"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
 			$("#tbl_dists").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>");
 		});
-	});	var url = "{{protocol}}" + window.location.host.toString() + "/format"
+	});	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/format"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
 			$("#tbl_formats").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>");
 		});
-	});	var url = "{{protocol}}" + window.location.host.toString() + "/suite"
+	});	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/suite"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)

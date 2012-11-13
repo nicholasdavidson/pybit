@@ -76,7 +76,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form-inline" method="POST" action="{{protocol}}" + window.location.host.toString() + "/buildd" id="buildbox_form" name="buildbox_form">
+<form class="form-inline" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd" id="buildbox_form" name="buildbox_form">
 					<legend>Add a Buildbox</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -96,7 +96,7 @@
    {
 $.ajax({
         type: "GET",
-        url: "{{protocol}}" + window.location.host.toString() + "/buildd/" + id + "/delete",
+        url: "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + id + "/delete",
         error: function(data){
 			     alert('Error deleting buildd with id: ' + id + "\n" + data.responseText );
            location.reload();
@@ -110,12 +110,12 @@ $.ajax({
 {            $('#buildbox_form').ajaxForm(function() {
                 alert("Added buildd OK!");
                 location.reload();
-            });	var url = "{{protocol}}" + window.location.host.toString() + "/buildd"
+            });	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_buildds").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/buildd/" + field.id + "'>" + field.name + "</a></td><td><a  href='" + "{{protocol}}" + window.location.host.toString() + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + "{{protocol}}" + window.location.host.toString() + "/buildd/" + field.id + "/status'>View Status</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
+			$("#tbl_buildds").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/buildd/" + field.id + "'>" + field.name + "</a></td><td><a  href='" + "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.id + "/status'>View Status</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
 		});
 	});});
 </script>    </div>

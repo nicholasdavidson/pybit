@@ -76,7 +76,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form" method="POST" action="{{protocol}}" + window.location.host.toString() + "/package" id="package_form" name="package_form">
+<form class="form" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/package" id="package_form" name="package_form">
 					<legend>Add a Package</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -97,7 +97,7 @@
    {
 $.ajax({
         type: "GET",
-        url: "{{protocol}}" + window.location.host.toString() + "/package/" + id + "/delete",
+        url: "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/package/" + id + "/delete",
         error: function(data){
 			alert('Error deleting package with id: ' + id + "\n" + data.responseText );
       location.reload();
@@ -111,7 +111,7 @@ $.ajax({
 {            $('#package_form').ajaxForm(function() {
                 alert("Package Added!");
                 location.reload();
-            });	var url = "{{protocol}}" + window.location.host.toString() + "/package"
+            });	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/package"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)

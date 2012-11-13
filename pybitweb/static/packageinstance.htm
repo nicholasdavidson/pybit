@@ -76,7 +76,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form" method="POST" action="{{protocol}}" + window.location.host.toString() + "/packageinstance" id="packageinstance_form" name="packageinstance_form">
+<form class="form" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/packageinstance" id="packageinstance_form" name="packageinstance_form">
 					<legend>Create a package instance</legend>
 					<label for="package_id">Package: </label>
 					<select name="package_id" id="package_id"></select><label for="arch_id">Architecture: </label><select name="arch_id" id="arch_id"></select><label for="suite_id">Suite: </label><select name="suite_id"  id="suite_id"></select><label for="dist_id">Distribution: </label><select name="dist_id" id="dist_id"></select><label for="format_id">Package Format: </label><select name="format_id"  id="format_id"></select><br><input type="checkbox" name="slave"value="0" id="slave">Slave</input>
@@ -94,7 +94,7 @@
    {
 $.ajax({
         type: "GET",
-        url: "{{protocol}}" + window.location.host.toString() + "/packageinstance/" + id + "/delete",
+        url: "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/packageinstance/" + id + "/delete",
         error: function(data){
 			alert('Error deleting packageinstance with id: ' + id + "\n" + data.responseText );
       location.reload();
@@ -111,37 +111,37 @@ $().ready(function ()
 	            $('#packageinstance_form').ajaxForm(function() {
                 alert("Packageinstance Added!");
                 location.reload();
-            });	var packages = "{{protocol}}" + window.location.host.toString() + "/package"
+            });	var packages = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/package"
 	$.getJSON(packages, function(json)
 	{
 		$.each(json, function(i, field)
 		{			$("#package_id").append("<option value='" + field.id + "'>" + field.name + " " + field.version + "</option>");
 		});
-	});	var arches = "{{protocol}}" + window.location.host.toString() + "/arch"
+	});	var arches = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch"
 	$.getJSON(arches, function(json)
 	{
 		$.each(json, function(i, field)
 		{			$("#arch_id").append("<option value='" + field.id + "'>" + field.name + "</option>");
 		});
-	});	var suites = "{{protocol}}" + window.location.host.toString() + "/suite"
+	});	var suites = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/suite"
 	$.getJSON(suites, function(json)
 	{
 		$.each(json, function(i, field)
 		{			$("#suite_id").append("<option value='" + field.id + "'>" + field.name + "</option>");
 		});
-	});	var dists = "{{protocol}}" + window.location.host.toString() + "/dist"
+	});	var dists = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/dist"
 	$.getJSON(dists, function(json)
 	{
 		$.each(json, function(i, field)
 		{			$("#dist_id").append("<option value='" + field.id + "'>" + field.name + "</option>");
 		});
-	});	var formats = "{{protocol}}" + window.location.host.toString() + "/format"
+	});	var formats = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/format"
 	$.getJSON(formats, function(json)
 	{
 		$.each(json, function(i, field)
 		{			$("#format_id").append("<option value='" + field.id + "'>" + field.name + "</option>");
 		});
-	});	var url = "{{protocol}}" + window.location.host.toString() + "/packageinstance"
+	});	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/packageinstance"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)

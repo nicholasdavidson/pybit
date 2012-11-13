@@ -77,7 +77,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form" method="POST" action="{{protocol}}" + window.location.host.toString() + "/job"  id="job_form" name="job_form">
+<form class="form" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job"  id="job_form" name="job_form">
 					<legend>Submit a Job</legend>
 					<label for="packageinstance_id">Package Instance ID: </label>
 					<select name="packageinstance_id"  id="packageinstance_id" size="1" style="width:480px; display:block;"></select>
@@ -104,7 +104,7 @@
     </div>
         <div id="collapseTwo" class="accordion-body collapse">
       <div class="accordion-inner">
-	<form class="form" method="GET" action="{{protocol}}" + window.location.host.toString() + "/job/cancel">
+	<form class="form" method="GET" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job/cancel">
 	<button id="deleteall" name = "deleteall" type="submit" class="btn btn-danger"><a href="/job/delete">DANGER: CANCEL *ALL* RUNNING JOBS</a></button>
 	</form>
 		    </div>
@@ -145,7 +145,7 @@
 
 function show_history(id)
 {
-	var url = "{{protocol}}" + window.location.host.toString() + "/job/" + id + "/status"
+	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job/" + id + "/status"
 $.getJSON(url, function(json)
 {
 $("#history_header").empty();
@@ -164,7 +164,7 @@ function delete_click(id)
    {
 $.ajax({
         type: "GET",
-        url: "{{protocol}}" + window.location.host.toString() + "/job/" + id + "/delete",
+        url: "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job/" + id + "/delete",
         error: function(data){
 			   alert('Error deleting job with id: ' + id + "\n" + data.responseText );
          location.reload();
@@ -179,7 +179,7 @@ $.ajax({
                 alert("Added job OK!")
                 location.reload();
             });
-	var packageinstances = "{{protocol}}" + window.location.host.toString() + "/packageinstance";
+	var packageinstances = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/packageinstance";
 	$.getJSON(packageinstances, function(json)
 	{
 		$.each(json, function(i, field)
@@ -187,14 +187,14 @@ $.ajax({
 			$("#packageinstance_id").append("<option value='" + field.id + "'>" + field.id + " - " + field.package.name + " " + field.package.version + "." + field.format.name + " "  + " " + field.distribution.name + "/" + field.suite.name + " (" + field.arch.name + ") </option>");
 		});
 	});	var jobstatuses = new Object()
-	var url = "{{protocol}}" + window.location.host.toString() + "/job/status"
+	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job/status"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
 		bid = "";
 		bname = "Unassigned";
-		var url2 = "{{protocol}}" + window.location.host.toString() + "/job/" + field.id + "/status";
+		var url2 = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job/" + field.id + "/status";
 	$.getJSON(url2, function(json2)
 	{
 		var statuses = new Array()
