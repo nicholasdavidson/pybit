@@ -55,6 +55,15 @@ class EventHandler(pyinotify.ProcessEvent):
 	def __init__(self, settings):
 		self.settings = settings
 		ProcessEvent.__init__(self)
+		
+def run(settings):
+	wm = pyinotify.WatchManager()
+	mask = pyinotify.IN_CREATE
+	
+	handler = EventHandler(settings)
+	notifier = pyinotify.Notifier(wm, handler)
+	wdd = wm.add_watch(settings['path'], mask, rec=True)
+	notifier.loop()
 
 if __name__ == '__main__':
 	parser = optparse.OptionParser()
@@ -112,20 +121,13 @@ if __name__ == '__main__':
 	
 	settings = pybit.merge_options(settings, groupConfigFile, options)
 	
-	wm = pyinotify.WatchManager()
-	mask = pyinotify.IN_CREATE
-	
-	handler = EventHandler(settings)
-	notifier = pyinotify.Notifier(wm, handler)
-	wdd = wm.add_watch(settings['path'], mask, rec=True)
-	
-	
-	
 	if options.daemonise:
 		with context :
 			pid = str(os.getpid())
 			file(PIDFILE, 'w').write(pid)
-			notifier.loop()
+			run(settings)
+			
 	else:
 		logging.debug ("I: Running watcher...")
 		notifier.loop()
+		run(settings)
