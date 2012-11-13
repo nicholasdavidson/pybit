@@ -43,6 +43,7 @@ debian/pybit-client/
 debian/pybit-common/
 debian/pybit-svn/
 debian/pybit-web/
+debian/pybit-watcher/
 debian/*.1
 debian/*.debhelper
 

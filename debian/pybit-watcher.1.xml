@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id='pybit-watcher'>
+<refmeta>
+<refentrytitle>pybit-watcher</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='source'>November 2012</refmiscinfo>
+<refmiscinfo class='manual'>pybit-watcher</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>pybit-watcher</refname>
+<refpurpose>watches incoming directories for reprepro</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>pybit-watcher</command>
+    <arg choice='opt'><replaceable>options</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+  <varlistentry>
+  <term><option>-h</option>, <option>--help</option></term>
+  <listitem>
+<para>show this help message and exit</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--conf_file</option>=<emphasis remap='I'>PYBIT_WATCHER_CONF_FILE</emphasis></term>
+  <listitem>
+<para>Config file to read settings from, defaults to
+watcher.conf which will be read from configs/watcher
+and /etc/pybit/watcher in turn.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-v</option></term>
+  <listitem>
+<para>Turn on verbose messages.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-d</option></term>
+  <listitem>
+<para>Daemonise with output going to /var/log/pybit-watcher</para>
+  </listitem>
+  </varlistentry>
+</variablelist>
+
+<para>pybit-watcher: error: no such option: <option>--version</option></para>
+</refsect1>
+
+</refentry>
+
