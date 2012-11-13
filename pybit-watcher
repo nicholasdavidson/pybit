@@ -69,7 +69,7 @@ if __name__ == '__main__':
 		help="Controls if we simulate or do we actually run.", metavar=META + "DRYRUN")
 
 	parser.add_option("--conf_file", dest="conf_file", default="watcher/watcher.conf",
-		help="Config file to read settings from, defaults to client.conf which will be read from configs/client.conf and /etc/pybit/client.conf in turn.",
+		help="Config file to read settings from, defaults to watcher.conf which will be read from configs/watcher and /etc/pybit/watcher in turn.",
 		metavar=META + "CONF_FILE")
 
 	parser.add_option("-v", dest="verbose", action="store_true", default=False,
@@ -85,7 +85,7 @@ if __name__ == '__main__':
 	(settings, opened_path) = pybit.load_settings(options.conf_file)
 	
 	if options.daemonise :
-		testLogger = getDaemonLogger('/var/log/pybitclient.log')
+		testLogger = getDaemonLogger('/var/log/pybitwatcher.log')
 		stdoutLogger = getDaemonLogger('/dev/null')
 		stderrLogger = getDaemonLogger('/dev/null')
 		context = LoggingDaemonContext()
@@ -104,7 +104,7 @@ if __name__ == '__main__':
 		sys.exit(-1)
 		
 	if 'configured'  in settings and settings['configured'] == False:
-		logging.debug ("Please configure your client. Edit %s" % opened_path)
+		logging.debug ("Please configure the Reprepro watcher. Edit %s" % opened_path)
 		sys.exit(os.EX_OK)
 	
 	settings = pybit.merge_options(settings, groupConfigFile, options)
