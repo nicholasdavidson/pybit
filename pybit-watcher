@@ -38,7 +38,7 @@ from pyinotify import ProcessEvent
 
 
 META="PYBIT_WATCHER_"
-PIDFILE = "/var/run/pybit-watcher"
+PIDFILE = "/var/run/pybit-watcher.pid"
 
 
 def signal_handler(signal, frame):
