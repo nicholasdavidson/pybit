@@ -121,8 +121,8 @@ if __name__ == '__main__':
 	
 	
 	
-	if options.daemonise == True:
-		with daemon.DaemonContext():
+	if options.daemonise:
+		with context :
 			pid = str(os.getpid())
 			file(PIDFILE, 'w').write(pid)
 			notifier.loop()
