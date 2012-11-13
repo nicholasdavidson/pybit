@@ -37,6 +37,7 @@ from pyinotify import ProcessEvent
 
 
 META="PYBIT_WATCHER_"
+PIDFILE = "/var/run/pybit-watcher"
 
 def getDaemonLogger (filePath, format = None) :
 	FORMAT = format or '%(asctime)s %(msg)s'

@@ -43,7 +43,7 @@ from pybit.models import AMQPConnection
 
 META = "PYBIT_CLIENT_"
 
-PIDFILE = "var/run/pybit-client"
+PIDFILE = "/var/run/pybit-client"
 
 #register the single handler
 def signal_handler(signal, frame):
