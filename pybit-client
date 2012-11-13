@@ -33,7 +33,7 @@ import requests
 import pybit
 import os
 import daemon
-from pybitclient.daemonlogger import LoggingDaemonContext, FileLikeLogger
+from pybit.daemonlogger import LoggingDaemonContext, FileLikeLogger
 import time
 import logging
 from pybitclient import PyBITClient

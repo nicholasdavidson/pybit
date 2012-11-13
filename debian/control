@@ -30,8 +30,7 @@ Description: Subversion post commit hook for pybit
 
 Package: pybit-client
 Architecture: all
-Depends: sbuild, dput, dpkg-dev, pybit-common, python-requests,
- python-daemon,
+Depends: sbuild, dput, dpkg-dev, pybit-common, python-requests
  subversion, pbuilder, libcrypt-ssleay-perl,
  ${python:Depends}, ${misc:Depends}
 Description: buildd client support for Pybit
@@ -60,7 +59,7 @@ Description: pybit web frontend
 Package: pybit-common
 Architecture: all
 Depends: python-amqplib, python-debian, python-jsonpickle,
- ${python:Depends}, ${misc:Depends}
+ python-daemon, ${python:Depends}, ${misc:Depends}
 Description: Common objects for pybit
  Contains object definitions to common
  Python objects between Pybit services
