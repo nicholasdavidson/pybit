@@ -33,8 +33,8 @@ import sys
 import logging
 
 from pybit.daemonlogger import LoggingDaemonContext, FileLikeLogger
+from pyinotify import ProcessEvent
 
-settings= {}
 
 META="PYBIT_WATCHER_"
 
@@ -46,11 +46,14 @@ def getDaemonLogger (filePath, format = None) :
 class EventHandler(pyinotify.ProcessEvent):
 	def process_IN_CREATE(self, event):
 		if os.path.isfile(event.pathname) and event.pathname.endswith(".changes"):
-			cmd = "reprepro -b %s processincomming  %s" % (settings['repobase'], settings['rule'])
-			if settings['dryrun'] == True: 
-				loging.debug(cmd)
+			cmd = "reprepro -b %s processincomming  %s" % (self.settings['repobase'], self.settings['rule'])
+			if self.settings['dryrun'] == True: 
+				logging.debug(cmd)
 			else:
 				 os.system (cmd)
+	def __init__(self, settings):
+		self.settings = settings
+		ProcessEvent.__init__(self)
 
 if __name__ == '__main__':
 	parser = optparse.OptionParser()
@@ -64,7 +67,7 @@ if __name__ == '__main__':
 	groupConfigFile.add_option("--repobase", dest="repobase",
 		help="Base of the repository.", metavar=META + "REPOBASE")
 	
-	groupConfigFile.add_option("--dry-run", dest="dryrun", action="store_true", default=False,
+	groupConfigFile.add_option("--dry-run", dest="dryrun", action="store_true",
 		help="Controls if we simulate or do we actually run.", metavar=META + "DRYRUN")
 
 	parser.add_option("--conf_file", dest="conf_file", default="watcher/watcher.conf",
@@ -111,7 +114,7 @@ if __name__ == '__main__':
 	wm = pyinotify.WatchManager()
 	mask = pyinotify.IN_CREATE
 	
-	handler = EventHandler()
+	handler = EventHandler(settings)
 	notifier = pyinotify.Notifier(wm, handler)
 	wdd = wm.add_watch(settings['path'], mask, rec=True)
 	
