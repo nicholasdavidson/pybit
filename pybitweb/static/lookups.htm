@@ -75,7 +75,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse in">
       <div class="accordion-inner">
-      <form class="form-inline" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch"  id="arch_form" name="arch_form">
+      <form class="form-inline" method="POST" action="REPLACE_WITH_URL/arch"  id="arch_form" name="arch_form">
 					<legend>Add Package Architectures</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -94,7 +94,7 @@
     </div>
     <div id="collapseTwo" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form-inline" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/status"  id="status_form" name="status_form">
+<form class="form-inline" method="POST" action="REPLACE_WITH_URL/status"  id="status_form" name="status_form">
 					<legend>Add Job Statuses</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -112,7 +112,7 @@
     </div>
     <div id="collapseThree" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form-inline" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/dist"  id="dist_form" name="dist_form">
+<form class="form-inline" method="POST" action="REPLACE_WITH_URL/dist"  id="dist_form" name="dist_form">
 					<legend>Add Software Distributions</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -130,7 +130,7 @@
       </a>
     </div>
     <div id="collapseFour" class="accordion-body collapse">
-      <div class="accordion-inner">	<form class="form-inline" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/format"  id="format_form" name="format_form">
+      <div class="accordion-inner">	<form class="form-inline" method="POST" action="REPLACE_WITH_URL/format"  id="format_form" name="format_form">
 					<legend>Add Package Formats</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -149,7 +149,7 @@
     </div>
     <div id="collapseFive" class="accordion-body collapse">
       <div class="accordion-inner">
-	<form class="form-inline" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/suite"  id="suite_form" name="suite_form">
+	<form class="form-inline" method="POST" action="REPLACE_WITH_URL/suite"  id="suite_form" name="suite_form">
 					<legend>Add Software Suites</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -194,7 +194,11 @@
         }
     });
 }$().ready(function ()
-{            $('#arch_form').ajaxForm(function() {
+{
+
+	document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', "" + window.location.protocol.toString() + "//" + window.location.host.toString());
+
+	          $('#arch_form').ajaxForm(function() {
                 alert("Arch Added!");
                 location.reload();
             });            $('#status_form').ajaxForm(function() {

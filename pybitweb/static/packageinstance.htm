@@ -76,7 +76,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/packageinstance" id="packageinstance_form" name="packageinstance_form">
+<form class="form" method="POST" action="REPLACE_WITH_URL/packageinstance" id="packageinstance_form" name="packageinstance_form">
 					<legend>Create a package instance</legend>
 					<label for="package_id">Package: </label>
 					<select name="package_id" id="package_id"></select><label for="arch_id">Architecture: </label><select name="arch_id" id="arch_id"></select><label for="suite_id">Suite: </label><select name="suite_id"  id="suite_id"></select><label for="dist_id">Distribution: </label><select name="dist_id" id="dist_id"></select><label for="format_id">Package Format: </label><select name="format_id"  id="format_id"></select><br><input type="checkbox" name="slave"value="0" id="slave">Slave</input>
@@ -108,6 +108,9 @@ $.ajax({
 
 $().ready(function ()
 {
+
+		document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', "" + window.location.protocol.toString() + "//" + window.location.host.toString());
+
 	            $('#packageinstance_form').ajaxForm(function() {
                 alert("Packageinstance Added!");
                 location.reload();
