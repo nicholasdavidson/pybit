@@ -1,10 +1,11 @@
 <VirtualHost *:80>
     WSGIDaemonProcess application user=www-data group=www-data processes=1 threads=5
     WSGIScriptAlias / /home/jamesb/pybit/application.wsgi
-
+    WSGIPassAuthorization On
     <Directory /home/jamesb/pybit>
         WSGIProcessGroup application
         WSGIApplicationGroup %{GLOBAL}
+        WSGIPassAuthorization On
         Order deny,allow
         Allow from all
     </Directory>
