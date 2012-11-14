@@ -164,6 +164,7 @@ class PyBITClient(object):
 			if decoded.success == True:
 				self.move_state("BUILD")
 			else:
+				self.overall_success = False
 				self.move_state("CLEAN")
 
 
@@ -175,6 +176,7 @@ class PyBITClient(object):
 			if decoded.success == True:
 				self.move_state("UPLOAD")
 			else:
+				self.overall_success = False
 				self.move_state("CLEAN")
 
 
@@ -183,6 +185,7 @@ class PyBITClient(object):
 		if isinstance(decoded, TaskComplete) :
 			self.overall_success = decoded.success
 			self.process.join()
+			self.overall_success = False
 			self.move_state("CLEAN")
 
 	def clean_handler(self, msg, decoded):
@@ -191,6 +194,7 @@ class PyBITClient(object):
 			if decoded.success == True:
 				self.move_state("IDLE")
 			else:
+				self.overall_success = False
 				self.move_state("FATAL_ERROR")
 
 	def __init__(self, arch, distribution, pkg_format, suite, conn_info, settings) :
