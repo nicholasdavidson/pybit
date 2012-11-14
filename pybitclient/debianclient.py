@@ -141,6 +141,7 @@ class DebianBuildClient(PackageHandler):
 				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 					retval = "build_dsc"
 		if not retval :
+			# FIXME: sbuild logs are going to /root/logs when running as a daemon. Issue #27
 			command = "sbuild -A -s -d %s %s/%s_%s.dsc" % (buildreq.get_suite(),
 				srcdir, buildreq.get_package(), buildreq.get_version())
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
@@ -176,8 +177,8 @@ class DebianBuildClient(PackageHandler):
 			command = "dcmd rm %s" % (changes)
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "post-upload-clean-fail"
-			else :
-				retval = "success"
+		if not retval :
+			retval = "success"
 		pybitclient.send_message (conn_data, retval)
 		if retval == "success":
 			return 0
