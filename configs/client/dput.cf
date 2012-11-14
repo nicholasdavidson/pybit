@@ -4,3 +4,4 @@ incoming                = /srv/tcl/distros/debian/incoming/
 login                   = buildd
 method                  = scp
 allow_unsigned_uploads  = true
+ssh_config_options      = IdentityFile=/home/buildd/.ssh/id_rsa
