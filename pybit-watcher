@@ -58,7 +58,8 @@ class EventHandler(pyinotify.ProcessEvent):
 	def process_IN_CREATE(self, event):
 		if os.path.isfile(event.pathname) and event.pathname.endswith(".changes"):
 			cmd = "reprepro -b %s processincomming  %s" % (self.settings['repobase'], self.settings['rule'])
-			if self.settings['dryrun'] == True: 
+			if ('dryrun' in self.settings and
+				self.settings['dryrun'] == True): 
 				logging.debug(cmd)
 			else:
 				 os.system (cmd)
