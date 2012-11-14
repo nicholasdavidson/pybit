@@ -22,7 +22,10 @@
 
 
 <refsect1 id='description'><title>DESCRIPTION</title>
-<para>pybit-client</para>
+<para>pybit-client receives messages from the controller to create a
+specific package build using the specific version control system. The
+client feeds status messages back to the controller.
+</para>
 </refsect1>
 
 <refsect1 id='options'><title>OPTIONS</title>
