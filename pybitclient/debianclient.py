@@ -162,9 +162,7 @@ class DebianBuildClient(PackageHandler):
 	def upload (self, buildreq, conn_data):
 		retval = None
 		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
-		srcdir = os.path.join (self.settings["buildroot"],
-				buildreq.get_suite(), buildreq.transport.method)
-		changes = "%s/%s_%s_%s.changes" % (srcdir, buildreq.get_package(),
+		changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"], buildreq.get_package(),
 			buildreq.get_version(), buildreq.get_arch())
 		if not os.path.isfile (changes) and not self.settings["dry_run"]:
 			logging.debug("upload: Failed to find %s file." % (changes))
