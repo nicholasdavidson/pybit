@@ -76,7 +76,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form-inline" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd" id="buildbox_form" name="buildbox_form">
+<form class="form-inline" method="POST" action="REPLACE_WITH_URL/buildd" id="buildbox_form" name="buildbox_form">
 					<legend>Add a Buildbox</legend>
 					<label for="name">Name</label>
 					<input name="name" type="text" />
@@ -107,7 +107,11 @@ $.ajax({
         }
     });
 }$().ready(function ()
-{            $('#buildbox_form').ajaxForm(function() {
+{
+
+document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', "" + window.location.protocol.toString() + "//" + window.location.host.toString());
+
+	           $('#buildbox_form').ajaxForm(function() {
                 alert("Added buildd OK!");
                 location.reload();
             });	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd"

@@ -77,7 +77,7 @@
     </div>
     <div id="collapseOne" class="accordion-body collapse">
       <div class="accordion-inner">
-<form class="form" method="POST" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job"  id="job_form" name="job_form">
+<form class="form" method="POST" action="REPLACE_WITH_URL/job"  id="job_form" name="job_form">
 					<legend>Submit a Job</legend>
 					<label for="packageinstance_id">Package Instance ID: </label>
 					<select name="packageinstance_id"  id="packageinstance_id" size="1" style="width:480px; display:block;"></select>
@@ -104,7 +104,7 @@
     </div>
         <div id="collapseTwo" class="accordion-body collapse">
       <div class="accordion-inner">
-	<form class="form" method="GET" action="" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job/cancel">
+	<form class="form" method="GET" action="REPLACE_WITH_URL/job/cancel">
 	<button id="deleteall" name = "deleteall" type="submit" class="btn btn-danger"><a href="/job/delete">DANGER: CANCEL *ALL* RUNNING JOBS</a></button>
 	</form>
 		    </div>
@@ -175,7 +175,11 @@ $.ajax({
         }
     });
 }$().ready(function ()
-{            $('#job_form').ajaxForm(function() {
+{
+
+	document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', "" + window.location.protocol.toString() + "//" + window.location.host.toString());
+
+	            $('#job_form').ajaxForm(function() {
                 alert("Added job OK!")
                 location.reload();
             });
