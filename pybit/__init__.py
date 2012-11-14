@@ -65,6 +65,7 @@ def get_build_route_name(dist, arch, suite, package):
 def load_settings(path):
 	opened_file = None
 	opened_path = path
+	settings = {}
 	#try the unmodified path incase we're being passed an absolute path.
 	try:
 		opened_file = open(path)
@@ -81,11 +82,11 @@ def load_settings(path):
 	if opened_file:
 		encoded_string = opened_file.read()
 		try:
-			return (jsonpickle.decode(encoded_string ), opened_path)
+			settings = jsonpickle.decode(encoded_string ) 
 		except ValueError :
-			return ({}, opened_path)
-	else:
-		return ({}, opened_path)
+			print "Couldn't load any settings files."
+	
+	return (settings, opened_path)
 
 exchange_name="pybit"
 status_route="pybit.control.status"
