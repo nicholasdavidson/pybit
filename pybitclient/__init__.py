@@ -185,7 +185,6 @@ class PyBITClient(object):
 		if isinstance(decoded, TaskComplete) :
 			self.overall_success = decoded.success
 			self.process.join()
-			self.overall_success = False
 			self.move_state("CLEAN")
 
 	def clean_handler(self, msg, decoded):
