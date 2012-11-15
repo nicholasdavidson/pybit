@@ -65,7 +65,7 @@ class EventHandler(pyinotify.ProcessEvent):
 				 log_cmd = "dryrun"
 			
 			logging.debug("%s: %s" % (log_cmd, cmd))
-			if ('dryrun' in self.settings and
+			if ('dryrun' not in self.settings or
 				self.settings['dryrun'] == False):
 				os.system(cmd)
 
