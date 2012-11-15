@@ -32,6 +32,7 @@ import os
 import sys
 import logging
 import signal
+import subprocess
 
 from pybit.daemonlogger import LoggingDaemonContext, FileLikeLogger
 from pyinotify import ProcessEvent
@@ -57,22 +58,18 @@ def getDaemonLogger (filePath, format = None) :
 class EventHandler(pyinotify.ProcessEvent):
 	def process_IN_CREATE(self, event):
 		if os.path.isfile(event.pathname) and event.pathname.endswith(".changes"):
-			
-			cmd = "reprepro -b %s processincoming  %s" % (self.settings['repobase'], self.settings['rule'])
-			log_cmd = "run"
-			if ('dryrun' in self.settings and
-				self.settings['dryrun'] == False): 
-				 log_cmd = "dryrun"
-			
-			logging.debug("%s: %s" % (log_cmd, cmd))
+			cmd_args = ["reprepro", "-b", self.settings['repobase'], "processincoming", self.settings['rule']]
+			logging.debug(cmd_args)
 			if ('dryrun' not in self.settings or
 				self.settings['dryrun'] == False):
-				os.system(cmd)
+				output = subprocess.Popen(cmd_args, stdout=subprocess.PIPE).communicate()[0]
+				logging.debug(output)
 
 	def __init__(self, settings):
 		self.settings = settings
 		ProcessEvent.__init__(self)
-		
+
+
 def run(settings):
 	try:
 		signal.signal(signal.SIGINT, signal_handler)
@@ -81,7 +78,8 @@ def run(settings):
 		raise Exception('Error configuring signal handler: ' + str(e))
 	wm = pyinotify.WatchManager()
 	mask = pyinotify.IN_CREATE
-	
+	if 'dryrun' in settings and settings['dryrun'] == True:
+		logging.debug("Starting in dryrun mode")
 	handler = EventHandler(settings)
 	notifier = pyinotify.Notifier(wm, handler)
 	wdd = wm.add_watch(settings['path'], mask, rec=True)
