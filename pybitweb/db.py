@@ -717,7 +717,7 @@ class Database(object):
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s))",
 					 (remove_nasties(jobid),remove_nasties(status),))
-			if client is not None:
+			if client is not None and client != "":
 				#insert the client if it doesn't already exist.
 				cur.execute("INSERT INTO buildclients(name) SELECT name FROM buildclients UNION VALUES(%s) EXCEPT SELECT name FROM buildclients",
 						(remove_nasties(client),))
