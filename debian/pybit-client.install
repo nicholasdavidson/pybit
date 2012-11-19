@@ -1,4 +1,4 @@
-configs/client/client.conf ./etc/pybit/client/
+configs/client/client.conf ./usr/share/pybitclient/
 configs/client/dput.cf ./etc/pybit/client/
 pybitclient/sbuild-cross.sh ./usr/share/pybitclient/
 pybitclient/sbuild-orig.sh ./usr/share/pybitclient/

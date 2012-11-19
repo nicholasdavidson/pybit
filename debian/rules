@@ -52,6 +52,7 @@ clean:
 	[ ! -f Makefile ] || $(MAKE) clean
 	find . -name '*.pyc' -delete
 	dh_clean
+	debconf-updatepo
 
 sdist-orig:
 	python setup.py sdist
@@ -73,6 +74,7 @@ binary-indep: build install
 	dh_installdocs
 	dh_installexamples
 	dh_installinit
+	dh_installdebconf
 	dh_install $(exclusions) --exclude=.git
 	dh_compress
 	dh_python2

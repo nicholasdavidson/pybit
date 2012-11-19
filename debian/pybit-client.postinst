@@ -1,0 +1,119 @@
+#!/usr/bin/perl
+# postinst script for pybit-client
+#
+# see: dh_installdeb(1)
+
+use strict;
+use warnings;
+
+# summary of how this script can be called:
+#        * <postinst> `configure' <most-recently-configured-version>
+#        * <old-postinst> `abort-upgrade' <new version>
+#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#          <new-version>
+#        * <postinst> `abort-remove'
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+
+use Debconf::Client::ConfModule qw(:all);
+
+my $cfgfile   = '/etc/pybit/client/client.conf';
+version('2.0');
+my %cfg=();
+
+if ($ARGV[0] eq 'configure' or $ARGV[0] eq 'reconfigure') {
+	$cfg{'id'}   = scalar get('pybit-client/clientid');
+	$cfg{'host'} = scalar get('pybit-client/rabbitmqhost');
+	$cfg{'dput'} = scalar get('pybit-client/dputdest');
+	$cfg{'dir'}  = scalar get('pybit-client/buildroot');
+	$cfg{'lvm'}  = scalar get('pybit-client/lvmsnapshot');
+	foreach my $key (keys %cfg) {
+		my $val = $cfg{$key};
+		chomp($val);
+		$val =~ s/"//g;
+		$val =~ s/'//g;
+		$val =~ s/,//g;
+		$cfg{$key} = $val;
+	}
+	if (-r "$cfgfile") {
+		open(CONF, "$cfgfile") or die;
+	} else {
+		open(CONF, "/usr/share/pybitclient/client.conf") or die;
+	}
+	my @lines=<CONF>;
+	close (CONF);
+	foreach my $line (@lines) {
+		if ($line =~ m|"clientid": (.*),?|) {
+			$line =~ s|$1|\"$cfg{'id'}\"|;
+		}
+		if ($line =~ m|"host": (.*),?|) {
+			$line =~ s|$1|\"$cfg{'host'}\"|;
+		}
+		if ($line =~ m|"dput_dest": (.*),?|) {
+			$line =~ s|$1|\"$cfg{'dput'}\"|;
+		}
+		if ($line =~ m|"buildroot": (.*),?|) {
+			$line =~ s|$1|\"$cfg{'dir'}\"|;
+		}
+		if ($line =~ m|use_lvm|) {
+			if ($cfg{'lvm'} eq "true") {
+				$line =~ s|"use_lvm": (.*),?|"use_lvm": true|;
+			} else {
+				$line =~ s|"use_lvm": (.*),?|"use_lvm": false|;
+			}
+		}
+		# sanity checks
+		if ($line =~ m|"distribution": (.*),?|) {
+			my $chk = $1;
+			if (not defined $chk or $chk !~ /\w/) {
+				my $distro = `dpkg-vendor --query vendor`;
+				chomp ($distro);
+				$line =~ s|$chk|\"$distro\"|;
+			}
+		}
+		if ($line =~ m|"pkg_format": (.*),?|) {
+			my $chk = $1;
+			if (not defined $chk or $chk !~ /\w/) {
+				# Debian related postinst, assume deb package format when not set.
+				$line =~ s|$chk|\"deb\"|;
+			}
+		}
+		if ($line =~ m|"host_arch": (.*),?|) {
+			my $chk = $1;
+			if (not defined $chk or $chk !~ /\w/) {
+				my $host = `dpkg-architecture -qDEB_HOST_ARCH 2>/dev/null`;
+				chomp ($host);
+				$line =~ s|$chk|\"$host\"|;
+			}
+		}
+	}
+	open (CONF, ">$cfgfile") or die;
+	print CONF "{\n";
+	foreach my $json (@lines) {
+		chomp ($json);
+		next if ($json =~ /{/);
+		next if ($json =~ /}/);
+		next if ($json =~ /debconf/);
+		if ($json !~ /,/) {
+			$json .= ",";
+		}
+		print CONF "$json\n";
+	}
+	print CONF " \"debconf\": true\n";
+	print CONF "}\n";
+	close (CONF);
+}
+
+my $dh_commands="set -- @ARGV\\n" . << 'EOF';
+set -e
+
+#DEBHELPER#
+EOF
+
+system ($dh_commands) / 256 == 0
+	or die "Problem with shell scripts: $!";
+
+exit 0
