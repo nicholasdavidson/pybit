@@ -116,6 +116,10 @@ if __name__ == '__main__':
 	groupConfigFile.add_option("--clientid", dest="clientid",
 		help="id to use for build-client control queue, defaults to 1 but is unique per amqp server.",
 		metavar=META + "CLIENTID")
+	
+	groupConfigFile.add_option("--poll_time", dest="poll_time",
+		help="interval at which to poll the queue, defaults to 60 s.",
+		metavar=META + "POLL_TIME")
 
 	parser.add_option_group(groupConfigFile)
 
