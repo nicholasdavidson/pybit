@@ -135,7 +135,8 @@ class DebianBuildClient(PackageHandler):
 					 dep_check, os.path.realpath(control))
 				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 					retval = "build-dep-wait"
-			retval = self.orig_source_handler (buildreq, conn_data)
+			if not retval :
+				retval = self.orig_source_handler (buildreq, conn_data)
 			if not retval :
 				command = "(cd %s ; dpkg-buildpackage -nc -S -d -uc -us)" % (package_dir)
 				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
