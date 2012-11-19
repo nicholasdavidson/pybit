@@ -95,7 +95,10 @@ def get_buildd_app(settings, db, controller):
 		#TODO: FIXME
 		try:
 			res = app.config['controller'].buildd_command_queue_exists(buildd_name)
-			return str(res)
+			if res == True :
+				return "Active"
+			else :
+				return "Not Active"
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None

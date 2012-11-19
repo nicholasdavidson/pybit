@@ -31,9 +31,13 @@ from common import requires_auth
 def get_arch_app(settings, db):
 	app = Bottle(config={'settings':settings, 'db':db})
 	@app.route('/', method='GET')
-	def get_arch():
+	@app.route('/page/<page:int>', method='GET')
+	def get_arch(page = None):
 		#return list of arches
-		arches = app.config.db.get_arches()
+		if page:
+			arches = app.config.db.get_arches(page)
+		else:
+			arches = app.config.db.get_arches()
 		encoded = jsonpickle.encode(arches)
 		response.content_type = "application/json"
 		return encoded
@@ -151,10 +155,14 @@ def get_suitearch_app(settings, db):
 def get_status_app(settings, db):
 	app = Bottle(config={'settings':settings, 'db':db})
 	@app.route('/', method='GET')
-	def get_statuses():
+	@app.route('/page/<page:int>', method='GET')
+	def get_statuses(page = None):
 		try:
 			#return list of statuses
-			statuses = app.config['db'].get_statuses()
+			if page:
+				statuses = app.config['db'].get_statuses(page)
+			else:
+				statuses = app.config['db'].get_statuses()
 			encoded = jsonpickle.encode(statuses)
 			response.content_type = "application/json"
 			return encoded
@@ -214,10 +222,14 @@ def get_status_app(settings, db):
 def get_dist_app(settings, db):
 	app = Bottle(config={'settings':settings, 'db':db})
 	@app.route('/', method='GET')
-	def get_dists():
+	@app.route('/page/<page:int>', method='GET')
+	def get_dists(page = None):
 		try:
 			#return list of distributions
-			dists = app.config['db'].get_dists()
+			if page:
+				dists = app.config['db'].get_dists(page)
+			else:
+				dists = app.config['db'].get_dists(page)	
 			encoded = jsonpickle.encode(dists)
 			response.content_type = "application/json"
 			return encoded
@@ -277,10 +289,14 @@ def get_dist_app(settings, db):
 def get_format_app(settings, db):
 	app = Bottle(config={'settings':settings, 'db':db})
 	@app.route('/', method='GET')
-	def get_formats():
+	@app.route('/page/<page:int>', method='GET')
+	def get_formats(page = None):
 		try:
 			#return list of package formats
-			formats = app.config['db'].get_formats()
+			if page:
+				formats = app.config['db'].get_formats(page)
+			else:
+				formats = app.config['db'].get_formats()
 			encoded = jsonpickle.encode(formats)
 			response.content_type = "application/json"
 			return encoded
@@ -339,10 +355,14 @@ def get_format_app(settings, db):
 def get_suite_app(settings, db):
 	app = Bottle(config={'settings':settings, 'db':db})
 	@app.route('/', method='GET')
-	def get_suites():
+	@app.route('/page/<page:int>', method='GET')
+	def get_suites(page = None):
 		try:
 			#return list of suites
-			suites = app.config['db'].get_suites()
+			if page:
+				suites = app.config['db'].get_suites(page)
+			else:
+				suites = app.config['db'].get_suites()	
 			encoded = jsonpickle.encode(suites)
 			response.content_type = "application/json"
 			return encoded

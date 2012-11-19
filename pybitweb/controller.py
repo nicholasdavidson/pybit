@@ -97,7 +97,7 @@ class Controller(object):
 												new_job.packageinstance.arch.name, 
 												new_job.packageinstance.suite.name, 
 												new_job.packageinstance.format.name)
-						self.check_queue(build_queue, routing_key, chan)
+						self.add_message_queue(build_queue, routing_key, chan)
 						
 						if chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True) :
 							#print "\n____________SENDING", build_req, "____________TO____________", routing_key
@@ -117,7 +117,7 @@ class Controller(object):
 			return
 		return
 
-	def check_queue(self, queue, routing_key, chan):
+	def add_message_queue(self, queue, routing_key, chan):
 		print "CREATING", chan.queue_declare(queue=queue, durable=True,
 										exclusive=False, auto_delete=False)
 		print "BINDING", queue, routing_key, chan.queue_bind(queue=queue,

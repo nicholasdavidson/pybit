@@ -90,10 +90,15 @@ class Database(object):
 	#<<<<<<<< Lookup table queries >>>>>>>>
 	# Do we care about update or delete?
 
-	def get_arches(self):
+	def get_arches(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM arch ORDER BY name")
+			if page:
+				limit = 5 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,name FROM arch ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,name FROM arch ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -234,10 +239,15 @@ class Database(object):
 			raise Exception("Error deleting suitearch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def get_dists(self):
+	def get_dists(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM distribution ORDER BY name")
+			if page:
+				limit = 5 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,name FROM distribution ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,name FROM distribution ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -315,10 +325,15 @@ class Database(object):
 			raise Exception("Error deleting dist with id:" + str(dist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def get_formats(self):
+	def get_formats(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM format ORDER BY name")
+			if page:
+				limit = 5 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,name FROM format ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,name FROM format ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -394,10 +409,15 @@ class Database(object):
 			raise Exception("Error deleting format with id:" + str(format_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def get_statuses(self):
+	def get_statuses(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM status ORDER BY name")
+			if page:
+				limit = 5 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,name FROM status ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,name FROM status ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -457,10 +477,15 @@ class Database(object):
 			raise Exception("Error deleting status with id:" + str(status_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def get_suites(self):
+	def get_suites(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM suite ORDER BY name")
+			if page:
+				limit = 5 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,name FROM suite ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,name FROM suite ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 
