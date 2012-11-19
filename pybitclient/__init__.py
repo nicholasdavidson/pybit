@@ -1,21 +1,3 @@
-import re
-import os
-import errno
-import json
-import time
-import logging
-import jsonpickle
-from amqplib import client_0_8 as amqp
-import pybit
-from pybit.models import TaskComplete, PackageInstance, ClientMessage, BuildRequest, CommandRequest, AMQPConnection,\
-	CancelRequest
-from debianclient import DebianBuildClient
-from subversion import SubversionClient
-import multiprocessing
-import socket
-import requests
-from requests.auth import HTTPBasicAuth
-
 #       Copyright 2012:
 #
 #       Nick Davidson <nickd@toby-churchill.com>,
@@ -37,6 +19,25 @@ from requests.auth import HTTPBasicAuth
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
+
+
+import re
+import os
+import errno
+import json
+import time
+import logging
+import jsonpickle
+from amqplib import client_0_8 as amqp
+import pybit
+from pybit.models import TaskComplete, PackageInstance, ClientMessage, BuildRequest, CommandRequest, AMQPConnection,\
+	CancelRequest
+from debianclient import DebianBuildClient
+from subversion import SubversionClient
+import multiprocessing
+import socket
+import requests
+from requests.auth import HTTPBasicAuth
 
 class PyBITClient(object):
 
