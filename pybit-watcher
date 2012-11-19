@@ -33,6 +33,7 @@ import sys
 import logging
 import signal
 import subprocess
+import time
 
 from pybit.daemonlogger import LoggingDaemonContext, FileLikeLogger
 from pyinotify import ProcessEvent
@@ -56,14 +57,23 @@ def getDaemonLogger (filePath, format = None) :
 	return logging.getLogger()
 
 class EventHandler(pyinotify.ProcessEvent):
+	
 	def process_IN_CREATE(self, event):
 		if os.path.isfile(event.pathname) and event.pathname.endswith(".changes"):
+			logging.debug("Sleeping for %ss",self.settings['sleeptime'])
+			time.sleep(self.settings['sleeptime'])
 			cmd_args = ["reprepro", "-b", self.settings['repobase'], "processincoming", self.settings['rule']]
-			logging.debug(cmd_args)
+			logging.debug(" ".join(cmd_args))
 			if ('dryrun' not in self.settings or
 				self.settings['dryrun'] == False):
-				output = subprocess.Popen(cmd_args, stdout=subprocess.PIPE).communicate()[0]
-				logging.debug(output)
+				process = subprocess.Popen(cmd_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+				(stdout, stderr) = process.communicate()
+				
+				if process.returncode:
+					logging.debug(stderr)
+					logging.debug("reprepo command failed with code: %s" % process.returncode)
+				else:
+					logging.debug(stdout)
 
 	def __init__(self, settings):
 		self.settings = settings
@@ -99,7 +109,9 @@ if __name__ == '__main__':
 	
 	groupConfigFile.add_option("--dry-run", dest="dryrun", action="store_true",
 		help="Controls if we simulate or do we actually run.", metavar=META + "DRYRUN")
-
+	groupConfigFile.add_option("--sleeptime", dest="sleeptime",
+		help="The number of seconds we wait after a changes file is created before we run the reprepro command.",
+		metavar=META + "SLEEPTIME")
 	parser.add_option("--conf_file", dest="conf_file", default="watcher/watcher.conf",
 		help="Config file to read settings from, defaults to watcher.conf which will be read from configs/watcher and /etc/pybit/watcher in turn.",
 		metavar=META + "CONF_FILE")
