@@ -76,10 +76,10 @@ class EventHandler(pyinotify.ProcessEvent):
 					logging.debug(stdout)
 
 	def __init__(self, settings):
+		self.settings = settings
 		self.sleeptime = 3
 		if 'sleeptime' in self.settings:
 			self.sleeptime = self.settings['sleeptime']
-		self.settings = settings
 		ProcessEvent.__init__(self)
 
 
