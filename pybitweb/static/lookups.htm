@@ -163,7 +163,25 @@
 </div>
       <hr>      <footer>
         <p>&copy; TCL 2012</p>
-      </footer>    </div><!--/.fluid-container--><script>   function delete_click(id,target)
+      </footer>    </div><!--/.fluid-container--><script>
+
+
+
+
+
+      function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+
+
+
+
+        function delete_click(id,target)
    {	switch (target)
 	{
 		case 1:
@@ -195,7 +213,7 @@
     });
 }$().ready(function ()
 {
-
+	var arch_page = 1;
 	document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', "" + window.location.protocol.toString() + "//" + window.location.host.toString());
 
 	          $('#arch_form').ajaxForm(function() {
@@ -214,14 +232,32 @@
             $('#suite_form').ajaxForm(function() {
                 alert("Suite Added!");
                 location.reload();
-            });	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch"
+            });
+
+	if (getUrlVars()["arch_page"])
+	{
+		arch_page = getUrlVars()["arch_page"]
+		var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch/" + arch_page
+	}
+	else
+	{
+    var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch/1"
+    }
+
+new_arch_page = parseInt(arch_page) + 1;
+last_arch_page = parseInt(arch_page) - 1;
+
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
 			$("#tbl_arches").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>");
 		});
-	});	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/status"
+
+		 $('#tbl_arches').append("<div class='pagination'><ul><li><a href='" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/lookups.htm?arch_page=" + last_arch_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/lookups.htm?arch_page=" + new_arch_page + "'>Next</a></li></ul></div>");
+	});
+
+	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/status"
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)

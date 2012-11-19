@@ -90,10 +90,15 @@ class Database(object):
 	#<<<<<<<< Lookup table queries >>>>>>>>
 	# Do we care about update or delete?
 
-	def get_arches(self):
+	def get_arches(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM arch ORDER BY name")
+			if page:
+				limit = 5 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,name FROM arch ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,name FROM arch ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 

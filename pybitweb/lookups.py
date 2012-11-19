@@ -31,9 +31,13 @@ from common import requires_auth
 def get_arch_app(settings, db):
 	app = Bottle(config={'settings':settings, 'db':db})
 	@app.route('/', method='GET')
-	def get_arch():
+	@app.route('/<page:int>', method='GET')
+	def get_arch(page = None):
 		#return list of arches
-		arches = app.config.db.get_arches()
+		if page:
+			arches = app.config.db.get_arches(page)
+		else:
+			arches = app.config.db.get_arches()
 		encoded = jsonpickle.encode(arches)
 		response.content_type = "application/json"
 		return encoded
