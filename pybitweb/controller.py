@@ -246,3 +246,9 @@ class Controller(object):
 			return
 		return
 
+
+	def buildd_command_queue_exists(self, build_client):
+		return self.chan.queue_declare(queue=build_client, passive=True, durable=True,
+								exclusive=False, auto_delete=False,)
+	
+
