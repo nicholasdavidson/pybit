@@ -237,11 +237,11 @@
 	if (getUrlVars()["arch_page"])
 	{
 		arch_page = getUrlVars()["arch_page"]
-		var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch/" + arch_page
+		var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch/page/" + arch_page
 	}
 	else
 	{
-    var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch/1"
+    var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch/page/1"
     }
 
 new_arch_page = parseInt(arch_page) + 1;
