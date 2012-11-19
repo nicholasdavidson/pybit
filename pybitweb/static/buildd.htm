@@ -132,7 +132,7 @@ document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', ""
 					_class = "success";
 				}
 
-				$("#tbl_buildds").append("<tr class='" + _class  +"'><td><a href='{{protocol}}" + window.location.host.toString() + "/buildd/" + field.id + "'>" + field.name + "</a></td><td>" + status + "</td><td><a  href='" + "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.id + "/status'>View Status</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
+				$("#tbl_buildds").append("<tr class='" + _class  +"'><td><a href='{{protocol}}" + window.location.host.toString() + "/buildd/" + field.id + "'>" + field.name + "</a></td><td>" + status + "</td><td><a  href='" + "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
 			});
 
 		});
