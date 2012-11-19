@@ -263,8 +263,21 @@ class Controller(object):
 
 
 	def buildd_command_queue_exists(self, build_client):
-		chan = self.get_amqp_channel()
-		return chan.queue_declare(queue=build_client, passive=True, durable=True,
+		try:
+			print "Checking if queue exists: " + build_client
+			chan = self.get_amqp_channel()
+			chan.queue_declare(queue=build_client, passive=True, durable=True,
 								exclusive=False, auto_delete=False,)
-	
-
+			return False
+		except amqp.AMQPChannelException as e:
+			if e.amqp_reply_code == 405:
+				print "405 from buildd_command_queue_exists. Returning True."
+				return True # Locked i.e. exists
+			elif e.amqp_reply_code == 404:
+				print "404 from buildd_command_queue_exists. Returning False."
+				return False # doesnt exist
+			else:
+				return False
+		except Exception as e:
+			print "Error in buildd_command_queue_exists. Returning False." + str(e)
+			return False;  # Error

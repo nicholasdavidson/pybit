@@ -28,8 +28,8 @@ import common
 from common import requires_auth
 from controller import Controller
 
-def get_buildd_app(settings, db):
-	app = Bottle(config= {'settings' : settings, 'db' : db})
+def get_buildd_app(settings, db, controller):
+	app = Bottle(config= {'settings' : settings, 'db' : db, 'controller': controller})
 	@app.route('/', method='GET')
 	def get_buildd():
 		try:
@@ -90,10 +90,12 @@ def get_buildd_app(settings, db):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 	
-	@app.route('/<buildd_name:name>/status', method='GET')
+	@app.route('/<buildd_name>/status', method='GET')
 	def get_buildd_status(buildd_name):
+		#TODO: FIXME
 		try:
-			return app.config['controller'].buildd_command_queue_exists(buildd_name)
+			res = app.config['controller'].buildd_command_queue_exists(buildd_name)
+			return str(res)
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
