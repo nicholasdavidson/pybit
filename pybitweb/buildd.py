@@ -26,9 +26,10 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 import common
 from common import requires_auth
+from controller import Controller
 
-def get_buildd_app(settings, db):
-	app = Bottle(config= {'settings' : settings, 'db' : db})
+def get_buildd_app(settings, db, controller):
+	app = Bottle(config= {'settings' : settings, 'db' : db, 'controller': controller})
 	@app.route('/', method='GET')
 	def get_buildd():
 		try:
@@ -89,12 +90,15 @@ def get_buildd_app(settings, db):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 	
-	@app.route('/<buildd_id:int>/status', method='GET')
-	def get_buildd_status(buildd_id):
+	@app.route('/<buildd_name>/status', method='GET')
+	def get_buildd_status(buildd_name):
+		#TODO: FIXME
 		try:
-			response.content_type = "application/json"
-			#TODO - CODEME
-			return template("Returning status of buildd: {{buildd_id}}",buildd_id=buildd_id)
+			res = app.config['controller'].buildd_command_queue_exists(buildd_name)
+			if res == True :
+				return "Active"
+			else :
+				return "Not Active"
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None

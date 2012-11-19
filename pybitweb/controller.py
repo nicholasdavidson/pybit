@@ -32,18 +32,30 @@ from pybit.models import BuildRequest, CancelRequest, JobHistory
 
 class Controller(object):
 
+	def get_amqp_channel(self):
+		chan = None
+		try:
+			conn = amqp.Connection(host=self.settings['rabbit_url'],
+				 userid=self.settings['rabbit_userid'],
+				 password=self.settings['rabbit_password'],
+				 virtual_host=self.settings['rabbit_virtual_host'],
+				 insist=self.settings['rabbit_insist'])
+			try: 	
+				chan = conn.channel()
+				chan.exchange_declare(exchange=pybit.exchange_name,
+					type="direct",
+					durable=True,
+					auto_delete=False)
+			except amqp.AMQPChannelException:
+				pass
+		except amqp.AMQPConnectionException:			
+			pass
+		return chan
+
 	def __init__(self, settings, db):
 		print "DEBUG: Controller constructor called."
 		self.db = db
-		try:
-			self.settings = settings
-			self.conn = amqp.Connection(host=self.settings['rabbit_url'], userid=self.settings['rabbit_userid'], password=self.settings['rabbit_password'], virtual_host=self.settings['rabbit_virtual_host'], insist=self.settings['rabbit_insist'])
-			self.chan = self.conn.channel()
-			#declare exchange.
-			self.chan.exchange_declare(exchange=pybit.exchange_name, type="direct", durable=True, auto_delete=False)
-		except Exception as e:
-			raise Exception('Error creating controller (Maybe we cannot connect to queue?) - ' + str(e))
-			return
+		self.settings = settings
 
 	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport, commands = None) :
 		try:
@@ -65,6 +77,7 @@ class Controller(object):
 			current_format = self.db.get_format_byname(pkg_format)[0]
 			master = True
 			#for arch in supported_arches:
+			chan = self.get_amqp_channel()
 			for arch in build_arches:
 				current_arch = self.db.get_arch_byname(arch)[0]
 				current_packageinstance = self.process_packageinstance(current_arch, current_package, current_dist, current_format, current_suite, master)
@@ -84,8 +97,9 @@ class Controller(object):
 												new_job.packageinstance.arch.name, 
 												new_job.packageinstance.suite.name, 
 												new_job.packageinstance.format.name)
-						self.check_queue(build_queue, routing_key)
-						if self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True) :
+						self.add_message_queue(build_queue, routing_key, chan)
+						
+						if chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True) :
 							#print "\n____________SENDING", build_req, "____________TO____________", routing_key
 							print "SENDING BUILD REQUEST FOR JOB ID", new_job.id, new_job.packageinstance.package.name, new_job.packageinstance.package.version, new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name
 						else :
@@ -103,10 +117,10 @@ class Controller(object):
 			return
 		return
 
-	def check_queue(self, queue, routing_key):
-		print "CREATING", self.chan.queue_declare(queue=queue, durable=True,
+	def add_message_queue(self, queue, routing_key, chan):
+		print "CREATING", chan.queue_declare(queue=queue, durable=True,
 										exclusive=False, auto_delete=False)
-		print "BINDING", queue, routing_key, self.chan.queue_bind(queue=queue,
+		print "BINDING", queue, routing_key, chan.queue_bind(queue=queue,
 										exchange=pybit.exchange_name, routing_key=routing_key)
 		return
 
@@ -167,7 +181,7 @@ class Controller(object):
 				print "ADDED NEW PACKAGE INSTANCE (", packageinstance.id, ")"
 		return packageinstance
 
-	def process_cancel(self, job):
+	def process_cancel(self, job, chan):
 		job_status_history = self.db.get_job_statuses(job.id)
 		last_status = job_status_history[-1].status
 		build_client = job_status_history[-1].buildclient
@@ -176,7 +190,7 @@ class Controller(object):
 			msg = amqp.Message(cancel_req)
 			msg.properties["delivery_mode"] = 2
 			print "UNFINISHED JOB ID", job.id, "STATUS:", last_status, "SENDING CANCEL REQUEST TO", build_client
-			self.chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=build_client)
+			chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=build_client)
 		else :
 			print "UNFINISHED JOB ID", job.id, "STATUS:", last_status, "UPDATE STATUS TO 'Cancelled'"
 			self.db.put_job_status(job.id, "Cancelled", build_client)
@@ -187,6 +201,7 @@ class Controller(object):
 		packageinstance = new_job.packageinstance
 		unfinished_jobs_list = self.db.get_unfinished_jobs()
 		#print "UNFINISHED JOB LIST", unfinished_jobs_list
+		chan = self.get_amqp_channel()
 		for unfinished_job in unfinished_jobs_list:
 			unfinished_job_package_name = unfinished_job.packageinstance.package.name
 			if unfinished_job_package_name == packageinstance.package.name :
@@ -198,7 +213,7 @@ class Controller(object):
 						unfinished_job_arch_id = unfinished_job.packageinstance.arch.id
 						unfinished_job_suite_id = unfinished_job.packageinstance.suite.id
 						if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) :
-							self.process_cancel(unfinished_job)
+							self.process_cancel(unfinished_job, chan)
 #						else :
 #							print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(dist/arch/suite differs)"
 #					else :
@@ -246,3 +261,23 @@ class Controller(object):
 			return
 		return
 
+
+	def buildd_command_queue_exists(self, build_client):
+		try:
+			print "Checking if queue exists: " + build_client
+			chan = self.get_amqp_channel()
+			chan.queue_declare(queue=build_client, passive=True, durable=True,
+								exclusive=False, auto_delete=False,)
+			return False
+		except amqp.AMQPChannelException as e:
+			if e.amqp_reply_code == 405:
+				print "405 from buildd_command_queue_exists. Returning True."
+				return True # Locked i.e. exists
+			elif e.amqp_reply_code == 404:
+				print "404 from buildd_command_queue_exists. Returning False."
+				return False # doesnt exist
+			else:
+				return False
+		except Exception as e:
+			print "Error in buildd_command_queue_exists. Returning False." + str(e)
+			return False;  # Error

@@ -90,10 +90,15 @@ class Database(object):
 	#<<<<<<<< Lookup table queries >>>>>>>>
 	# Do we care about update or delete?
 
-	def get_arches(self):
+	def get_arches(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM arch ORDER BY name")
+			if page:
+				limit = 5 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,name FROM arch ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,name FROM arch ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -234,10 +239,15 @@ class Database(object):
 			raise Exception("Error deleting suitearch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def get_dists(self):
+	def get_dists(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM distribution ORDER BY name")
+			if page:
+				limit = 5 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,name FROM distribution ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,name FROM distribution ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -315,10 +325,15 @@ class Database(object):
 			raise Exception("Error deleting dist with id:" + str(dist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def get_formats(self):
+	def get_formats(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM format ORDER BY name")
+			if page:
+				limit = 5 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,name FROM format ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,name FROM format ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -394,10 +409,15 @@ class Database(object):
 			raise Exception("Error deleting format with id:" + str(format_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def get_statuses(self):
+	def get_statuses(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM status ORDER BY name")
+			if page:
+				limit = 5 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,name FROM status ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,name FROM status ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -457,10 +477,15 @@ class Database(object):
 			raise Exception("Error deleting status with id:" + str(status_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def get_suites(self):
+	def get_suites(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM suite ORDER BY name")
+			if page:
+				limit = 5 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,name FROM suite ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,name FROM suite ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -563,9 +588,12 @@ class Database(object):
 			cur.execute("SELECT id,name FROM buildclients WHERE id=%s",(buildd_id,))
 			res = cur.fetchall()
 			self.conn.commit()
-			buildd = BuildD(res[0]['id'],res[0]['name'])
-			cur.close()
-			return buildd
+			if (res):
+				buildd = BuildD(res[0]['id'],res[0]['name'])
+				cur.close()
+				return buildd
+			else:
+				return None
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving buildd with id:" + str(buildd_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
@@ -717,7 +745,7 @@ class Database(object):
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s))",
 					 (remove_nasties(jobid),remove_nasties(status),))
-			if client is not None:
+			if client is not None and client != "":
 				#insert the client if it doesn't already exist.
 				cur.execute("INSERT INTO buildclients(name) SELECT name FROM buildclients UNION VALUES(%s) EXCEPT SELECT name FROM buildclients",
 						(remove_nasties(client),))

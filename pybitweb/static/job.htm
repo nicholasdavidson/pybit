@@ -89,9 +89,17 @@
       </div>
     </div>
   </div>
-</div>	<table id="tbl_jobs"  class="table table-bordered table-condensed">
-	<tr><th colspan='2'>Current Jobs</th></tr>
+</div>
+
+<select name="status_filter_element"  id="status_filter_element" size="1" style="width:480px; display:block;" onchange="status_filter()">
+<option value='Unfinished'>Unfinished</option>
+</select>
+
+	<table id="tbl_jobs"  class="table table-bordered table-condensed">
+	<thead>	<tr><th colspan='2'>Current Jobs</th></tr></thead>
+	<tbody>
 	<tr><th>ID</th><th>Package Instance</th><th>Buildclient</th><th>Status</th><th>Operations</th></tr>
+	</tbody>
 	</table>
 
 
@@ -143,6 +151,14 @@
 
 <script>
 
+function status_filter()
+{
+var element = document.getElementById("status_filter_element");
+$('#tbl_jobs tbody').empty();
+renderTable(element.options[element.selectedIndex].value);
+}
+
+
 function show_history(id)
 {
 	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job/" + id + "/status"
@@ -160,6 +176,30 @@ $("#history_body").append("<tr><td>" + field.status + "</td><td>" + field.buildc
     });
 }
 
+function get_status_class(status)
+{
+	if (status == "Building")
+	{
+		return "success";
+	}
+	else if (status == "Blocked")
+	{
+		return "warning";
+	}
+	else if (status == "Waiting")
+	{
+		return "info";
+	}
+	else if (status == "Failed")
+	{
+		return "warning";
+	}
+	else
+	{
+		return "warning";
+	}
+}
+
 function delete_click(id)
    {
 $.ajax({
@@ -174,15 +214,10 @@ $.ajax({
           location.reload();
         }
     });
-}$().ready(function ()
+}
+
+function renderTable(status_query)
 {
-
-	document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', "" + window.location.protocol.toString() + "//" + window.location.host.toString());
-
-	            $('#job_form').ajaxForm(function() {
-                alert("Added job OK!")
-                location.reload();
-            });
 	var packageinstances = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/packageinstance";
 	$.getJSON(packageinstances, function(json)
 	{
@@ -191,13 +226,21 @@ $.ajax({
 			$("#packageinstance_id").append("<option value='" + field.id + "'>" + field.id + " - " + field.package.name + " " + field.package.version + "." + field.format.name + " "  + " " + field.distribution.name + "/" + field.suite.name + " (" + field.arch.name + ") </option>");
 		});
 	});	var jobstatuses = new Object()
-	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job/status"
+
+	if (!status_query || status_query == "Unfinished")
+	{
+		var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job/status"
+	}
+	else
+	{
+		var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job/status/" + status_query
+	}
+
 	$.getJSON(url, function(json)
 	{
 		$.each(json, function(i, field)
 		{
-		bid = "";
-		bname = "Unassigned";
+
 		var url2 = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/job/" + field.id + "/status";
 	$.getJSON(url2, function(json2)
 	{
@@ -208,32 +251,43 @@ $.ajax({
 		});
 		jobstatuses[field.id] = statuses[statuses.length - 1];
 		if (field.buildclient)
-			{
-				bid = field.buildclient.id
-				bname = field.buildclient.name
-			}			if (jobstatuses[field.id] == "Building")
-			{
-				_class = "success"
-			}
-			else if (jobstatuses[field.id] == "Blocked")
-			{
-				_class = "warning"
-			}
-			else if (jobstatuses[field.id] == "Waiting")
-			{
-				_class = "info"
-			}
-			else if (jobstatuses[field.id] == "Failed")
-			{
-				_class = "warning"
-			}
-			else
-			{
-				_class = "warning"
-			}
-			$("#tbl_jobs").append("<tr class='" + _class +"'><td><a href='{{protocol}}" + window.location.host.toString() + "/job/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + " (" +  field.packageinstance.arch.name + " " +  field.packageinstance.format.name + ")" + "</td><td><a href='{{protocol}}" + window.location.host.toString() + "/buildd/" + bid + "'>" + bname + "</a></td><td>" + jobstatuses[field.id] + "<br> Master Flag: " + field.packageinstance.master +"</td><td><a href='{{protocol}}" + window.location.host.toString() + "/job/" + field.id + "/cancel'>Cancel</a><br><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id +")'>View Status History</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");	});
+		{
+			bid = field.buildclient.id;
+			bname = field.buildclient.name;
+			_class = get_status_class(jobstatuses[field.id]);
+		} else {
+			_class = get_status_class("");
+			bid = "";
+			bname = "Unassigned";
+		}	
+
+			$("#tbl_jobs tbody").append("<tr class='" + _class +"'><td><a href='{{protocol}}" + window.location.host.toString() + "/job/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + " (" +  field.packageinstance.arch.name + " " +  field.packageinstance.format.name + ")" + "</td><td><a href='{{protocol}}" + window.location.host.toString() + "/buildd/" + bid + "'>" + bname + "</a></td><td>" + jobstatuses[field.id] + "<br> Master Flag: " + field.packageinstance.master +"</td><td><a href='{{protocol}}" + window.location.host.toString() + "/job/" + field.id + "/cancel'>Cancel</a><br><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id +")'>View Status History</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");	});
 		});
 	});
+}
+
+$().ready(function ()
+{
+
+	document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', "" + window.location.protocol.toString() + "//" + window.location.host.toString());
+
+	// Populate dropdown
+	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/status"
+	$.getJSON(url, function(json)
+	{
+		$.each(json, function(i, field)
+		{
+			$("#status_filter_element").append("<option value='" + field.name + "'>" + field.name + "</option>");
+		});
+	});
+
+
+	            $('#job_form').ajaxForm(function() {
+                alert("Added job OK!")
+                location.reload();
+            });
+
+	renderTable();
 });
 </script>    </div>
   </div></body>

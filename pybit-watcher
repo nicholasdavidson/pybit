@@ -32,6 +32,8 @@ import os
 import sys
 import logging
 import signal
+import subprocess
+import time
 
 from pybit.daemonlogger import LoggingDaemonContext, FileLikeLogger
 from pyinotify import ProcessEvent
@@ -55,24 +57,32 @@ def getDaemonLogger (filePath, format = None) :
 	return logging.getLogger()
 
 class EventHandler(pyinotify.ProcessEvent):
+	
 	def process_IN_CREATE(self, event):
 		if os.path.isfile(event.pathname) and event.pathname.endswith(".changes"):
-			
-			cmd = "reprepro -b %s processincoming  %s" % (self.settings['repobase'], self.settings['rule'])
-			log_cmd = "run"
-			if ('dryrun' in self.settings and
-				self.settings['dryrun'] == False): 
-				 log_cmd = "dryrun"
-			
-			logging.debug("%s: %s" % (log_cmd, cmd))
-			if ('dryrun' in self.settings and
+			logging.debug("Sleeping for %ss",self.sleeptime)
+			time.sleep(self.sleeptime)
+			cmd_args = ["reprepro", "-b", self.settings['repobase'], "processincoming", self.settings['rule']]
+			logging.debug(" ".join(cmd_args))
+			if ('dryrun' not in self.settings or
 				self.settings['dryrun'] == False):
-				os.system(cmd)
+				process = subprocess.Popen(cmd_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+				(stdout, stderr) = process.communicate()
+				
+				if process.returncode:
+					logging.debug(stderr)
+					logging.debug("reprepo command failed with code: %s" % process.returncode)
+				else:
+					logging.debug(stdout)
 
 	def __init__(self, settings):
 		self.settings = settings
+		self.sleeptime = 3
+		if 'sleeptime' in self.settings:
+			self.sleeptime = self.settings['sleeptime']
 		ProcessEvent.__init__(self)
-		
+
+
 def run(settings):
 	try:
 		signal.signal(signal.SIGINT, signal_handler)
@@ -81,7 +91,8 @@ def run(settings):
 		raise Exception('Error configuring signal handler: ' + str(e))
 	wm = pyinotify.WatchManager()
 	mask = pyinotify.IN_CREATE
-	
+	if 'dryrun' in settings and settings['dryrun'] == True:
+		logging.debug("Starting in dryrun mode")
 	handler = EventHandler(settings)
 	notifier = pyinotify.Notifier(wm, handler)
 	wdd = wm.add_watch(settings['path'], mask, rec=True)
@@ -101,7 +112,9 @@ if __name__ == '__main__':
 	
 	groupConfigFile.add_option("--dry-run", dest="dryrun", action="store_true",
 		help="Controls if we simulate or do we actually run.", metavar=META + "DRYRUN")
-
+	groupConfigFile.add_option("--sleeptime", dest="sleeptime",
+		help="The number of seconds we wait after a changes file is created before we run the reprepro command.",
+		metavar=META + "SLEEPTIME")
 	parser.add_option("--conf_file", dest="conf_file", default="watcher/watcher.conf",
 		help="Config file to read settings from, defaults to watcher.conf which will be read from configs/watcher and /etc/pybit/watcher in turn.",
 		metavar=META + "CONF_FILE")

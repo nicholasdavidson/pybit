@@ -1,21 +1,3 @@
-import re
-import os
-import errno
-import json
-import time
-import logging
-import jsonpickle
-from amqplib import client_0_8 as amqp
-import pybit
-from pybit.models import TaskComplete, PackageInstance, ClientMessage, BuildRequest, CommandRequest, AMQPConnection,\
-	CancelRequest
-from debianclient import DebianBuildClient
-from subversion import SubversionClient
-import multiprocessing
-import socket
-import requests
-from requests.auth import HTTPBasicAuth
-
 #       Copyright 2012:
 #
 #       Nick Davidson <nickd@toby-churchill.com>,
@@ -38,6 +20,25 @@ from requests.auth import HTTPBasicAuth
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+
+import re
+import os
+import errno
+import json
+import time
+import logging
+import jsonpickle
+from amqplib import client_0_8 as amqp
+import pybit
+from pybit.models import TaskComplete, PackageInstance, ClientMessage, BuildRequest, CommandRequest, AMQPConnection,\
+	CancelRequest
+from debianclient import DebianBuildClient
+from subversion import SubversionClient
+import multiprocessing
+import socket
+import requests
+from requests.auth import HTTPBasicAuth
+
 class PyBITClient(object):
 
 	def _clean_current(self):
@@ -46,6 +47,7 @@ class PyBITClient(object):
 		self.current_msg = None
 		self.current_request = None
 		self.overall_success = None
+		self.subprocess_message
 
 	def set_status(self, status, request=None, client = None):
 		if request is None:
@@ -73,9 +75,19 @@ class PyBITClient(object):
 				status_list = jsonpickle.decode(r.content)
 				if (len(status_list) > 0):
 					return status_list[-1].status
+				
+	def republish_job(self, buildreq):
+		routing_key = pybit.get_build_route_name(buildreq.packageinstance.distribution.name, 
+			buildreq.packageinstance.arch.name, 
+			buildreq.packageinstance.suite.name, 
+			buildreq.packageinstance.format.name)
+		self.message_chan.basic_publish(amqp.Message(buildreq),
+			exchange=pybit.exchange_name,
+			routing_key=routing_key,
+			mandatory=True)
 
 	def wait(self):
-		time.sleep(5)
+		time.sleep(self.poll_time)
 		if self.state == "IDLE" :
 			msg = None
 			if self.message_chan is not None:
@@ -120,13 +132,18 @@ class PyBITClient(object):
 				overall_success = self.overall_success
 				current_msg = self.current_msg
 				current_req = self.current_request
+				subprocess_message = self.subprocess_message
 				self._clean_current()
 				if current_msg is not None :
 					self.message_chan.basic_ack(current_msg.delivery_tag)
 					if overall_success == True:
 						self.set_status(ClientMessage.done, current_req)
 					elif overall_success == False:
-						self.set_status(ClientMessage.failed, current_req)
+						if  subprocess_message == 'build-dep-wait':
+							self.set_status(ClientMessage.blocked, current_req)
+							self.republish_job(current_req)
+						else:
+							self.set_status(ClientMessage.failed, current_req)
 
 			logging.debug ("Moved from %s to %s" % (self.old_state, self.state))
 		else:
@@ -177,6 +194,7 @@ class PyBITClient(object):
 				self.move_state("UPLOAD")
 			else:
 				self.overall_success = False
+				self.subprocess_message = decoded.message
 				self.move_state("CLEAN")
 
 
@@ -184,8 +202,8 @@ class PyBITClient(object):
 	def upload_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
 			self.overall_success = decoded.success
+			self.subprocess_message = decoded.message
 			self.process.join()
-			self.overall_success = False
 			self.move_state("CLEAN")
 
 	def clean_handler(self, msg, decoded):
@@ -216,7 +234,9 @@ class PyBITClient(object):
 		self.command_chan = None
 		self.message_chan = None
 		self.settings = settings
-
+		self.poll_time = 60
+		if 'poll_time' in self.settings:
+			self.poll_time = self.settings['poll_time']
 		self.routing_key = pybit.get_build_route_name(self.distribution,
 			self.arch, self.suite, self.pkg_format)
 
