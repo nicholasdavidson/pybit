@@ -88,7 +88,7 @@
 </div>
 	<a id="buildds"></a>
 	<table id="tbl_buildds"  class="table table-bordered table-condensed">
-	<tr><th colspan='2'>Buildboxes</th></tr><tr><th>Name</th><th>Operations</th></tr>
+	<tr><th colspan='3'>Buildboxes</th></tr><tr><th>Name</th><th>Status</th><th>Operations</th></tr>
 	</table>
       <hr>      <footer>
         <p>&copy; TCL 2012</p>
@@ -119,7 +119,13 @@ document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', ""
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_buildds").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/buildd/" + field.id + "'>" + field.name + "</a></td><td><a  href='" + "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.id + "/status'>View Status</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
+			status_url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.name + "/status"
+
+			$.get(status_url, function(status)
+			{
+				$("#tbl_buildds").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/buildd/" + field.id + "'>" + field.name + "</a></td><td>" + status + "</td><td><a  href='" + "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.id + "/status'>View Status</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
+			});
+
 		});
 	});});
 </script>    </div>
