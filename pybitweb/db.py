@@ -563,9 +563,12 @@ class Database(object):
 			cur.execute("SELECT id,name FROM buildclients WHERE id=%s",(buildd_id,))
 			res = cur.fetchall()
 			self.conn.commit()
-			buildd = BuildD(res[0]['id'],res[0]['name'])
-			cur.close()
-			return buildd
+			if (res):
+				buildd = BuildD(res[0]['id'],res[0]['name'])
+				cur.close()
+				return buildd
+			else:
+				return None
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving buildd with id:" + str(buildd_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
