@@ -60,8 +60,8 @@ class EventHandler(pyinotify.ProcessEvent):
 	
 	def process_IN_CREATE(self, event):
 		if os.path.isfile(event.pathname) and event.pathname.endswith(".changes"):
-			logging.debug("Sleeping for %ss",self.settings['sleeptime'])
-			time.sleep(self.settings['sleeptime'])
+			logging.debug("Sleeping for %ss",self.sleeptime)
+			time.sleep(self.sleeptime)
 			cmd_args = ["reprepro", "-b", self.settings['repobase'], "processincoming", self.settings['rule']]
 			logging.debug(" ".join(cmd_args))
 			if ('dryrun' not in self.settings or
@@ -76,6 +76,9 @@ class EventHandler(pyinotify.ProcessEvent):
 					logging.debug(stdout)
 
 	def __init__(self, settings):
+		self.sleeptime = 3
+		if 'sleeptime' in self.settings:
+			self.sleeptime = self.settings['sleeptime']
 		self.settings = settings
 		ProcessEvent.__init__(self)
 
