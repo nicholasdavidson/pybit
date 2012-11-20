@@ -4,7 +4,6 @@ pybitclient/sbuild-cross.sh ./usr/share/pybitclient/
 pybitclient/sbuild-orig.sh ./usr/share/pybitclient/
 configs/buildd-test.conf ./usr/share/pybitclient/
 pybit-client ./usr/bin/
-debian/tmp/usr/local/lib/python*/dist-packages/pybitclient/ ./usr/share/pyshared/
 buildd-test.py ./usr/share/pybitclient/
 debian/pybit-client.1 ./usr/share/man/man1/
 debian/pybitclientlog ./etc/logrotate.d/
