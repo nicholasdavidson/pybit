@@ -181,7 +181,7 @@ contacted or None if the job doesn't exist
 					elif status == None:
 						self.move_state("IDLE")
 					elif status == ClientMessage.cancelled:
-						logging.debug ("jobid: %s has been cancelled. Acking." % (self.current_request.get_job_id()))
+						logging.debug ("jobid: %s has been cancelled. Acking." % self.current_request.get_job_id())
 						self.move_state("IDLE")
 				except Exception as requests.exceptions.ConnectionError:
 					self.overall_success = False
