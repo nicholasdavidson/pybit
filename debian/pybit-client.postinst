@@ -84,7 +84,7 @@ if ($ARGV[0] eq 'configure' or $ARGV[0] eq 'reconfigure') {
 		if ($line =~ m|"host_arch": (.*),?|) {
 			my $chk = $1;
 			if (not defined $chk or $chk !~ /\w/) {
-				my $host = `dpkg-architecture -qDEB_HOST_ARCH 2>/dev/null`;
+				my $host = `dpkg-architecture -qDEB_BUILD_ARCH 2>/dev/null`;
 				chomp ($host);
 				$line =~ s|$chk|\"$host\"|;
 			}
