@@ -228,7 +228,8 @@ class Controller(object):
 		# cancels all packages/jobs
 		unfinished_jobs_list = self.db.get_unfinished_jobs()
 		for unfinished_job in unfinished_jobs_list:
-			self.process_cancel(unfinished_job)
+			chan = self.get_amqp_channel()
+			self.process_cancel(unfinished_job, chan)
 		return
 
 	def cancel_package(self, package_id):
@@ -240,7 +241,8 @@ class Controller(object):
 			unfinished_jobs_list = self.db.get_unfinished_jobs()
 			for unfinished_job in unfinished_jobs_list:
 				if (unfinished_job.packageinstance.package.name == package.name) and (unfinished_job.packageinstance.package.version == package.version):
-					self.process_cancel(unfinished_job)
+					chan = self.get_amqp_channel()
+					self.process_cancel(unfinished_job, chan)
 		return
 
 	def cancel_package_instance(self,job_id): #FIXME: rename...
@@ -254,7 +256,8 @@ class Controller(object):
 				if not job_to_cancel :
 					response.status = "404 - no job matching id"
 				else :
-					self.process_cancel(job_to_cancel)
+					chan = self.get_amqp_channel()
+					self.process_cancel(job_to_cancel, chan)
 		except Exception as e:
 			raise Exception('Error parsing job information: ' + str(e))
 			response.status = "500 - Error parsing job information"
