@@ -107,6 +107,13 @@ tool like debootstrap to create a Debian build environment in a subdirectory
 configuring that chroot to have the relevant apt sources and pre-installed
 packages (e.g. build-essential and dpkg-dev).
 </para>
+<refsect2 id="pbuilder"><title>Install pbuilder</title>
+<para>
+The pybit debianclient uses <filename>/usr/lib/pbuilder/pbuilder-satisfydepends-classic</filename>
+for the dependency resolution test, so the pbuilder package needs to be
+installed inside each build chroot.
+</para>
+</refsect2>
 <refsect2 id="naming"><title>Naming the chroots</title>
 <para>
 The pybit client will expect to be able to use a chroot (or an alias for
