@@ -40,7 +40,7 @@ class Controller(object):
 				 password=self.settings['rabbit_password'],
 				 virtual_host=self.settings['rabbit_virtual_host'],
 				 insist=self.settings['rabbit_insist'])
-			try: 	
+			try:
 				chan = conn.channel()
 				chan.exchange_declare(exchange=pybit.exchange_name,
 					type="direct",
@@ -48,7 +48,7 @@ class Controller(object):
 					auto_delete=False)
 			except amqp.AMQPChannelException:
 				pass
-		except amqp.AMQPConnectionException:			
+		except amqp.AMQPConnectionException:
 			pass
 		return chan
 
@@ -89,16 +89,16 @@ class Controller(object):
 						build_req = jsonpickle.encode(BuildRequest(new_job,transport,self.settings['webserver_url'],commands))
 						msg = amqp.Message(build_req)
 						msg.properties["delivery_mode"] = 2
-						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name, 
-												new_job.packageinstance.arch.name, 
-												new_job.packageinstance.suite.name, 
+						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name,
+												new_job.packageinstance.arch.name,
+												new_job.packageinstance.suite.name,
 												new_job.packageinstance.format.name)
-						build_queue = pybit.get_build_queue_name(new_job.packageinstance.distribution.name, 
-												new_job.packageinstance.arch.name, 
-												new_job.packageinstance.suite.name, 
+						build_queue = pybit.get_build_queue_name(new_job.packageinstance.distribution.name,
+												new_job.packageinstance.arch.name,
+												new_job.packageinstance.suite.name,
 												new_job.packageinstance.format.name)
 						self.add_message_queue(build_queue, routing_key, chan)
-						
+
 						if chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True) :
 							#print "\n____________SENDING", build_req, "____________TO____________", routing_key
 							print "SENDING BUILD REQUEST FOR JOB ID", new_job.id, new_job.packageinstance.package.name, new_job.packageinstance.package.version, new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name
@@ -225,6 +225,7 @@ class Controller(object):
 		return
 
 	def cancel_all_builds(self):
+		print "DEBUG: Cancelling all builds!"
 		# cancels all packages/jobs
 		unfinished_jobs_list = self.db.get_unfinished_jobs()
 		for unfinished_job in unfinished_jobs_list:

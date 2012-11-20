@@ -49,7 +49,7 @@ def get_job_app(settings, db, controller) :
 				package_name = request.forms.get('package')
 				suite = request.forms.get('suite')
 				pkg_format = request.forms.get('format')
-	
+
 				if not uri and not method and not dist and not vcs_id and not architectures and not version and not package_name and not suite and not pkg_format :
 					response.status = "400 - Required fields missing."
 					return None
@@ -71,8 +71,9 @@ def get_job_app(settings, db, controller) :
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	#NEW: Have controller cancel all jobs.
+	@app.route('/cancelall', method='GET')
 	@app.route('/', method='DELETE')
 	@requires_auth
 	def cancel_jobs():
@@ -83,7 +84,7 @@ def get_job_app(settings, db, controller) :
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	#NEW: Have controller cancel a specific job.
 	@app.route('/<jobid:int>/cancel', method='GET')
 	@requires_auth
@@ -95,7 +96,7 @@ def get_job_app(settings, db, controller) :
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/status', method='GET')
 	def get_jobstatuses():
 		try:
@@ -106,7 +107,7 @@ def get_job_app(settings, db, controller) :
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/<jobid:int>', method='PUT')
 	@app.route('/<jobid:int>', method='POST')
 	@requires_auth
@@ -126,7 +127,7 @@ def get_job_app(settings, db, controller) :
 		else:
 			response.status = "400 - Required fields missing."
 			return
-	
+
 	@app.route('/status/<status>', method='GET')
 	def get_jobs_bystatus(status):
 		try:
@@ -137,7 +138,7 @@ def get_job_app(settings, db, controller) :
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
 	@requires_auth
@@ -149,7 +150,7 @@ def get_job_app(settings, db, controller) :
 			vcs_id = request.forms.get('vcs_id')
 			uri = request.forms.get('uri')
 			commands = request.forms.get('commands') # NEW: Any additional build commands
-	
+
 			if  packageinstance_id and method and vcs_id and uri:
 				packageinstance = app.config['db'].get_packageinstance_id(packageinstance_id)
 				package_version = packageinstance.package.version
@@ -158,9 +159,9 @@ def get_job_app(settings, db, controller) :
 				dist = packageinstance.distribution.name
 				suite = packageinstance.suite.name
 				pkg_format = packageinstance.format.name
-	
+
 				print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + commands + ")")
-	
+
 				# Pass to controller to queue up
 				transport = Transport(None, method, uri, vcs_id)
 				app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,commands)
@@ -170,13 +171,13 @@ def get_job_app(settings, db, controller) :
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/<jobid:int>', method='GET')
 	def get_jobid(jobid):
 		try:
 			# Return details for specified job ID
 			res = app.config['db'].get_job(jobid)
-	
+
 			# check results returned
 			if res:
 				encoded = jsonpickle.encode(res)
@@ -188,7 +189,7 @@ def get_job_app(settings, db, controller) :
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/<jobid:int>/delete', method='GET')
 	@app.route('/<jobid:int>', method='DELETE')
 	@requires_auth
@@ -201,13 +202,13 @@ def get_job_app(settings, db, controller) :
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/<jobid:int>/status', method='GET')
 	def get_jobstatus(jobid):
 		try:
 			# Return status history for specified job ID
 			res = app.config['db'].get_job_statuses(jobid)
-	
+
 			# check results returned
 			if res:
 				encoded = jsonpickle.encode(res)
