@@ -153,6 +153,9 @@ class BuildRequest(Model):
 
 	def get_job_id(self):
 		return self.job.id
+	
+	def get_dist(self):
+		return self.job.packageinstance.distribution.name
 
 
 class AMQPConnection(object):
