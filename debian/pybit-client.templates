@@ -1,0 +1,58 @@
+Template: pybit-client/clientid
+Type: string
+_Description: Specify pybit client id string:
+ Each client needs to have a unique string to identify itself within
+ the job list and queues.
+
+Template: pybit-client/lvmsnapshot
+Type: boolean
+Default: false
+_Description: Use lvm snapshots on this client?
+ If your sbuild configuration uses lvm-snapshots, pybit-client can
+ ensure that your snapshot apt cache data remains updated whilst
+ keeping the snapshot clean.
+
+Template: pybit-client/buildroot
+Type: string
+Default: /home/buildd/pybit
+_Description: Specify the buildd location:
+ Please enter a writeable directory where the version control handler
+ and the upload task can write files.
+ .
+ If this is empty, the default /home/buildd/pybit will be used.
+
+Template: pybit-client/rabbitmqhost
+Type: string
+_Description: Specify the host machine running RabbitMQ:
+ Each buildd client needs to communicate with a single server running
+ rabbitMQ from which it receives the details of the jobs which the
+ client needs to attempt to build.
+
+Template: pybit-client/dputdest
+Type: string
+_Description: Specify the dput destination for packages to be uploaded:
+ Each client has a dput config for a specific upload machine, specify
+ that config name here.
+ .
+ This entry must not be empty.
+
+Template: pybit-client/missingid
+Type: note
+_Description: Client id string cannot be empty!
+ Any client with an empty clientid (or a clientid which matches an
+ existing clientid) will fail to start.
+
+Template: pybit-client/missinghost
+Type: note
+_Description: RabbitMQ host is empty!
+ Any client with a missing rabbitmq host will not receive any
+ messages from the queue and will not build any packages.
+ .
+ Please edit /etc/pybit/client/client.conf after configuration.
+
+Template: pybit-client/defaultdput
+Type: note
+_Description: dput destination cannot be empty!
+ pybit-client is not intended to upload to unspecified dput
+ destinations like ftp-master.debian.org and does not currently
+ support GnuPG signed uploads.

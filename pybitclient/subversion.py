@@ -64,7 +64,8 @@ class SubversionClient(VersionControlHandler):
 			command = "rm -rf %s" % (self.cleandir)
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 				retval = "failed_clean"
-		retval = "success"
+		if not retval :
+			retval = "success"
 		pybitclient.send_message (conn_data, retval)
 		if retval == "success":
 			return 0

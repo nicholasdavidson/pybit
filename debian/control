@@ -7,7 +7,7 @@ Uploaders: Nick Davidson <nickd@toby-churchill.com>,
  Neil Williams <neilw@toby-churchill.com>,
  Nick Bane <nick@cecomputing.co.uk>,
  James Bennet <James.Bennet@toby-churchill.com>
-Build-Depends: debhelper (>= 7.0.50~), docbook-xsl, xsltproc,
+Build-Depends: debhelper (>= 7.0.50~), docbook-xsl, xsltproc, po-debconf,
  python (>= 2.6.6-3~), python2.6, python-setuptools,
  python-jsonpickle,
  python-requests (>=0.10.1-1~),
