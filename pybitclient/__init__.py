@@ -77,14 +77,15 @@ class PyBITClient(object):
 					return status_list[-1].status
 				
 	def republish_job(self, buildreq):
-		routing_key = pybit.get_build_route_name(buildreq.packageinstance.distribution.name, 
-			buildreq.packageinstance.arch.name, 
-			buildreq.packageinstance.suite.name, 
-			buildreq.packageinstance.format.name)
-		self.message_chan.basic_publish(amqp.Message(buildreq),
-			exchange=pybit.exchange_name,
-			routing_key=routing_key,
-			mandatory=True)
+		if (isinstance(buildreq, BuildRequest)) :
+			routing_key = pybit.get_build_route_name(buildreq.get_dist(), 
+				buildreq.get_arch(), 
+				buildreq.get_suite(), 
+				buildreq.get_format())
+			self.message_chan.basic_publish(amqp.Message(buildreq),
+				exchange=pybit.exchange_name,
+				routing_key=routing_key,
+				mandatory=True)
 
 	def wait(self):
 		time.sleep(self.poll_time)
