@@ -47,7 +47,7 @@ class PyBITClient(object):
 		self.current_msg = None
 		self.current_request = None
 		self.overall_success = None
-		self.subprocess_message
+		self.subprocess_message = None
 
 	def set_status(self, status, request=None, client = None):
 		if request is None:
