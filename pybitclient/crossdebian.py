@@ -56,8 +56,8 @@ class DebianBuildClient(PackageHandler):
 		if not pybitclient.run_cmd (command, self.options["dry_run"], logfile):
 			retval = "build-dep-wait"
 		if not retval :
-			command = "sbuild --debbuildopt=\"-a%s\" --setup-hook=\"/usr/bin/sbuild-cross.sh\" --arch=%s -A -s -d %s %s/%s_%s.dsc" %
-				(pkg.architecture, pkg.architecture, pkg.suite, srcdir, pkg.source, pkg.version)
+			command = "sbuild --debbuildopt=\"-a%s\" --setup-hook=\"/usr/bin/sbuild-cross.sh\" --arch=%s -A -s -d %s %s/%s_%s.dsc" % (
+				pkg.architecture, pkg.architecture, pkg.suite, srcdir, pkg.source, pkg.version)
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "build_binary"
 		if not retval :
