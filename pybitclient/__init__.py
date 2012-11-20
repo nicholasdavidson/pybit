@@ -64,8 +64,15 @@ class PyBITClient(object):
 				pass
 		else:
 			logging.debug ("Couldn't find status or current_request")
+			
 
 	def get_status(self, request = None):
+		"""Get the build request status from the controller via REST 
+
+Returns the current job status, waiting if the controller cannot be
+contacted or None if the job doesn't exist
+
+"""
 		if request is None:
 			request = self.current_request
 		if request is not None:
@@ -75,6 +82,10 @@ class PyBITClient(object):
 				status_list = jsonpickle.decode(r.content)
 				if (len(status_list) > 0):
 					return status_list[-1].status
+			elif r.status_code == 404:
+				return None
+			else:
+				return ClientMessage.waiting
 				
 	def republish_job(self, buildreq):
 		if (isinstance(buildreq, BuildRequest)) :
@@ -162,10 +173,14 @@ class PyBITClient(object):
 			if (self.current_request.transport.method == "svn" or
 				self.current_request.transport.method == "svn+ssh"):
 				try:
-					if self.get_status() == ClientMessage.waiting:
+					status = self.get_status()
+					if (status == ClientMessage.waiting or
+						status == ClientMessage.blocked):
 						self.vcs_handler = SubversionClient(self.settings)
 						self.move_state("CHECKOUT")
-					elif self.get_status() == ClientMessage.cancelled:
+					elif status == None:
+						self.move_state("IDLE")
+					elif status == ClientMessage.cancelled:
 						logging.debug ("jobid: %s has been cancelled. Acking." % (self.current_request.get_job_id()))
 						self.move_state("IDLE")
 				except Exception as requests.exceptions.ConnectionError:
