@@ -20,14 +20,119 @@
 </cmdsynopsis>
 </refsynopsisdiv>
 
-
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para>pybit-client receives messages from the controller to create a
-specific package build using the specific version control system. The
+specific package build using the specified version control system. The
 client feeds status messages back to the controller.
 </para>
 </refsect1>
 
+<refsect1 id="usage"><title>Usage</title>
+<para>pybit-client runs as a single-instance daemon by default. The standard daemon control interface is supported:
+</para>
+<programlisting>
+invoke-rc.d pybit-client stop
+invoke-rc.d pybit-client start
+update-rc.d pybit-client disable
+update-rc.d pybit-client enable
+</programlisting>
+</refsect1>
+
+<refsect1 id="configuration"><title>Daemon Configuration</title>
+<para>
+Certain values are set using <emphasis>debconf</emphasis> at package installation but values can also be
+set in <filename>/etc/pybit/client/client.conf</filename> and the relevant debconf settings can be
+updated using <emphasis>dpkg-reconfigure pybit-client</emphasis>. The configuration file is in JSON
+format.
+</para>
+<para><emphasis>clientid</emphasis> -
+The clientid string for this client (must not be empty and needs to be unique for each client using any one RabbitMQ server).
+</para>
+<para><emphasis>host_arch</emphasis> -
+The native architecture of this client, e.g. i386.
+<programlisting>
+dpkg-architecture -qDEB_BUILD_ARCH
+</programlisting>
+</para>
+<para><emphasis>use_lvm</emphasis> -
+Whether lvm snapshots are in use (default is true).
+</para>
+<para><emphasis>distribution</emphasis> -
+The distribution in use. e.g. Debian.
+<programlisting>
+dpkg-vendor --query vendor
+</programlisting>
+</para>
+<para><emphasis>pkg_format</emphasis> -
+Tag used by each build client to screen out unsupported binary build formats,
+e.g. Debian clients will check for deb and RPM clients would check for rpm.
+</para>
+<para><emphasis>buildroot</emphasis> -
+The buildd location on the client filesystem. Default: <filename>/home/buildd/pybit</filename>
+</para>
+<para><emphasis>host</emphasis> -
+The location of the RabbitMQ server which sends the build messages. This can be
+omitted during initial setup and testing but needs to be specified
+and the client restarted or no builds will be started.
+</para>
+<para><emphasis>port</emphasis> -
+Override the standard port of 5672 for the RabbitMQ server.
+</para>
+<para><emphasis>userid</emphasis> -
+If the RabbitMQ server uses authentication, override the default username of <emphasis>guest</emphasis>.
+</para>
+<para><emphasis>password</emphasis> -
+If the RabbitMQ server uses authentication, override the default password of <emphasis>guest</emphasis>.
+</para>
+<para><emphasis>vhost</emphasis> -
+If the RabbitMQ server uses a specific VHost, override the default of <emphasis>/</emphasis>.
+</para>
+<para><emphasis>dput</emphasis> -
+options passed down to dput - see dput (1). The default is
+<emphasis>-U</emphasis> to stop dput writing .upload files.
+</para>
+<para><emphasis>dput_dest</emphasis> -
+The codename of the location to upload the built packages (must not be
+empty as the default for dput is typically to upload to ftp-master.debian.org).
+</para>
+<para><emphasis>poll_time</emphasis> - frequency with which this client checks
+the queues for new messages. Measured in seconds. Default: 60 seconds.</para>
+</refsect1>
+<refsect1 id="schroot"><title>schroot configuration</title>
+<para>
+The detailed process of creating chroots suitable for schroot is covered
+in the sbuild documentation (schroot.conf (5)) and amounts to using a
+tool like debootstrap to create a Debian build environment in a subdirectory
+(which may or may not be also the mountpoint of an LVM snapshot) and then
+configuring that chroot to have the relevant apt sources and pre-installed
+packages (e.g. build-essential and dpkg-dev).
+</para>
+<refsect2 id="naming"><title>Naming the chroots</title>
+<para>
+The pybit client will expect to be able to use a chroot (or an alias for
+a chroot) which matches the suite specified in the build request. If using
+version control hooks, this suite is likely to come from the Distribution
+field of the output of <emphasis>dpkg-parsechangelog</emphasis>. Ensure that
+any client has a suitable chroot listed in the output of <emphasis>schroot -l</emphasis>.
+</para>
+</refsect2>
+<refsect2 id="testing"><title>Testing the chroots</title>
+<para>
+There is a test script (<filename>/usr/share/pybitclient/buildd-test.py</filename>)
+which can be used alongside a test schroot to run through the buildd commands
+and then do the upload. (What happens to that upload is dependent on the next step,
+it just sits in an incoming directory initially.)
+</para>
+</refsect2>
+<refsect2 id="upload"><title>Configuring the upload handler</title>
+<para>
+Set up dput by editing <filename>/etc/pybit/client/dput.cf</filename> to provide
+a usable upload configuration. The format of this file is the same
+as ~/.dput.cf and is passed to dput using the -c option internally.
+See dput.cf (5)
+</para>
+</refsect2>
+</refsect1>
 <refsect1 id='options'><title>OPTIONS</title>
 <variablelist remap='TP'>
   <varlistentry>
@@ -37,9 +142,22 @@ client feeds status messages back to the controller.
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>--arch</option>=<emphasis remap='I'>PYBIT_CLIENT_ARCH</emphasis></term>
+  <term><option>--conf_file</option>=<emphasis remap="I">CONF_FILE</emphasis></term>
+  <listitem>
+  <para>Configuration file from which settings can be read. Defaults to <filename>configs/client.conf</filename>
+  from the current working directory or falls back to <filename>/etc/pybit/client/client.conf</filename>.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--arch</option>=<emphasis remap='I'>ARCH</emphasis></term>
   <listitem>
 <para>Architecture to use, defaults to i386</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-d</option></term>
+  <listitem>
+  <para>Run this client as a daemon - default option used by <filename>/etc/init.d/pybit-client</filename>.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -105,4 +223,10 @@ client feeds status messages back to the controller.
   </varlistentry>
 </variablelist>
 </refsect1>
+  <refsect1>
+    <title>Author</title>
+    <para>This  manual  page  was  written by Neil Williams
+      <email>codehelp@debian.org</email>
+    </para>
+  </refsect1>
 </refentry>

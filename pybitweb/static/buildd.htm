@@ -119,6 +119,7 @@ document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', ""
 	{
 		$.each(json, function(i, field)
 		{
+			var shortname =  field.name.replace("build_client_",""); // TODO: HACKS
 			status_url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.name + "/status"
 
 			$.get(status_url, function(status)
@@ -126,13 +127,16 @@ document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', ""
 				if (status == "Not Active")
 				{
 					_class = "error";
+
+				$("#tbl_buildds").append("<tr class='" + _class  +"'><td><a href='{{protocol}}" + window.location.host.toString() + "/buildd/" + field.id + "'>" + field.name + "</a></td><td>" + status + "</td><td><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
 				}
 				else if (status == "Active")
 				{
 					_class = "success";
+
+				$("#tbl_buildds").append("<tr class='" + _class  +"'><td><a href='{{protocol}}" + window.location.host.toString() + "/buildd/" + field.id + "'>" + field.name + "</a></td><td>" + status + "</td><td><a  href='" + "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='http://" + shortname + "/logs/pybitclient.log'>View Logs</a></td></tr>");
 				}
 
-				$("#tbl_buildds").append("<tr class='" + _class  +"'><td><a href='{{protocol}}" + window.location.host.toString() + "/buildd/" + field.id + "'>" + field.name + "</a></td><td>" + status + "</td><td><a  href='" + "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
 			});
 
 		});
