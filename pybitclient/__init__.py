@@ -82,11 +82,14 @@ class PyBITClient(object):
 				buildreq.get_arch(), 
 				buildreq.get_suite(), 
 				buildreq.get_format())
-			self.message_chan.basic_publish(amqp.Message(buildreq),
-				exchange=pybit.exchange_name,
-				routing_key=routing_key,
-				mandatory=True)
-
+			try:
+				msg = jsonpickle.encode(buildreq) 
+				self.message_chan.basic_publish(amqp.Message(msg),
+					exchange=pybit.exchange_name,
+					routing_key=routing_key,
+					mandatory=True)
+			except amqp.AMQPConnectionException as e:
+				logging.debug("Couldn't connect to channel. traceback: %s" % e)
 	def wait(self):
 		time.sleep(self.poll_time)
 		if self.state == "IDLE" :
