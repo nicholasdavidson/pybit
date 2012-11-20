@@ -33,3 +33,4 @@ setup(name='pybit',
 	maintainer_email='rnd@toby-churchill.com',
 	include_package_data = True
 	)
+

@@ -18,9 +18,11 @@ endif
 
 # get upstream version for get-orig-source target
 VERSION:= $(shell dpkg-parsechangelog | grep '^Version: ' | sed -e 's/^Version: //' | sed -e 's/\-.*$$//')
-
-PYTHON2:=$(shell pyversions -r)
+# allow using whichever supported python is installed
+PYTHON2:=$(shell pyversions -r debian/control|xargs which|xargs basename)
+include /usr/share/python/python.mk
 pyalldo=set -e; $(foreach py, $(PYTHON2) $(PYTHON3), PYTHONPATH=. $(py) $(1);)
+install_dir=$(call py_libdir, $(PYTHON2))
 
 configure: configure-stamp
 configure-stamp: build-setup
@@ -64,7 +66,13 @@ install: build
 	dh_testroot
 	dh_prep
 	dh_installdirs
-	python setup.py install --root="$(CURDIR)/debian/tmp" --no-compile
+	python setup.py install --root="$(CURDIR)/debian/tmp" --no-compile $(py_setup_install_args)
+	mkdir -p debian/pybit-common$(install_dir)
+	mkdir -p debian/pybit-client$(install_dir)
+	mkdir -p debian/pybit-web$(install_dir)
+	mv debian/tmp$(install_dir)/pybit/ debian/pybit-common$(install_dir)
+	mv debian/tmp$(install_dir)/pybitclient/ debian/pybit-client/$(install_dir)
+	mv debian/tmp$(install_dir)/pybitweb/ debian/pybit-web$(install_dir)
 
 # Build architecture-independent files here.
 binary-indep: build install
