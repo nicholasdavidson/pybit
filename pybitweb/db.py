@@ -1059,19 +1059,6 @@ class Database(object):
 			return None
 	#<<<<<<<<< Report Queries >>>>>>>
 
-	def check_packageinstance_has_unfinished_jobs(self):
-		# TODO: NEW
-		try:
-			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("WITH latest_status AS (SELECT DISTINCT ON (job_id) job_id, packageinstance_id, status.name FROM job, jobstatus LEFT JOIN status ON status_id=status.id ORDER BY job_id, time DESC) SELECT job_id, packageinstance_id, name FROM latest_status WHERE  name!='Uploaded' AND name!='Done' AND name!='Cancelled' AND packageinstance_id=1 ORDER BY job_id")
-			res = cur.fetchall()
-			self.conn.commit()
-
-			if res and len(res) > 0:
-				return True
-			else:
-				return False
-
 	def get_report_package_instance(self):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
