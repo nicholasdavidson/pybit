@@ -93,17 +93,17 @@
 	<tr><th>ID</th><th>Name</th><th>Version</th><th>Operations</th></tr>
 	</table>      <hr>      <footer>
         <p>&copy; TCL 2012</p>
-      </footer>    </div><!--/.fluid-container--><script>   function delete_click(id)
+      </footer>    </div><!--/.fluid-container--><script>   function cancel_click(id)
    {
 $.ajax({
         type: "GET",
-        url: "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/package/" + id + "/delete",
+        url: "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/package/" + id + "/cancel",
         error: function(data){
-			alert('Error deleting package with id: ' + id + "\n" + data.responseText );
+			alert('Error sending request to cancel active jobs for package id: ' + id + "\n" + data.responseText );
       location.reload();
         },
         success: function(data) {
-           alert('OK deleting package with id: ' + id);
+           alert('Active job cancel request sent for package: ' + id);
            location.reload();
         }
     });
@@ -120,7 +120,23 @@ $.ajax({
 	{
 		$.each(json, function(i, field)
 		{
-			$("#tbl_packages").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/package/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/" + field.id + "/cancel'>Cancel</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
+			active_jobs_url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/package/" + field.id + "/active"
+
+			$.get(active_jobs_url, function(active_jobs)
+			{
+				if (active_jobs == "False")
+				{
+				$("#tbl_packages").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/package/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td></td></tr>");
+				}
+				else if (active_jobs == "True")
+				{
+					_class = "success";
+					
+				$("#tbl_packages").append("<tr class='" + _class  +"'><td><a href='{{protocol}}" + window.location.host.toString() + "/package/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel all *ACTIVE* builds for this package' onclick='cancel_click(" + field.id +")'></input></td></tr>");
+				}
+
+			});
+
 		});
 	});
 });
