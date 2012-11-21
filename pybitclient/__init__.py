@@ -299,11 +299,15 @@ contacted or None if the job doesn't exist
 			if isinstance(cmd_req, CancelRequest) :
 				logging.debug ("Received CANCEL request for jobid:", cmd_req.get_job_id())
 				self.set_status(ClientMessage.cancelled, cmd_req)
-				if (self.current_request.get_job_id() == cmd_req.get_job_id()) and (self.process is not None) :
+				if (self.current_request and
+					self.current_request.get_job_id() == cmd_req.get_job_id() and
+					self.process is not None) :
 					self.process.terminate()
 					self.process.join()
 					self.process = None
 					self.move_state("IDLE")
+				else:
+					logging.debug("Ignoring cancel request as no current request or id doesn't match.")
 			else :
 				logging.debug ("Received COMMAND request for jobid:", cmd_req.get_job_id())
 		else:
