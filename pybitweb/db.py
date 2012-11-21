@@ -1059,6 +1059,22 @@ class Database(object):
 			return None
 	#<<<<<<<<< Report Queries >>>>>>>
 
+	def check_package_has_unfinished_jobs(self, package_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("WITH latest_status AS (SELECT DISTINCT ON (job_id) job_id, status.name FROM jobstatus LEFT JOIN status ON status_id=status.id ORDER BY job_id, time DESC) SELECT job_id, name, package_id FROM latest_status LEFT JOIN job ON latest_status.job_id=job.id LEFT JOIN packageinstance ON packageinstance_id=packageinstance.id WHERE package_id=%s AND name NOT IN ('Done', 'Uploaded', 'Cancelled')",(package_id,)); 
+			res = cur.fetchall()
+			self.conn.commit()
+
+			if res and len(res) > 0:
+				return True
+			else:
+				return False
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error check package has unfinished jobs. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def get_report_package_instance(self):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
