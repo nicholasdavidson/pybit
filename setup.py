@@ -31,6 +31,9 @@ setup(name='pybit',
 	packages=['pybit', 'pybitclient', 'pybitweb',],
 	maintainer='TCL Build System user',
 	maintainer_email='rnd@toby-churchill.com',
-	include_package_data = True
+	include_package_data = True,
+	exclude_package_data = { 'pybitclient' : [ 'sbuild-cross.sh' , 'sbuild-orig.sh', 'README'],
+	'pybitweb' : [ 'static/*' ]
+	}
 	)
 
