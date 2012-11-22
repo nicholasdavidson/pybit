@@ -97,7 +97,13 @@ The codename of the location to upload the built packages (must not be
 empty as the default for dput is typically to upload to ftp-master.debian.org).
 </para>
     <para><emphasis>poll_time</emphasis> - frequency with which this client checks
-the queues for new messages. Measured in seconds. Default: 60 seconds.</para>
+the queues for new messages. Measured in seconds. Default: 60 seconds.
+</para>
+    <para><emphasis>dry_run</emphasis> - initially, clients are setup in dry run mode which
+means that commands are echoed to the terminal instead of being executed, to allow
+testing of new setups. To enable builds on the client, edit <filename>/etc/pybit/client/client.conf</filename>
+to change the value for dry_run to false.
+</para>
   </refsect1>
   <refsect1 id="schroot">
     <title>schroot configuration</title>
@@ -108,6 +114,11 @@ tool like debootstrap to create a Debian build environment in a subdirectory
 (which may or may not be also the mountpoint of an LVM snapshot) and then
 configuring that chroot to have the relevant apt sources and pre-installed
 packages (e.g. build-essential and dpkg-dev).
+</para>
+<para>
+Note: when creating a chroot for schroot, remember to use the
+<option>--variant=buildd</option> option to <filename>debootstrap</filename>
+and install <filename>fakeroot</filename> inside the chroot.
 </para>
     <refsect2 id="pbuilder">
       <title>Install pbuilder</title>
@@ -125,6 +136,11 @@ a chroot) which matches the suite specified in the build request. If using
 version control hooks, this suite is likely to come from the Distribution
 field of the output of <emphasis>dpkg-parsechangelog</emphasis>. Ensure that
 any client has a suitable chroot listed in the output of <emphasis>schroot -l</emphasis>.
+</para>
+<para>
+Currently, pybit-client only listens to queues which match the <emphasis>suite</emphasis>
+configured in <filename>/etc/pybit/client/client.conf</filename>. This configuration
+is likely to change to a list in future versions.
 </para>
     </refsect2>
     <refsect2 id="testing">
