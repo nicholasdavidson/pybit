@@ -130,7 +130,17 @@ def get_packages_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
+	# Gets package versions (not instances!) by name.
+	@app.route('/<package_id:int>/active', method='GET')
+	def get_package_active_jobs(package_id):
+		try:
+			response.content_type = "text/plain"
+			return str(app.config['db'].check_package_has_unfinished_jobs(package_id))
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
 	@app.route('/details/:name/:version', method='GET')
 	def get_package_details(name,version):
 		try:
