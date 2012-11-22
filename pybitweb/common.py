@@ -81,7 +81,7 @@ def load_from_cwd(filename):
 def load_from_etc(filename):
     try:
         #print "DEBUG: Opening config file" , filename
-        path = "/etc/pybit/configs/%s" % (filename);
+        path = "/etc/pybit/web/%s" % (filename);
 
         if isfile(path): # exists
             settings_file = open(path, 'r')
