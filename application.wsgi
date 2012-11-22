@@ -7,11 +7,6 @@ os.chdir(os.path.dirname(__file__))
 import jsonpickle
 import optparse
 import site
-
-site.addsitedir('/home/jamesb/pybit')
-site.addsitedir('/home/jamesb/pybit/pybit')
-site.addsitedir('/home/jamesb/pybit/pybitweb')
-
 import pybit
 import pybitweb
 from pybitweb.db import Database

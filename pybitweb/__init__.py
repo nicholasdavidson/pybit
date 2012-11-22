@@ -5,115 +5,137 @@ import lookups
 import buildd
 import package
 import packageinstance
+import os
 
 def get_app(settings, db, controller):
     app = Bottle(config={'settings' : settings, 'db' : db, 'controller' : controller})
+
+    local_path = "pybitweb/static"
+    installed_path = settings['web']['installed_path']
+
+    def getPath():
+        if os.path.exists(local_path):
+            return local_path
+        elif os.path.exists(installed_path):
+            return installed_path
+        else:
+            return None
+
+    # Helper which abstracts away whether its looking in /usr/share for static assets, as packages, or in a relative direcory i.e. git checkout.
+    def getStaticResource(file_path):
+        localpath = local_path + file_path
+        installedpath = installed_path + file_path
+        if os.path.exists(localpath) and os.path.isfile(localpath):
+            return localpath
+        elif os.path.exists(installedpath) and os.path.isfile(installedpath):
+            return installedpath
+
     @app.error(404)
     def error404(error):
         return 'HTTP Error 404 - Not Found.'
-    
+
     # Remove this to get more debug.
     @app.error(500)
     def error500(error):
         return 'HTTP Error 500 - Internal Server Error.'
-    
+
     # Things in here are applied to all requests. We need to set this header so strict browsers can query it using jquery
     #http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
     @app.hook('after_request')
     def enable_cors():
         response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-    
+
     @app.route('/', method='GET')
     def index():
-        return template("pybitweb/static/index.htm",
+        return template(getStaticResource("/index.htm"),
                         host=settings['web']['hostname'],
                         port=settings['web']['port'],
                         protocol=settings['web']['protocol'],
-			jqueryurl=settings['web']['jqueryurl'],
-			jqueryformurl=settings['web']['jqueryformurl']
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl']
 )
 
     # static resources like CSS
     @app.route('/bootstrap/<filepath:path>', method='GET')
     def serve_static_res(filepath):
-            return static_file(filepath, root='./pybitweb/static/bootstrap/')
+            return static_file(filepath, root=getPath() + "/bootstrap/")
 
     # Serve javascript resources from local system - TODO: new.
     @app.route('/resources/jquery.min.js', method='GET')
     def serve_static_res():
-			response.content_type = "application/javascript"
-			return static_file('jquery.min.js',root='/usr/share/javascript/jquery/')
+            response.content_type = "application/javascript"
+            return static_file('jquery.min.js',root='/usr/share/javascript/jquery/')
     # static resources like CSS
     @app.route('/resources/jquery.form.min.js', method='GET')
     def serve_static_res():
-			response.content_type = "application/javascript"
-			return static_file('jquery.form.min.js',root='/usr/share/javascript/jquery-form/')
+            response.content_type = "application/javascript"
+            return static_file('jquery.form.min.js',root='/usr/share/javascript/jquery-form/')
 
     # static HTML index page
     @app.route('/index.htm', method='GET')
     def serve_static_idex():
-            return template("pybitweb/static/index.htm",
+            return template(getStaticResource("/index.htm"),
                             host=settings['web']['hostname'],
                             port=settings['web']['port'],
                         protocol=settings['web']['protocol'],
-			jqueryurl=settings['web']['jqueryurl'],
-			jqueryformurl=settings['web']['jqueryformurl']
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl']
 )
 
     # static HTML page listing buildboxes
     @app.route('/buildd.htm', method='GET')
     def serve_static_buildboxes():
-            return template("pybitweb/static/buildd.htm",
+            return template(getStaticResource("/buildd.htm"),
                             host=settings['web']['hostname'],
                             port=settings['web']['port'],
                         protocol=settings['web']['protocol'],
-			jqueryurl=settings['web']['jqueryurl'],
-			jqueryformurl=settings['web']['jqueryformurl']
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl']
 )
 
     # static HTML page listing jobs
     @app.route('/job.htm', method='GET')
     def serve_static_jobs():
-            return template("pybitweb/static/job.htm",
+            return template(getStaticResource("/job.htm"),
                             host=settings['web']['hostname'],
                             port=settings['web']['port'],
                         protocol=settings['web']['protocol'],
-			jqueryurl=settings['web']['jqueryurl'],
-			jqueryformurl=settings['web']['jqueryformurl']
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl']
 )
 
     # static HTML page listing things
     @app.route('/lookups.htm', method='GET')
     def serve_static_lookups():
-            return template("pybitweb/static/lookups.htm",
+            return template(getStaticResource("/lookups.htm"),
                             host=settings['web']['hostname'],
                             port=settings['web']['port'],
                         protocol=settings['web']['protocol'],
-			jqueryurl=settings['web']['jqueryurl'],
-			jqueryformurl=settings['web']['jqueryformurl']
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl']
 )
 
     # static HTML page listing packages
     @app.route('/package.htm', method='GET')
     def serve_static_packages():
-            return template("pybitweb/static/package.htm",
+            return template(getStaticResource("/package.htm"),
                             host=settings['web']['hostname'],
                             port=settings['web']['port'],
                         protocol=settings['web']['protocol'],
-			jqueryurl=settings['web']['jqueryurl'],
-			jqueryformurl=settings['web']['jqueryformurl']
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl']
 )
 
     # static HTML page listing package instances
     @app.route('/packageinstance.htm', method='GET')
     def serve_static_package_instances():
-            return template("pybitweb/static/packageinstance.htm",
+            return template(getStaticResource("/packageinstance.htm"),
                             host=settings['web']['hostname'],
                             port=settings['web']['port'],
                         protocol=settings['web']['protocol'],
-			jqueryurl=settings['web']['jqueryurl'],
-			jqueryformurl=settings['web']['jqueryformurl']
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl']
 )
 
     app.mount('/job', job.get_job_app(settings, db, controller))
