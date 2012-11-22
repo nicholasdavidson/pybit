@@ -1,145 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-
-<META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
-<META HTTP-EQUIV="Expires" CONTENT="-1">
-<meta charset="utf-8">
-  <title>pyBit - Packages</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-	padding-bottom: 40px;
-      }
-    </style>
-<link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">  <script src="{{protocol}}{{jqueryurl}}"></script>
-  <script src="{{protocol}}{{jqueryformurl}}"></script>
-  <script src="bootstrap/js/bootstrap.min.js"></script></head>
-<body><div class="container-fluid">
-  <div class="row-fluid">
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
+    <head>
+        <META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
+        <META HTTP-EQUIV="Expires" CONTENT="-1">
+        <meta charset="utf-8">
+        <title>pyBit - Packages</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body
+            {
+                padding-top : 60px; /* 60px to make the container go all the way
+                 * to the bottom of the topbar */
+                padding-bottom : 40px;
+            }
+        </style>
+        <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <script src="{{protocol}}{{jqueryurl}}"></script>
+        <script src="{{protocol}}{{jqueryformurl}}"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+    </head>
+    <body>
         <div class="container-fluid">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="index.htm">pyBit</a>
-          <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li><a href="index.htm">Home</a></li>
-              <li><a href="lookups.htm">Lookups</a></li>
-              <li class="active"><a href="package.htm">Packages</a></li>
-              <li><a href="packageinstance.htm">Package Instances</a></li>
-	      <li><a href="job.htm">Jobs</a></li>
-	      <li><a href="buildd.htm">Build Boxes</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
+            <div class="row-fluid">
+                <div class="navbar navbar-inverse navbar-fixed-top">
+                    <div class="navbar-inner">
+                        <div class="container-fluid">
+                            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a>
+                            <a class="brand" href="index.htm">pyBit</a>
+                            <div class="nav-collapse collapse">
+                                <ul class="nav">
+                                    <li>
+                                        <a href="index.htm">Home</a>
+                                    </li>
+                                    <li>
+                                        <a href="lookups.htm">Lookups</a>
+                                    </li>
+                                    <li class="active">
+                                        <a href="package.htm">Packages</a>
+                                    </li>
+                                    <li>
+                                        <a href="packageinstance.htm">Package Instances</a>
+                                    </li>
+                                    <li>
+                                        <a href="job.htm">Jobs</a>
+                                    </li>
+                                    <li>
+                                        <a href="buildd.htm">Build Boxes</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!--/.nav-collapse -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="span2">
+                <!--Sidebar content-->
+                <div class="well sidebar-nav">
+                    <ul class="nav  nav-list">
+                        <li class="nav-header">
+                            Navigation
+                        </li>
+                        <li>
+                            <a href="index.htm">Home</a>
+                        </li>
+                        <li class="nav-header">
+                            Lookups
+                        </li>
+                        <li>
+                            <a href="lookups.htm#arches">Architectures</a>
+                        </li>
+                        <li>
+                            <a href="lookups.htm#statuses">Statuses</a>
+                        </li>
+                        <li>
+                            <a href="lookups.htm#dists">Dists</a>
+                        </li>
+                        <li>
+                            <a href="lookups.htm#formats">Formats</a>
+                        </li>
+                        <li>
+                            <a href="lookups.htm#suites">Suites</a>
+                        </li>
+                        <li class="nav-header">
+                            Packages
+                        </li>
+                        <li class="active">
+                            <a href="package.htm">All Packages</a>
+                        </li>
+                        <li>
+                            <a href="packageinstance.htm">Package Instances</a>
+                        </li>
+                        <li class="nav-header">
+                            Jobs
+                        </li>
+                        <li>
+                            <a href="job.htm">Jobs</a>
+                        </li>
+                        <li>
+                            <a href="buildd.htm">BuildBoxes</a>
+                        </li>
+                    </ul>
+                </div>
+                <!--/.well -->
+            </div>
+            <div class="span10">
+                <!--Body content-->
+                <div class="container-fluid">
+                    <h1>PyBit - python Buildd Integration Toolkit.</h1>
+                    <h3>Packages</h3>
+                    <div class="accordion" id="accordion1">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Click here to show the submit package form. </a>
+                            </div>
+                            <div id="collapseOne" class="accordion-body collapse">
+                                <div class="accordion-inner">
+                                    <form class="form" method="POST" action="REPLACE_WITH_URL/package" id="package_form" name="package_form">
+                                        <legend>
+                                            Add a Package
+                                        </legend>
+                                        <label for="name">Name</label>
+                                        <input name="name" type="text" />
+                                        <label for="version">Version</label>
+                                        <input name="version" type="text" />
+                                        <br>
+                                        <button type="submit" class="btn  btn-primary">
+                                            Submit
+                                        </button>
+                                        <button type="button" class="btn">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <table id="tbl_packages"  class="table table-bordered table-condensed">
+                        <tr>
+                            <th colspan='4'>Packages</th>
+                        </tr>
+                        <tr>
+                            <th>ID</th><th>Name</th><th>Version</th><th>Operations</th>
+                        </tr>
+                    </table>
+                    <hr>
+                    <footer>
+                        <p>
+                            &copy; TCL 2012
+                        </p>
+                    </footer>
+                </div>
+                <!--/.fluid-container-->
+                <script>
+                    function cancel_click ( id )
+                    {
+                        $.ajax (
+                        {
+                            type : "GET" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/" + id + "/cancel" ,
+                            error : function ( data )
+                            {
+                                alert ( 'Error sending request to cancel active jobs for package id: ' + id + "\n" + data.responseText );
+                                location.reload ( );
+                            } ,
+                            success : function ( data )
+                            {
+                                alert ( 'Active job cancel request sent for package: ' + id );
+                                location.reload ( );
+                            }
+
+                        } );
+                    }
+                    $ ( ).ready ( function ( )
+                    {
+                        document.body.innerHTML = document.body.innerHTML.replace ( 'REPLACE_WITH_URL' , "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) );
+                        $ ( '#package_form' ).ajaxForm ( function ( )
+                        {
+                            alert ( "Package Added!" );
+                            location.reload ( );
+                        } );
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package"
+                        $.getJSON ( url , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                active_jobs_url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/" + field.id + "/active"
+                                $.get ( active_jobs_url , function ( active_jobs )
+                                {
+                                    if ( active_jobs == "False" )
+                                    {
+                                        $ ( "#tbl_packages" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/package/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td></td></tr>" );
+                                    }
+                                    else
+                                    if ( active_jobs == "True" )
+                                    {
+                                        _class = "success";
+                                        $ ( "#tbl_packages" ).append ( "<tr class='" + _class + "'><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/package/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel all *ACTIVE* builds for this package' onclick='cancel_click(" + field.id + ")'></input></td></tr>" );
+                                    }
+                                } );
+                            } );
+                        } );
+                    } );
+                </script>
+            </div>
         </div>
-      </div>
-    </div>
-</div>
-    <div class="span2">
-      <!--Sidebar content-->
-<div class="well sidebar-nav">
-            <ul class="nav  nav-list">
-              <li class="nav-header">Navigation</li>
-              <li><a href="index.htm">Home</a></li>
-              <li class="nav-header">Lookups</li>
-              <li><a href="lookups.htm#arches">Architectures</a></li>
-              <li><a href="lookups.htm#statuses">Statuses</a></li>
-              <li><a href="lookups.htm#dists">Dists</a></li>
-              <li><a href="lookups.htm#formats">Formats</a></li>
-              <li><a href="lookups.htm#suites">Suites</a></li>
-              <li class="nav-header">Packages</li>
-              <li class="active"><a href="package.htm">All Packages</a></li>
-              <li><a href="packageinstance.htm">Package Instances</a></li>
-              <li class="nav-header">Jobs</li>
-              <li><a href="job.htm">Jobs</a></li>
-              <li><a href="buildd.htm">BuildBoxes</a></li>
-            </ul>
-          </div><!--/.well -->
-</div>    <div class="span10">
-      <!--Body content-->    <div class="container-fluid">      <h1>PyBit - python Buildd Integration Toolkit.</h1>
-      <h3>Packages</h3>
-<div class="accordion" id="accordion1">
-<div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
-         Click here to show the submit package form.
-      </a>
-    </div>
-    <div id="collapseOne" class="accordion-body collapse">
-      <div class="accordion-inner">
-<form class="form" method="POST" action="REPLACE_WITH_URL/package" id="package_form" name="package_form">
-					<legend>Add a Package</legend>
-					<label for="name">Name</label>
-					<input name="name" type="text" />
-					<label for="version">Version</label>
-					<input name="version" type="text" />
-					<br>
-					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
-					</form>
-      </div>
-    </div>
-  </div>
-</div>	<table id="tbl_packages"  class="table table-bordered table-condensed">
-	<tr><th colspan='2'>Packages</th></tr>
-	<tr><th>ID</th><th>Name</th><th>Version</th><th>Operations</th></tr>
-	</table>      <hr>      <footer>
-        <p>&copy; TCL 2012</p>
-      </footer>    </div><!--/.fluid-container--><script>   function cancel_click(id)
-   {
-$.ajax({
-        type: "GET",
-        url: "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/package/" + id + "/cancel",
-        error: function(data){
-			alert('Error sending request to cancel active jobs for package id: ' + id + "\n" + data.responseText );
-      location.reload();
-        },
-        success: function(data) {
-           alert('Active job cancel request sent for package: ' + id);
-           location.reload();
-        }
-    });
-}$().ready(function ()
-{
-
-		document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', "" + window.location.protocol.toString() + "//" + window.location.host.toString());
-
-		           $('#package_form').ajaxForm(function() {
-                alert("Package Added!");
-                location.reload();
-            });	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/package"
-	$.getJSON(url, function(json)
-	{
-		$.each(json, function(i, field)
-		{
-			active_jobs_url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/package/" + field.id + "/active"
-
-			$.get(active_jobs_url, function(active_jobs)
-			{
-				if (active_jobs == "False")
-				{
-				$("#tbl_packages").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/package/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td></td></tr>");
-				}
-				else if (active_jobs == "True")
-				{
-					_class = "success";
-					
-				$("#tbl_packages").append("<tr class='" + _class  +"'><td><a href='{{protocol}}" + window.location.host.toString() + "/package/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/details/" + field.name + "'>" + field.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/package/details/" + field.name + "/" + field.version + "'>" + field.version + "</td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel all *ACTIVE* builds for this package' onclick='cancel_click(" + field.id +")'></input></td></tr>");
-				}
-
-			});
-
-		});
-	});
-});
-</script>    </div>
-  </div></body>
+    </body>
 </html>

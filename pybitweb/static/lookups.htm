@@ -1,292 +1,400 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-
-<META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
-<META HTTP-EQUIV="Expires" CONTENT="-1">
-<meta charset="utf-8">
-  <title>pyBit - Lookups</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-	padding-bottom: 40px;
-      }
-    </style>
-<link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">  <script src="{{protocol}}{{jqueryurl}}"></script>
-  <script src="{{protocol}}{{jqueryformurl}}"></script>
-  <script src="bootstrap/js/bootstrap.min.js"></script></head>
-<body><div class="container-fluid">
-  <div class="row-fluid">
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
+    <head>
+        <META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
+        <META HTTP-EQUIV="Expires" CONTENT="-1">
+        <meta charset="utf-8">
+        <title>pyBit - Lookups</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body
+            {
+                padding-top : 60px; /* 60px to make the container go all the way
+                 * to the bottom of the topbar */
+                padding-bottom : 40px;
+            }
+        </style>
+        <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <script src="{{protocol}}{{jqueryurl}}"></script>
+        <script src="{{protocol}}{{jqueryformurl}}"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+    </head>
+    <body>
         <div class="container-fluid">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="index.htm">pyBit</a>
-          <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li><a href="index.htm">Home</a></li>
-              <li class="active"><a href="lookups.htm">Lookups</a></li>
-	      <li><a href="package.htm">Packages</a></li>
-              <li><a href="packageinstance.htm">Package Instances</a></li>
-	      <li><a href="job.htm">Jobs</a></li>
-	      <li><a href="buildd.htm">Build Boxes</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
+            <div class="row-fluid">
+                <div class="navbar navbar-inverse navbar-fixed-top">
+                    <div class="navbar-inner">
+                        <div class="container-fluid">
+                            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a>
+                            <a class="brand" href="index.htm">pyBit</a>
+                            <div class="nav-collapse collapse">
+                                <ul class="nav">
+                                    <li>
+                                        <a href="index.htm">Home</a>
+                                    </li>
+                                    <li class="active">
+                                        <a href="lookups.htm">Lookups</a>
+                                    </li>
+                                    <li>
+                                        <a href="package.htm">Packages</a>
+                                    </li>
+                                    <li>
+                                        <a href="packageinstance.htm">Package Instances</a>
+                                    </li>
+                                    <li>
+                                        <a href="job.htm">Jobs</a>
+                                    </li>
+                                    <li>
+                                        <a href="buildd.htm">Build Boxes</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!--/.nav-collapse -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="span2">
+                <!--Sidebar content-->
+                <div class="well sidebar-nav">
+                    <ul class="nav  nav-list">
+                        <li class="nav-header">
+                            Navigation
+                        </li>
+                        <li>
+                            <a href="index.htm">Home</a>
+                        </li>
+                        <li class="nav-header">
+                            Lookups
+                        </li>
+                        <li class="active">
+                            <a href="lookups.htm#arches">Architectures</a>
+                        </li>
+                        <li>
+                            <a href="lookups.htm#statuses">Statuses</a>
+                        </li>
+                        <li>
+                            <a href="lookups.htm#dists">Dists</a>
+                        </li>
+                        <li>
+                            <a href="lookups.htm#formats">Formats</a>
+                        </li>
+                        <li>
+                            <a href="lookups.htm#suites">Suites</a>
+                        </li>
+                        <li class="nav-header">
+                            Packages
+                        </li>
+                        <li>
+                            <a href="package.htm">All Packages</a>
+                        </li>
+                        <li>
+                            <a href="packageinstance.htm">Package Instances</a>
+                        </li>
+                        <li class="nav-header">
+                            Jobs
+                        </li>
+                        <li>
+                            <a href="job.htm">Jobs</a>
+                        </li>
+                        <li>
+                            <a href="buildd.htm">BuildBoxes</a>
+                        </li>
+                    </ul>
+                </div>
+                <!--/.well -->
+            </div>
+            <div class="span10">
+                <!--Body content-->
+                <div class="container-fluid">
+                    <h1>PyBit - python Buildd Integration Toolkit.</h1>
+                    <h3>Lookups</h3>
+                    <div class="accordion" id="accordion1">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Package Architectures </a>
+                            </div>
+                            <div id="collapseOne" class="accordion-body collapse in">
+                                <div class="accordion-inner">
+                                    <form class="form-inline" method="POST" action="REPLACE_WITH_URL/arch"  id="arch_form" name="arch_form">
+                                        <legend>
+                                            Add Package Architectures
+                                        </legend>
+                                        <label for="name">Name</label>
+                                        <input name="name" type="text" />
+                                        <button type="submit" class="btn  btn-primary">
+                                            Submit
+                                        </button>
+                                        <button type="button" class="btn">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    <a id="arches"></a>
+                                    <table id="tbl_arches"  class="table table-bordered table-condensed">
+                                        <tr>
+                                            <th colspan='2'>Architectures</th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseTwo"> Job Statuses </a>
+                            </div>
+                            <div id="collapseTwo" class="accordion-body collapse">
+                                <div class="accordion-inner">
+                                    <form class="form-inline" method="POST" action="REPLACE_WITH_URL/status"  id="status_form" name="status_form">
+                                        <legend>
+                                            Add Job Statuses
+                                        </legend>
+                                        <label for="name">Name</label>
+                                        <input name="name" type="text" />
+                                        <button type="submit" class="btn  btn-primary">
+                                            Submit
+                                        </button>
+                                        <button type="button" class="btn">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    <a id="statuses"></a>
+                                    <table id="tbl_statuses"  class="table table-bordered table-condensed">
+                                        <tr>
+                                            <th colspan='2'>Statuses</th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree"> Software Distributions </a>
+                            </div>
+                            <div id="collapseThree" class="accordion-body collapse">
+                                <div class="accordion-inner">
+                                    <form class="form-inline" method="POST" action="REPLACE_WITH_URL/dist"  id="dist_form" name="dist_form">
+                                        <legend>
+                                            Add Software Distributions
+                                        </legend>
+                                        <label for="name">Name</label>
+                                        <input name="name" type="text" />
+                                        <button type="submit" class="btn  btn-primary">
+                                            Submit
+                                        </button>
+                                        <button type="button" class="btn">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    <a id="dists"></a>
+                                    <table id="tbl_dists"  class="table table-bordered table-condensed">
+                                        <tr>
+                                            <th colspan='2'>Distributions</th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour"> Package Formats </a>
+                            </div>
+                            <div id="collapseFour" class="accordion-body collapse">
+                                <div class="accordion-inner">
+                                    <form class="form-inline" method="POST" action="REPLACE_WITH_URL/format"  id="format_form" name="format_form">
+                                        <legend>
+                                            Add Package Formats
+                                        </legend>
+                                        <label for="name">Name</label>
+                                        <input name="name" type="text" />
+                                        <button type="submit" class="btn  btn-primary">
+                                            Submit
+                                        </button>
+                                        <button type="button" class="btn">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    <a id="formats"></a>
+                                    <table id="tbl_formats"  class="table table-bordered table-condensed">
+                                        <tr>
+                                            <th colspan='2'>Formats</th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseFive"> Software Suites </a>
+                            </div>
+                            <div id="collapseFive" class="accordion-body collapse">
+                                <div class="accordion-inner">
+                                    <form class="form-inline" method="POST" action="REPLACE_WITH_URL/suite"  id="suite_form" name="suite_form">
+                                        <legend>
+                                            Add Software Suites
+                                        </legend>
+                                        <label for="name">Name</label>
+                                        <input name="name" type="text" />
+                                        <button type="submit" class="btn  btn-primary">
+                                            Submit
+                                        </button>
+                                        <button type="button" class="btn">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    <a id="suites"></a>
+                                    <table id="tbl_suites"  class="table table-bordered table-condensed">
+                                        <tr>
+                                            <th colspan='2'>Formats</th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <footer>
+                        <p>
+                            &copy; TCL 2012
+                        </p>
+                    </footer>
+                </div>
+                <!--/.fluid-container-->
+                <script>
+                    function getUrlVars ( )
+                    {
+                        var vars =
+                        {
+                        };
+                        var parts = window.location.href.replace ( /[?&]+([^=&]+)=([^&]*)/gi , function ( m , key , value )
+                        {
+                            vars [ key ] = value;
+                        } );
+                        return vars;
+                    }
+
+                    function delete_click ( id , target )
+                    {
+                        switch (target)
+                        {
+                            case 1:
+                                target = "arch"
+                                break;
+                            case 2:
+                                target = "status"
+                                break;
+                            case 3:
+                                target = "dist"
+                                break;
+                            case 4:
+                                target = "format"
+                                break;
+                            case 5:
+                                target = "suite"
+                                break;
+                        }
+                        $.ajax (
+                        {
+                            type : "GET" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/" + target + "/" + id + "/delete" ,
+                            error : function ( data )
+                            {
+                                alert ( 'Error deleting ' + target + ' with id: ' + id + "\n" + data.responseText );
+                                location.reload ( );
+                            } ,
+                            success : function ( data )
+                            {
+                                alert ( 'OK deleting ' + target + ' with id: ' + id );
+                                location.reload ( );
+                            }
+
+                        } );
+                    }
+                    $ ( ).ready ( function ( )
+                    {
+                        var arch_page = 1;
+                        document.body.innerHTML = document.body.innerHTML.replace ( 'REPLACE_WITH_URL' , "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) );
+                        $ ( '#arch_form' ).ajaxForm ( function ( )
+                        {
+                            alert ( "Arch Added!" );
+                            location.reload ( );
+                        } );
+                        $ ( '#status_form' ).ajaxForm ( function ( )
+                        {
+                            alert ( "Status Added!" );
+                            location.reload ( );
+                        } );
+                        $ ( '#dist_form' ).ajaxForm ( function ( )
+                        {
+                            alert ( "Dist Added!" );
+                            location.reload ( );
+                        } );
+                        $ ( '#format_form' ).ajaxForm ( function ( )
+                        {
+                            alert ( "Format Added!" );
+                            location.reload ( );
+                        } );
+                        $ ( '#suite_form' ).ajaxForm ( function ( )
+                        {
+                            alert ( "Suite Added!" );
+                            location.reload ( );
+                        } );
+                        if ( getUrlVars() [ "arch_page" ] )
+                        {
+                            arch_page = getUrlVars() [ "arch_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/" + arch_page
+                        }
+                        else
+                        {
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/1"
+                        }
+                        new_arch_page = parseInt ( arch_page ) + 1;
+                        last_arch_page = parseInt ( arch_page ) - 1;
+                        $.getJSON ( url , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#tbl_arches" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
+                            } );
+                            $ ( '#tbl_arches' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/lookups.htm?arch_page=" + last_arch_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/lookups.htm?arch_page=" + new_arch_page + "'>Next</a></li></ul></div>" );
+                        } );
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status"
+                        $.getJSON ( url , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#tbl_statuses" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
+                            } );
+                        } );
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist"
+                        $.getJSON ( url , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#tbl_dists" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
+                            } );
+                        } );
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format"
+                        $.getJSON ( url , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#tbl_formats" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>" );
+                            } );
+                        } );
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite"
+                        $.getJSON ( url , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#tbl_suites" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
+                            } );
+                        } );
+                    } );
+                </script>
+            </div>
         </div>
-      </div>
-    </div>
-</div>
-    <div class="span2">
-      <!--Sidebar content-->
-<div class="well sidebar-nav">
-            <ul class="nav  nav-list">
-              <li class="nav-header">Navigation</li>
-              <li><a href="index.htm">Home</a></li>
-              <li class="nav-header">Lookups</li>
-              <li class="active"><a href="lookups.htm#arches">Architectures</a></li>
-              <li><a href="lookups.htm#statuses">Statuses</a></li>
-              <li><a href="lookups.htm#dists">Dists</a></li>
-              <li><a href="lookups.htm#formats">Formats</a></li>
-              <li><a href="lookups.htm#suites">Suites</a></li>
-              <li class="nav-header">Packages</li>
-              <li><a href="package.htm">All Packages</a></li>
-              <li><a href="packageinstance.htm">Package Instances</a></li>
-              <li class="nav-header">Jobs</li>
-              <li><a href="job.htm">Jobs</a></li>
-              <li><a href="buildd.htm">BuildBoxes</a></li>
-            </ul>
-          </div><!--/.well -->
-</div>    <div class="span10">
-      <!--Body content-->    <div class="container-fluid">      <h1>PyBit - python Buildd Integration Toolkit.</h1>
-      <h3>Lookups</h3>
-<div class="accordion" id="accordion1"><div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
-        Package Architectures
-      </a>
-    </div>
-    <div id="collapseOne" class="accordion-body collapse in">
-      <div class="accordion-inner">
-      <form class="form-inline" method="POST" action="REPLACE_WITH_URL/arch"  id="arch_form" name="arch_form">
-					<legend>Add Package Architectures</legend>
-					<label for="name">Name</label>
-					<input name="name" type="text" />
-					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
-					</form>	<a id="arches"></a>
-	<table id="tbl_arches"  class="table table-bordered table-condensed">
-	<tr><th colspan='2'>Architectures</th></tr>
-	</table>
-      </div>
-    </div>
-  </div><div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseTwo">
-        Job Statuses
-      </a>
-    </div>
-    <div id="collapseTwo" class="accordion-body collapse">
-      <div class="accordion-inner">
-<form class="form-inline" method="POST" action="REPLACE_WITH_URL/status"  id="status_form" name="status_form">
-					<legend>Add Job Statuses</legend>
-					<label for="name">Name</label>
-					<input name="name" type="text" />
-					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
-					</form>	<a id="statuses"></a>
-	<table id="tbl_statuses"  class="table table-bordered table-condensed">
-	<tr><th colspan='2'>Statuses</th></tr>
-	</table>      </div>
-    </div>
-  </div><div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree">
-        Software Distributions
-      </a>
-    </div>
-    <div id="collapseThree" class="accordion-body collapse">
-      <div class="accordion-inner">
-<form class="form-inline" method="POST" action="REPLACE_WITH_URL/dist"  id="dist_form" name="dist_form">
-					<legend>Add Software Distributions</legend>
-					<label for="name">Name</label>
-					<input name="name" type="text" />
-					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
-					</form>	<a id="dists"></a>
-	<table id="tbl_dists"  class="table table-bordered table-condensed">
-	<tr><th colspan='2'>Distributions</th></tr>
-	</table>
-      </div>
-    </div>
-  </div><div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour">
-        Package Formats
-      </a>
-    </div>
-    <div id="collapseFour" class="accordion-body collapse">
-      <div class="accordion-inner">	<form class="form-inline" method="POST" action="REPLACE_WITH_URL/format"  id="format_form" name="format_form">
-					<legend>Add Package Formats</legend>
-					<label for="name">Name</label>
-					<input name="name" type="text" />
-					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
-					</form>	<a id="formats"></a>
-	<table id="tbl_formats"  class="table table-bordered table-condensed">
-	<tr><th colspan='2'>Formats</th></tr>
-	</table>
-      </div>
-    </div>
-  </div><div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseFive">
-        Software Suites
-      </a>
-    </div>
-    <div id="collapseFive" class="accordion-body collapse">
-      <div class="accordion-inner">
-	<form class="form-inline" method="POST" action="REPLACE_WITH_URL/suite"  id="suite_form" name="suite_form">
-					<legend>Add Software Suites</legend>
-					<label for="name">Name</label>
-					<input name="name" type="text" />
-					<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button>
-					</form>	<a id="suites"></a>
-	<table id="tbl_suites"  class="table table-bordered table-condensed">
-	<tr><th colspan='2'>Formats</th></tr>
-	</table>      </div>
-    </div>
-  </div>
-</div>
-      <hr>      <footer>
-        <p>&copy; TCL 2012</p>
-      </footer>    </div><!--/.fluid-container--><script>
-
-
-
-
-
-      function getUrlVars() {
-    var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        vars[key] = value;
-    });
-    return vars;
-}
-
-
-
-
-
-        function delete_click(id,target)
-   {	switch (target)
-	{
-		case 1:
-			target = "arch"
-			break;
-		case 2:
-			target = "status"
-			break;
-		case 3:
-			target = "dist"
-			break;
-		case 4:
-			target = "format"
-			break;
-		case 5:
-			target = "suite"
-			break;
-	}$.ajax({
-        type: "GET",
-        url: "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/" + target +"/" + id + "/delete",
-        error: function(data){
-			alert('Error deleting ' + target + ' with id: ' + id + "\n" + data.responseText );
-      location.reload();
-        },
-        success: function(data) {
-           alert('OK deleting ' + target + ' with id: ' + id);
-           location.reload();
-        }
-    });
-}$().ready(function ()
-{
-	var arch_page = 1;
-	document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', "" + window.location.protocol.toString() + "//" + window.location.host.toString());
-
-	          $('#arch_form').ajaxForm(function() {
-                alert("Arch Added!");
-                location.reload();
-            });            $('#status_form').ajaxForm(function() {
-                alert("Status Added!");
-                location.reload();
-            });            $('#dist_form').ajaxForm(function() {
-                alert("Dist Added!");
-                location.reload();
-            });            $('#format_form').ajaxForm(function() {
-                alert("Format Added!");
-                location.reload();
-            });
-            $('#suite_form').ajaxForm(function() {
-                alert("Suite Added!");
-                location.reload();
-            });
-
-	if (getUrlVars()["arch_page"])
-	{
-		arch_page = getUrlVars()["arch_page"]
-		var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch/page/" + arch_page
-	}
-	else
-	{
-    var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch/page/1"
-    }
-
-new_arch_page = parseInt(arch_page) + 1;
-last_arch_page = parseInt(arch_page) - 1;
-
-	$.getJSON(url, function(json)
-	{
-		$.each(json, function(i, field)
-		{
-			$("#tbl_arches").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>");
-		});
-
-		 $('#tbl_arches').append("<div class='pagination'><ul><li><a href='" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/lookups.htm?arch_page=" + last_arch_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/lookups.htm?arch_page=" + new_arch_page + "'>Next</a></li></ul></div>");
-	});
-
-	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/status"
-	$.getJSON(url, function(json)
-	{
-		$.each(json, function(i, field)
-		{
-			$("#tbl_statuses").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>");
-		});
-	});	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/dist"
-	$.getJSON(url, function(json)
-	{
-		$.each(json, function(i, field)
-		{
-			$("#tbl_dists").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>");
-		});
-	});	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/format"
-	$.getJSON(url, function(json)
-	{
-		$.each(json, function(i, field)
-		{
-			$("#tbl_formats").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>");
-		});
-	});	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/suite"
-	$.getJSON(url, function(json)
-	{
-		$.each(json, function(i, field)
-		{
-			$("#tbl_suites").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>");
-		});
-	});
-});
-</script>    </div>
-  </div></body>
+    </body>
 </html>

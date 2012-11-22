@@ -1,159 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-
-<META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
-<META HTTP-EQUIV="Expires" CONTENT="-1">
-<meta charset="utf-8">
-  <title>pyBit - Package Instances </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-	padding-bottom: 40px;
-      }
-    </style>
-<link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">  <script src="{{protocol}}{{jqueryurl}}"></script>
-  <script src="{{protocol}}{{jqueryformurl}}"></script>
-  <script src="bootstrap/js/bootstrap.min.js"></script></head>
-<body><div class="container-fluid">
-  <div class="row-fluid">
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
+    <head>
+        <META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
+        <META HTTP-EQUIV="Expires" CONTENT="-1">
+        <meta charset="utf-8">
+        <title>pyBit - Package Instances </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body
+            {
+                padding-top : 60px; /* 60px to make the container go all the way
+                 * to the bottom of the topbar */
+                padding-bottom : 40px;
+            }
+        </style>
+        <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <script src="{{protocol}}{{jqueryurl}}"></script>
+        <script src="{{protocol}}{{jqueryformurl}}"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+    </head>
+    <body>
         <div class="container-fluid">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="index.htm">pyBit</a>
-          <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li><a href="index.htm">Home</a></li>
-              <li><a href="lookups.htm">Lookups</a></li>
-              <li><a href="package.htm">Packages</a></li>
-              <li class="active"><a href="packageinstance.htm">Package Instances</a></li>
-	      <li><a href="job.htm">Jobs</a></li>
-	      <li><a href="buildd.htm">Build Boxes</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
+            <div class="row-fluid">
+                <div class="navbar navbar-inverse navbar-fixed-top">
+                    <div class="navbar-inner">
+                        <div class="container-fluid">
+                            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a>
+                            <a class="brand" href="index.htm">pyBit</a>
+                            <div class="nav-collapse collapse">
+                                <ul class="nav">
+                                    <li>
+                                        <a href="index.htm">Home</a>
+                                    </li>
+                                    <li>
+                                        <a href="lookups.htm">Lookups</a>
+                                    </li>
+                                    <li>
+                                        <a href="package.htm">Packages</a>
+                                    </li>
+                                    <li class="active">
+                                        <a href="packageinstance.htm">Package Instances</a>
+                                    </li>
+                                    <li>
+                                        <a href="job.htm">Jobs</a>
+                                    </li>
+                                    <li>
+                                        <a href="buildd.htm">Build Boxes</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!--/.nav-collapse -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="span2">
+                <!--Sidebar content-->
+                <div class="well sidebar-nav">
+                    <ul class="nav  nav-list">
+                        <li class="nav-header">
+                            Navigation
+                        </li>
+                        <li>
+                            <a href="index.htm">Home</a>
+                        </li>
+                        <li class="nav-header">
+                            Lookups
+                        </li>
+                        <li>
+                            <a href="lookups.htm#arches">Architectures</a>
+                        </li>
+                        <li>
+                            <a href="lookups.htm#statuses">Statuses</a>
+                        </li>
+                        <li>
+                            <a href="lookups.htm#dists">Dists</a>
+                        </li>
+                        <li>
+                            <a href="lookups.htm#formats">Formats</a>
+                        </li>
+                        <li>
+                            <a href="lookups.htm#suites">Suites</a>
+                        </li>
+                        <li class="nav-header">
+                            Packages
+                        </li>
+                        <li>
+                            <a href="package.htm">All Packages</a>
+                        </li>
+                        <li class="active">
+                            <a href="packageinstance.htm">Package Instances</a>
+                        </li>
+                        <li class="nav-header">
+                            Jobs
+                        </li>
+                        <li>
+                            <a href="job.htm">Jobs</a>
+                        </li>
+                        <li>
+                            <a href="buildd.htm">BuildBoxes</a>
+                        </li>
+                    </ul>
+                </div>
+                <!--/.well -->
+            </div>
+            <div class="span10">
+                <!--Body content-->
+                <div class="container-fluid">
+                    <h1>PyBit - python Buildd Integration Toolkit.</h1>
+                    <h3>Package Instances</h3>
+                    <div class="accordion" id="accordion1">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Click here to show the submit packageinstance form. </a>
+                            </div>
+                            <div id="collapseOne" class="accordion-body collapse">
+                                <div class="accordion-inner">
+                                    <form class="form" method="POST" action="REPLACE_WITH_URL/packageinstance" id="packageinstance_form" name="packageinstance_form">
+                                        <legend>
+                                            Create a package instance
+                                        </legend>
+                                        <label for="package_id">Package: </label>
+                                        <select name="package_id" id="package_id"></select><label for="arch_id">Architecture: </label><select name="arch_id" id="arch_id"></select><label for="suite_id">Suite: </label><select name="suite_id"  id="suite_id"></select><label for="dist_id">Distribution: </label><select name="dist_id" id="dist_id"></select><label for="format_id">Package Format: </label><select name="format_id"  id="format_id"></select>
+                                        <br>
+                                        <input type="checkbox" name="slave" value="0" id="slave">
+                                        Slave</input>
+                                        <br>
+                                        <button type="submit" class="btn  btn-primary">
+                                            Submit
+                                        </button>
+                                        <button type="button" class="btn">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <table id="tbl_packageinstances"  class="table table-bordered table-condensed">
+                        <tr>
+                            <th colspan='8'>Package Instances</th>
+                        </tr>
+                        <tr>
+                            <th>ID</th><th>Package</th><th>Architecture</th><th>Distribution</th><th>Format</th><th>Suite</th><th>Master?</th><th>Operations</th>
+                        </tr>
+                    </table>
+                    <hr>
+                    <footer>
+                        <p>
+                            &copy; TCL 2012
+                        </p>
+                    </footer>
+                </div>
+                <!--/.fluid-container-->
+                <script>
+                    function delete_click ( id )
+                    {
+                        $.ajax (
+                        {
+                            type : "GET" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/" + id + "/delete" ,
+                            error : function ( data )
+                            {
+                                alert ( 'Error deleting packageinstance with id: ' + id + "\n" + data.responseText );
+                                location.reload ( );
+                            } ,
+                            success : function ( data )
+                            {
+                                alert ( 'OK deleting packageinstance with id: ' + id );
+                                location.reload ( );
+                            }
+
+                        } );
+                    }
+
+
+                    $ ( ).ready ( function ( )
+                    {
+                        document.body.innerHTML = document.body.innerHTML.replace ( 'REPLACE_WITH_URL' , "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) );
+                        $ ( '#packageinstance_form' ).ajaxForm ( function ( )
+                        {
+                            alert ( "Packageinstance Added!" );
+                            location.reload ( );
+                        } );
+                        var packages = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package"
+                        $.getJSON ( packages , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#package_id" ).append ( "<option value='" + field.id + "'>" + field.name + " " + field.version + "</option>" );
+                            } );
+                        } );
+                        var arches = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch"
+                        $.getJSON ( arches , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#arch_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
+                            } );
+                        } );
+                        var suites = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite"
+                        $.getJSON ( suites , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#suite_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
+                            } );
+                        } );
+                        var dists = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist"
+                        $.getJSON ( dists , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#dist_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
+                            } );
+                        } );
+                        var formats = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format"
+                        $.getJSON ( formats , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#format_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
+                            } );
+                        } );
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance"
+                        $.getJSON ( url , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#tbl_packageinstances" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/packageinstance/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/packageinstance/details/" + field.package.name + "'>" + field.package.name + " " + field.package.version + "</a></td><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/arch/" + field.arch.id + "'>" + field.arch.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/dist/" + field.distribution.id + "'>" + field.distribution.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/format/" + field.format.id + "'>" + field.format.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/suite/" + field.suite.id + "'>" + field.suite.name + "</a></td><td>" + field.master + "</td><td><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ")'></input></td></tr>" );
+                            } );
+                        } );
+                    } );
+                </script>
+            </div>
         </div>
-      </div>
-    </div>
-</div>
-    <div class="span2">
-      <!--Sidebar content-->
-<div class="well sidebar-nav">
-            <ul class="nav  nav-list">
-              <li class="nav-header">Navigation</li>
-              <li><a href="index.htm">Home</a></li>
-              <li class="nav-header">Lookups</li>
-              <li><a href="lookups.htm#arches">Architectures</a></li>
-              <li><a href="lookups.htm#statuses">Statuses</a></li>
-              <li><a href="lookups.htm#dists">Dists</a></li>
-              <li><a href="lookups.htm#formats">Formats</a></li>
-              <li><a href="lookups.htm#suites">Suites</a></li>
-              <li class="nav-header">Packages</li>
-              <li><a href="package.htm">All Packages</a></li>
-              <li class="active"><a href="packageinstance.htm">Package Instances</a></li>
-              <li class="nav-header">Jobs</li>
-              <li><a href="job.htm">Jobs</a></li>
-              <li><a href="buildd.htm">BuildBoxes</a></li>
-            </ul>
-          </div><!--/.well -->
-</div>    <div class="span10">
-      <!--Body content-->    <div class="container-fluid">      <h1>PyBit - python Buildd Integration Toolkit.</h1>
-      <h3>Package Instances</h3>
-<div class="accordion" id="accordion1">
-<div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
-        Click here to show the submit packageinstance form.
-      </a>
-    </div>
-    <div id="collapseOne" class="accordion-body collapse">
-      <div class="accordion-inner">
-<form class="form" method="POST" action="REPLACE_WITH_URL/packageinstance" id="packageinstance_form" name="packageinstance_form">
-					<legend>Create a package instance</legend>
-					<label for="package_id">Package: </label>
-					<select name="package_id" id="package_id"></select><label for="arch_id">Architecture: </label><select name="arch_id" id="arch_id"></select><label for="suite_id">Suite: </label><select name="suite_id"  id="suite_id"></select><label for="dist_id">Distribution: </label><select name="dist_id" id="dist_id"></select><label for="format_id">Package Format: </label><select name="format_id"  id="format_id"></select><br><input type="checkbox" name="slave"value="0" id="slave">Slave</input>
-					<br>
-<button type="submit" class="btn  btn-primary">Submit</button> <button type="button" class="btn">Cancel</button></form>
-      </div>
-    </div>
-  </div>
-</div>	<table id="tbl_packageinstances"  class="table table-bordered table-condensed">
-	<tr><th colspan='2'>Package Instances</th></tr>
-	<tr><th>ID</th><th>Package</th><th>Architecture</th><th>Distribution</th><th>Format</th><th>Suite</th><th>Master?</th><th>Operations</th></tr>
-	</table>      <hr>      <footer>
-        <p>&copy; TCL 2012</p>
-      </footer>    </div><!--/.fluid-container--><script>   function delete_click(id)
-   {
-$.ajax({
-        type: "GET",
-        url: "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/packageinstance/" + id + "/delete",
-        error: function(data){
-			alert('Error deleting packageinstance with id: ' + id + "\n" + data.responseText );
-      location.reload();
-        },
-        success: function(data) {
-           alert('OK deleting packageinstance with id: ' + id);
-           location.reload();
-        }
-    });
-}
-
-$().ready(function ()
-{
-
-		document.body.innerHTML = document.body.innerHTML.replace('REPLACE_WITH_URL', "" + window.location.protocol.toString() + "//" + window.location.host.toString());
-
-	            $('#packageinstance_form').ajaxForm(function() {
-                alert("Packageinstance Added!");
-                location.reload();
-            });	var packages = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/package"
-	$.getJSON(packages, function(json)
-	{
-		$.each(json, function(i, field)
-		{			$("#package_id").append("<option value='" + field.id + "'>" + field.name + " " + field.version + "</option>");
-		});
-	});	var arches = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/arch"
-	$.getJSON(arches, function(json)
-	{
-		$.each(json, function(i, field)
-		{			$("#arch_id").append("<option value='" + field.id + "'>" + field.name + "</option>");
-		});
-	});	var suites = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/suite"
-	$.getJSON(suites, function(json)
-	{
-		$.each(json, function(i, field)
-		{			$("#suite_id").append("<option value='" + field.id + "'>" + field.name + "</option>");
-		});
-	});	var dists = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/dist"
-	$.getJSON(dists, function(json)
-	{
-		$.each(json, function(i, field)
-		{			$("#dist_id").append("<option value='" + field.id + "'>" + field.name + "</option>");
-		});
-	});	var formats = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/format"
-	$.getJSON(formats, function(json)
-	{
-		$.each(json, function(i, field)
-		{			$("#format_id").append("<option value='" + field.id + "'>" + field.name + "</option>");
-		});
-	});	var url = "" + window.location.protocol.toString() + "//" + window.location.host.toString() + "/packageinstance"
-	$.getJSON(url, function(json)
-	{
-		$.each(json, function(i, field)
-		{
-			$("#tbl_packageinstances").append("<tr><td><a href='{{protocol}}" + window.location.host.toString() + "/packageinstance/" + field.id + "'>" + field.id + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/packageinstance/details/" + field.package.name + "'>" + field.package.name + " " + field.package.version + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/arch/" + field.arch.id + "'>" + field.arch.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/dist/" + field.distribution.id + "'>" + field.distribution.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/format/" + field.format.id + "'>" + field.format.name + "</a></td><td><a href='{{protocol}}" + window.location.host.toString() + "/suite/" + field.suite.id + "'>" + field.suite.name + "</a></td><td>" + field.master + "</td><td><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id +")'></input></td></tr>");
-		});
-	});
-}
-);
-</script>    </div>
-  </div></body>
+    </body>
 </html>
