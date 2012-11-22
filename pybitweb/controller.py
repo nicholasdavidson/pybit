@@ -86,7 +86,8 @@ class Controller(object):
 					print "CREATED NEW JOB ID", new_job.id
 					if new_job.id :
 						self.cancel_superceded_jobs(new_job)
-						build_req = jsonpickle.encode(BuildRequest(new_job,transport,self.settings['webserver_url'],commands))
+						build_req = jsonpickle.encode(BuildRequest(new_job,transport,
+							"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port']),commands))
 						msg = amqp.Message(build_req)
 						msg.properties["delivery_mode"] = 2
 						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name,
@@ -186,7 +187,7 @@ class Controller(object):
 		last_status = job_status_history[-1].status
 		build_client = job_status_history[-1].buildclient
 		if (len(job_status_history) > 0) and (last_status == "Building") and (build_client != None) :
-			cancel_req = jsonpickle.encode(CancelRequest(job,self.settings['webserver_url']))
+			cancel_req = jsonpickle.encode(CancelRequest(job,"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port'])))
 			msg = amqp.Message(cancel_req)
 			msg.properties["delivery_mode"] = 2
 			print "UNFINISHED JOB ID", job.id, "STATUS:", last_status, "SENDING CANCEL REQUEST TO", build_client
