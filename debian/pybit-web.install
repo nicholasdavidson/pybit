@@ -1,0 +1,2 @@
+db/schema.sql ./usr/share/dbconfig-common/data/pybit-web/install/postgresql
+db/populate.sql ./usr/share/dbconfig-common/data/pybit-web/install/postgresql

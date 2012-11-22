@@ -8,6 +8,7 @@ Uploaders: Nick Davidson <nickd@toby-churchill.com>,
  Nick Bane <nick@cecomputing.co.uk>,
  James Bennet <James.Bennet@toby-churchill.com>
 Build-Depends: debhelper (>= 7.0.50~), docbook-xsl, xsltproc, po-debconf,
+ dbconfig-common,
  python (>= 2.6.6-3~), python2.6 | python2.7, python-setuptools,
  python-jsonpickle,
  python-requests (>=0.10.1-1~),
@@ -44,7 +45,9 @@ Description: buildd client support for Pybit
 Package: pybit-web
 Architecture: all
 Depends: python-psycopg2 (>= 2.4.2-1~), pybit-common,
+ dbconfig-common,
  ${python:Depends}, ${misc:Depends}
+Replaces: pybit-common (<= 0.1.1)
 Description: pybit web frontend
  This package provides a reporting and custom-build
  request interface for the data managed by pybit-controller.
