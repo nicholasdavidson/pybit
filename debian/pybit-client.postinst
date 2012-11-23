@@ -7,7 +7,7 @@ use strict;
 use warnings;
 use JSON;
 use Debconf::Client::ConfModule qw(:all);
-
+use vars qw/ $cfgfile %cfg @lines $json $json_hash $json_text /;
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
 #        * <old-postinst> `abort-upgrade' <new version>
@@ -20,9 +20,9 @@ use Debconf::Client::ConfModule qw(:all);
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-my $cfgfile   = '/etc/pybit/client/client.conf';
+$cfgfile   = '/etc/pybit/client/client.conf';
 version('2.0');
-my %cfg=();
+%cfg=();
 
 if ($ARGV[0] eq 'configure' or $ARGV[0] eq 'reconfigure') {
 	$cfg{'id'}   = scalar get('pybit-client/clientid');
@@ -43,7 +43,7 @@ if ($ARGV[0] eq 'configure' or $ARGV[0] eq 'reconfigure') {
 	} else {
 		open(CONF, "/usr/share/pybitclient/client.conf") or die;
 	}
-	my @lines=<CONF>;
+	@lines=<CONF>;
 	close (CONF);
 	$json = new JSON;
 	$json = $json->utf8(1);
@@ -61,10 +61,10 @@ if ($ARGV[0] eq 'configure' or $ARGV[0] eq 'reconfigure') {
 		chomp ($distro);
 		$$json_hash{'distribution'} = $distro;
 	}
-	if (not defined $$json_hash{'pkg_format'} or $$json_hash{'pkg_format'} != /\w/) {
+	if (not defined $$json_hash{'pkg_format'} or $$json_hash{'pkg_format'} !~ /\w/) {
 		$$json_hash{'pkg_format'} = "deb";
 	}
-	if (not defined $$json_hash{'host_arch'} or $$json_hash{'host_arch'} != /\w/) {
+	if (not defined $$json_hash{'host_arch'} or $$json_hash{'host_arch'} !~ /\w/) {
 		my $host = `dpkg-architecture -qDEB_BUILD_ARCH 2>/dev/null`;
 		chomp ($host);
 		$$json_hash{'host_arch'} = $host;
