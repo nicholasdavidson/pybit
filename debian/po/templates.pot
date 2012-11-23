@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: pybit\n"
 "Report-Msgid-Bugs-To: pybit@packages.debian.org\n"
-"POT-Creation-Date: 2012-11-19 14:13+0000\n"
+"POT-Creation-Date: 2012-11-23 08:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,7 +68,7 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../pybit-client.templates:4001
+#: ../pybit-client.templates:4001 ../pybit-web.templates:1001
 msgid "Specify the host machine running RabbitMQ:"
 msgstr ""
 
@@ -117,7 +117,7 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../pybit-client.templates:7001
+#: ../pybit-client.templates:7001 ../pybit-web.templates:4001
 msgid "RabbitMQ host is empty!"
 msgstr ""
 
@@ -147,4 +147,75 @@ msgstr ""
 msgid ""
 "pybit-client is not intended to upload to unspecified dput destinations like "
 "ftp-master.debian.org and does not currently support GnuPG signed uploads."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:1001
+msgid ""
+"The web frontend and the pybit controller need to communicate with a single "
+"server running rabbitMQ to which it sends the details of the  jobs to be "
+"built."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:2001
+msgid "Specify the fully qualified hostname for the web frontend:"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:2001
+msgid "The pybit controller and the web frontend run on the same machine."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:2001
+msgid ""
+"You may choose to use a named apache virtual host or accept the default if "
+"all your pybit clients also run on this one machine."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:2001
+msgid ""
+"The hostname is passed down to the build clients to allow clients to post "
+"failure messages back to the controller."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:3001
+msgid "Specify the port on which the web frontend should be available:"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:3001
+msgid "For a localhost installation, it is probably easiest to use 8080."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:3001
+msgid ""
+"If the web frontend is running on a dedicated host or an apache virtual "
+"host, it may be preferable to use port 80."
+msgstr ""
+
+#. Type: note
+#. Description
+#: ../pybit-web.templates:4001
+msgid ""
+"If the controller has a missing rabbitmq host, none of the build clients "
+"will receive any messages on the queue and will not build any packages."
+msgstr ""
+
+#. Type: note
+#. Description
+#: ../pybit-web.templates:4001
+msgid "Please edit /etc/pybit/web/web.conf after configuration."
 msgstr ""
