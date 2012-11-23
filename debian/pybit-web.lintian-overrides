@@ -1,5 +1,0 @@
-# to make the JSON manageable, pybit postinst scripts use perl
-pybit-web: unused-debconf-template pybit-web/hostname
-pybit-web: unused-debconf-template pybit-web/port
-pybit-web: unused-debconf-template pybit-web/missinghost
-

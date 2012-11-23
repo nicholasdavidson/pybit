@@ -61,7 +61,7 @@ $$json_hash{'db'}{'user'} = $dbuser if (defined $dbuser);
 $$json_hash{'db'}{'password'} = $dbpass if (defined $dbpass);
 $$json_hash{'web'}{'hostname'} = $cfg{'host'};
 $$json_hash{'web'}{'port'} = $cfg{'port'};
-$$json_hash{'controller'}{'rabbit_url'} = $cfg{'rabbit'};
+$$json_hash{'controller'}{'rabbit_url'} = $cfg{'rabbit'}.":5672";
 $$json_hash{'debconf'} = JSON::true;
 open (CONF, ">$cfgfile") or die;
 print CONF $json->encode ($json_hash);
