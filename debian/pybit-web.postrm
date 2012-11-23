@@ -9,5 +9,8 @@ if [ -f /usr/share/dbconfig-common/dpkg/postrm.pgsql  ]; then
 	. /usr/share/dbconfig-common/dpkg/postrm.pgsql
 fi
 dbc_go pybit-web $@
+if [ -f /etc/pybit/debian-db.pl ]; then
+	rm /etc/pybit/debian-db.pl
+fi
 
 #DEBHELPER#

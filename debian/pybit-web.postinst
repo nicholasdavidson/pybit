@@ -77,7 +77,6 @@ if ($ARGV[0] eq 'configure' or $ARGV[0] eq 'reconfigure') {
 	open (CONF, ">$cfgfile") or die;
 	print CONF $json->encode ($json_hash);
 	close (CONF);
-	unlink $dbexport;
 }
 
 # allow debhelper substitutions because we use an init.d
