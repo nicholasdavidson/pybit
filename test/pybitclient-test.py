@@ -30,6 +30,8 @@ import pybit
 from pybitclient.buildclient import PackageHandler, VersionControlHandler
 from pybitclient.debianclient import DebianBuildClient
 from pybitclient.subversion import SubversionClient
+from pybitclient.git import GitClient
+from pybitclient.apt import AptClient
 
 class TestClient(unittest.TestCase) :
 	def setUp (self):
@@ -72,6 +74,12 @@ class TestClient(unittest.TestCase) :
 		svn_client = SubversionClient(self.options)
 		self.assertTrue (svn_client)
 		self.assertTrue (svn_client.is_dry_run())
+		apt_client = AptClient(self.options)
+		self.assertTrue (apt_client)
+		self.assertTrue (apt_client.is_dry_run())
+		git_client = GitClient(self.options)
+		self.assertTrue (git_client)
+		self.assertTrue (git_client.is_dry_run())
 
 def main():
 	FORMAT = '%(msg)s'
