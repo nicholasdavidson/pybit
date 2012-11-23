@@ -42,7 +42,7 @@ if __name__ == '__main__':
 	parser.add_option_group(groupConfigFile)
 	parser.add_option_group(groupConfigFile)
 
-	parser.add_option("--config", dest="config", default="web.conf",
+	parser.add_option("--config", dest="config", default="web/web.conf",
 		help="Config file to read settings from, defaults to web.conf which will be read from configs/ and /etc/pybit/ in turn.",
 		metavar=META + "CONF_FILE")
 
