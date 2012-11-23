@@ -44,9 +44,9 @@ Description: buildd client support for Pybit
 Package: pybit-web
 Architecture: all
 Depends: python-psycopg2 (>= 2.4.2-1~), pybit-common,
- dbconfig-common, libjson-perl,
+ dbconfig-common, libjson-perl, ucf,
  ${python:Depends}, ${misc:Depends}
-Recommends: libjs-jquery(>= 1.4.2-2), libjs-jquery-form
+Recommends: libjs-jquery(>= 1.4.2-2), libjs-jquery-form, postgresql-client
 Suggests: rabbitmq-server
 Replaces: pybit-common (<= 0.1.1)
 Description: pybit web frontend

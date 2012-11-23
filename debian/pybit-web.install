@@ -2,4 +2,4 @@ db/schema.sql ./usr/share/dbconfig-common/data/pybit-web/install/postgresql
 db/populate.sql ./usr/share/dbconfig-common/data/pybit-web/install/postgresql
 pybitweb/static/ ./usr/share/pybit-web/
 configs/web.conf ./usr/share/pybit-web/
-debian/pybit-web-conf.sh ./usr/share/pybit-web/
+debian/pybit-web-conf.pl ./usr/share/pybit-web/
