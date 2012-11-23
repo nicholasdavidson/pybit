@@ -19,8 +19,13 @@
     <arg choice='opt'><replaceable>options</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
-
-
+  <refsect1 id="description">
+    <title>DESCRIPTION</title>
+    <para>pybit-watcher monitors a nominated directory for Debian package
+    uploads (*.changes) and then runs a specified incoming rule on the
+    configured reprepro repository.
+</para>
+  </refsect1>
 <refsect1 id='options'><title>OPTIONS</title>
 <variablelist remap='TP'>
   <varlistentry>
@@ -50,9 +55,39 @@ and /etc/pybit/watcher in turn.</para>
   </listitem>
   </varlistentry>
 </variablelist>
-
-<para>pybit-watcher: error: no such option: <option>--version</option></para>
 </refsect1>
-
+  <refsect1 id="configuration">
+    <title>Daemon Configuration</title>
+<para>pybit-watcher needs to be configured before it will run and process uploads.
+The configuration file is in JSON format, ordering is not important.
+</para>
+<para><emphasis>repobase</emphasis> - top level directory of the <filename>reprepro</filename>
+repository, i.e. where <filename>reprepro</filename> can find the <filename>./conf/distributions</filename>
+file.
+</para>
+<para><emphasis>path</emphasis> - directory used for uploads, must be writeable by
+whichever user(s) will be able to upload.
+</para>
+<para><emphasis>dryrun</emphasis> - if set to true, commands are printed to
+the console instead of being executed. Default: true
+</para>
+<para><emphasis>rule</emphasis> - the <filename>reprepro</filename> incoming
+rule to call with this watcher. Only one incoming rule can be used.
+</para>
+<para><emphasis>sleeptime</emphasis> - the time allowed after the watcher
+is notified that a .changes file has been written to allow for the upload
+tool to change permissions or other management tasks. Default: 3 seconds.
+</para>
+<para><emphasis>configured</emphasis> -
+Set to true once the other settings are correct for your installation.
+Default is false.
+</para>
+</refsect1>
+  <refsect1>
+    <title>Author</title>
+    <para>This  manual  page  was  written by Neil Williams
+      <email>codehelp@debian.org</email>
+    </para>
+  </refsect1>
 </refentry>
 
