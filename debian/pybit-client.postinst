@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # postinst script for pybit-client
-#
+# FIXME: port to use JSON as that is safe in a post-install script.
 # see: dh_installdeb(1)
 
 use strict;
