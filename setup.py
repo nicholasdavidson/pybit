@@ -24,7 +24,7 @@
 from setuptools import setup
 
 setup(name='pybit',
-	version='0.1.1',
+	version='0.2.0',
 	description='PyBit buildd integrated toolkit',
 	license='gpl2',
 	url='https://github.com/nicholasdavidson/pybit.git',
