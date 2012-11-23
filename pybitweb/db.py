@@ -59,21 +59,29 @@ class Database(object):
 
 	#Connects to DB using settings loaded from file.
 	def connect(self):
-		try:
-			if ('password' in self.settings and
-				self.settings['password'] is not None):
+		# for catbells
+		if ('password' in self.settings and self.settings['password'] is not None):
+			if ('hostname' in self.settings and  self.settings['hostname'] is not None):
+				# remote with password
+				print "REMOTE WITH PASSWORD"
 				self.conn = psycopg2.connect(database=self.settings['databasename'],
-					user=self.settings['user'], host=self.settings['hostname'],
-					port=self.settings['port'], password=self.settings['password'])
+				user=self.settings['user'], host=self.settings['hostname'],
+				port=self.settings['port'], password=self.settings['password'])
 			else:
+				# local with password
+				print "LOCAL WITH PASSWORD"
 				self.conn = psycopg2.connect(database=self.settings['databasename'],
-					user=self.settings['user'], host=self.settings['hostname'],
-					port=self.settings['port'])
-
-			return True
-		except psycopg2.Error as e:
-			raise Exception("Error connecting to database. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return False
+				user=self.settings['user'], password=self.settings['password'])
+		else:
+			if ('hostname' in self.settings and  self.settings['hostname'] is not None):
+				# remote without password
+				print "REMOTE WITHOUT PASSWORD"
+				self.conn = psycopg2.connect(database=self.settings['databasename'],user=self.settings['user'], host=self.settings['hostname'],port=self.settings['port'])
+			else:
+				# local without password
+				print "LOCAL WITHOUT PASSWORD"
+				self.conn = psycopg2.connect(database=self.settings['databasename'],
+				user=self.settings['user'])
 
 	#Called by deconstructor
 	def disconnect(self):
@@ -1062,7 +1070,7 @@ class Database(object):
 	def check_package_has_unfinished_jobs(self, package_id):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("WITH latest_status AS (SELECT DISTINCT ON (job_id) job_id, status.name FROM jobstatus LEFT JOIN status ON status_id=status.id ORDER BY job_id, time DESC) SELECT job_id, name, package_id FROM latest_status LEFT JOIN job ON latest_status.job_id=job.id LEFT JOIN packageinstance ON packageinstance_id=packageinstance.id WHERE package_id=%s AND name NOT IN ('Done', 'Uploaded', 'Cancelled')",(package_id,)); 
+			cur.execute("WITH latest_status AS (SELECT DISTINCT ON (job_id) job_id, status.name FROM jobstatus LEFT JOIN status ON status_id=status.id ORDER BY job_id, time DESC) SELECT job_id, name, package_id FROM latest_status LEFT JOIN job ON latest_status.job_id=job.id LEFT JOIN packageinstance ON packageinstance_id=packageinstance.id WHERE package_id=%s AND name NOT IN ('Done', 'Uploaded', 'Cancelled')",(package_id,));
 			res = cur.fetchall()
 			self.conn.commit()
 
