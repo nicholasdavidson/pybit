@@ -2,7 +2,7 @@
 # as there is no perl binding for dbconfig.
 # Used by pybit-web.postinst
 # idempotency - this is an intermediate file only.
-ucf -p /etc/pybit/debian-db.sh
+ucf -p /etc/pybit/debian-db.pl
 # source debconf stuff
 . /usr/share/debconf/confmodule
 # source dbconfig-common stuff
