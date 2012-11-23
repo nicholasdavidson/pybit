@@ -1,0 +1,35 @@
+Template: pybit-web/rabbitmqhost
+Type: string
+_Description: Specify the host machine running RabbitMQ:
+ The web frontend and the pybit controller need to communicate with a
+ single server running rabbitMQ to which it sends the details of the 
+ jobs to be built.
+
+Template: pybit-web/hostname
+Type: string
+Default: localhost
+_Description: Specify the fully qualified hostname for the web frontend:
+ The pybit controller and the web frontend run on the same machine.
+ .
+ You may choose to use a named apache virtual host or accept the default
+ if all your pybit clients also run on this one machine.
+ .
+ The hostname is passed down to the build clients to allow clients to
+ post failure messages back to the controller.
+
+Template: pybit-web/port
+Type: string
+Default: 8080
+_Description: Specify the port on which the web frontend should be available:
+ For a localhost installation, it is probably easiest to use 8080. 
+ .
+ If the web frontend is running on a dedicated host or an apache
+ virtual host, it may be preferable to use port 80.
+
+Template: pybit-web/missinghost
+Type: note
+_Description: RabbitMQ host is empty!
+ If the controller has a missing rabbitmq host, none of the build clients
+ will receive any messages on the queue and will not build any packages.
+ .
+ Please edit /etc/pybit/web/web.conf after configuration.

@@ -6,6 +6,7 @@
 use strict;
 use warnings;
 use JSON;
+use Debconf::Client::ConfModule qw(:all);
 use vars qw/ $command $ret $dbuser $dbpass $cfgfile %cfg $ret
  $basepath $dbname $dbserver $dbport $dbtype $dbexport $dh_commands
  @json_list $json_text $fh $json_hash %dbhash $json /;
@@ -26,6 +27,18 @@ $cfgfile   = '/etc/pybit/web/web.conf';
 $dbexport  = '/etc/pybit/debian-db.pl'; # contains the temp db data
 
 if ($ARGV[0] eq 'configure' or $ARGV[0] eq 'reconfigure') {
+	# extract the ordinary debconf data
+	$cfg{'rabbit'} = scalar get('pybit-web/rabbitmqhost');
+	$cfg{'host'} = scalar get('pybit-web/hostname');
+	$cfg{'port'} = scalar get('pybit-web/port');
+	if (not defined $cfg{'host'}) {
+		my $host = `hostname -f`;
+		chomp ($host);
+		$cfg{'host'} = $host;
+	}
+	if (not defined $cfg{'port'}) {
+		$cfg{'port'} = 8080;
+	}
 	# extract the db data out of dbconfig-common
 	$ret = system("sh /usr/share/pybit-web/pybit-web-conf.sh configure") >> 8;
 	if ($ret == 0 and -f $dbexport) {
@@ -57,6 +70,9 @@ if ($ARGV[0] eq 'configure' or $ARGV[0] eq 'reconfigure') {
 	$$json_hash{'db'}{'port'} = $dbport if (defined $dbport);
 	$$json_hash{'db'}{'user'} = $dbuser if (defined $dbuser);
 	$$json_hash{'db'}{'password'} = $dbpass if (defined $dbpass);
+	$$json_hash{'web'}{'hostname'} = $cfg{'host'};
+	$$json_hash{'web'}{'port'} = $cfg{'port'};
+	$$json_hash{'controller'}{'rabbit_url'} = $cfg{'rabbit'};
 	$$json_hash{'debconf'} = JSON::true;
 	open (CONF, ">$cfgfile") or die;
 	print CONF $json->encode_json ($json_hash);
@@ -66,12 +82,6 @@ if ($ARGV[0] eq 'configure' or $ARGV[0] eq 'reconfigure') {
 
 $dh_commands="set -- @ARGV\\n" . << 'EOF';
 set -e
-
-# source debconf stuff
-. /usr/share/debconf/confmodule
-# source dbconfig-common stuff
-. /usr/share/dbconfig-common/dpkg/postinst.pgsql
-dbc_go pybit-web $@
 
 #DEBHELPER#
 EOF

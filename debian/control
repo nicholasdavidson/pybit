@@ -48,6 +48,7 @@ Depends: python-psycopg2 (>= 2.4.2-1~), pybit-common,
  dbconfig-common, libjson-perl,
  ${python:Depends}, ${misc:Depends}
 Recommends: libjs-jquery(>= 1.4.2-2), libjs-jquery-form
+Suggests: rabbitmq-server
 Replaces: pybit-common (<= 0.1.1)
 Description: pybit web frontend
  This package provides a reporting and custom-build
@@ -57,8 +58,12 @@ Description: pybit web frontend
  build requests from VCS hooks and the web API to pybit-client
  installations and maintains the status database for PyBit.
  .
- At this time, the static (front-end) web pages do need to be served from the
- same machine as is serving the controller web application.
+ At this time, the static (front-end) web pages do need to be
+ served from the same machine as is serving the controller web
+ application.
+ .
+ A single RabbitMQ server is also required, it can be installed on
+ any machine which is visible to the controller and all clients.
 
 Package: pybit-common
 Architecture: all
