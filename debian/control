@@ -80,3 +80,6 @@ Depends: python-pyinotify, python-daemon, pybit-common, reprepro,
 Description: watches incoming directories for reprepro
  This package provides a watcher which runs as a daemon and monitors a
  directory for changes files then runs the appropriate reprepro rule.
+ .
+ This allows pybit clients to upload without waiting for the packages
+ to be processed by the archive.

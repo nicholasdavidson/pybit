@@ -1,0 +1,6 @@
+# to make the JSON manageable, pybit postinst scripts use perl
+pybit-client: unused-debconf-template pybit-client/lvmsnapshot
+pybit-client: unused-debconf-template pybit-client/missingid
+pybit-client: unused-debconf-template pybit-client/missinghost
+pybit-client: unused-debconf-template pybit-client/defaultdput
+
