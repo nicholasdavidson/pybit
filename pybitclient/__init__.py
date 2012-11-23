@@ -34,6 +34,8 @@ from pybit.models import TaskComplete, PackageInstance, ClientMessage, BuildRequ
 	CancelRequest
 from debianclient import DebianBuildClient
 from subversion import SubversionClient
+from git import GitClient
+from apt import AptClient
 import multiprocessing
 import socket
 import requests
@@ -64,10 +66,10 @@ class PyBITClient(object):
 				pass
 		else:
 			logging.debug ("Couldn't find status or current_request")
-			
+
 
 	def get_status(self, request = None):
-		"""Get the build request status from the controller via REST 
+		"""Get the build request status from the controller via REST
 
 Returns the current job status, waiting if the controller cannot be
 contacted or None if the job doesn't exist
@@ -86,15 +88,15 @@ contacted or None if the job doesn't exist
 				return None
 			else:
 				return ClientMessage.waiting
-				
+
 	def republish_job(self, buildreq):
 		if (isinstance(buildreq, BuildRequest)) :
-			routing_key = pybit.get_build_route_name(buildreq.get_dist(), 
-				buildreq.get_arch(), 
-				buildreq.get_suite(), 
+			routing_key = pybit.get_build_route_name(buildreq.get_dist(),
+				buildreq.get_arch(),
+				buildreq.get_suite(),
 				buildreq.get_format())
 			try:
-				msg = jsonpickle.encode(buildreq) 
+				msg = jsonpickle.encode(buildreq)
 				self.message_chan.basic_publish(amqp.Message(msg),
 					exchange=pybit.exchange_name,
 					routing_key=routing_key,
@@ -170,23 +172,28 @@ contacted or None if the job doesn't exist
 		if isinstance(decoded, BuildRequest):
 			self.current_msg = msg
 			self.current_request = decoded
-			if (self.current_request.transport.method == "svn" or
-				self.current_request.transport.method == "svn+ssh"):
-				try:
-					status = self.get_status()
-					if (status == ClientMessage.waiting or
-						status == ClientMessage.blocked):
+			try:
+				status = self.get_status()
+				if (status == ClientMessage.waiting or
+					status == ClientMessage.blocked):
+					if (self.current_request.transport.method == "svn" or
+						self.current_request.transport.method == "svn+ssh"):
 						self.vcs_handler = SubversionClient(self.settings)
-						self.move_state("CHECKOUT")
-					elif status == None:
+					elif (self.current_request.transport.method == "git") :
+						self.vcs_handler = GitClient(self.settings)
+					elif (self.current_request.transport.method == "apt") :
+						self.vcs_handler = AptClient(self.settings)
+					else:
+						self.overall_success = False
 						self.move_state("IDLE")
-					elif status == ClientMessage.cancelled:
-						logging.debug ("jobid: %s has been cancelled. Acking." % self.current_request.get_job_id())
-						self.move_state("IDLE")
-				except Exception as requests.exceptions.ConnectionError:
-					self.overall_success = False
+						return
+					self.move_state("CHECKOUT")
+				elif status == None:
 					self.move_state("IDLE")
-			else:
+				elif status == ClientMessage.cancelled:
+					logging.debug ("jobid: %s has been cancelled. Acking." % self.current_request.get_job_id())
+					self.move_state("IDLE")
+			except Exception as requests.exceptions.ConnectionError:
 				self.overall_success = False
 				self.move_state("IDLE")
 
