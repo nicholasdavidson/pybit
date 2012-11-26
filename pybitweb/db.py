@@ -27,6 +27,7 @@ import jsonpickle
 import cgi
 
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage
+from common import checkValue
 
 def remove_nasties(nastystring):
 	try:
@@ -60,8 +61,8 @@ class Database(object):
 	#Connects to DB using settings loaded from file.
 	def connect(self):
 		# for catbells
-		if ('password' in self.settings and self.settings['password'] is not None):
-			if ('hostname' in self.settings and  self.settings['hostname'] is not None):
+		if (checkValue('password',self.settings)):
+			if (checkValue('hostname',self.settings)):
 				# remote with password
 				print "REMOTE WITH PASSWORD"
 				self.conn = psycopg2.connect(database=self.settings['databasename'],
@@ -73,7 +74,7 @@ class Database(object):
 				self.conn = psycopg2.connect(database=self.settings['databasename'],
 				user=self.settings['user'], password=self.settings['password'])
 		else:
-			if ('hostname' in self.settings and  self.settings['hostname'] is not None):
+			if (checkValue('hostname',self.settings)):
 				# remote without password
 				print "REMOTE WITHOUT PASSWORD"
 				self.conn = psycopg2.connect(database=self.settings['databasename'],user=self.settings['user'], host=self.settings['hostname'],port=self.settings['port'])

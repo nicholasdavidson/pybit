@@ -28,6 +28,12 @@ import sys
 from os.path import isfile
 from pybitweb.bottle import Bottle,request,response
 
+def checkValue(value,container):
+	if value in container and container[value] is not None and container[value] is not "":
+		return True
+	else:
+		return False
+
 # TODO: Query the DB for this!
 def check_auth(username, password):
     if username == 'admin' and password == 'pass':
