@@ -41,6 +41,18 @@ def get_packages_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
+
+	@app.route('/names', method='GET')
+	def list_packagenames():
+		try:
+			# Returning list of all package names
+			packages = app.config['db'].get_packagenames()
+			encoded = jsonpickle.encode(packages)
+			response.content_type = "application/json"
+			return encoded
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
 	
 	@app.route('/<package_id:int>', method='GET')
 	def get_package_id(package_id):

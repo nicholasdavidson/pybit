@@ -123,8 +123,9 @@
                                         <legend>
                                             Create a package instance
                                         </legend>
-                                        <label for="package_id">Package: </label>
-                                        <select name="package_id" id="package_id"></select><label for="arch_id">Architecture: </label><select name="arch_id" id="arch_id"></select><label for="suite_id">Suite: </label><select name="suite_id"  id="suite_id"></select><label for="dist_id">Distribution: </label><select name="dist_id" id="dist_id"></select><label for="format_id">Package Format: </label><select name="format_id"  id="format_id"></select>
+                                        <label for="package">Package: </label>
+                                        <select name="package" id="package" onclick="changePackage()"></select>                                        <label for="version">Package Version: </label>
+                                        <select name="version" id="version"></select><label for="arch_id">Architecture: </label><select name="arch_id" id="arch_id"></select><label for="suite_id">Suite: </label><select name="suite_id"  id="suite_id"></select><label for="dist_id">Distribution: </label><select name="dist_id" id="dist_id"></select><label for="format_id">Package Format: </label><select name="format_id"  id="format_id"></select>
                                         <br>
                                         <input type="checkbox" name="slave" value="0" id="slave">
                                         Slave</input>
@@ -177,6 +178,23 @@
                         } );
                     }
 
+function changePackage()
+{
+                        var element = document.getElementById ( "package" );
+ $ ( "#version" ).empty();
+						packageName = element.options [ element.selectedIndex ].value;
+                        console.log(packageName) ;
+
+                        var named_versions = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/details/" + packageName
+
+                        $.getJSON ( named_versions , function ( json2 )
+                        {
+                            $.each ( json2 , function ( j , field2 )
+                            {
+								$ ( "#version" ).append ( "<option value='" + field2.version + "'>" + field2.version + "</option>" );
+                            } );
+                        } );
+}
 
                     $ ( ).ready ( function ( )
                     {
@@ -186,14 +204,18 @@
                             alert ( "Packageinstance Added!" );
                             location.reload ( );
                         } );
-                        var packages = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package"
-                        $.getJSON ( packages , function ( json )
+
+
+                        var package_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/names"
+                        $.getJSON ( package_names , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#package_id" ).append ( "<option value='" + field.id + "'>" + field.name + " " + field.version + "</option>" );
+							$ ( "#package" ).append ( "<option value='" + field.name + "'>" + field.name + "</option>" );
                             } );
+changePackage();
                         } );
+
                         var arches = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch"
                         $.getJSON ( arches , function ( json )
                         {
