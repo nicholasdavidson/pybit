@@ -27,6 +27,7 @@ import logging
 from pybitclient.subversion import SubversionClient
 from pybitclient.git import GitClient
 from pybitclient.debianclient import DebianBuildClient
+from pybitclient.apt import AptClient
 from pybitclient import PyBITClient
 from pybit.models import BuildRequest, Transport, PackageInstance, Job, Arch, Suite, Package
 
@@ -35,13 +36,13 @@ def main():
 	logging.basicConfig( stream=sys.stderr, level=logging.DEBUG)
 	logging.basicConfig( format=FORMAT )
 	conffile = "%s/configs/client/client.conf" % (os.getcwd());
+	testconf = "%s/buildd-test.conf" % (os.getcwd());
 	if os.path.isfile (conffile):
 		(settings, opened_path) = pybit.load_settings(conffile)
 	else :
 		(settings, opened_path) = pybit.load_settings("/etc/pybit/client/client.conf")
 	build_client = PyBITClient(settings["host_arch"], settings["distribution"], settings["pkg_format"], settings["suite"], None, settings)
 
-	testconf = "%s/buildd-test.conf" % (os.getcwd());
 	if not os.path.isfile (testconf):
 		print "E: Unable to find %s - no test data for this buildd" % (testconf)
 		print "I: Copy /usr/share/pybitclient/buildd-test.conf and modify it for your available packages."
@@ -55,6 +56,7 @@ def main():
 		"architecture", "source", "uri", "pkg_format", "distribution", "role", "commands" ]
 	svn_vcs = SubversionClient (settings)
 	git_vcs = GitClient(settings)
+	apt_src = AptClient(settings)
 	client = DebianBuildClient (settings)
 
 	while count < test_options["count"] and count < 10: # catch typos in the conf file
@@ -111,6 +113,9 @@ def main():
 		if (method_type == "git") :
 			git_vcs.clean_source(test_req, None)
 			git_vcs.fetch_source (test_req, None)
+		if (method_type == "apt") :
+			apt_src.clean_source(test_req, None)
+			apt_src.fetch_source(test_req, None)
 		# To check the build-dependencies in advance, we need to ensure the
 		# chroot has an update apt-cache, so can't use apt-update option of
 		# sbuild. The alternative is to update the apt-cache twice per build,
@@ -131,6 +136,8 @@ def main():
 			svn_vcs.clean_source(test_req, None)
 		if (method_type == "git") :
 			git_vcs.clean_source(test_req, None)
+		if (method_type == "apt") :
+			apt_src.clean_source(test_req, None)
 	return 0
 
 if __name__ == '__main__':
