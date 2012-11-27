@@ -67,8 +67,9 @@ class DebianBuildClient(PackageHandler):
 		# a command passed to schroot needs to be accessible inside the
 		# chroot and therefore copied to ${HOME} so that schroot copies it again,
 		# into the chroot itself.
-		command = "(cp /usr/share/pybitclient/sbuild-orig.sh . ; schroot -u root -c %s -- ./sbuild-orig.sh %s %s ; rm ./sbuild-orig.sh)" % (buildreq.get_suite(),
-			package_dir, parts[2])
+		orig_sh = "/usr/share/pybitclient/sbuild-orig.sh"
+		command = "(cp %s %s/sbuild-orig.sh ; schroot -u root -c %s -- %s/sbuild-orig.sh %s %s ; rm %s/sbuild-orig.sh)" % (orig_sh,
+			self.settings["buildroot"], buildreq.get_suite(), self.settings["buildroot"], package_dir, parts[2], self.settings["buildroot"])
 		if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 			retval = "custom-command-error"
 		return retval
@@ -143,7 +144,6 @@ class DebianBuildClient(PackageHandler):
 					if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 						retval = "build_dsc"
 		if not retval :
-			# FIXME: sbuild logs are going to /root/logs when running as a daemon. Issue #27
 			command = "(cd %s && sbuild -A -s -d %s %s/%s_%s.dsc)" % (self.settings["buildroot"], buildreq.get_suite(),
 				srcdir, buildreq.get_package(), buildreq.get_version())
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
