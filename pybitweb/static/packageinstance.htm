@@ -123,6 +123,7 @@
                                         <legend>
                                             Create a package instance
                                         </legend>
+ <span class="help-block">Choose an existing package by name and version, then define the arch, suite, distribution, and format, for this particular instance, then click 'Submit', to add it to the database. This generally happens automatically thanks to the SVN or other VCS hook.</span>
                                         <label for="package">Package: </label>
                                         <select name="package" id="package" onclick="changePackage()"></select>                                        <label for="version">Package Version: </label>
                                         <select name="version" id="version"></select><label for="arch_id">Architecture: </label><select name="arch_id" id="arch_id"></select><label for="suite_id">Suite: </label><select name="suite_id"  id="suite_id"></select><label for="dist_id">Distribution: </label><select name="dist_id" id="dist_id"></select><label for="format_id">Package Format: </label><select name="format_id"  id="format_id"></select>
@@ -141,6 +142,7 @@
                             </div>
                         </div>
                     </div>
+ <span class="help-block">Existing packages instances are listed below. To add a new package instance to the database, add its details using the form above.</span>
                     <table id="tbl_packageinstances"  class="table table-bordered table-condensed">
                         <tr>
                             <th colspan='8'>Package Instances</th>
