@@ -833,6 +833,23 @@ class Database(object):
 			raise Exception("Error retrieving packages list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	def get_packagenames(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT DISTINCT (name), name FROM package GROUP BY name ORDER BY name") # We only care about a unique list of names
+			res = cur.fetchall()
+			self.conn.commit()
+
+			packages = []
+			for i in res:
+				packages.append(Package(None,None,i['name'])) # TODO: these may actually be useful to have still.
+			cur.close()
+			return packages
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving packages list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def get_packages_byname(self, name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)

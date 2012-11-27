@@ -35,11 +35,11 @@ class Controller(object):
 	def get_amqp_channel(self):
 		chan = None
 		try:
-			conn = amqp.Connection(host=self.settings['rabbit_url'],
-				 userid=self.settings['rabbit_userid'],
-				 password=self.settings['rabbit_password'],
-				 virtual_host=self.settings['rabbit_virtual_host'],
-				 insist=self.settings['rabbit_insist'])
+			conn = amqp.Connection(host=self.settings['controller']['rabbit_url'],
+				 userid=self.settings['controller']['rabbit_userid'],
+				 password=self.settings['controller']['rabbit_password'],
+				 virtual_host=self.settings['controller']['rabbit_virtual_host'],
+				 insist=self.settings['controller']['rabbit_insist'])
 			try:
 				chan = conn.channel()
 				chan.exchange_declare(exchange=pybit.exchange_name,

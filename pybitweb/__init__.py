@@ -55,6 +55,16 @@ def get_app(settings, db, controller):
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
+    # favicons
+    @app.route('/favicon.ico', method='GET')
+    def serve_favicon_ico():
+            response.content_type = "image/x-icon"
+            return static_file('favicon.ico',root=getPath())
+
+    @app.route('/favicon.png', method='GET')
+    def serve_favicon_png():
+            response.content_type = "image/png"
+            return static_file('favicon.png',root=getPath())
 
     # static resources like CSS
     @app.route('/bootstrap/<filepath:path>', method='GET')

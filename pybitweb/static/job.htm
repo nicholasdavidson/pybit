@@ -10,6 +10,8 @@
         <meta name="description" content="">
         <meta name="author" content="">
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="favicon.png" />
         <style>
             body
             {
@@ -113,6 +115,7 @@
                 <div class="container-fluid">
                     <h1>PyBit - python Buildd Integration Toolkit.</h1>
                     <h3>Jobs</h3>
+ <span class="help-block">Use this page to add or cancel jobs, as well as to view thier status history and assigned Package and BuildBox.</span>
                     <div class="accordion" id="accordion1">
                         <div class="accordion-group">
                             <div class="accordion-heading">
@@ -124,10 +127,13 @@
                                         <legend>
                                             Submit a Job
                                         </legend>
+ <span class="help-block">To submit a job, firstly choose a <strong>Existing</strong> Package, and PackageInstance. <br/> Next, enter the path to he source, the method to use to retrieve it (i.e. 'SVN') , and the VCS revision, as well as any [Optional] build commands.</span>
+                                        <label for="package">Package Name: </label>
+                                        <select name="package"  id="package" size="1" onclick="changePackage()" style="width:480px; display:block;"></select>
                                         <label for="packageinstance_id">Package Instance ID: </label>
                                         <select name="packageinstance_id"  id="packageinstance_id" size="1" style="width:480px; display:block;"></select>
                                         <label for='uri'>URI: </label>
-                                        <input type="text" name="uri "id="uri">
+                                        <input type="text" name="uri" id="uri">
                                         <label for='method'>Method: </label>
                                         <input type="text" name="method" id="method">
                                         <label for='revision'>Revision: </label>
@@ -145,6 +151,7 @@
                             </div>
                         </div>
                     </div>
+<span class="help-block">Use this dropdown to filter the list of jobs (shown below), by  their status.</span>
                     <select name="status_filter_element"  id="status_filter_element" size="1" style="width:480px; display:block;" onchange="status_filter()">
                         <option value='Unfinished'>Unfinished</option>
                     </select>
@@ -169,6 +176,8 @@
                                 <div class="accordion-inner">
                                     <form class="form" method="GET" action="{{protocol}}{{host}}/job/cancelall">
                                         <button id="deleteall" name = "deleteall" type="submit" class="btn btn-danger">
+                    <a id="buildds"></a>
+ <span class="help-block">Click the button below to cancel all build jobs</span>
                                             <a href="/job/cancelall">DANGER: CANCEL *ALL* RUNNING JOBS</a>
                                         </button>
                                     </form>
@@ -209,6 +218,24 @@
                 </div>
                 <!--/.fluid-container-->
                 <script>
+
+function changePackage()
+{
+                        var element = document.getElementById ( "package" );
+ $ ( "#packageinstance_id" ).empty();
+						packageName = element.options [ element.selectedIndex ].value;
+
+                        var named_versions = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/details/" + packageName
+
+                        $.getJSON ( named_versions , function ( json2 )
+                        {
+                            $.each ( json2 , function ( j , field2 )
+                            {
+                                $ ( "#packageinstance_id" ).append ( "<option value='" + field2.id + "'>" + field2.package.name + " " + field2.package.version + "." + field2.format.name + " - " + field2.distribution.name + "/" + field2.suite.name + " (" + field2.arch.name + ") </option>" );
+                            } );
+                        } );
+}
+
                     function status_filter ( )
                     {
                         var element = document.getElementById ( "status_filter_element" );
@@ -285,7 +312,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#packageinstance_id" ).append ( "<option value='" + field.id + "'>" + field.id + " - " + field.package.name + " " + field.package.version + "." + field.format.name + " " + " " + field.distribution.name + "/" + field.suite.name + " (" + field.arch.name + ") </option>" );
+                                $ ( "#packageinstance_id" ).append ( "<option value='" + field.id + "'>" + field.package.name + " " + field.package.version + "." + field.format.name + " - " + field.distribution.name + "/" + field.suite.name + " (" + field.arch.name + ") </option>" );
                             } );
                         } );
                         var jobstatuses = new Object ( )
@@ -337,6 +364,17 @@
 
                     $ ( ).ready ( function ( )
                     {
+
+                        var package_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/names"
+                        $.getJSON ( package_names , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+							$ ( "#package" ).append ( "<option value='" + field.name + "'>" + field.name + "</option>" );
+                            } );
+changePackage();
+                        } );
+
                         document.body.innerHTML = document.body.innerHTML.replace ( 'REPLACE_WITH_URL' , "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) );
                         // Populate dropdown
                         var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status"
