@@ -124,10 +124,13 @@
                                         <legend>
                                             Submit a Job
                                         </legend>
+
+                                        <label for="package">Package Name: </label>
+                                        <select name="package"  id="package" size="1" onclick="changePackage()" style="width:480px; display:block;"></select>
                                         <label for="packageinstance_id">Package Instance ID: </label>
                                         <select name="packageinstance_id"  id="packageinstance_id" size="1" style="width:480px; display:block;"></select>
                                         <label for='uri'>URI: </label>
-                                        <input type="text" name="uri "id="uri">
+                                        <input type="text" name="uri" id="uri">
                                         <label for='method'>Method: </label>
                                         <input type="text" name="method" id="method">
                                         <label for='revision'>Revision: </label>
@@ -209,6 +212,24 @@
                 </div>
                 <!--/.fluid-container-->
                 <script>
+
+function changePackage()
+{
+                        var element = document.getElementById ( "package" );
+ $ ( "#packageinstance_id" ).empty();
+						packageName = element.options [ element.selectedIndex ].value;
+
+                        var named_versions = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/details/" + packageName
+
+                        $.getJSON ( named_versions , function ( json2 )
+                        {
+                            $.each ( json2 , function ( j , field2 )
+                            {
+                                $ ( "#packageinstance_id" ).append ( "<option value='" + field2.id + "'>" + field2.package.name + " " + field2.package.version + "." + field2.format.name + " - " + field2.distribution.name + "/" + field2.suite.name + " (" + field2.arch.name + ") </option>" );
+                            } );
+                        } );
+}
+
                     function status_filter ( )
                     {
                         var element = document.getElementById ( "status_filter_element" );
@@ -337,6 +358,17 @@
 
                     $ ( ).ready ( function ( )
                     {
+
+                        var package_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/names"
+                        $.getJSON ( package_names , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+							$ ( "#package" ).append ( "<option value='" + field.name + "'>" + field.name + "</option>" );
+                            } );
+changePackage();
+                        } );
+
                         document.body.innerHTML = document.body.innerHTML.replace ( 'REPLACE_WITH_URL' , "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) );
                         // Populate dropdown
                         var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status"
