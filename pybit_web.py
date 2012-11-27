@@ -53,7 +53,7 @@ if __name__ == '__main__':
 	settings = pybit.merge_options(settings, groupConfigFile, options)
 	
 	myDb = Database(settings['db']) # singleton instance
-	buildController = Controller(settings['controller'], myDb) # singleton instance
+	buildController = Controller(settings, myDb) # singleton instance - Needs access to both controller and web settings
 #	try:
 	app = pybitweb.get_app(settings, myDb, buildController)
 	bottle.debug(options.verbose)
