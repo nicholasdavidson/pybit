@@ -127,23 +127,24 @@ class DebianBuildClient(PackageHandler):
 		# See #18 for the unreleased build support issue.
 		if hasattr (buildreq, 'commands') and buildreq.commands :
 			retval = self.build_command_handler (buildreq, conn_data)
-		else :
-			if os.path.isdir(package_dir) or self.settings["dry_run"] :
+		else : #61 - avoid dependency check if not using lvm
+			if self.settings["use_lvm"] and (os.path.isdir(package_dir) or self.settings["dry_run"]) :
 				control = os.path.join (package_dir, 'debian', 'control')
 				dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
-				command = "schroot -u root -c %s -- %s %s" % (buildreq.get_suite(),
-					 dep_check, os.path.realpath(control))
+				command = "schroot -u root -c %s -- %s %s" % (buildreq.get_suite(), dep_check, os.path.realpath(control))
 				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 					retval = "build-dep-wait"
 			if not retval :
 				retval = self.orig_source_handler (buildreq, conn_data)
 			if not retval :
-				command = "(cd %s ; dpkg-buildpackage -nc -S -d -uc -us)" % (package_dir)
-				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
-					retval = "build_dsc"
+				dsc_file = "%s/%s_%s.dsc" % (srcdir, buildreq.get_package(), buildreq.get_version())
+				if not os.path.exists (dsc_file) :
+					command = "(cd %s && dpkg-buildpackage -nc -S -d -uc -us)" % (package_dir)
+					if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
+						retval = "build_dsc"
 		if not retval :
 			# FIXME: sbuild logs are going to /root/logs when running as a daemon. Issue #27
-			command = "sbuild -A -s -d %s %s/%s_%s.dsc" % (buildreq.get_suite(),
+			command = "(cd %s && sbuild -A -s -d %s %s/%s_%s.dsc)" % (self.settings["buildroot"], buildreq.get_suite(),
 				srcdir, buildreq.get_package(), buildreq.get_version())
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "build_binary"
@@ -205,8 +206,8 @@ class DebianBuildClient(PackageHandler):
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "build_dsc"
 			if not retval :
-				command = "sbuild --apt-update -d %s %s/%s_%s.dsc" % (
-					buildreq.get_suite(), srcdir,
+				command = "(cd %s && sbuild --apt-update -d %s %s/%s_%s.dsc)" % (
+					self.settings["buildroot"], buildreq.get_suite(), srcdir,
 					buildreq.get_package(), buildreq.get_version())
 				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 					retval = "build_binary"
