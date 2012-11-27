@@ -8,6 +8,7 @@ include pybitweb/static/bootstrap/css/*
 include pybitweb/static/bootstrap/img/*
 include pybitweb/static/bootstrap/js/*
 include pybitweb/static/js/*
+include pybitweb/pybit-logo-sm_med.png
 include pybit-client
 include pybit_web.py
 include pybitclient/README
