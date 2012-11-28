@@ -121,7 +121,7 @@
                             </div>
                             <div id="collapseOne" class="accordion-body collapse">
                                 <div class="accordion-inner">
-                                    <form class="form" method="POST" action="REPLACE_WITH_URL/packageinstance" id="packageinstance_form" name="packageinstance_form">
+                                    <form class="form" method="POST" action="packageinstance" id="packageinstance_form" name="packageinstance_form">
                                         <legend>
                                             Create a package instance
                                         </legend>
@@ -201,7 +201,6 @@ function changePackage()
 
                     $ ( ).ready ( function ( )
                     {
-                        document.body.innerHTML = document.body.innerHTML.replace ( 'REPLACE_WITH_URL' , "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) );
                         $ ( '#packageinstance_form' ).ajaxForm ( function ( )
                         {
                             alert ( "Packageinstance Added!" );

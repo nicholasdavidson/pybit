@@ -123,7 +123,7 @@
                             </div>
                             <div id="collapseOne" class="accordion-body collapse">
                                 <div class="accordion-inner">
-                                    <form class="form" method="POST" action="REPLACE_WITH_URL/job"  id="job_form" name="job_form">
+                                    <form class="form" method="POST" action="job"  id="job_form" name="job_form">
                                         <legend>
                                             Submit a Job
                                         </legend>
@@ -174,7 +174,7 @@
                             </div>
                             <div id="collapseTwo" class="accordion-body collapse">
                                 <div class="accordion-inner">
-                                    <form class="form" method="GET" action="REPLACE_WITH_URL/job/cancelall">
+                                    <form class="form" method="GET" action="job/cancelall">
                                         <button id="deleteall" name = "deleteall" type="submit" class="btn btn-danger">
                     <a id="buildds"></a>
  <span class="help-block">Click the button below to cancel all build jobs</span>
@@ -375,7 +375,6 @@ function changePackage()
 changePackage();
                         } );
 
-                        document.body.innerHTML = document.body.innerHTML.replace ( 'REPLACE_WITH_URL' , "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) );
                         // Populate dropdown
                         var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status"
                         $.getJSON ( url , function ( json )

@@ -121,7 +121,7 @@
                             </div>
                             <div id="collapseOne" class="accordion-body collapse">
                                 <div class="accordion-inner">
-                                    <form class="form" method="POST" action="REPLACE_WITH_URL/package" id="package_form" name="package_form">
+                                    <form class="form" method="POST" action="package" id="package_form" name="package_form">
                                         <legend>
                                             Add a Package
                                         </legend>
@@ -181,7 +181,6 @@
                     }
                     $ ( ).ready ( function ( )
                     {
-                        document.body.innerHTML = document.body.innerHTML.replace ( 'REPLACE_WITH_URL' , "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) );
                         $ ( '#package_form' ).ajaxForm ( function ( )
                         {
                             alert ( "Package Added!" );
