@@ -364,7 +364,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_arches" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
+                                $ ( "#tbl_arches" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
                             } );
                             $ ( '#tbl_arches' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/lookups.htm?arch_page=" + last_arch_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/lookups.htm?arch_page=" + new_arch_page + "'>Next</a></li></ul></div>" );
                         } );
@@ -373,7 +373,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_statuses" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
+                                $ ( "#tbl_statuses" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
                             } );
                         } );
                         var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist"
@@ -381,7 +381,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_dists" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
+                                $ ( "#tbl_dists" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
                             } );
                         } );
                         var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format"
@@ -389,7 +389,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_formats" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>" );
+                                $ ( "#tbl_formats" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>" );
                             } );
                         } );
                         var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite"
@@ -397,7 +397,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_suites" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
+                                $ ( "#tbl_suites" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
                             } );
                         } );
                     } );
