@@ -49,9 +49,7 @@ def get_app(settings, db, controller):
     @app.route('/', method='GET')
     def index():
         return template(getStaticResource("/index.htm"),
-                        host=settings['web']['hostname'],
-                        port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
@@ -86,9 +84,7 @@ def get_app(settings, db, controller):
     @app.route('/index.htm', method='GET')
     def serve_static_idex():
             return template(getStaticResource("/index.htm"),
-                            host=settings['web']['hostname'],
-                            port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
@@ -97,9 +93,7 @@ def get_app(settings, db, controller):
     @app.route('/buildd.htm', method='GET')
     def serve_static_buildboxes():
             return template(getStaticResource("/buildd.htm"),
-                            host=settings['web']['hostname'],
-                            port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
@@ -108,9 +102,7 @@ def get_app(settings, db, controller):
     @app.route('/job.htm', method='GET')
     def serve_static_jobs():
             return template(getStaticResource("/job.htm"),
-                            host=settings['web']['hostname'],
-                            port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
@@ -119,9 +111,7 @@ def get_app(settings, db, controller):
     @app.route('/lookups.htm', method='GET')
     def serve_static_lookups():
             return template(getStaticResource("/lookups.htm"),
-                            host=settings['web']['hostname'],
-                            port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
@@ -130,9 +120,7 @@ def get_app(settings, db, controller):
     @app.route('/package.htm', method='GET')
     def serve_static_packages():
             return template(getStaticResource("/package.htm"),
-                            host=settings['web']['hostname'],
-                            port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
@@ -141,9 +129,7 @@ def get_app(settings, db, controller):
     @app.route('/packageinstance.htm', method='GET')
     def serve_static_package_instances():
             return template(getStaticResource("/packageinstance.htm"),
-                            host=settings['web']['hostname'],
-                            port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
