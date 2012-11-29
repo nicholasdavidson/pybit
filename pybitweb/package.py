@@ -31,10 +31,14 @@ from common import requires_auth
 def get_packages_app(settings, db, controller):
 	app = Bottle(config={'settings':settings,'db':db, 'controller' : controller})
 	@app.route('/', method='GET')
-	def get_all_packages():
+	@app.route('/page/<page:int>', method='GET')
+	def get_all_packages(page = None):
 		try:
 			# Returning list of all packages
-			packages = app.config['db'].get_packages()
+			if page:
+				packages = app.config['db'].get_packages(page)
+			else:
+				packages = app.config['db'].get_packages()
 			encoded = jsonpickle.encode(packages)
 			response.content_type = "application/json"
 			return encoded

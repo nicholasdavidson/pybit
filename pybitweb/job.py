@@ -63,11 +63,15 @@ def get_job_app(settings, db, controller) :
 			return None
 
 	@app.route('/', method='GET')
-	def get_jobs():
+	@app.route('/page/<page:int>', method='GET')
+	def get_jobs(page = None):
 		try:
 			response.content_type = "application/json"
 			#return list of ALL jobs
-			return jsonpickle.encode(app.config['db'].get_jobs())
+			if page:
+				return jsonpickle.encode(app.config['db'].get_jobs(page))
+			else:
+				return jsonpickle.encode(app.config['db'].get_jobs())
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None

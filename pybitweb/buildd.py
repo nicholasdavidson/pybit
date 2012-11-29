@@ -31,10 +31,14 @@ from controller import Controller
 def get_buildd_app(settings, db, controller):
 	app = Bottle(config= {'settings' : settings, 'db' : db, 'controller': controller})
 	@app.route('/', method='GET')
-	def get_buildd():
+	@app.route('/page/<page:int>', method='GET')
+	def get_buildd(page = None):
 		try:
 			# Return list of BuildDs
-			buildds = app.config['db'].get_buildclients()
+			if page:
+				buildds = app.config['db'].get_buildclients(page)
+			else:
+				buildds = app.config['db'].get_buildclients()
 			encoded = jsonpickle.encode(buildds)
 			response.content_type = "application/json"
 			return encoded

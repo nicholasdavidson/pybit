@@ -40,10 +40,14 @@ def get_packageinstance_app(settings, db):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 	@app.route('/', method='GET')
-	def get_all_packageinstances():
+	@app.route('/page/<page:int>', method='GET')
+	def get_all_packageinstances(page = None):
 		try:
 			# Returning list of all packageinstances
-			packageinstances = app.config['db'].get_packageinstances()
+			if page:
+				packageinstances = app.config['db'].get_packageinstances(page)
+			else:
+				packageinstances = app.config['db'].get_packageinstances()
 			encoded = jsonpickle.encode(packageinstances)
 			response.content_type = "application/json"
 			return encoded

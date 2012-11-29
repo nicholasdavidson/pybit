@@ -574,10 +574,15 @@ class Database(object):
 
 	#<<<<<<<< BuildD related database functions >>>>>>>>
 
-	def get_buildclients(self):
+	def get_buildclients(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM buildclients ORDER BY name")
+			if page:
+				limit = 10 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,name FROM buildclients ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,name FROM buildclients ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -678,10 +683,15 @@ class Database(object):
 			raise Exception("Error retrieving job with id:" + str(job_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def get_jobs(self):
+	def get_jobs(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job ORDER BY id")
+			if page:
+				limit = 10 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job ORDER BY id LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job ORDER BY id")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -816,10 +826,15 @@ class Database(object):
 
 	#<<<<<<<< Package related database functions >>>>>>>>
 	# UPDATE queries?
-	def get_packages(self):
+	def get_packages(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,version,name FROM package ORDER BY name,id")
+			if page:
+				limit = 10 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,version,name FROM package ORDER BY name,id LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,version,name FROM package ORDER BY name,id")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -953,10 +968,15 @@ class Database(object):
 			raise Exception("Error retrieving package instance with:" + str(packageinstance_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def get_packageinstances(self):
+	def get_packageinstances(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id")
+			if page:
+				limit = 10 # CONSTANT
+				offset = (page -1) * limit;
+				cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id LIMIT %s OFFSET %s", (limit,offset,))
+			else:
+				cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id")
 			res = cur.fetchall()
 			self.conn.commit()
 
