@@ -119,7 +119,7 @@
                             <div class="accordion-heading">
                                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree"> Software Distributions </a>
                             </div>
-                            <div id="collapseThree" class="accordion-body collapse in">
+                            <div id="collapseOne" class="accordion-body collapse in">
                                 <div class="accordion-inner">
                                     <form class="form-inline" method="POST" action="dist"  id="dist_form" name="dist_form">
  <span class="help-block">Enter the name of a software distribution, to add it to the database. Examples of distributions include 'Debian' or 'Red Hat'. <br/>  One example of when you would need to add something to this list, is if a new OS becomes supported. </span>
@@ -132,7 +132,6 @@
                                             Cancel
                                         </button>
                                     </form>
-                                    <a id="dists"></a>
                                     <table id="tbl_dists"  class="table table-bordered table-condensed">
                                         <tr>
                                             <th colspan='2'>Distributions</th>
@@ -190,31 +189,31 @@
                     }
                     $ ( ).ready ( function ( )
                     {
-                        var arch_page = 1;
+                        var dist_page = 1;
                         $ ( '#dist_form' ).ajaxForm ( function ( )
                         {
                             alert ( "Dist Added!" );
                             location.reload ( );
                         } );
-                        if ( getUrlVars() [ "arch_page" ] )
+                        if ( getUrlVars() [ "dist_page" ] )
                         {
-                            arch_page = getUrlVars() [ "arch_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/" + arch_page
+                            dist_page = getUrlVars() [ "dist_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/page/" + dist_page
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/1"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/page/1"
                         }
-                        new_arch_page = parseInt ( arch_page ) + 1;
-                        last_arch_page = parseInt ( arch_page ) - 1;
+                        new_dist_page = parseInt ( dist_page ) + 1;
+                        last_dist_page = parseInt ( dist_page ) - 1;
 
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist"
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
                                 $ ( "#tbl_dists" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
                             } );
+                            $ ( '#tbl_dists' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dists.htm?dist_page=" + last_dist_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dists.htm?dist_page=" + new_dist_page + "'>Next</a></li></ul></div>" );
                         } );
                     } );
                 </script>

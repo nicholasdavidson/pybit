@@ -119,7 +119,7 @@
                             <div class="accordion-heading">
                                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour"> Package Formats </a>
                             </div>
-                            <div id="collapseFour" class="accordion-body collapse in">
+                            <div id="collapseOne" class="accordion-body collapse in">
                                 <div class="accordion-inner">
                                     <form class="form-inline" method="POST" action="format"  id="format_form" name="format_form">
  <span class="help-block">Enter the name (File extension) of a packaging format, to add it to the database. Examples of distributions include 'deb' or 'rpm'. <br/>  One example of when you would need to add something to this list, is if you write a new build output handler. </span>
@@ -132,7 +132,6 @@
                                             Cancel
                                         </button>
                                     </form>
-                                    <a id="formats"></a>
                                     <table id="tbl_formats"  class="table table-bordered table-condensed">
                                         <tr>
                                             <th colspan='2'>Formats</th>
@@ -190,7 +189,7 @@
                     }
                     $ ( ).ready ( function ( )
                     {
-                        var arch_page = 1;
+                        var format_page = 1;
 
                         $ ( '#format_form' ).ajaxForm ( function ( )
                         {
@@ -198,25 +197,25 @@
                             location.reload ( );
                         } );
 
-                        if ( getUrlVars() [ "arch_page" ] )
+                        if ( getUrlVars() [ "format_page" ] )
                         {
-                            arch_page = getUrlVars() [ "arch_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/" + arch_page
+                            format_page = getUrlVars() [ "format_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format/page/" + format_page
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/1"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format/page/1"
                         }
-                        new_arch_page = parseInt ( arch_page ) + 1;
-                        last_arch_page = parseInt ( arch_page ) - 1;
+                        new_format_page = parseInt ( format_page ) + 1;
+                        last_format_page = parseInt ( format_page ) - 1;
 
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format"
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
                                 $ ( "#tbl_formats" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>" );
                             } );
+                            $ ( '#tbl_formats' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/formats.htm?format_page=" + last_format_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/formats.htm?format_page=" + new_format_page + "'>Next</a></li></ul></div>" );
                         } );
                     } );
                 </script>

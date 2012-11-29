@@ -119,7 +119,7 @@
                             <div class="accordion-heading">
                                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseFive"> Software Suites </a>
                             </div>
-                            <div id="collapseFive" class="accordion-body collapse in">
+                            <div id="collapseOne" class="accordion-body collapse in">
                                 <div class="accordion-inner">
                                     <form class="form-inline" method="POST" action="suite"  id="suite_form" name="suite_form">
  <span class="help-block">Enter the name of a software suite, to add it to the database. Examples of suites include 'development' or 'chickpea'. <br/>  One example of when you would need to add something to this list, is if you make a new release branch. </span>
@@ -132,7 +132,6 @@
                                             Cancel
                                         </button>
                                     </form>
-                                    <a id="suites"></a>
                                     <table id="tbl_suites"  class="table table-bordered table-condensed">
                                         <tr>
                                             <th colspan='2'>Formats</th>
@@ -190,32 +189,32 @@
                     }
                     $ ( ).ready ( function ( )
                     {
-                        var arch_page = 1;
+                        var suite_page = 1;
 
                         $ ( '#suite_form' ).ajaxForm ( function ( )
                         {
                             alert ( "Suite Added!" );
                             location.reload ( );
                         } );
-                        if ( getUrlVars() [ "arch_page" ] )
+                        if ( getUrlVars() [ "suite_page" ] )
                         {
-                            arch_page = getUrlVars() [ "arch_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/" + arch_page
+                            suite_page = getUrlVars() [ "suite_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite/page/" + arch_page
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/1"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite/page/1"
                         }
-                        new_arch_page = parseInt ( arch_page ) + 1;
-                        last_arch_page = parseInt ( arch_page ) - 1;
+                        new_suite_page = parseInt ( suite_page ) + 1;
+                        last_suite_page = parseInt ( suite_page ) - 1;
 
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite"
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
                                 $ ( "#tbl_suites" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
                             } );
+                            $ ( '#tbl_suites' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suites.htm?suite_page=" + last_suite_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suites.htm?suite_page=" + new_suite_page + "'>Next</a></li></ul></div>" );
                         } );
                     } );
                 </script>

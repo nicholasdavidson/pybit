@@ -120,7 +120,7 @@
                             <div class="accordion-heading">
                                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Job Statuses </a>
                             </div>
-                            <div id="collapseTwo" class="accordion-body collapse in">
+                            <div id="collapseOne" class="accordion-body collapse in">
                                 <div class="accordion-inner">
                                     <form class="form-inline" method="POST" action="status"  id="status_form" name="status_form">
  <span class="help-block">Enter the name of a status, to add it to the database. Examples of such statuses include 'Building' or 'Cancelled'. <br/>  Note that these are NOT to be edited under normal use.</span>
@@ -190,32 +190,32 @@
                     }
                     $ ( ).ready ( function ( )
                     {
-                        var arch_page = 1;
+                        var status_page = 1;
 
                         $ ( '#status_form' ).ajaxForm ( function ( )
                         {
                             alert ( "Status Added!" );
                             location.reload ( );
                         } );
-                        if ( getUrlVars() [ "arch_page" ] )
+                        if ( getUrlVars() [ "status_page" ] )
                         {
-                            arch_page = getUrlVars() [ "arch_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/" + arch_page
+                            status_page = getUrlVars() [ "status_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status/page/" + status_page
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/1"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status/page/1"
                         }
-                        new_arch_page = parseInt ( arch_page ) + 1;
-                        last_arch_page = parseInt ( arch_page ) - 1;
+                        new_status_page = parseInt ( status_page ) + 1;
+                        last_status_page = parseInt ( status_page ) - 1;
 
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status"
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
                                 $ ( "#tbl_statuses" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
                             } );
+                            $ ( '#tbl_statuses' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/statuses.htm?status_page=" + last_status_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/statuses.htm?status_page=" + new_status_page + "'>Next</a></li></ul></div>" );
                         } );
                     } );
                 </script>
