@@ -50,7 +50,7 @@ def get_job_app(settings, db, controller) :
 				suite = request.forms.get('suite')
 				pkg_format = request.forms.get('format')
 
-				if not uri and not method and not dist and not vcs_id and not architectures and not version and not package_name and not suite and not pkg_format :
+				if not uri and not method and not dist and not architectures and not version and not package_name and not suite and not pkg_format :
 					response.status = "400 - Required fields missing."
 					return None
 				else :
