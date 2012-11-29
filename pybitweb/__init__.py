@@ -138,6 +138,14 @@ def get_app(settings, db, controller):
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl'])
 
+    # static HTML page listing suitearches
+    @app.route('/suitearch.htm', method='GET')
+    def serve_static_suitearches():
+            return template(getStaticResource("/suitearch.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl'])
+
     # static HTML page listing buildboxes
     @app.route('/buildd.htm', method='GET')
     def serve_static_buildboxes():
@@ -185,7 +193,7 @@ def get_app(settings, db, controller):
 
     app.mount('/job', job.get_job_app(settings, db, controller))
     app.mount('/suite', lookups.get_suite_app(settings, db))
-    app.mount('/suitearch', lookups.get_suite_app(settings, db))
+    app.mount('/suitearch', lookups.get_suitearch_app(settings, db))
     app.mount('/dist', lookups.get_dist_app(settings, db))
     app.mount('/status',lookups.get_status_app(settings, db))
     app.mount('/arch',lookups.get_arch_app(settings, db))

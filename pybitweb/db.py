@@ -194,7 +194,7 @@ class Database(object):
 
 			suite_arches = []
 			for i in res:
-				suite_arches.append(SuiteArch(i['id'],i['suite_id'],i['arch_id']))
+				suite_arches.append(SuiteArch(i['id'],self.get_suite_id(i['suite_id']),self.get_arch_id(i['arch_id'])))
 			cur.close()
 			return suite_arches
 		except psycopg2.Error as e:
@@ -208,7 +208,7 @@ class Database(object):
 			cur.execute("SELECT id,suite_id,arch_id FROM suitearches WHERE id=%s",(suitearch_id,))
 			res = cur.fetchall()
 			self.conn.commit()
-			suitearch = SuiteArch(res[0]['id'],res[0]['suite_id'],res[0]['arch_id'])
+			suitearch = SuiteArch(res[0]['id'],self.get_suite_id(res[0]['suite_id']),self.get_arch_id(res[0]['arch_id']))
 			cur.close()
 			return suitearch
 		except psycopg2.Error as e:
@@ -222,7 +222,7 @@ class Database(object):
 			cur.execute("INSERT into suitearches(suite_id,arch_id) VALUES (%s, %s) RETURNING id",(remove_nasties(suite_id),remove_nasties(arch_id)))
 			res = cur.fetchall()
 			self.conn.commit()
-			suitearch = SuiteArch(res[0]['id'],suite_id,arch_id)
+			suitearch = SuiteArch(res[0]['id'],self.get_suite_id(suite_id),self.get_arch_id(arch_id))
 			cur.close()
 			return suitearch
 		except psycopg2.Error as e:

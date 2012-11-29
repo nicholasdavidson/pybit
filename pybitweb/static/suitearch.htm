@@ -78,16 +78,16 @@
                         <li>
                             <a href="statuses.htm">Statuses</a>
                         </li>
-                        <li class="active">
+                        <li>
                             <a href="dists.htm">Dists</a>
                         </li>
                         <li>
                             <a href="formats.htm">Formats</a>
                         </li>
-                        <li>
+                        <li
                             <a href="suites.htm">Suites</a>
                         </li>
-                                                 <li>
+                                                 <li class="active">>
                             <a href="suitearch.htm">Suite Arches</a>
                         </li>
                         <li class="nav-header">
@@ -116,18 +116,26 @@
                 <!--Body content-->
                 <div class="container-fluid">
                     <h1>PyBit - python Buildd Integration Toolkit.</h1>
-                    <h3>Add Software Distributions</h3>
+                    <h3>Add Supported Arches to Software Suites</h3>
                     <div class="accordion" id="accordion1">
                         <div class="accordion-group">
                             <div class="accordion-heading">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree"> Software Distributions </a>
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseFive"> Suite Arches</a>
                             </div>
                             <div id="collapseOne" class="accordion-body collapse in">
                                 <div class="accordion-inner">
-                                    <form class="form-inline" method="POST" action="dist"  id="dist_form" name="dist_form">
- <span class="help-block">Enter the name of a software distribution, to add it to the database. Examples of distributions include 'Debian' or 'Red Hat'. <br/>  One example of when you would need to add something to this list, is if a new OS becomes supported. </span>
-                                        <label for="name">Name</label>
-                                        <input name="name" type="text" />
+                                    <form class="form-inline" method="POST" action="suitearch"  id="suitearch_form" name="suitearch_form">
+ <span class="help-block">Choose an existing arch to add to the list of supported ones for a particular software suite </span>
+
+                                        <label for="suite_id">Suite: </label>
+                                        <select name="suite_id"  id="suite_id" size="1" style="width:480px; display:block;"></select>
+
+                                        <label for="arch_id">Arch: </label>
+                                        <select name="arch_id"  id="arch_id" size="1" style="width:480px; display:block;"></select>
+
+
+
+
                                         <button type="submit" class="btn  btn-primary">
                                             Submit
                                         </button>
@@ -135,9 +143,9 @@
                                             Cancel
                                         </button>
                                     </form>
-                                    <table id="tbl_dists"  class="table table-bordered table-condensed">
+                                    <table id="tbl_suitearches"  class="table table-bordered table-condensed">
                                         <tr>
-                                            <th colspan='2'>Distributions</th>
+                                            <th colspan='2'>Suite Arches</th>
                                         </tr>
                                     </table>
                                 </div>
@@ -169,8 +177,8 @@
                     {
                         switch (target)
                         {
-                            case 3:
-                                target = "dist"
+                            case 5:
+                                target = "suitearch"
                                 break;
                         }
                         $.ajax (
@@ -192,31 +200,40 @@
                     }
                     $ ( ).ready ( function ( )
                     {
-                        var dist_page = 1;
-                        $ ( '#dist_form' ).ajaxForm ( function ( )
+                        var suitearch_page = 1;
+
+                        $ ( '#suitearch_form' ).ajaxForm ( function ( )
                         {
-                            alert ( "Dist Added!" );
+                            alert ( "Suite Arch Added!" );
                             location.reload ( );
                         } );
-                        if ( getUrlVars() [ "dist_page" ] )
+
+                        var suite_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite"
+                        $.getJSON ( suite_names , function ( json )
                         {
-                            dist_page = getUrlVars() [ "dist_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/page/" + dist_page
-                        }
-                        else
+                            $.each ( json , function ( i , field )
+                            {
+							$ ( "#suite_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
+                            } );
+                        } );
+
+                        var arch_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch"
+                        $.getJSON ( arch_names , function ( json )
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/page/1"
-                        }
-                        new_dist_page = parseInt ( dist_page ) + 1;
-                        last_dist_page = parseInt ( dist_page ) - 1;
+                            $.each ( json , function ( i , field )
+                            {
+							$ ( "#arch_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
+                            } );
+                        } );
+
+						var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suitearch"
 
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_dists" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
+                                $ ( "#tbl_suitearches" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suitearch/" + field.id + "'>" + field.suite.name + "/" + field.arch.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
                             } );
-                            $ ( '#tbl_dists' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dists.htm?dist_page=" + last_dist_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dists.htm?dist_page=" + new_dist_page + "'>Next</a></li></ul></div>" );
                         } );
                     } );
                 </script>
