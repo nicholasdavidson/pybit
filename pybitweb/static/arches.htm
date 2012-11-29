@@ -4,7 +4,7 @@
         <META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
         <META HTTP-EQUIV="Expires" CONTENT="-1">
         <meta charset="utf-8">
-        <title>pyBit - BuildBoxes</title>
+        <title>pyBit - Lookups</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">
@@ -37,7 +37,7 @@
                                     <li>
                                         <a href="index.htm">Home</a>
                                     </li>
-                                    <li>
+                                    <li class="active">
                                         <a href="lookups.htm">Lookups</a>
                                     </li>
                                     <li>
@@ -49,7 +49,7 @@
                                     <li>
                                         <a href="job.htm">Jobs</a>
                                     </li>
-                                    <li class="active">
+                                    <li>
                                         <a href="buildd.htm">Build Boxes</a>
                                     </li>
                                 </ul>
@@ -72,7 +72,7 @@
                         <li class="nav-header">
                             Lookups
                         </li>
-                        <li>
+                        <li class="active">
                             <a href="arches.htm">Architectures</a>
                         </li>
                         <li>
@@ -102,7 +102,7 @@
                         <li>
                             <a href="job.htm">Jobs</a>
                         </li>
-                        <li class="active">
+                        <li>
                             <a href="buildd.htm">BuildBoxes</a>
                         </li>
                     </ul>
@@ -113,19 +113,16 @@
                 <!--Body content-->
                 <div class="container-fluid">
                     <h1>PyBit - python Buildd Integration Toolkit.</h1>
-                    <h3>Lookups</h3>
+                    <h3> Add Package Architectures</h3>
                     <div class="accordion" id="accordion1">
                         <div class="accordion-group">
                             <div class="accordion-heading">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Click here to show the register form. </a>
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Package Architectures </a>
                             </div>
-                            <div id="collapseOne" class="accordion-body collapse">
+                            <div id="collapseOne" class="accordion-body collapse in">
                                 <div class="accordion-inner">
-                                    <form class="form-inline" method="POST" action="buildd" id="buildbox_form" name="buildbox_form">
-                                        <legend>
-                                            Add a Buildbox
-                                        </legend>
- <span class="help-block">To add a BuildBoxes to the database, add its hostname, using the form below.</span>
+                                    <form class="form-inline" method="POST" action="arch"  id="arch_form" name="arch_form">
+ <span class="help-block">Enter the name of a package architecture, to add it to the database. Examples of such architectures include 'i386'. <br/> One example of when you would need to add something to this list, is if a new platform becomes supported.</span>
                                         <label for="name">Name</label>
                                         <input name="name" type="text" />
                                         <button type="submit" class="btn  btn-primary">
@@ -135,20 +132,15 @@
                                             Cancel
                                         </button>
                                     </form>
+                                    <table id="tbl_arches"  class="table table-bordered table-condensed">
+                                        <tr>
+                                            <th colspan='2'>Architectures</th>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <a id="buildds"></a>
- <span class="help-block">Known BuildBoxes are listed below. To add a new machine to the database, add its hostname, using the form above. <br/> The status of the machine is shown next to it's name, as are any available operations.</span>
-                    <table id="tbl_buildds"  class="table table-bordered table-condensed">
-                        <tr>
-                            <th colspan='3'>Buildboxes</th>
-                        </tr>
-                        <tr>
-                            <th>Name</th><th>Status</th><th>Operations</th>
-                        </tr>
-                    </table>
                     <hr>
                     <footer>
                         <p>
@@ -158,20 +150,38 @@
                 </div>
                 <!--/.fluid-container-->
                 <script>
-                    function delete_click ( id )
+                    function getUrlVars ( )
                     {
+                        var vars =
+                        {
+                        };
+                        var parts = window.location.href.replace ( /[?&]+([^=&]+)=([^&]*)/gi , function ( m , key , value )
+                        {
+                            vars [ key ] = value;
+                        } );
+                        return vars;
+                    }
+
+                    function delete_click ( id , target )
+                    {
+                        switch (target)
+                        {
+                            case 1:
+                                target = "arch"
+                                break;
+                        }
                         $.ajax (
                         {
                             type : "GET" ,
-                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/" + id + "/delete" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/" + target + "/" + id + "/delete" ,
                             error : function ( data )
                             {
-                                alert ( 'Error deleting buildd with id: ' + id + "\n" + data.responseText );
+                                alert ( 'Error deleting ' + target + ' with id: ' + id + "\n" + data.responseText );
                                 location.reload ( );
                             } ,
                             success : function ( data )
                             {
-                                alert ( 'OK deleting buildd with id: ' + id );
+                                alert ( 'OK deleting ' + target + ' with id: ' + id );
                                 location.reload ( );
                             }
 
@@ -179,34 +189,31 @@
                     }
                     $ ( ).ready ( function ( )
                     {
-                        $ ( '#buildbox_form' ).ajaxForm ( function ( )
+                        var arch_page = 1;
+
+                        $ ( '#arch_form' ).ajaxForm ( function ( )
                         {
-                            alert ( "Added buildd OK!" );
+                            alert ( "Arch Added!" );
                             location.reload ( );
                         } );
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd"
+                        if ( getUrlVars() [ "arch_page" ] )
+                        {
+                            arch_page = getUrlVars() [ "arch_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/" + arch_page
+                        }
+                        else
+                        {
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/1"
+                        }
+                        new_arch_page = parseInt ( arch_page ) + 1;
+                        last_arch_page = parseInt ( arch_page ) - 1;
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                var shortname = field.name.replace ( "build_client_" , "" );
-                                // TODO: HACKS
-                                status_url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/" + field.name + "/status"
-                                $.get ( status_url , function ( status )
-                                {
-                                    if ( status == "Not Active" )
-                                    {
-                                        _class = "error";
-                                        $ ( "#tbl_buildds" ).append ( "<tr class='" + _class + "'><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/" + field.id + "'>" + field.name + "</a></td><td>" + status + "</td><td><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ")'></input></td></tr>" );
-                                    }
-                                    else
-                                    if ( status == "Active" )
-                                    {
-                                        _class = "success";
-                                        $ ( "#tbl_buildds" ).append ( "<tr class='" + _class + "'><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/" + field.id + "'>" + field.name + "</a></td><td>" + status + "</td><td><a  href='" + "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>View Logs</a></td></tr>" );
-                                    }
-                                } );
+                                $ ( "#tbl_arches" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
                             } );
+                            $ ( '#tbl_arches' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/lookups.htm?arch_page=" + last_arch_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/lookups.htm?arch_page=" + new_arch_page + "'>Next</a></li></ul></div>" );
                         } );
                     } );
                 </script>

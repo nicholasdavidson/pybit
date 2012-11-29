@@ -98,6 +98,46 @@ def get_app(settings, db, controller):
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
+    # static HTML page listing arches
+    @app.route('/arches.htm', method='GET')
+    def serve_static_arches():
+            return template(getStaticResource("/arches.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl'])
+
+    # static HTML page listing dists
+    @app.route('/dists.htm', method='GET')
+    def serve_static_dists():
+            return template(getStaticResource("/dists.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl'])
+
+    # static HTML page listing formats
+    @app.route('/formats.htm', method='GET')
+    def serve_static_formats():
+            return template(getStaticResource("/formats.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl'])
+
+    # static HTML page listing statuses
+    @app.route('/statuses.htm', method='GET')
+    def serve_static_statuses():
+            return template(getStaticResource("/statuses.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl'])
+
+    # static HTML page listing suites
+    @app.route('/suites.htm', method='GET')
+    def serve_static_suites():
+            return template(getStaticResource("/suites.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl'])
+
     # static HTML page listing buildboxes
     @app.route('/buildd.htm', method='GET')
     def serve_static_buildboxes():
