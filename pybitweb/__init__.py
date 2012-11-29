@@ -89,6 +89,15 @@ def get_app(settings, db, controller):
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
+    # static HTML index page
+    @app.route('/dashboard.htm', method='GET')
+    def serve_static_idex():
+            return template(getStaticResource("/dashboard.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl']
+)
+
     # static HTML page listing buildboxes
     @app.route('/buildd.htm', method='GET')
     def serve_static_buildboxes():
