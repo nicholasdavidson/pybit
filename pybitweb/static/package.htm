@@ -163,6 +163,18 @@
                 </div>
                 <!--/.fluid-container-->
                 <script>
+                    function getUrlVars ( )
+                    {
+                        var vars =
+                        {
+                        };
+                        var parts = window.location.href.replace ( /[?&]+([^=&]+)=([^&]*)/gi , function ( m , key , value )
+                        {
+                            vars [ key ] = value;
+                        } );
+                        return vars;
+                    }
+
                     function cancel_click ( id )
                     {
                         $.ajax (
@@ -184,13 +196,26 @@
                     }
                     $ ( ).ready ( function ( )
                     {
+                        var package_page = 1;
+
                         $ ( '#package_form' ).ajaxForm ( function ( )
                         {
                             alert ( "Package Added!" );
                             location.reload ( );
                         } );
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package"
-                        $.getJSON ( url , function ( json )
+
+if ( getUrlVars() [ "package_page" ] )
+                        {
+                            package_page = getUrlVars() [ "package_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/page/" + package_page
+                        }
+                        else
+                        {
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/page/1"
+                        }
+                        new_package_page = parseInt ( package_page ) + 1;
+                        last_package_page = parseInt ( package_page ) - 1;
+ 						$.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
@@ -209,6 +234,7 @@
                                     }
                                 } );
                             } );
+                            $ ( '#tbl_packages' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package.htm?package_page=" + last_package_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package.htm?package_page=" + new_package_page + "'>Next</a></li></ul></div>" );
                         } );
                     } );
                 </script>

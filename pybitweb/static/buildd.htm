@@ -160,6 +160,18 @@
                 </div>
                 <!--/.fluid-container-->
                 <script>
+                    function getUrlVars ( )
+                    {
+                        var vars =
+                        {
+                        };
+                        var parts = window.location.href.replace ( /[?&]+([^=&]+)=([^&]*)/gi , function ( m , key , value )
+                        {
+                            vars [ key ] = value;
+                        } );
+                        return vars;
+                    }
+
                     function delete_click ( id )
                     {
                         $.ajax (
@@ -181,13 +193,26 @@
                     }
                     $ ( ).ready ( function ( )
                     {
+                        var buildd_page = 1;
+
                         $ ( '#buildbox_form' ).ajaxForm ( function ( )
                         {
                             alert ( "Added buildd OK!" );
                             location.reload ( );
                         } );
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd"
-                        $.getJSON ( url , function ( json )
+
+if ( getUrlVars() [ "buildd_page" ] )
+                        {
+                            buildd_page = getUrlVars() [ "buildd_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/page/" + buildd_page
+                        }
+                        else
+                        {
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/page/1"
+                        }
+                        new_buildd_page = parseInt ( buildd_page ) + 1;
+                        last_buildd_page = parseInt ( buildd_page ) - 1;
+						$.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
@@ -209,6 +234,7 @@
                                     }
                                 } );
                             } );
+                            $ ( '#tbl_buildds' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd.htm?buildd_page=" + last_buildd_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd.htm?buildd_page=" + new_buildd_page + "'>Next</a></li></ul></div>" );
                         } );
                     } );
                 </script>
