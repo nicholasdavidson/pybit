@@ -29,7 +29,9 @@ from common import requires_auth
 from controller import Controller
 
 def get_buildd_app(settings, db, controller):
-	app = Bottle(config= {'settings' : settings, 'db' : db, 'controller': controller})
+	app = Bottle()
+	app.config= {'settings' : settings, 'db' : db, 'controller': controller}
+
 	@app.route('/', method='GET')
 	@app.route('/page/<page:int>', method='GET')
 	def get_buildd(page = None):

@@ -29,7 +29,9 @@ import common
 from common import requires_auth
 
 def get_arch_app(settings, db):
-	app = Bottle(config={'settings':settings, 'db':db})
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
 	@app.route('/', method='GET')
 	@app.route('/page/<page:int>', method='GET')
 	def get_arch(page = None):
@@ -89,7 +91,9 @@ def get_arch_app(settings, db):
 	return app
 
 def get_suitearch_app(settings, db):
-	app = Bottle(config={'settings':settings, 'db':db})
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
 	@app.route('/', method='GET')
 	def get_suitearch():
 		try:
@@ -153,7 +157,9 @@ def get_suitearch_app(settings, db):
 	return app
 
 def get_status_app(settings, db):
-	app = Bottle(config={'settings':settings, 'db':db})
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
 	@app.route('/', method='GET')
 	@app.route('/page/<page:int>', method='GET')
 	def get_statuses(page = None):
@@ -220,7 +226,9 @@ def get_status_app(settings, db):
 	return app
 
 def get_dist_app(settings, db):
-	app = Bottle(config={'settings':settings, 'db':db})
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
 	@app.route('/', method='GET')
 	@app.route('/page/<page:int>', method='GET')
 	def get_dists(page = None):
@@ -287,7 +295,9 @@ def get_dist_app(settings, db):
 	return app
 
 def get_format_app(settings, db):
-	app = Bottle(config={'settings':settings, 'db':db})
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
 	@app.route('/', method='GET')
 	@app.route('/page/<page:int>', method='GET')
 	def get_formats(page = None):
@@ -353,7 +363,9 @@ def get_format_app(settings, db):
 			return None
 	return app
 def get_suite_app(settings, db):
-	app = Bottle(config={'settings':settings, 'db':db})
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
 	@app.route('/', method='GET')
 	@app.route('/page/<page:int>', method='GET')
 	def get_suites(page = None):

@@ -29,7 +29,9 @@ import common
 from common import requires_auth
 
 def get_packages_app(settings, db, controller):
-	app = Bottle(config={'settings':settings,'db':db, 'controller' : controller})
+	app = Bottle()
+	app.config={'settings':settings,'db':db, 'controller' : controller}
+
 	@app.route('/', method='GET')
 	@app.route('/page/<page:int>', method='GET')
 	def get_all_packages(page = None):

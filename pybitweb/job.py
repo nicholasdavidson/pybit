@@ -33,7 +33,9 @@ from pybit.models import Transport,JobHistory
 
 #NEW: proxy to class method controller.add
 def get_job_app(settings, db, controller) :
-	app = Bottle(config={'settings':settings, 'db':db, 'controller': controller})
+	app = Bottle()
+	app.config={'settings':settings, 'db':db, 'controller': controller}
+
 	@app.route('/vcshook', method='POST')
 	@app.route('/vcshook', method='PUT')
 	@requires_auth

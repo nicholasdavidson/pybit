@@ -8,7 +8,8 @@ import packageinstance
 import os
 
 def get_app(settings, db, controller):
-    app = Bottle(config={'settings' : settings, 'db' : db, 'controller' : controller})
+    app = Bottle()
+    app.config={'settings' : settings, 'db' : db, 'controller' : controller}
 
     local_path = "pybitweb/static"
     installed_path = settings['web']['installed_path']

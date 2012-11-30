@@ -29,7 +29,9 @@ import common
 from common import requires_auth
 
 def get_packageinstance_app(settings, db):
-	app = Bottle(config = { 'settings': settings, 'db': db})
+	app = Bottle()
+	app.config = { 'settings': settings, 'db': db}
+
 	@app.route('/<packageinstance_id:int>/togglemaster/<master:int>', method='GET')
 	def update_packageinstance_masterflag(packageinstance_id,master):
 		try:
