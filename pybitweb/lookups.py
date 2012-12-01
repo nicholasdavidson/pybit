@@ -37,9 +37,9 @@ def get_arch_app(settings, db):
 	def get_arch(page = None):
 		#return list of arches
 		if page:
-			arches = app.config.db.get_arches(page)
+			arches = app.config['db'].get_arches(page)
 		else:
-			arches = app.config.db.get_arches()
+			arches = app.config['db'].get_arches()
 		encoded = jsonpickle.encode(arches)
 		response.content_type = "application/json"
 		return encoded
