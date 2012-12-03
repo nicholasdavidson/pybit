@@ -25,6 +25,7 @@ import psycopg2
 import psycopg2.extras
 import jsonpickle
 import cgi
+import math
 
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage
 from common import checkValue
@@ -45,6 +46,10 @@ def remove_nasties(nastystring):
 class Database(object):
 
 	conn = None
+
+	# CONSTANTs
+	limit_low = 5.0
+	limit_high = 10.0;
 
 	#<<<<<<<< General database functions >>>>>>>>
 
@@ -99,13 +104,29 @@ class Database(object):
 	#<<<<<<<< Lookup table queries >>>>>>>>
 	# Do we care about update or delete?
 
+	def count_arches(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM arch AS num_arches")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+			pages = res[0][0] / self.limit_low;
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving arches count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def get_arches(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				limit = 5 # CONSTANT
-				offset = (page -1) * limit;
-				cur.execute("SELECT id,name FROM arch ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+
+				offset = (page -1) * self.limit_low;
+				cur.execute("SELECT id,name FROM arch ORDER BY name LIMIT %s OFFSET %s", (self.limit_low,offset,))
 			else:
 				cur.execute("SELECT id,name FROM arch ORDER BY name")
 			res = cur.fetchall()
@@ -185,6 +206,22 @@ class Database(object):
 			raise Exception("Error deleting arch with id:" + str(arch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	def count_suitearches(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM suitearch AS num_suitearches")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+			pages = res[0][0] / self.limit_low;
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving suitearches count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def get_suitearches(self):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -248,13 +285,29 @@ class Database(object):
 			raise Exception("Error deleting suitearch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	def count_dists(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM distribution AS num_dists")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+			pages = res[0][0] / self.limit_low;
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving distributions count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def get_dists(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				limit = 5 # CONSTANT
-				offset = (page -1) * limit;
-				cur.execute("SELECT id,name FROM distribution ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+
+				offset = (page -1) * self.limit_low;
+				cur.execute("SELECT id,name FROM distribution ORDER BY name LIMIT %s OFFSET %s", (self.limit_low,offset,))
 			else:
 				cur.execute("SELECT id,name FROM distribution ORDER BY name")
 			res = cur.fetchall()
@@ -334,13 +387,30 @@ class Database(object):
 			raise Exception("Error deleting dist with id:" + str(dist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	def count_formats(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM format AS num_formats")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+			pages = res[0][0] / self.limit_low;
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving formats count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+
 	def get_formats(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				limit = 5 # CONSTANT
-				offset = (page -1) * limit;
-				cur.execute("SELECT id,name FROM format ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+
+				offset = (page -1) * self.limit_low;
+				cur.execute("SELECT id,name FROM format ORDER BY name LIMIT %s OFFSET %s", (self.limit_low,offset,))
 			else:
 				cur.execute("SELECT id,name FROM format ORDER BY name")
 			res = cur.fetchall()
@@ -418,13 +488,29 @@ class Database(object):
 			raise Exception("Error deleting format with id:" + str(format_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	def count_statuses(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM status AS num_statuses")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+			pages = res[0][0] / self.limit_low;
+
+			return math.ceil(pages); # ALWAYS round up.
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving statuses count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def get_statuses(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				limit = 5 # CONSTANT
-				offset = (page -1) * limit;
-				cur.execute("SELECT id,name FROM status ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+
+				offset = (page -1) * self.limit_low;
+				cur.execute("SELECT id,name FROM status ORDER BY name LIMIT %s OFFSET %s", (self.limit_low,offset,))
 			else:
 				cur.execute("SELECT id,name FROM status ORDER BY name")
 			res = cur.fetchall()
@@ -486,13 +572,29 @@ class Database(object):
 			raise Exception("Error deleting status with id:" + str(status_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	def count_suites(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM suite AS num_suites")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+			pages = res[0][0] / self.limit_low;
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving suites count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def get_suites(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				limit = 5 # CONSTANT
-				offset = (page -1) * limit;
-				cur.execute("SELECT id,name FROM suite ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+
+				offset = (page -1) * self.limit_low;
+				cur.execute("SELECT id,name FROM suite ORDER BY name LIMIT %s OFFSET %s", (self.limit_low,offset,))
 			else:
 				cur.execute("SELECT id,name FROM suite ORDER BY name")
 			res = cur.fetchall()
@@ -574,13 +676,29 @@ class Database(object):
 
 	#<<<<<<<< BuildD related database functions >>>>>>>>
 
+	def count_buildclients(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM buildclients AS num_buildclients")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+			pages = res[0][0] / self.limit_high;
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving buildclients count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def get_buildclients(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				limit = 10 # CONSTANT
-				offset = (page -1) * limit;
-				cur.execute("SELECT id,name FROM buildclients ORDER BY name LIMIT %s OFFSET %s", (limit,offset,))
+				 # CONSTANT
+				offset = (page -1) * self.limit_high;
+				cur.execute("SELECT id,name FROM buildclients ORDER BY name LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:
 				cur.execute("SELECT id,name FROM buildclients ORDER BY name")
 			res = cur.fetchall()
@@ -687,9 +805,9 @@ class Database(object):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				limit = 10 # CONSTANT
-				offset = (page -1) * limit;
-				cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job ORDER BY id LIMIT %s OFFSET %s", (limit,offset,))
+				 # CONSTANT
+				offset = (page -1) * self.limit_high;
+				cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job ORDER BY id LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:
 				cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job ORDER BY id")
 			res = cur.fetchall()
@@ -826,13 +944,30 @@ class Database(object):
 
 	#<<<<<<<< Package related database functions >>>>>>>>
 	# UPDATE queries?
+
+	def count_packages(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM package AS num_packages")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+			pages = res[0][0] / self.limit_high;
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving packages count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def get_packages(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				limit = 10 # CONSTANT
-				offset = (page -1) * limit;
-				cur.execute("SELECT id,version,name FROM package ORDER BY name,id LIMIT %s OFFSET %s", (limit,offset,))
+				 # CONSTANT
+				offset = (page -1) * self.limit_high;
+				cur.execute("SELECT id,version,name FROM package ORDER BY name,id LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:
 				cur.execute("SELECT id,version,name FROM package ORDER BY name,id")
 			res = cur.fetchall()
@@ -968,13 +1103,29 @@ class Database(object):
 			raise Exception("Error retrieving package instance with:" + str(packageinstance_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	def count_packageinstances(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM packageinstance AS num_packageinstances")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+			pages = res[0][0] / self.limit_high;
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving packageinstances count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def get_packageinstances(self,page=None):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				limit = 10 # CONSTANT
-				offset = (page -1) * limit;
-				cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id LIMIT %s OFFSET %s", (limit,offset,))
+				 # CONSTANT
+				offset = (page -1) * self.limit_high;
+				cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:
 				cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id")
 			res = cur.fetchall()

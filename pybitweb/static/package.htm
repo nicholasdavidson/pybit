@@ -234,7 +234,12 @@ if ( getUrlVars() [ "package_page" ] )
                                     }
                                 } );
                             } );
-                            $ ( '#tbl_packages' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package.htm?package_page=" + last_package_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package.htm?package_page=" + new_package_page + "'>Next</a></li></ul></div>" );
+
+                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/count"
+                            $.getJSON ( url2 , function ( json2 )
+							{
+                            $ ( '#tbl_packages' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package.htm?package_page=" + last_package_page + "'>Prev</a></li><li><a>" + package_page + "/" + json2 + "</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package.htm?package_page=" + new_package_page + "'>Next</a></li></ul></div>" );
+							});
                         } );
                     } );
                 </script>

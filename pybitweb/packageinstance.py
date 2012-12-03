@@ -41,6 +41,7 @@ def get_packageinstance_app(settings, db):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
+
 	@app.route('/', method='GET')
 	@app.route('/page/<page:int>', method='GET')
 	def get_all_packageinstances(page = None):
@@ -57,6 +58,14 @@ def get_packageinstance_app(settings, db):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 	
+	@app.route('/count', method='GET')
+	def get_count():
+		#return count of packageinstances
+		count = app.config['db'].count_packageinstances()
+		encoded = jsonpickle.encode(count)
+		response.content_type = "application/json"
+		return encoded
+
 	@app.route('/<packageinstance_id:int>', method='GET')
 	def get_packageinstance_id(packageinstance_id):
 		try:

@@ -48,6 +48,15 @@ def get_buildd_app(settings, db, controller):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 	
+
+	@app.route('/count', method='GET')
+	def get_count():
+		#return count of buildds
+		count = app.config['db'].count_buildclients()
+		encoded = jsonpickle.encode(count)
+		response.content_type = "application/json"
+		return encoded
+
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
 	@requires_auth

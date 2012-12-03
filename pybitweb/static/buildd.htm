@@ -234,8 +234,13 @@ if ( getUrlVars() [ "buildd_page" ] )
                                     }
                                 } );
                             } );
-                            $ ( '#tbl_buildds' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd.htm?buildd_page=" + last_buildd_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd.htm?buildd_page=" + new_buildd_page + "'>Next</a></li></ul></div>" );
-                        } );
+
+                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/count"
+                            $.getJSON ( url2 , function ( json2 )
+							{
+                            $ ( '#tbl_buildds' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd.htm?buildd_page=" + last_buildd_page + "'>Prev</a></li><li><a>" + buildd_page + "/" + json2 + "</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd.htm?buildd_page=" + new_buildd_page + "'>Next</a></li></ul></div>" );
+							});
+                       } );
                     } );
                 </script>
             </div>
