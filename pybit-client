@@ -63,7 +63,7 @@ except Exception as e:
 def run(settings) :
 	conn_info = AMQPConnection(pybit.get_client_queue(settings['clientid']),
 				settings['host'], settings['userid'], settings['password'], settings['vhost'])
-	with PyBITClient(settings['host_arch'], settings['distribution'], settings['pkg_format'], settings['suite'], conn_info, settings) as build_client:
+	with PyBITClient(settings['host_arch'], settings['distribution'], settings['pkg_format'], settings['suites'], conn_info, settings) as build_client:
 		while True:
 			if build_client is not None:
 				build_client.wait()
@@ -90,8 +90,8 @@ if __name__ == '__main__':
 	groupConfigFile.add_option("--pkg_format", dest="pkg_format",
 		help="Package type to use, defaults to deb", metavar= META +"FORMAT")
 
-	groupConfigFile.add_option("--suite", dest="suite",
-		help="Suite to use, defaults to unstable", metavar= META +"SUITE")
+	groupConfigFile.add_option("--suite", dest="suites", action="append",
+		help="Suite to use, defaults to unstable. Can be passed multiple times.", metavar= META +"SUITES")
 
 	groupConfigFile.add_option("--host", dest="host",
 		help="host to connect to, defaults to localhost.",
