@@ -216,7 +216,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_formats" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>" );
+                                $ ( "#tbl_formats" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>" );
                             } );
                             $ ( '#tbl_formats' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/formats.htm?format_page=" + last_format_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/formats.htm?format_page=" + new_format_page + "'>Next</a></li></ul></div>" );
                         } );

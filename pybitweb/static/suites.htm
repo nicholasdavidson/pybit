@@ -215,7 +215,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_suites" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
+                                $ ( "#tbl_suites" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
                             } );
                             $ ( '#tbl_suites' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suites.htm?suite_page=" + last_suite_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suites.htm?suite_page=" + new_suite_page + "'>Next</a></li></ul></div>" );
                         } );
