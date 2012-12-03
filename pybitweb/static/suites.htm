@@ -120,7 +120,7 @@
                     <div class="accordion" id="accordion1">
                         <div class="accordion-group">
                             <div class="accordion-heading">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseFive"> Software Suites </a>
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Software Suites </a>
                             </div>
                             <div id="collapseOne" class="accordion-body collapse in">
                                 <div class="accordion-inner">
@@ -217,8 +217,12 @@
                             {
                                 $ ( "#tbl_suites" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
                             } );
-                            $ ( '#tbl_suites' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suites.htm?suite_page=" + last_suite_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suites.htm?suite_page=" + new_suite_page + "'>Next</a></li></ul></div>" );
-                        } );
+                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite/count"
+                            $.getJSON ( url2 , function ( json2 )
+							{
+                            $ ( '#tbl_suites' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suites.htm?suite_page=" + last_suite_page + "'>Prev</a></li><li><a>" + suite_page + "/" + json2 + "</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suites.htm?suite_page=" + new_suite_page + "'>Next</a></li></ul></div>" );
+							});                        
+						} );
                     } );
                 </script>
             </div>

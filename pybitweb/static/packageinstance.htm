@@ -287,7 +287,12 @@ if ( getUrlVars() [ "packageinstance_page" ] )
                             {
                                 $ ( "#tbl_packageinstances" ).append ( "<tr><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/details/" + field.package.name + "'>" + field.package.name + " " + field.package.version + "</a></td><td>" + field.arch.name + "</td><td>" + field.distribution.name + "</td><td>" + field.format.name + "</td><td>" + field.suite.name + "</td><td>" + field.master + "</td><td><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ")'></input></td></tr>" );
                             } );
-                            $ ( '#tbl_packageinstances' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance.htm?packageinstance_page=" + last_packageinstance_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance.htm?packageinstance_page=" + new_packageinstance_page + "'>Next</a></li></ul></div>" );
+
+                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/count"
+                            $.getJSON ( url2 , function ( json2 )
+							{
+                            $ ( '#tbl_packageinstances' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance.htm?packageinstance_page=" + last_packageinstance_page + "'>Prev</a></li><li><a>" + packageinstance_page + "/" + json2 + "</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance.htm?packageinstance_page=" + new_packageinstance_page + "'>Next</a></li></ul></div>" );
+							});
                         } );
                     } );
                 </script>

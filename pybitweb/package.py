@@ -48,6 +48,14 @@ def get_packages_app(settings, db, controller):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 
+	@app.route('/count', method='GET')
+	def get_count():
+		#return count of packages
+		count = app.config['db'].count_packages()
+		encoded = jsonpickle.encode(count)
+		response.content_type = "application/json"
+		return encoded
+
 	@app.route('/names', method='GET')
 	def list_packagenames():
 		try:

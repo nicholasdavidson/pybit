@@ -120,7 +120,7 @@
                     <div class="accordion" id="accordion1">
                         <div class="accordion-group">
                             <div class="accordion-heading">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree"> Software Distributions </a>
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Software Distributions </a>
                             </div>
                             <div id="collapseOne" class="accordion-body collapse in">
                                 <div class="accordion-inner">
@@ -216,8 +216,12 @@
                             {
                                 $ ( "#tbl_dists" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
                             } );
-                            $ ( '#tbl_dists' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dists.htm?dist_page=" + last_dist_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dists.htm?dist_page=" + new_dist_page + "'>Next</a></li></ul></div>" );
-                        } );
+var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/count"
+                            $.getJSON ( url2 , function ( json2 )
+							{
+                            $ ( '#tbl_dists' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dists.htm?dist_page=" + last_dist_page + "'>Prev</a></li><li><a>" + dist_page + "/" + json2 + "</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dists.htm?dist_page=" + new_dist_page + "'>Next</a></li></ul></div>" );
+							});                        
+						} );
                     } );
                 </script>
             </div>
