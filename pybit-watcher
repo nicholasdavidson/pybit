@@ -60,9 +60,12 @@ class EventHandler(pyinotify.ProcessEvent):
 	
 	def process_IN_CREATE(self, event):
 		if os.path.isfile(event.pathname) and event.pathname.endswith(".changes"):
-			logging.debug("Sleeping for %ss",self.sleeptime)
+			logging.debug("Sleeping for %ss" % self.sleeptime)
 			time.sleep(self.sleeptime)
 			cmd_args = ["reprepro", "-b", self.settings['repobase'], "processincoming", self.settings['rule']]
+			if ('user' in self.settings and
+				self.settings['user'] != ''):
+				cmd_args = ["su",self.settings["user"], "-c", "\"%s\"" %  " ".join(cmd_args)] 
 			logging.debug(" ".join(cmd_args))
 			if ('dryrun' not in self.settings or
 				self.settings['dryrun'] == False):
@@ -112,6 +115,10 @@ if __name__ == '__main__':
 	
 	groupConfigFile.add_option("--dry-run", dest="dryrun", action="store_true",
 		help="Controls if we simulate or do we actually run.", metavar=META + "DRYRUN")
+	
+	groupConfigFile.add_option("--user", dest="user",
+		help="Which user do we run as?", metavar=META + "USER")
+	
 	groupConfigFile.add_option("--sleeptime", dest="sleeptime",
 		help="The number of seconds we wait after a changes file is created before we run the reprepro command.",
 		metavar=META + "SLEEPTIME")
