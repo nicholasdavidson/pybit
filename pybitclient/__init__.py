@@ -109,7 +109,6 @@ contacted or None if the job doesn't exist
 			msg = None
 			if self.message_chan is not None:
 				for suite in self.listen_list:
-					info = self.listen_list[suite]
 					msg = self.message_chan.basic_get(queue=self.listen_list[suite]['queue'])
 					if msg:
 						break
