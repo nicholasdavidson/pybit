@@ -108,7 +108,11 @@ contacted or None if the job doesn't exist
 		if self.state == "IDLE" :
 			msg = None
 			if self.message_chan is not None:
-				msg = self.message_chan.basic_get()
+				for suite in self.listen_list:
+					info = self.listen_list[suite]
+					msg = self.message_chan.basic_get(queue=self.listen_list[suite]['queue'])
+					if msg:
+						break
 			if msg is not None :
 				self.message_handler(msg)
 		cmd = None
