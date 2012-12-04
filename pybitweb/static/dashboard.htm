@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
+        <META HTTP-EQUIV="Expires" CONTENT="-1">
+        <meta http-equiv='refresh' content='30';URL='job.htm'>
+        <meta charset="utf-8">
+        <title>pyBit - Jobs </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="favicon.png" />
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <style>
+            body
+            {
+				line-height:100%;
+				font-size:xx-large;
+            }
+
+
+			table
+			{
+				line-height:100%;
+				font-size:xx-large;
+
+			}
+
+			table.table
+			{
+				line-height:100%;
+				font-size:xx-large;
+
+			}
+
+			thead
+			{
+				line-height:100%;
+				font-size:xx-large;
+			}
+
+			th
+			{
+				line-height:100%;
+				font-size:xx-large;
+			}
+
+			td
+			{
+				line-height:100%;
+				font-size:xx-large;
+
+			}
+
+			tbody
+			{
+				line-height:100%;
+				font-size:xx-large;
+			}
+
+			tr
+			{
+				line-height:100%;
+				font-size:xx-large;
+
+			}
+
+			.table th
+			{
+				line-height:100%;
+				font-size:xx-large;
+
+			}
+
+			.table td
+			{
+				line-height:100%;
+				font-size:xx-large;
+
+			}
+
+			.table tr
+			{
+				line-height:100%;
+				font-size:xx-large;
+
+			}
+
+        </style>
+        <script src="{{protocol}}{{jqueryurl}}"></script>
+<script src="{{protocol}}{{jqueryformurl}}"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="span14">
+                <!--Body content-->
+                <div class="container-fluid">
+                    <table id="tbl_jobs"  class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th colspan='7'>Unfinished Jobs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>ID</th><th>Package</th><th>Version</th><th>Arch</th><th>Suite</th><th>Buildclient</th><th>Status</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--/.fluid-container-->
+                <script>
+
+                    function get_status_class ( status )
+                    {
+                        if ( status == "Building" )
+                        {
+                            return "success";
+                        }
+                        else
+                        if ( status == "Blocked" )
+                        {
+                            return "warning";
+                        }
+                        else
+                        if ( status == "Waiting" )
+                        {
+                            return "info";
+                        }
+                        else
+                        if ( status == "Failed" )
+                        {
+                            return "warning";
+                        }
+                        else
+                        {
+                            return "warning";
+                        }
+                    }
+
+                    function delete_click ( id )
+                    {
+                        $.ajax (
+                        {
+                            type : "GET" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/" + id + "/delete" ,
+                            error : function ( data )
+                            {
+                                alert ( 'Error deleting job with id: ' + id + "\n" + data.responseText );
+                                location.reload ( );
+                            } ,
+                            success : function ( data )
+                            {
+                                alert ( 'OK deleting job with id: ' + id );
+                                location.reload ( );
+                            }
+
+                        } );
+                    }
+
+                    function renderTable  ()
+                    {
+                        var jobstatuses = new Object ( )
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/status"
+                        $.getJSON ( url , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                var url2 = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/" + field.id + "/status";
+                                var shortname = "";
+                                $.getJSON ( url2 , function ( json2 )
+                                {
+                                    var statuses = new Array ( )
+                                    $.each ( json2 , function ( i , field2 )
+                                    {
+                                        statuses.push ( field2.status );
+                                    } );
+                                    jobstatuses [ field.id ] = statuses [ statuses.length - 1 ];
+                                    if ( field.buildclient )
+                                    {
+                                        bid = field.buildclient.id;
+                                        bname = field.buildclient.name;
+                                        _class = get_status_class ( jobstatuses [ field.id ] );
+                                        shortname = bname.replace ( "build_client_" , "" );
+                                        // TODO: HACKS
+                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/" + field.id + "'>" + field.id + "</a></td><td>" + field.packageinstance.package.name + 
+"</td><td>" + field.packageinstance.package.version + "</td><td>" + field.packageinstance.arch.name + "</td><td>" + field.packageinstance.distribution.name + "/" +  field.packageinstance.suite.name + "</td>" + "<td><a href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>" + bname + "</a></td><td>" + jobstatuses [ field.id ] + "<br> Master Flag: " + field.packageinstance.master + "</td></tr>" );
+                                    }
+                                    else
+                                    {
+                                        _class = get_status_class ( "" );
+                                        bid = "";
+                                        bname = "Unassigned";
+                                        shortname = bname.replace ( "build_client_" , "" );
+                                        // TODO: HACKS
+                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/" + field.id + "'>" + field.id + "</a></td><td>" + field.packageinstance.package.name + 
+"</td><td>" + field.packageinstance.package.version + "</td><td>" + field.packageinstance.arch.name + "</td><td>" + field.packageinstance.distribution.name + "/" +  field.packageinstance.suite.name + "</td><td>" + bname + "</td><td>" + jobstatuses [ field.id ] + "<br> Master Flag: " + field.packageinstance.master + "</td></tr>" );
+                                    }
+                                } );
+                            } );
+                        } );
+                    }
+
+
+                    $ ( ).ready ( function ( )
+                    {
+							renderTable ();
+					});
+                </script>
+            </div>
+        </div>
+    </body>
+</html>

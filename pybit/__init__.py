@@ -37,7 +37,7 @@ def merge_options(settings, options_group, options):
 
 	for option in options_group.option_list :
 		value = getattr(options, option.dest)
-		if value is not None:
+		if value is not None and value is not "":
 			settings[option.dest] = value
 			if verbose == True:
 				print "Setting %s to %s" % (option.dest, value)

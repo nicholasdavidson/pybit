@@ -14,5 +14,5 @@ from pybitweb.controller import Controller
 
 (settings, opened_path) = pybit.load_settings("web/web.conf")
 myDb = Database(settings['db']) # singleton instance
-buildController = Controller(settings['controller'], myDb) # singleton instance
+buildController = Controller(settings, myDb) # singleton instance
 application = pybitweb.get_app(settings,myDb,buildController)

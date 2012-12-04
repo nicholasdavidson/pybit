@@ -33,7 +33,9 @@ from pybit.models import Transport,JobHistory
 
 #NEW: proxy to class method controller.add
 def get_job_app(settings, db, controller) :
-	app = Bottle(config={'settings':settings, 'db':db, 'controller': controller})
+	app = Bottle()
+	app.config={'settings':settings, 'db':db, 'controller': controller}
+
 	@app.route('/vcshook', method='POST')
 	@app.route('/vcshook', method='PUT')
 	@requires_auth
@@ -50,7 +52,7 @@ def get_job_app(settings, db, controller) :
 				suite = request.forms.get('suite')
 				pkg_format = request.forms.get('format')
 
-				if not uri and not method and not dist and not vcs_id and not architectures and not version and not package_name and not suite and not pkg_format :
+				if not uri and not method and not dist and not architectures and not version and not package_name and not suite and not pkg_format :
 					response.status = "400 - Required fields missing."
 					return None
 				else :
@@ -63,11 +65,15 @@ def get_job_app(settings, db, controller) :
 			return None
 
 	@app.route('/', method='GET')
-	def get_jobs():
+	@app.route('/page/<page:int>', method='GET')
+	def get_jobs(page = None):
 		try:
 			response.content_type = "application/json"
 			#return list of ALL jobs
-			return jsonpickle.encode(app.config['db'].get_jobs())
+			if page:
+				return jsonpickle.encode(app.config['db'].get_jobs(page))
+			else:
+				return jsonpickle.encode(app.config['db'].get_jobs())
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None

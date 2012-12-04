@@ -4,7 +4,7 @@
         <META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
         <META HTTP-EQUIV="Expires" CONTENT="-1">
         <meta charset="utf-8">
-        <title>pyBit - Packages</title>
+        <title>pyBit - Lookups</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">
@@ -37,10 +37,10 @@
                                     <li>
                                         <a href="index.htm">Home</a>
                                     </li>
-                                    <li>
+                                    <li class="active">
                                         <a href="lookups.htm">Lookups</a>
                                     </li>
-                                    <li class="active">
+                                    <li>
                                         <a href="package.htm">Packages</a>
                                     </li>
                                     <li>
@@ -72,7 +72,7 @@
                         <li class="nav-header">
                             Lookups
                         </li>
-                        <li>
+                        <li class="active">
                             <a href="arches.htm">Architectures</a>
                         </li>
                         <li>
@@ -87,13 +87,13 @@
                         <li>
                             <a href="suites.htm">Suites</a>
                         </li>
-                                                 <li>
+                         <li>
                             <a href="suitearch.htm">Suite Arches</a>
                         </li>
                         <li class="nav-header">
                             Packages
                         </li>
-                        <li class="active">
+                        <li>
                             <a href="package.htm">All Packages</a>
                         </li>
                         <li>
@@ -116,24 +116,18 @@
                 <!--Body content-->
                 <div class="container-fluid">
                     <h1>PyBit - python Buildd Integration Toolkit.</h1>
-                    <h3>Packages</h3>
+                    <h3> Add Package Architectures</h3>
                     <div class="accordion" id="accordion1">
                         <div class="accordion-group">
                             <div class="accordion-heading">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Click here to show the submit package form. </a>
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Package Architectures </a>
                             </div>
-                            <div id="collapseOne" class="accordion-body collapse">
+                            <div id="collapseOne" class="accordion-body collapse in">
                                 <div class="accordion-inner">
-                                    <form class="form" method="POST" action="package" id="package_form" name="package_form">
-                                        <legend>
-                                            Add a Package
-                                        </legend>
- <span class="help-block">Enter the name, and version of a package, to add it to the database. <br/> This generally happens automatically thanks to the SVN or other VCS hook.</span>
+                                    <form class="form-inline" method="POST" action="arch"  id="arch_form" name="arch_form">
+ <span class="help-block">Enter the name of a package architecture, to add it to the database. Examples of such architectures include 'i386'. <br/> One example of when you would need to add something to this list, is if a new platform becomes supported.</span>
                                         <label for="name">Name</label>
                                         <input name="name" type="text" />
-                                        <label for="version">Version</label>
-                                        <input name="version" type="text" />
-                                        <br>
                                         <button type="submit" class="btn  btn-primary">
                                             Submit
                                         </button>
@@ -141,19 +135,15 @@
                                             Cancel
                                         </button>
                                     </form>
+                                    <table id="tbl_arches"  class="table table-bordered table-condensed">
+                                        <tr>
+                                            <th colspan='2'>Architectures</th>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
- <span class="help-block">Existing packages are listed below, and those with active jobs may be cancelled. To add a new package to the database, add its name and version using the form above.</span>
-                    <table id="tbl_packages"  class="table table-bordered table-condensed">
-                        <tr>
-                            <th colspan='4'>Packages</th>
-                        </tr>
-                        <tr>
-                            <th>ID</th><th>Name</th><th>Version</th><th>Operations</th>
-                        </tr>
-                    </table>
                     <hr>
                     <footer>
                         <p>
@@ -175,20 +165,26 @@
                         return vars;
                     }
 
-                    function cancel_click ( id )
+                    function delete_click ( id , target )
                     {
+                        switch (target)
+                        {
+                            case 1:
+                                target = "arch"
+                                break;
+                        }
                         $.ajax (
                         {
                             type : "GET" ,
-                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/" + id + "/cancel" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/" + target + "/" + id + "/delete" ,
                             error : function ( data )
                             {
-                                alert ( 'Error sending request to cancel active jobs for package id: ' + id + "\n" + data.responseText );
+                                alert ( 'Error deleting ' + target + ' with id: ' + id + "\n" + data.responseText );
                                 location.reload ( );
                             } ,
                             success : function ( data )
                             {
-                                alert ( 'Active job cancel request sent for package: ' + id );
+                                alert ( 'OK deleting ' + target + ' with id: ' + id );
                                 location.reload ( );
                             }
 
@@ -196,50 +192,37 @@
                     }
                     $ ( ).ready ( function ( )
                     {
-                        var package_page = 1;
+                        var arch_page = 1;
 
-                        $ ( '#package_form' ).ajaxForm ( function ( )
+                        $ ( '#arch_form' ).ajaxForm ( function ( )
                         {
-                            alert ( "Package Added!" );
+                            alert ( "Arch Added!" );
                             location.reload ( );
                         } );
-
-if ( getUrlVars() [ "package_page" ] )
+                        if ( getUrlVars() [ "arch_page" ] )
                         {
-                            package_page = getUrlVars() [ "package_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/page/" + package_page
+                            arch_page = getUrlVars() [ "arch_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/" + arch_page
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/page/1"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/1"
                         }
-                        new_package_page = parseInt ( package_page ) + 1;
-                        last_package_page = parseInt ( package_page ) - 1;
- 						$.getJSON ( url , function ( json )
+                        new_arch_page = parseInt ( arch_page ) + 1;
+                        last_arch_page = parseInt ( arch_page ) - 1;
+                        $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                active_jobs_url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/" + field.id + "/active"
-                                $.get ( active_jobs_url , function ( active_jobs )
-                                {
-                                    if ( active_jobs == "False" )
-                                    {
-                                        $ ( "#tbl_packages" ).append ( "<tr><td>" + field.id + "</td><td>" + field.name + "</td><td>" + field.version + "</td><td></td></tr>" );
-                                    }
-                                    else
-                                    if ( active_jobs == "True" )
-                                    {
-                                        _class = "success";
-                                        $ ( "#tbl_packages" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td>" + field.name + "</td><td>" + field.version + "</td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel all *ACTIVE* builds for this package' onclick='cancel_click(" + field.id + ")'></input></td></tr>" );
-                                    }
-                                } );
+                                $ ( "#tbl_arches" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
                             } );
 
-                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/count"
+                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/count"
                             $.getJSON ( url2 , function ( json2 )
 							{
-                            $ ( '#tbl_packages' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package.htm?package_page=" + last_package_page + "'>Prev</a></li><li><a>" + package_page + "/" + json2 + "</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package.htm?package_page=" + new_package_page + "'>Next</a></li></ul></div>" );
+							 $ ( '#tbl_arches' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arches.htm?arch_page=" + last_arch_page + "'>Prev</a></li><li><a>" + arch_page + "/" + json2 + "</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arches.htm?arch_page=" + new_arch_page + "'>Next</a></li></ul></div>" );
 							});
+
                         } );
                     } );
                 </script>

@@ -8,7 +8,8 @@ import packageinstance
 import os
 
 def get_app(settings, db, controller):
-    app = Bottle(config={'settings' : settings, 'db' : db, 'controller' : controller})
+    app = Bottle()
+    app.config={'settings' : settings, 'db' : db, 'controller' : controller}
 
     local_path = "pybitweb/static"
     installed_path = settings['web']['installed_path']
@@ -49,12 +50,20 @@ def get_app(settings, db, controller):
     @app.route('/', method='GET')
     def index():
         return template(getStaticResource("/index.htm"),
-                        host=settings['web']['hostname'],
-                        port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
+    # favicons
+    @app.route('/favicon.ico', method='GET')
+    def serve_favicon_ico():
+            response.content_type = "image/x-icon"
+            return static_file('favicon.ico',root=getPath())
+
+    @app.route('/favicon.png', method='GET')
+    def serve_favicon_png():
+            response.content_type = "image/png"
+            return static_file('favicon.png',root=getPath())
 
     # static resources like CSS
     @app.route('/bootstrap/<filepath:path>', method='GET')
@@ -76,20 +85,73 @@ def get_app(settings, db, controller):
     @app.route('/index.htm', method='GET')
     def serve_static_idex():
             return template(getStaticResource("/index.htm"),
-                            host=settings['web']['hostname'],
-                            port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
+
+    # static HTML index page
+    @app.route('/dashboard.htm', method='GET')
+    def serve_static_idex():
+            return template(getStaticResource("/dashboard.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl']
+)
+
+    # static HTML page listing arches
+    @app.route('/arches.htm', method='GET')
+    def serve_static_arches():
+            return template(getStaticResource("/arches.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl'])
+
+    # static HTML page listing dists
+    @app.route('/dists.htm', method='GET')
+    def serve_static_dists():
+            return template(getStaticResource("/dists.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl'])
+
+    # static HTML page listing formats
+    @app.route('/formats.htm', method='GET')
+    def serve_static_formats():
+            return template(getStaticResource("/formats.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl'])
+
+    # static HTML page listing statuses
+    @app.route('/statuses.htm', method='GET')
+    def serve_static_statuses():
+            return template(getStaticResource("/statuses.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl'])
+
+    # static HTML page listing suites
+    @app.route('/suites.htm', method='GET')
+    def serve_static_suites():
+            return template(getStaticResource("/suites.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl'])
+
+    # static HTML page listing suitearches
+    @app.route('/suitearch.htm', method='GET')
+    def serve_static_suitearches():
+            return template(getStaticResource("/suitearch.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl'])
 
     # static HTML page listing buildboxes
     @app.route('/buildd.htm', method='GET')
     def serve_static_buildboxes():
             return template(getStaticResource("/buildd.htm"),
-                            host=settings['web']['hostname'],
-                            port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
@@ -98,9 +160,7 @@ def get_app(settings, db, controller):
     @app.route('/job.htm', method='GET')
     def serve_static_jobs():
             return template(getStaticResource("/job.htm"),
-                            host=settings['web']['hostname'],
-                            port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
@@ -109,9 +169,7 @@ def get_app(settings, db, controller):
     @app.route('/lookups.htm', method='GET')
     def serve_static_lookups():
             return template(getStaticResource("/lookups.htm"),
-                            host=settings['web']['hostname'],
-                            port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
@@ -120,9 +178,7 @@ def get_app(settings, db, controller):
     @app.route('/package.htm', method='GET')
     def serve_static_packages():
             return template(getStaticResource("/package.htm"),
-                            host=settings['web']['hostname'],
-                            port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
@@ -131,16 +187,14 @@ def get_app(settings, db, controller):
     @app.route('/packageinstance.htm', method='GET')
     def serve_static_package_instances():
             return template(getStaticResource("/packageinstance.htm"),
-                            host=settings['web']['hostname'],
-                            port=settings['web']['port'],
-                        protocol=settings['web']['protocol'],
+            protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
     app.mount('/job', job.get_job_app(settings, db, controller))
     app.mount('/suite', lookups.get_suite_app(settings, db))
-    app.mount('/suitearch', lookups.get_suite_app(settings, db))
+    app.mount('/suitearch', lookups.get_suitearch_app(settings, db))
     app.mount('/dist', lookups.get_dist_app(settings, db))
     app.mount('/status',lookups.get_status_app(settings, db))
     app.mount('/arch',lookups.get_arch_app(settings, db))

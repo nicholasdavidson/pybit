@@ -9,6 +9,8 @@
         <meta name="description" content="">
         <meta name="author" content="">
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="favicon.png" />
         <style>
             body
             {
@@ -71,19 +73,22 @@
                             Lookups
                         </li>
                         <li>
-                            <a href="lookups.htm#arches">Architectures</a>
+                            <a href="arches.htm">Architectures</a>
                         </li>
                         <li>
-                            <a href="lookups.htm#statuses">Statuses</a>
+                            <a href="statuses.htm">Statuses</a>
                         </li>
                         <li>
-                            <a href="lookups.htm#dists">Dists</a>
+                            <a href="dists.htm">Dists</a>
                         </li>
                         <li>
-                            <a href="lookups.htm#formats">Formats</a>
+                            <a href="formats.htm">Formats</a>
                         </li>
                         <li>
-                            <a href="lookups.htm#suites">Suites</a>
+                            <a href="suites.htm">Suites</a>
+                        </li>
+                                                 <li>
+                            <a href="suitearch.htm">Suite Arches</a>
                         </li>
                         <li class="nav-header">
                             Packages
@@ -119,10 +124,11 @@
                             </div>
                             <div id="collapseOne" class="accordion-body collapse">
                                 <div class="accordion-inner">
-                                    <form class="form-inline" method="POST" action="REPLACE_WITH_URL/buildd" id="buildbox_form" name="buildbox_form">
+                                    <form class="form-inline" method="POST" action="buildd" id="buildbox_form" name="buildbox_form">
                                         <legend>
                                             Add a Buildbox
                                         </legend>
+ <span class="help-block">To add a BuildBoxes to the database, add its hostname, using the form below.</span>
                                         <label for="name">Name</label>
                                         <input name="name" type="text" />
                                         <button type="submit" class="btn  btn-primary">
@@ -136,7 +142,7 @@
                             </div>
                         </div>
                     </div>
-                    <a id="buildds"></a>
+ <span class="help-block">Known BuildBoxes are listed below. To add a new machine to the database, add its hostname, using the form above. <br/> The status of the machine is shown next to it's name, as are any available operations.</span>
                     <table id="tbl_buildds"  class="table table-bordered table-condensed">
                         <tr>
                             <th colspan='3'>Buildboxes</th>
@@ -154,6 +160,18 @@
                 </div>
                 <!--/.fluid-container-->
                 <script>
+                    function getUrlVars ( )
+                    {
+                        var vars =
+                        {
+                        };
+                        var parts = window.location.href.replace ( /[?&]+([^=&]+)=([^&]*)/gi , function ( m , key , value )
+                        {
+                            vars [ key ] = value;
+                        } );
+                        return vars;
+                    }
+
                     function delete_click ( id )
                     {
                         $.ajax (
@@ -175,14 +193,26 @@
                     }
                     $ ( ).ready ( function ( )
                     {
-                        document.body.innerHTML = document.body.innerHTML.replace ( 'REPLACE_WITH_URL' , "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) );
+                        var buildd_page = 1;
+
                         $ ( '#buildbox_form' ).ajaxForm ( function ( )
                         {
                             alert ( "Added buildd OK!" );
                             location.reload ( );
                         } );
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd"
-                        $.getJSON ( url , function ( json )
+
+if ( getUrlVars() [ "buildd_page" ] )
+                        {
+                            buildd_page = getUrlVars() [ "buildd_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/page/" + buildd_page
+                        }
+                        else
+                        {
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/page/1"
+                        }
+                        new_buildd_page = parseInt ( buildd_page ) + 1;
+                        last_buildd_page = parseInt ( buildd_page ) - 1;
+						$.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
@@ -194,17 +224,23 @@
                                     if ( status == "Not Active" )
                                     {
                                         _class = "error";
-                                        $ ( "#tbl_buildds" ).append ( "<tr class='" + _class + "'><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/buildd/" + field.id + "'>" + field.name + "</a></td><td>" + status + "</td><td><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ")'></input></td></tr>" );
+                                        $ ( "#tbl_buildds" ).append ( "<tr class='" + _class + "'><td>" + field.name + "</td><td>" + status + "</td><td><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ")'></input></td></tr>" );
                                     }
                                     else
                                     if ( status == "Active" )
                                     {
                                         _class = "success";
-                                        $ ( "#tbl_buildds" ).append ( "<tr class='" + _class + "'><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/buildd/" + field.id + "'>" + field.name + "</a></td><td>" + status + "</td><td><a  href='" + "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='http://" + shortname + "/logs/pybitclient.log'>View Logs</a></td></tr>" );
+                                        $ ( "#tbl_buildds" ).append ( "<tr class='" + _class + "'><td>" + field.name + "</td><td>" + status + "</td><td><a  href='" + "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>View Logs</a></td></tr>" );
                                     }
                                 } );
                             } );
-                        } );
+
+                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/count"
+                            $.getJSON ( url2 , function ( json2 )
+							{
+                            $ ( '#tbl_buildds' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd.htm?buildd_page=" + last_buildd_page + "'>Prev</a></li><li><a>" + buildd_page + "/" + json2 + "</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd.htm?buildd_page=" + new_buildd_page + "'>Next</a></li></ul></div>" );
+							});
+                       } );
                     } );
                 </script>
             </div>

@@ -18,6 +18,9 @@ set -e
 # the debian-policy package
 
 ucf -p /etc/pybit/debian-db.pl
+if [ -f /etc/pybit/debian-db.pl ]; then
+  rm /etc/pybit/debian-db.pl
+fi
 # Source debconf library.
 . /usr/share/debconf/confmodule
 # source debconf stuff

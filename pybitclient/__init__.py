@@ -108,7 +108,10 @@ contacted or None if the job doesn't exist
 		if self.state == "IDLE" :
 			msg = None
 			if self.message_chan is not None:
-				msg = self.message_chan.basic_get()
+				for suite in self.listen_list:
+					msg = self.message_chan.basic_get(queue=self.listen_list[suite]['queue'])
+					if msg:
+						break
 			if msg is not None :
 				self.message_handler(msg)
 		cmd = None
@@ -241,7 +244,7 @@ contacted or None if the job doesn't exist
 				self.overall_success = False
 				self.move_state("FATAL_ERROR")
 
-	def __init__(self, arch, distribution, pkg_format, suite, conn_info, settings) :
+	def __init__(self, arch, distribution, pkg_format, suites, conn_info, settings) :
 		self.state_table = {}
 		self.state_table["UNKNOWN"] = self.fatal_error_handler
 		self.state_table["IDLE"] = self.idle_handler
@@ -255,7 +258,7 @@ contacted or None if the job doesn't exist
 		self.arch = arch
 		self.distribution = distribution
 		self.pkg_format = pkg_format
-		self.suite = suite
+		self.listen_list = dict()
 		self.conn = None
 		self.command_chan = None
 		self.message_chan = None
@@ -263,19 +266,16 @@ contacted or None if the job doesn't exist
 		self.poll_time = 60
 		if 'poll_time' in self.settings:
 			self.poll_time = self.settings['poll_time']
-		self.routing_key = pybit.get_build_route_name(self.distribution,
-			self.arch, self.suite, self.pkg_format)
-
-		self.queue_name = pybit.get_build_queue_name(self.distribution,
-			self.arch, self.suite, self.pkg_format)
-
+		for suite in suites:
+			route = pybit.get_build_route_name(self.distribution,
+				self.arch, suite, self.pkg_format)
+			queue = pybit.get_build_queue_name(self.distribution,
+					self.arch, suite, self.pkg_format)
+			self.listen_list[suite] = {
+				'route': route,
+				'queue': queue}
+		
 		self.conn_info = conn_info
-
-
-
-		#self.message_chan.basic_consume(queue=self.queue_name, no_ack=False, callback=self.message_handler, consumer_tag="build_callback")
-		#self.command_chan.basic_consume(queue=self.client_queue_name, no_ack=True, callback=self.command_handler, consumer_tag="cmd_callback")
-
 
 
 		if (pkg_format == "deb") :
@@ -340,15 +340,16 @@ contacted or None if the job doesn't exist
 			logging.debug ("Couldn't connect rabbitmq server with: %s" % repr(self.conn_info))
 			return
 
-		logging.debug("Creating queue with name:" + self.queue_name)
-		try:
-			self.message_chan.queue_declare(queue=self.queue_name, durable=True,
-				exclusive=False, auto_delete=False)
-			self.message_chan.queue_bind(queue=self.queue_name,
-				exchange=pybit.exchange_name, routing_key=self.routing_key)
-		except amqp.exceptions.AMQPChannelException :
-			logging.debug ("Unable to declare or bind to message channel.")
-			pass
+		for suite, info in self.listen_list.items():
+			logging.debug("Creating queue with name:" + info['queue'])
+			try:
+				self.message_chan.queue_declare(queue=info['queue'], durable=True,
+					exclusive=False, auto_delete=False)
+				self.message_chan.queue_bind(queue=info['queue'],
+					exchange=pybit.exchange_name, routing_key=info['route'])
+			except amqp.exceptions.AMQPChannelException :
+				logging.debug ("Unable to declare or bind to message channel.")
+				pass
 
 		logging.debug ("Creating private command queue with name:" + self.conn_info.client_name)
 		try:

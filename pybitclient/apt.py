@@ -31,16 +31,13 @@ class AptClient(VersionControlHandler):
 			retval = "wrong_method"
 		if not retval :
 			self.workdir = os.path.join (self.settings["buildroot"],
-				buildreq.get_suite(), buildreq.transport.method, buildreq.get_package())
-			if (buildreq.transport.vcs_id is not None):
-				command = "(cd %s ; apt-get -d source %s=%s ; dpkg-source -x %s_%s.dsc)" % (self.workdir,
-				buildreq.get_package(), buildreq.get_version(), buildreq.get_package(), buildreq.get_package() )
-			elif (buildreq.transport.uri is not None):
-				command = "(cd %s ; apt-get -d source %s ; dpkg-source -x %s_%s.dsc)" % (self.workdir,
-				buildreq.get_package(), buildreq.get_package(), buildreq.get_package() )
-			else:
-				logging.debug ("Could not fetch source, no method URI found")
-				retval = "unrecognised uri"
+				buildreq.get_suite(), buildreq.transport.method)
+			if (buildreq.get_version() is not None):
+				command = "(cd %s && apt-get -d source %s=%s && dpkg-source -x %s_%s.dsc)" % (self.workdir,
+				buildreq.get_package(), buildreq.get_version(), buildreq.get_package(), buildreq.get_version() )
+			else :
+				command = "(cd %s && apt-get -d source %s && dpkg-source -x %s_%s.dsc)" % (self.workdir,
+				buildreq.get_package(), buildreq.get_package(), buildreq.get_version() )
 		if not retval :
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 				retval = "fetch_source"

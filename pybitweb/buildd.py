@@ -29,12 +29,18 @@ from common import requires_auth
 from controller import Controller
 
 def get_buildd_app(settings, db, controller):
-	app = Bottle(config= {'settings' : settings, 'db' : db, 'controller': controller})
+	app = Bottle()
+	app.config= {'settings' : settings, 'db' : db, 'controller': controller}
+
 	@app.route('/', method='GET')
-	def get_buildd():
+	@app.route('/page/<page:int>', method='GET')
+	def get_buildd(page = None):
 		try:
 			# Return list of BuildDs
-			buildds = app.config['db'].get_buildclients()
+			if page:
+				buildds = app.config['db'].get_buildclients(page)
+			else:
+				buildds = app.config['db'].get_buildclients()
 			encoded = jsonpickle.encode(buildds)
 			response.content_type = "application/json"
 			return encoded
@@ -42,6 +48,15 @@ def get_buildd_app(settings, db, controller):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 	
+
+	@app.route('/count', method='GET')
+	def get_count():
+		#return count of buildds
+		count = app.config['db'].count_buildclients()
+		encoded = jsonpickle.encode(count)
+		response.content_type = "application/json"
+		return encoded
+
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
 	@requires_auth

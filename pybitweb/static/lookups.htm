@@ -9,6 +9,8 @@
         <meta name="description" content="">
         <meta name="author" content="">
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="favicon.png" />
         <style>
             body
             {
@@ -71,19 +73,22 @@
                             Lookups
                         </li>
                         <li class="active">
-                            <a href="lookups.htm#arches">Architectures</a>
+                            <a href="arches.htm">Architectures</a>
                         </li>
                         <li>
-                            <a href="lookups.htm#statuses">Statuses</a>
+                            <a href="statuses.htm">Statuses</a>
                         </li>
                         <li>
-                            <a href="lookups.htm#dists">Dists</a>
+                            <a href="dists.htm">Dists</a>
                         </li>
                         <li>
-                            <a href="lookups.htm#formats">Formats</a>
+                            <a href="formats.htm">Formats</a>
                         </li>
                         <li>
-                            <a href="lookups.htm#suites">Suites</a>
+                            <a href="suites.htm">Suites</a>
+                        </li>
+                                                 <li>
+                            <a href="suitearch.htm">Suite Arches</a>
                         </li>
                         <li class="nav-header">
                             Packages
@@ -112,6 +117,7 @@
                 <div class="container-fluid">
                     <h1>PyBit - python Buildd Integration Toolkit.</h1>
                     <h3>Lookups</h3>
+<span class="help-block">This page is where you can add values such as valid package architectures, and software suites, to the database. <br/> You can also view the table of exist values. Simply click the titles shown below to expand them for use.</span>
                     <div class="accordion" id="accordion1">
                         <div class="accordion-group">
                             <div class="accordion-heading">
@@ -119,10 +125,11 @@
                             </div>
                             <div id="collapseOne" class="accordion-body collapse in">
                                 <div class="accordion-inner">
-                                    <form class="form-inline" method="POST" action="REPLACE_WITH_URL/arch"  id="arch_form" name="arch_form">
+                                    <form class="form-inline" method="POST" action="arch"  id="arch_form" name="arch_form">
                                         <legend>
                                             Add Package Architectures
                                         </legend>
+ <span class="help-block">Enter the name of a package architecture, to add it to the database. Examples of such architectures include 'i386'. <br/> One example of when you would need to add something to this list, is if a new platform becomes supported.</span>
                                         <label for="name">Name</label>
                                         <input name="name" type="text" />
                                         <button type="submit" class="btn  btn-primary">
@@ -147,10 +154,11 @@
                             </div>
                             <div id="collapseTwo" class="accordion-body collapse">
                                 <div class="accordion-inner">
-                                    <form class="form-inline" method="POST" action="REPLACE_WITH_URL/status"  id="status_form" name="status_form">
+                                    <form class="form-inline" method="POST" action="status"  id="status_form" name="status_form">
                                         <legend>
                                             Add Job Statuses
                                         </legend>
+ <span class="help-block">Enter the name of a status, to add it to the database. Examples of such statuses include 'Building' or 'Cancelled'. <br/>  Note that these are NOT to be edited under normal use.</span>
                                         <label for="name">Name</label>
                                         <input name="name" type="text" />
                                         <button type="submit" class="btn  btn-primary">
@@ -175,10 +183,11 @@
                             </div>
                             <div id="collapseThree" class="accordion-body collapse">
                                 <div class="accordion-inner">
-                                    <form class="form-inline" method="POST" action="REPLACE_WITH_URL/dist"  id="dist_form" name="dist_form">
+                                    <form class="form-inline" method="POST" action="dist"  id="dist_form" name="dist_form">
                                         <legend>
                                             Add Software Distributions
                                         </legend>
+ <span class="help-block">Enter the name of a software distribution, to add it to the database. Examples of distributions include 'Debian' or 'Red Hat'. <br/>  One example of when you would need to add something to this list, is if a new OS becomes supported. </span>
                                         <label for="name">Name</label>
                                         <input name="name" type="text" />
                                         <button type="submit" class="btn  btn-primary">
@@ -203,10 +212,11 @@
                             </div>
                             <div id="collapseFour" class="accordion-body collapse">
                                 <div class="accordion-inner">
-                                    <form class="form-inline" method="POST" action="REPLACE_WITH_URL/format"  id="format_form" name="format_form">
+                                    <form class="form-inline" method="POST" action="format"  id="format_form" name="format_form">
                                         <legend>
                                             Add Package Formats
                                         </legend>
+ <span class="help-block">Enter the name (File extension) of a packaging format, to add it to the database. Examples of distributions include 'deb' or 'rpm'. <br/>  One example of when you would need to add something to this list, is if you write a new build output handler. </span>
                                         <label for="name">Name</label>
                                         <input name="name" type="text" />
                                         <button type="submit" class="btn  btn-primary">
@@ -231,10 +241,11 @@
                             </div>
                             <div id="collapseFive" class="accordion-body collapse">
                                 <div class="accordion-inner">
-                                    <form class="form-inline" method="POST" action="REPLACE_WITH_URL/suite"  id="suite_form" name="suite_form">
+                                    <form class="form-inline" method="POST" action="suite"  id="suite_form" name="suite_form">
                                         <legend>
                                             Add Software Suites
                                         </legend>
+ <span class="help-block">Enter the name of a software suite, to add it to the database. Examples of suites include 'development' or 'chickpea'. <br/>  One example of when you would need to add something to this list, is if you make a new release branch. </span>
                                         <label for="name">Name</label>
                                         <input name="name" type="text" />
                                         <button type="submit" class="btn  btn-primary">
@@ -315,7 +326,7 @@
                     $ ( ).ready ( function ( )
                     {
                         var arch_page = 1;
-                        document.body.innerHTML = document.body.innerHTML.replace ( 'REPLACE_WITH_URL' , "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) );
+
                         $ ( '#arch_form' ).ajaxForm ( function ( )
                         {
                             alert ( "Arch Added!" );
@@ -356,7 +367,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_arches" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
+                                $ ( "#tbl_arches" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
                             } );
                             $ ( '#tbl_arches' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/lookups.htm?arch_page=" + last_arch_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/lookups.htm?arch_page=" + new_arch_page + "'>Next</a></li></ul></div>" );
                         } );
@@ -365,7 +376,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_statuses" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
+                                $ ( "#tbl_statuses" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
                             } );
                         } );
                         var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist"
@@ -373,7 +384,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_dists" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
+                                $ ( "#tbl_dists" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
                             } );
                         } );
                         var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format"
@@ -381,7 +392,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_formats" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>" );
+                                $ ( "#tbl_formats" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>" );
                             } );
                         } );
                         var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite"
@@ -389,7 +400,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_suites" ).append ( "<tr><td><a href='{{protocol}}" + window.location.host.toString ( ) + "/suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
+                                $ ( "#tbl_suites" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
                             } );
                         } );
                     } );

@@ -29,7 +29,9 @@ import common
 from common import requires_auth
 
 def get_packageinstance_app(settings, db):
-	app = Bottle(config = { 'settings': settings, 'db': db})
+	app = Bottle()
+	app.config = { 'settings': settings, 'db': db}
+
 	@app.route('/<packageinstance_id:int>/togglemaster/<master:int>', method='GET')
 	def update_packageinstance_masterflag(packageinstance_id,master):
 		try:
@@ -39,11 +41,16 @@ def get_packageinstance_app(settings, db):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
+
 	@app.route('/', method='GET')
-	def get_all_packageinstances():
+	@app.route('/page/<page:int>', method='GET')
+	def get_all_packageinstances(page = None):
 		try:
 			# Returning list of all packageinstances
-			packageinstances = app.config['db'].get_packageinstances()
+			if page:
+				packageinstances = app.config['db'].get_packageinstances(page)
+			else:
+				packageinstances = app.config['db'].get_packageinstances()
 			encoded = jsonpickle.encode(packageinstances)
 			response.content_type = "application/json"
 			return encoded
@@ -51,6 +58,14 @@ def get_packageinstance_app(settings, db):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 	
+	@app.route('/count', method='GET')
+	def get_count():
+		#return count of packageinstances
+		count = app.config['db'].count_packageinstances()
+		encoded = jsonpickle.encode(count)
+		response.content_type = "application/json"
+		return encoded
+
 	@app.route('/<packageinstance_id:int>', method='GET')
 	def get_packageinstance_id(packageinstance_id):
 		try:
@@ -75,7 +90,9 @@ def get_packageinstance_app(settings, db):
 	def put_packageinstance():
 		try:
 			# Add a new packageinstance.
-			package_id = request.forms.get('package_id')
+			package = request.forms.get('package')
+			version = request.forms.get('version')
+
 			arch_id = request.forms.get('arch_id')
 			suite_id = request.forms.get('suite_id')
 			dist_id = request.forms.get('dist_id')
@@ -85,15 +102,15 @@ def get_packageinstance_app(settings, db):
 			if not slave:
 				slave = "false"
 	
-			if package_id and arch_id  and suite_id  and dist_id and format_id and slave:
+			if package and version and arch_id  and suite_id  and dist_id and format_id and slave:
 	
-				package = app.config['db'].get_package_id(package_id)
+				package_obj = app.config['db'].get_package_byvalues(package,version)[0]
 				arch = app.config['db'].get_arch_id(arch_id)
 				suite = app.config['db'].get_suite_id(suite_id)
 				dist = app.config['db'].get_dist_id(dist_id)
 				pkg_format = app.config['db'].get_format_id(format_id)
 	
-				app.config['db'].put_packageinstance(package,arch,suite,dist,pkg_format,slave)
+				app.config['db'].put_packageinstance(package_obj,arch,suite,dist,pkg_format,slave)
 			else:
 				response.status = "400 - Required fields missing."
 			return

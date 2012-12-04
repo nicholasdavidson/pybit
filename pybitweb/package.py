@@ -29,12 +29,38 @@ import common
 from common import requires_auth
 
 def get_packages_app(settings, db, controller):
-	app = Bottle(config={'settings':settings,'db':db, 'controller' : controller})
+	app = Bottle()
+	app.config={'settings':settings,'db':db, 'controller' : controller}
+
 	@app.route('/', method='GET')
-	def get_all_packages():
+	@app.route('/page/<page:int>', method='GET')
+	def get_all_packages(page = None):
 		try:
 			# Returning list of all packages
-			packages = app.config['db'].get_packages()
+			if page:
+				packages = app.config['db'].get_packages(page)
+			else:
+				packages = app.config['db'].get_packages()
+			encoded = jsonpickle.encode(packages)
+			response.content_type = "application/json"
+			return encoded
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/count', method='GET')
+	def get_count():
+		#return count of packages
+		count = app.config['db'].count_packages()
+		encoded = jsonpickle.encode(count)
+		response.content_type = "application/json"
+		return encoded
+
+	@app.route('/names', method='GET')
+	def list_packagenames():
+		try:
+			# Returning list of all package names
+			packages = app.config['db'].get_packagenames()
 			encoded = jsonpickle.encode(packages)
 			response.content_type = "application/json"
 			return encoded
