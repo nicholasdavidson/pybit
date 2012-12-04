@@ -69,7 +69,7 @@ class EventHandler(pyinotify.ProcessEvent):
 			logging.debug(" ".join(cmd_args))
 			if ('dryrun' not in self.settings or
 				self.settings['dryrun'] == False):
-				process = subprocess.Popen(cmd_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+				process = subprocess.Popen(cmd_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 				(stdout, stderr) = process.communicate()
 				
 				if process.returncode:
