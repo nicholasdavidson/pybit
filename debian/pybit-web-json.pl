@@ -56,11 +56,18 @@ $json_text = join(' ', @json_list);
 $json_hash = $json->decode($json_text);
 $$json_hash{'db'}{'hostname'} = $dbserver if (defined $dbserver);
 $$json_hash{'db'}{'databasename'} = $dbname if (defined $dbname);
-$$json_hash{'db'}{'port'} = $dbport if (defined $dbport);
+if (defined $dbport) {
+	$dbport = 0 if ($dbport eq "");
+	if (int $dbport == 0) {
+		$$json_hash{'db'}{'port'} = undef;
+	} else {
+		$$json_hash{'db'}{'port'} = int $dbport == 0;
+	}
+}
 $$json_hash{'db'}{'user'} = $dbuser if (defined $dbuser);
 $$json_hash{'db'}{'password'} = $dbpass if (defined $dbpass);
 $$json_hash{'web'}{'hostname'} = $cfg{'host'};
-$$json_hash{'web'}{'port'} = $cfg{'port'};
+$$json_hash{'web'}{'port'} = int $cfg{'port'};
 $$json_hash{'controller'}{'rabbit_url'} = $cfg{'rabbit'}.":5672";
 $$json_hash{'debconf'} = JSON::true;
 open (CONF, ">$cfgfile") or die;
