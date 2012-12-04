@@ -153,7 +153,7 @@
                             <th colspan='8'>Package Instances</th>
                         </tr>
                         <tr>
-                            <th>ID</th><th>Package</th><th>Architecture</th><th>Distribution</th><th>Format</th><th>Suite</th><th>Master?</th><th>Operations</th>
+                            <th>ID</th><th>Package</th><th>Architecture</th><th>Distribution</th><th>Format</th><th>Suite</th><th>Master?</th>
                         </tr>
                     </table>
                     <hr>
@@ -175,26 +175,6 @@
                             vars [ key ] = value;
                         } );
                         return vars;
-                    }
-
-                    function delete_click ( id )
-                    {
-                        $.ajax (
-                        {
-                            type : "GET" ,
-                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/" + id + "/delete" ,
-                            error : function ( data )
-                            {
-                                alert ( 'Error deleting packageinstance with id: ' + id + "\n" + data.responseText );
-                                location.reload ( );
-                            } ,
-                            success : function ( data )
-                            {
-                                alert ( 'OK deleting packageinstance with id: ' + id );
-                                location.reload ( );
-                            }
-
-                        } );
                     }
 
 function changePackage()
@@ -285,7 +265,7 @@ if ( getUrlVars() [ "packageinstance_page" ] )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_packageinstances" ).append ( "<tr><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/details/" + field.package.name + "'>" + field.package.name + " " + field.package.version + "</a></td><td>" + field.arch.name + "</td><td>" + field.distribution.name + "</td><td>" + field.format.name + "</td><td>" + field.suite.name + "</td><td>" + field.master + "</td><td><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ")'></input></td></tr>" );
+                                $ ( "#tbl_packageinstances" ).append ( "<tr><td>" + field.id + "</td><td>" + field.package.name + " " + field.package.version + "</a></td><td>" + field.arch.name + "</td><td>" + field.distribution.name + "</td><td>" + field.format.name + "</td><td>" + field.suite.name + "</td><td>" + field.master + "</td></tr>" );
                             } );
 
                             var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/count"
