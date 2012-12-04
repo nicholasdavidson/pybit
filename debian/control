@@ -14,7 +14,7 @@ Build-Depends: debhelper (>= 7.0.50~), docbook-xsl, xsltproc, po-debconf,
  python-amqplib
 X-Python-Version: 2.6, 2.7
 Standards-Version: 3.9.3
-Vcs-Git: https://github.com/nicholasdavidson/pybit.git
+Vcs-Git: git://github.com/nicholasdavidson/pybit.git
 Vcs-Browser: https://github.com/nicholasdavidson/pybit
 
 Package: pybit-svn
@@ -46,7 +46,7 @@ Architecture: all
 Depends: python-psycopg2 (>= 2.4.2-1~), pybit-common,
  dbconfig-common, libjson-perl, ucf,
  ${python:Depends}, ${misc:Depends}
-Recommends: libjs-jquery(>= 1.4.2-2), libjs-jquery-form, postgresql-client
+Recommends: libjs-jquery(>= 1.4.2-2), libjs-jquery-form, postgresql-client, libapache2-mod-wsgi
 Suggests: rabbitmq-server
 Replaces: pybit-common (<= 0.1.1)
 Description: pybit web frontend
