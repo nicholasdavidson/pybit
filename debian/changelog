@@ -4,7 +4,7 @@ pybit (0.3.0-1) experimental; urgency=low
     platform buildd toolkit using queued messages)
   * Target experimental for first upload.
 
- -- Neil Williams <neilw@toby-churchill.com>  Tue, 04 Dec 2012 16:40:40 +0000
+ -- Neil Williams <codehelp@debian.org>  Tue, 04 Dec 2012 18:26:57 +0000
 
 pybit (0.1.1-1) unstable; urgency=low
 
