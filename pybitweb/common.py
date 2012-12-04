@@ -34,21 +34,28 @@ def checkValue(value,container):
 	else:
 		return False
 
-# TODO: Query the DB for this!
+# TODO: This is a huge bodge. Query the DB for this!
 def check_auth(username, password):
-	if username == 'admin' and password == 'pass':
+	# Load from local settings file in configs, or if not, from system settings in etc.
+	auth_settings = load_from_cwd("web/web.conf")
+	if not auth_settings:
+		# Cant load settings
+		auth_settings = load_from_etc("web/web.conf")
+	if not auth_settings:
+		# Still cant load settings
+		return False
+
+	# Check credentials
+	if auth_settings['web']['username'] == username and auth_settings['web']['password'] == password:
 		return True
 	else:
 		return False
 
-def authenticate(msg_string = "Authenticate."):
-	response.content_type = "application/json"
-	message = {'message': msg_string}
-	resp = jsonpickle.encode(message)
+def authenticate():
+	response.content_type = "text/html"
 	response.status = "401 - Unauthorized"
 	response.headers['WWW-Authenticate'] = 'Basic realm="PyBit"'
-
-	return resp
+	return "401 - Unauthorized"
 
 def requires_auth(f):
 	def decorated(*args, **kwargs):
@@ -57,7 +64,7 @@ def requires_auth(f):
 			  return authenticate()
 		elif not check_auth(auth[0],auth[1]):
 			response.status = "401 - Unauthorized"
-			return authenticate("HTTP Authentication Failed.")
+			return authenticate()
 		else:
 			return f(*args, **kwargs)
 	return decorated
