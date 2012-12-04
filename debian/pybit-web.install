@@ -3,3 +3,5 @@ db/populate.sql ./usr/share/dbconfig-common/data/pybit-web/install/postgresql
 pybitweb/static/ ./usr/share/pybit-web/
 configs/web/web.conf ./usr/share/pybit-web/
 debian/pybit-web-json.pl ./usr/share/pybit-web/
+apache_config.txt ./usr/share/pybit-web/
+application.wsgi ./usr/share/pybit-web/
