@@ -40,7 +40,7 @@ def check_auth(username, password):
 	auth_settings = load_from_cwd("web/web.conf")
 	if not auth_settings:
 		# Cant load settings
-		auth_settings = load_from_etc("web/web.conf")
+		auth_settings = load_from_etc("web.conf")
 	if not auth_settings:
 		# Still cant load settings
 		return False
