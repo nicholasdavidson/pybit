@@ -153,10 +153,10 @@ class BuildRequest(Model):
 
 	def get_job_id(self):
 		return self.job.id
-	
+
 	def get_dist(self):
 		return self.job.packageinstance.distribution.name
-	
+
 	def get_format(self):
 		return self.job.packageinstance.format.name
 
@@ -198,4 +198,9 @@ class TaskComplete(Model):
 		self.success = success
 		self.message = message
 
+def checkValue(value,container):
+	if value in container and container[value] is not None and container[value] is not "":
+		return True
+	else:
+		return False
 

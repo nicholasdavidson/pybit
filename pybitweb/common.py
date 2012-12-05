@@ -30,12 +30,6 @@ import pybit
 from os.path import isfile
 from pybitweb.bottle import Bottle,request,response
 
-def checkValue(value,container):
-	if value in container and container[value] is not None and container[value] is not "":
-		return True
-	else:
-		return False
-
 # TODO: This is a huge bodge. Query the DB for this!
 def check_auth(username, password):
 	# Load from local settings file in configs, or if not, from system settings in etc.

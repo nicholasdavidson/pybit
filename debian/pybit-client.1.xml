@@ -99,6 +99,14 @@ empty as the default for dput is typically to upload to ftp-master.debian.org).
     <para><emphasis>poll_time</emphasis> - frequency with which this client checks
 the queues for new messages. Measured in seconds. Default: 60 seconds.
 </para>
+    <para><emphasis>debsignkey</emphasis> - keyID to be used to sign the .changes files from
+    this buildd. If empty or omitted, changes files will never be signed.
+    <emphasis>The specified key MUST NOT use a passphrase.</emphasis> The key must be
+    usable by the user running <command>pybit-client</command> - check with
+    <programlisting>
+gpg --list-secret-keys
+    </programlisting>
+    </para>
     <para><emphasis>dry_run</emphasis> - initially, clients are setup in dry run mode which
 means that commands are echoed to the terminal instead of being executed, to allow
 testing of new setups. To enable builds on the client, edit <filename>/etc/pybit/client/client.conf</filename>
