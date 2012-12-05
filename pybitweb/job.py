@@ -26,8 +26,8 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import Database
-import common
-from common import requires_auth
+import bottle_basic_auth
+from bottle_basic_auth import requires_auth
 from controller import Controller
 from pybit.models import Transport,JobHistory
 

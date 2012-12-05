@@ -25,8 +25,8 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-import common
-from common import requires_auth
+import bottle_basic_auth
+from bottle_basic_auth import requires_auth
 
 def get_packageinstance_app(settings, db):
 	app = Bottle()
@@ -57,7 +57,7 @@ def get_packageinstance_app(settings, db):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/count', method='GET')
 	def get_count():
 		#return count of packageinstances
@@ -71,7 +71,7 @@ def get_packageinstance_app(settings, db):
 		try:
 			# Returns all information about a specific packageinstance
 			res = app.config['db'].get_packageinstance_id(packageinstance_id)
-	
+
 			# check results returned
 			if res:
 				encoded = jsonpickle.encode(res)
@@ -83,7 +83,7 @@ def get_packageinstance_app(settings, db):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
 	@requires_auth
@@ -98,18 +98,18 @@ def get_packageinstance_app(settings, db):
 			dist_id = request.forms.get('dist_id')
 			format_id =  request.forms.get('format_id')
 			slave = request.forms.get('slave')
-	
+
 			if not slave:
 				slave = "false"
-	
+
 			if package and version and arch_id  and suite_id  and dist_id and format_id and slave:
-	
+
 				package_obj = app.config['db'].get_package_byvalues(package,version)[0]
 				arch = app.config['db'].get_arch_id(arch_id)
 				suite = app.config['db'].get_suite_id(suite_id)
 				dist = app.config['db'].get_dist_id(dist_id)
 				pkg_format = app.config['db'].get_format_id(format_id)
-	
+
 				app.config['db'].put_packageinstance(package_obj,arch,suite,dist,pkg_format,slave)
 			else:
 				response.status = "400 - Required fields missing."
@@ -117,7 +117,7 @@ def get_packageinstance_app(settings, db):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/<packageinstance_id:int>/delete', method='GET')
 	@app.route('/<packageinstance_id:int>', method='DELETE')
 	@requires_auth
@@ -130,7 +130,7 @@ def get_packageinstance_app(settings, db):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/list', method='GET')
 	def get_packageinstances_filtered():
 		try:
@@ -140,7 +140,7 @@ def get_packageinstance_app(settings, db):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/details/:name', method='GET')
 	def get_packageinstance_versions(name):
 		try:

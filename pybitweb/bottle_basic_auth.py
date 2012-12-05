@@ -34,7 +34,6 @@ from pybitweb.bottle import Bottle,request,response
 def check_auth(username, password):
 	# Load from local settings file in configs, or if not, from system settings in etc.
 	(auth_settings,path) = pybit.load_settings("web/web.conf")
-	print str(auth_settings)
 	if not auth_settings:
 		# Cant load settings
 		return False

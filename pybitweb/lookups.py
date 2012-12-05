@@ -25,8 +25,8 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import Database
 from pybit.models import Arch,Dist,Format,Status,Suite,SuiteArch
-import common
-from common import requires_auth
+import bottle_basic_auth
+from bottle_basic_auth import requires_auth
 
 def get_arch_app(settings, db):
 	app = Bottle()

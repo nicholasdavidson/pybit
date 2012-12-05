@@ -24,8 +24,8 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
-import common
-from common import requires_auth
+import bottle_basic_auth
+from bottle_basic_auth import requires_auth
 from controller import Controller
 
 def get_buildd_app(settings, db, controller):
@@ -47,7 +47,7 @@ def get_buildd_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 
 	@app.route('/count', method='GET')
 	def get_count():
@@ -64,7 +64,7 @@ def get_buildd_app(settings, db, controller):
 		try:
 			# Register a new BuildD.
 			name = request.forms.get('name')
-	
+
 			if name:
 				app.config['db'].put_buildclient(name)
 			else:
@@ -73,13 +73,13 @@ def get_buildd_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/<buildd_id:int>', method='GET')
 	def get_buildd_id(buildd_id):
 		try:
 			# Returns all information about a specific buildd
 			res = app.config['db'].get_buildd_id(buildd_id)
-	
+
 			# check results returned
 			if res:
 				encoded = jsonpickle.encode(res)
@@ -91,7 +91,7 @@ def get_buildd_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/<buildd_id:int>/delete', method='GET')
 	@app.route('/<buildd_id:int>', method='DELETE')
 	@requires_auth
@@ -104,7 +104,7 @@ def get_buildd_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/<buildd_name>/status', method='GET')
 	def get_buildd_status(buildd_name):
 		#TODO: FIXME
@@ -117,14 +117,14 @@ def get_buildd_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/<buildclient_id:int>/jobs', method='GET')
 	def get_buildd_jobs(buildclient_id):
 		try:
 			#Returns jobs for specified buildd
-	
+
 			res = app.config['db'].get_buildd_jobs(buildclient_id)
-	
+
 			# check results returned
 			if res:
 				encoded =  jsonpickle.encode(res)
@@ -136,7 +136,7 @@ def get_buildd_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/<buildd_id:int>/:command', method='POST')
 	@requires_auth
 	def post_command(buildd_id,command):

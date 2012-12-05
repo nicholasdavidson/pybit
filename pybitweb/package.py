@@ -25,8 +25,8 @@ from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redi
 import jsonpickle
 from db import Database
 from controller import Controller
-import common
-from common import requires_auth
+import bottle_basic_auth
+from bottle_basic_auth import requires_auth
 
 def get_packages_app(settings, db, controller):
 	app = Bottle()
@@ -67,13 +67,13 @@ def get_packages_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/<package_id:int>', method='GET')
 	def get_package_id(package_id):
 		try:
 			# Returns all information about a specific package
 			res = app.config['db'].get_package_id(package_id)
-	
+
 			# check results returned
 			if res:
 				encoded = jsonpickle.encode(res)
@@ -85,7 +85,7 @@ def get_packages_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
 	@requires_auth
@@ -94,7 +94,7 @@ def get_packages_app(settings, db, controller):
 			# Add a new package.
 			version = request.forms.get('version')
 			name = request.forms.get('name')
-	
+
 			if version and name:
 				app.config['db'].put_package(version,name)
 			else:
@@ -103,7 +103,7 @@ def get_packages_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/<package_id:int>/delete', method='GET')
 	@app.route('/<package_id:int>', method='DELETE')
 	@requires_auth
@@ -116,20 +116,20 @@ def get_packages_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	#NEW: Have controller cancel all jobs for this package.
 	@app.route('/<package_id:int>/cancel', method='GET')
 	@requires_auth
 	def cancel_package(package_id):
 		try:
 			response.status = "202 - CANCEL PACKAGE request received"
-	
+
 			app.config['controller'].cancel_package(package_id)
 			return
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	@app.route('/list', method='GET') # TODO, filter by parameter (request.query.[x])
 	def get_packages_filtered():
 		try:
@@ -139,7 +139,7 @@ def get_packages_app(settings, db, controller):
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
-	
+
 	# Gets package versions (not instances!) by name.
 	@app.route('/details/:name', method='GET')
 	def get_package_versions(name):
