@@ -222,7 +222,20 @@
                             var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status/count"
                             $.getJSON ( url2 , function ( json2 )
 							{
-                            $ ( '#tbl_statuses' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/statuses.htm?status_page=" + last_status_page + "'>Prev</a></li><li><a>" + status_page + "/" + json2 + "</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/statuses.htm?status_page=" + new_status_page + "'>Next</a></li></ul></div>" );
+
+							var html_part1 = "";
+							if (status_page > 0)
+							{
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/statuses.htm?status_page=" + last_status_page + "'>Prev</a></li><li><a>" + status_page + "/" + json2 + "</a></li>";
+							}
+
+							var html_part2 = "";
+							if (status_page < json2) // Not last page
+							{
+							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/statuses.htm?status_page=" + new_status_page + "'>Next</a></li>";
+							}
+
+                            $ ( '#tbl_statuses' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>");
 							});
                         } );
                     } );

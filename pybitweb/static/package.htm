@@ -238,7 +238,20 @@ if ( getUrlVars() [ "package_page" ] )
                             var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/count"
                             $.getJSON ( url2 , function ( json2 )
 							{
-                            $ ( '#tbl_packages' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package.htm?package_page=" + last_package_page + "'>Prev</a></li><li><a>" + package_page + "/" + json2 + "</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package.htm?package_page=" + new_package_page + "'>Next</a></li></ul></div>" );
+
+							var html_part1 = "";
+							if (package_page > 0)
+							{
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package.htm?package_page=" + last_package_page + "'>Prev</a></li><li><a>" + package_page + "/" + json2 + "</a></li>";
+							}
+
+							var html_part2 = "";
+							if (package_page < json2) // Not last page
+							{
+							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package.htm?package_page=" + new_package_page + "'>Next</a></li>";
+							}
+
+                            $ ( '#tbl_packages' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );
 							});
                         } );
                     } );

@@ -222,7 +222,20 @@
                             var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format/count"
                             $.getJSON ( url2 , function ( json2 )
 							{
-                            $ ( '#tbl_formats' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/formats.htm?format_page=" + last_format_page + "'>Prev</a></li><li><a>" + format_page + "/" + json2 + "</a></a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/formats.htm?format_page=" + new_format_page + "'>Next</a></li></ul></div>" );
+
+							var html_part1 = "";
+							if (format_page > 0)
+							{
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/formats.htm?format_page=" + last_format_page + "'>Prev</a></li><li><a>" + format_page + "/" + json2 + "</a></a></li>";
+							}
+
+							var html_part2 = "";
+							if (format_page < json2) // Not last page
+							{
+							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/formats.htm?format_page=" + new_format_page + "'>Next</a></li>";
+							}
+
+                            $ ( '#tbl_formats' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );
 							}); 
                        } );
                     } );

@@ -202,7 +202,7 @@
                         if ( getUrlVars() [ "suite_page" ] )
                         {
                             suite_page = getUrlVars() [ "suite_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite/page/" + arch_page
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite/page/" + suite_page
                         }
                         else
                         {
@@ -220,7 +220,20 @@
                             var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite/count"
                             $.getJSON ( url2 , function ( json2 )
 							{
-                            $ ( '#tbl_suites' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suites.htm?suite_page=" + last_suite_page + "'>Prev</a></li><li><a>" + suite_page + "/" + json2 + "</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suites.htm?suite_page=" + new_suite_page + "'>Next</a></li></ul></div>" );
+
+							var html_part1 = "";
+							if (suite_page > 0)
+							{
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suites.htm?suite_page=" + last_suite_page + "'>Prev</a></li><li><a>" + suite_page + "/" + json2 + "</a></li>";
+							}
+
+							var html_part2 = "";
+							if (suite_page < json2) // Not last page
+							{
+							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suites.htm?suite_page=" + new_suite_page + "'>Next</a></li>";
+							}
+
+                            $ ( '#tbl_suites' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );
 							});                        
 						} );
                     } );

@@ -271,7 +271,20 @@ if ( getUrlVars() [ "packageinstance_page" ] )
                             var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/count"
                             $.getJSON ( url2 , function ( json2 )
 							{
-                            $ ( '#tbl_packageinstances' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance.htm?packageinstance_page=" + last_packageinstance_page + "'>Prev</a></li><li><a>" + packageinstance_page + "/" + json2 + "</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance.htm?packageinstance_page=" + new_packageinstance_page + "'>Next</a></li></ul></div>" );
+
+							var html_part1 = "";
+							if (packageinstance_page > 0)
+							{
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance.htm?packageinstance_page=" + last_packageinstance_page + "'>Prev</a></li><li><a>" + packageinstance_page + "/" + json2 + "</a></li>";
+							}
+
+							var html_part2 = "";
+							if (packageinstance_page < json2) // Not last page
+							{
+							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance.htm?packageinstance_page=" + new_packageinstance_page + "'>Next</a></li>";
+							}
+
+                            $ ( '#tbl_packageinstances' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );
 							});
                         } );
                     } );
