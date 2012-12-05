@@ -30,7 +30,7 @@ import os
 import logging
 import pybitclient
 from buildclient import PackageHandler
-from pybit.models import BuildRequest
+from pybit.models import BuildRequest, checkValue
 
 class DebianBuildClient(PackageHandler):
 	dput_cfg = "" #FIXME
@@ -154,6 +154,10 @@ class DebianBuildClient(PackageHandler):
 			if not self.settings["dry_run"] and not os.path.isfile (changes) :
 				logging.debug("build_master: Failed to find %s file." % (changes))
 				retval = "build_changes"
+			if not retval and checkValue ('debsignkey', self.settings) :
+				command = "debsign -k%s %s" % (self.settings['debsignkey'], changes)
+				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
+					retval = "build_sign"
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
@@ -218,6 +222,10 @@ class DebianBuildClient(PackageHandler):
 				if not self.settings["dry_run"] and not os.path.isfile (changes) :
 					logging.debug ("build_slave: Failed to find %s file." % (changes))
 					retval = "build_changes"
+				if not retval and checkValue ('debsignkey', self.settings) :
+					command = "debsign -k%s %s" % (self.settings['debsignkey'], changes)
+					if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
+						retval = "build_sign"
 		else:
 			retval = "Can't find build dir."
 		if not retval :

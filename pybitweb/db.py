@@ -27,8 +27,7 @@ import jsonpickle
 import cgi
 import math
 
-from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage
-from common import checkValue
+from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage, checkValue
 
 def remove_nasties(nastystring):
 	try:
