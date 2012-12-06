@@ -160,7 +160,7 @@ class DebianBuildClient(PackageHandler):
 			ret = pybitclient.run_cmd (command, self.settings["dry_run"], logfile)
 			if (ret == 3):
 				retval = "build-dep-wait"
-			elif (ret)
+			elif (ret):
 				retval = "build_binary"
 		if not retval :
 			changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"], buildreq.get_package(),
@@ -230,7 +230,7 @@ class DebianBuildClient(PackageHandler):
 				ret = pybitclient.run_cmd (command, self.settings["dry_run"], logfile)
 				if (ret == 3):
 					retval = "build-dep-wait"
-				elif (ret)
+				elif (ret):
 					retval = "build_binary"
 			if not retval :
 				changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"],
