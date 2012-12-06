@@ -38,7 +38,7 @@ class DebianBuildClient(PackageHandler):
 
 	def update_environment(self,name,pkg, conn_data):
 		retval = "success"
-		command = "(cd %s ; schroot -u root -c %s -- apt-get update > /dev/null 2>&1)" % (name, name)
+		command = "schroot -n -u root -c %s -- apt-get update > /dev/null 2>&1" % (name, name)
 		if not pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 			retval = "build_update"
 		pybitclient.send_message (conn_data, retval)
@@ -68,7 +68,7 @@ class DebianBuildClient(PackageHandler):
 		# chroot and therefore copied to ${HOME} so that schroot copies it again,
 		# into the chroot itself.
 		orig_sh = "/usr/share/pybitclient/sbuild-orig.sh"
-		command = "(cp %s %s/sbuild-orig.sh ; schroot -u root -c %s -- %s/sbuild-orig.sh %s %s ; rm %s/sbuild-orig.sh)" % (orig_sh,
+		command = "(cp %s %s/sbuild-orig.sh ; schroot -n -u root -c %s -- %s/sbuild-orig.sh %s %s ; rm %s/sbuild-orig.sh)" % (orig_sh,
 			self.settings["buildroot"], buildreq.get_suite(), self.settings["buildroot"], package_dir, parts[2], self.settings["buildroot"])
 		if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 			retval = "custom-command-error"
@@ -144,7 +144,7 @@ class DebianBuildClient(PackageHandler):
 					if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 						retval = "build_dsc"
 		if not retval :
-			command = "(cd %s && sbuild -A -s -d %s %s/%s_%s.dsc)" % (self.settings["buildroot"], buildreq.get_suite(),
+			command = "sbuild -A -n -s -d %s %s/%s_%s.dsc" % (buildreq.get_suite(),
 				srcdir, buildreq.get_package(), buildreq.get_version())
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "build_binary"
@@ -210,8 +210,8 @@ class DebianBuildClient(PackageHandler):
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "build_dsc"
 			if not retval :
-				command = "(cd %s && sbuild --apt-update -d %s %s/%s_%s.dsc)" % (
-					self.settings["buildroot"], buildreq.get_suite(), srcdir,
+				command = "sbuild -n --apt-update -d %s %s/%s_%s.dsc)" % (
+					buildreq.get_suite(), srcdir,
 					buildreq.get_package(), buildreq.get_version())
 				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 					retval = "build_binary"
