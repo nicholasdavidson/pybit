@@ -171,10 +171,11 @@ class Controller(object):
 			packageinstance = self.db.get_packageinstance_byvalues(package, arch, suite, dist, pkg_format)[0]
 			if packageinstance.id :
 				print "MATCHING PACKAGE INSTANCE FOUND (", packageinstance.id, ")"
-				if packageinstance.master != master :
-					print "UPDATING PACKAGE INSTANCE MASTER FLAG (", master, ")"
-					self.db.update_packageinstance_masterflag(packageinstance.id,master)
-					packageinstance.master = master
+				# Temporarily disable master update for Issue #84, this should not be default behaviour.
+#				if packageinstance.master != master :
+#					print "UPDATING PACKAGE INSTANCE MASTER FLAG (", master, ")"
+#					self.db.update_packageinstance_masterflag(packageinstance.id,master)
+#					packageinstance.master = master
 		else :
 			# add new package instance to db
 			packageinstance = self.db.put_packageinstance(package, arch, suite, dist, pkg_format, master)
