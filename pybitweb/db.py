@@ -208,7 +208,7 @@ class Database(object):
 	def count_suitearches(self):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT COUNT(*) FROM suitearch AS num_suitearches")
+			cur.execute("SELECT COUNT(*) FROM suitearches AS num_suitearches")
 			res = cur.fetchall()
 			self.conn.commit()
 

@@ -157,7 +157,7 @@ def get_job_app(settings, db, controller) :
 			uri = request.forms.get('uri')
 			commands = request.forms.get('commands') # NEW: Any additional build commands
 
-			if  packageinstance_id and method and vcs_id and uri:
+			if  packageinstance_id and method and uri:
 				packageinstance = app.config['db'].get_packageinstance_id(packageinstance_id)
 				package_version = packageinstance.package.version
 				package_name = packageinstance.package.name
