@@ -210,7 +210,7 @@ class DebianBuildClient(PackageHandler):
 			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "build_dsc"
 			if not retval :
-				command = "sbuild -n --apt-update -d %s %s/%s_%s.dsc)" % (
+				command = "sbuild -n --apt-update -d %s %s/%s_%s.dsc" % (
 					buildreq.get_suite(), srcdir,
 					buildreq.get_package(), buildreq.get_version())
 				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
