@@ -35,16 +35,17 @@ def main():
 	plugins = []
 	distros = {}
 	handlers = {}
+#	plugin_dir = "/tmp/plugin/pybit.d/"
 	plugin_dir = "/var/lib/pybit-client.d/"
 	(settings, opened_path) = pybit.load_settings("client/client.conf")
 	if not os.path.exists (plugin_dir):
-		plugin_dir = "../pybitclient"
+		plugin_dir = os.path.realpath ("../pybitclient/")
 #		os.sys.exit (1)
 	for name in os.listdir(plugin_dir):
 		if name.endswith(".py"):
 			plugins.append(name.strip('.py'))
 	for name in plugins :
-		if (name == "apt" or name == "git" or name == "crossdebian" or name == "buildclient" or name == "__init__"):
+		if (name == "buildclient" or name == "__init__"):
 			continue
 		print "checking plugin: %s" % name;
 		plugin_path = [ plugin_dir ];
@@ -52,7 +53,7 @@ def main():
 		try:
 			mod = imp.load_module(name, fp, pathname, description)
 			if not (hasattr(mod, 'createPlugin')) :
-				print "Error: plugin path contains an unrecognised module."
+				print "Error: plugin path contains an unrecognised module '%s'." % (name)
 				continue
 			plugin = mod.createPlugin(settings)
 			if (hasattr(plugin, 'get_distribution') and plugin.get_distribution() is not None) :
@@ -60,9 +61,8 @@ def main():
 				print dir(plugin)
 			elif (hasattr(plugin, 'method') and plugin.method is not None) :
 				vcs = plugin
-				print dir(plugin)
 			else :
-				print "Error: plugin path contains an unrecognised module."
+				print "Error: plugin path contains a recognised plugin but the plugin API for '%s' is incorrect." % (name)
 				continue
 		finally:
 			# Since we may exit via an exception, close fp explicitly.

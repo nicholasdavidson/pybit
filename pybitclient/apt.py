@@ -72,3 +72,7 @@ class AptClient(VersionControlHandler):
 
 	def __init__(self, settings):
 		VersionControlHandler.__init__(self, settings)
+		self.method = "apt"
+
+def createPlugin (settings) :
+	return AptClient (settings)

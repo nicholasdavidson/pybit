@@ -72,3 +72,7 @@ class GitClient(VersionControlHandler):
 
 	def __init__(self, settings):
 		VersionControlHandler.__init__(self, settings)
+		self.method = "git"
+
+def createPlugin (settings) :
+	return GitClient (settings)
