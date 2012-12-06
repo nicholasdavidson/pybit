@@ -22,7 +22,7 @@
 
 import os
 import pybitclient
-from buildclient import VersionControlHandler
+from pybitclient.buildclient import VersionControlHandler
 
 class AptClient(VersionControlHandler):
 	def fetch_source(self, buildreq, conn_data):

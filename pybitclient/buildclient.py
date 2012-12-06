@@ -83,3 +83,6 @@ class PackageHandler(object):
 
 	def upload (self, dirname, changes, pkg) :
 		pass
+
+	def get_distribution (self):
+		pass
