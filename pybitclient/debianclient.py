@@ -38,7 +38,7 @@ class DebianBuildClient(PackageHandler):
 
 	def update_environment(self,name,pkg, conn_data):
 		retval = "success"
-		command = "schroot -n -u root -c %s -- apt-get update > /dev/null 2>&1" % (name, name)
+		command = "schroot -n -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
 		if not pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 			retval = "build_update"
 		pybitclient.send_message (conn_data, retval)
