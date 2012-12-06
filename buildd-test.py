@@ -41,7 +41,7 @@ def main():
 		(settings, opened_path) = pybit.load_settings(conffile)
 	else :
 		(settings, opened_path) = pybit.load_settings("/etc/pybit/client/client.conf")
-	build_client = PyBITClient(settings["host_arch"], settings["distribution"], settings["pkg_format"], settings["suite"], None, settings)
+	build_client = PyBITClient(settings["host_arch"], settings["distribution"], settings["pkg_format"], settings["suites"], None, settings)
 
 	if not os.path.isfile (testconf):
 		print "E: Unable to find %s - no test data for this buildd" % (testconf)
