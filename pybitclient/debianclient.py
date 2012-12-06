@@ -38,7 +38,7 @@ class DebianBuildClient(PackageHandler):
 
 	def update_environment(self,name,pkg, conn_data):
 		retval = "success"
-		command = "schroot -n -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
+		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
 		if not pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 			retval = "build_update"
 		pybitclient.send_message (conn_data, retval)
@@ -122,6 +122,17 @@ class DebianBuildClient(PackageHandler):
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
 		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
+		# To check the build-dependencies in advance, we need to ensure the
+		# chroot has an update apt-cache, so can't use apt-update option of
+		# sbuild. The alternative is to update the apt-cache twice per build,
+		# once for the dep check and once before the build. The choice depends
+		# on whether two network trips are more efficient than rewriting the
+		# lvm snapshot before even trying to do any build.
+		if self.settings["use_lvm"] :
+			update_name = "%s-source" % buildreq.get_suite()
+		else :
+			update_name = buildreq.get_suite()
+		self.update_environment (update_name, buildreq, conn_data)
 		# need an extra uscan stage to deal with non-native packages
 		# this requires the upstream release to be accessible to the client.
 		# i.e. unreleased versions of non-native packages cannot be built this way.
