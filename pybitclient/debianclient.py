@@ -157,7 +157,10 @@ class DebianBuildClient(PackageHandler):
 		if not retval :
 			command = "sbuild -A -n -s -d %s %s/%s_%s.dsc" % (buildreq.get_suite(),
 				srcdir, buildreq.get_package(), buildreq.get_version())
-			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
+			ret = pybitclient.run_cmd (command, self.settings["dry_run"], logfile)
+			if (ret == 3):
+				retval = "build-dep-wait"
+			elif (ret):
 				retval = "build_binary"
 		if not retval :
 			changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"], buildreq.get_package(),
@@ -224,7 +227,10 @@ class DebianBuildClient(PackageHandler):
 				command = "sbuild -n --apt-update -d %s %s/%s_%s.dsc" % (
 					buildreq.get_suite(), srcdir,
 					buildreq.get_package(), buildreq.get_version())
-				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
+				ret = pybitclient.run_cmd (command, self.settings["dry_run"], logfile)
+				if (ret == 3):
+					retval = "build-dep-wait"
+				elif (ret):
 					retval = "build_binary"
 			if not retval :
 				changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"],

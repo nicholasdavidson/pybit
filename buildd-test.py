@@ -116,20 +116,11 @@ def main():
 		if (method_type == "apt") :
 			apt_src.clean_source(test_req, None)
 			apt_src.fetch_source(test_req, None)
-		# To check the build-dependencies in advance, we need to ensure the
-		# chroot has an update apt-cache, so can't use apt-update option of
-		# sbuild. The alternative is to update the apt-cache twice per build,
-		# once for the dep check and once before the build. The choice depends
-		# on whether two network trips are more efficient than rewriting the
-		# lvm snapshot before even trying to do any build.
-		if settings["use_lvm"] :
-			name = suite + "-source"
-		else:
-			name = suite
-		client.update_environment (name, test_req, None)
 		if (role == "slave"):
+			# runs the build with --apt-update
 			client.build_slave (test_req, None)
 		else :
+			# runs update_environment first
 			client.build_master (test_req, None)
 		client.upload (test_req, None)
 		if (method_type == "svn") :
