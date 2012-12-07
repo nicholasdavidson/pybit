@@ -32,6 +32,15 @@ DROP TABLE IF EXISTS SuiteArches CASCADE
 ;
 
 --  Create Tables - Changed to add NOT NULLs
+CREATE TABLE schema_version
+(
+	id SERIAL PRIMARY KEY NOT NULL
+);
+-- The schema version has to be updated every time we change the schema.
+-- Make sure to create an update script in vN.sql in updates to allow
+-- existing databases to be upgraded
+INSERT INTO schema_version(id) VALUES (1);
+
 CREATE TABLE Arch ( 
 	id SERIAL PRIMARY KEY NOT NULL,
 	Name text NOT NULL
@@ -116,7 +125,8 @@ CREATE TABLE Suite (
 CREATE TABLE SuiteArches (
 	id SERIAL PRIMARY KEY NOT NULL,
 	Suite_id bigint NOT NULL,
-	Arch_id bigint NOT NULL
+	Arch_id bigint NOT NULL,
+	master_weight bigint NOT NULL DEFAULT 0
 )
 ;
 
