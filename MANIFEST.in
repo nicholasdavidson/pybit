@@ -2,6 +2,7 @@ include buildd-test.py
 include pybitclient/dput.cf pybitclient/sbuild-cross.sh pybitclient/sbuild-orig.sh
 include configs/* test/* configs/client/* configs/watcher/* configs/web/*
 include hook/* db/*
+include db/updates/*
 include pybitweb/static/*
 include pybitweb/static/bootstrap/*
 include pybitweb/static/bootstrap/css/*
