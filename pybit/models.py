@@ -119,11 +119,11 @@ class Job(Model):
 
 
 class SuiteArch(Model):
-	def __init__(self,suitearch_id,suite,arch):
+	def __init__(self,suitearch_id,suite,arch,master_weight=0):
 		self.id = suitearch_id
 		self.suite = suite
 		self.arch = arch
-
+		self.master_weight = master_weight
 
 class BuildRequest(Model):
 	def __init__(self,job,transport,web_host,commands = None):
