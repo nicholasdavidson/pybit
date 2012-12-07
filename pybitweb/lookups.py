@@ -145,19 +145,19 @@ def get_suitearch_app(settings, db):
 	@app.route('/', method='PUT')
 	@requires_auth
 	def put_suitearch():
-		try:
-			# Add a new suitearch.
-			suite_id = request.forms.get('suite_id')
-			arch_id =  request.forms.get('arch_id')
+		# Add a new suitearch.
+		suite_id = request.forms.get('suite_id')
+		arch_id =  request.forms.get('arch_id')
+		master_weight =  request.forms.get('master_weight')
 
-			if suite_id and arch_id:
-				app.config['db'].put_suitearch(suite_id,arch_id)
-			else:
-				response.status = "400 - Required fields missing."
-			return
-		except Exception as e:
-			raise Exception('Exception encountered: ' + str(e))
-			return None
+		if not master_weight or master_weight == "":
+			master_weight = 0
+
+		if suite_id and arch_id:
+			app.config['db'].put_suitearch(suite_id,arch_id,master_weight)
+		else:
+			response.status = "400 - Required fields missing."
+		return
 
 	@app.route('/<suitearch_id:int>/delete', method='GET')
 	@app.route('/<suitearch_id:int>', method='DELETE')

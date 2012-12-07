@@ -252,14 +252,13 @@ class Database(object):
 			raise Exception("Error retrieving suite arch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	#TODO: Implement "master_weight" changes
 	def put_suitearch(self,suite_id,arch_id,master_weight = 0):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into suitearches(suite_id,arch_id) VALUES (%s, %s) RETURNING id",(remove_nasties(suite_id),remove_nasties(arch_id)))
+			cur.execute("INSERT into suitearches(suite_id,arch_id,master_weight) VALUES (%s, %s, %s) RETURNING id",(remove_nasties(suite_id),remove_nasties(arch_id),remove_nasties(master_weight)))
 			res = cur.fetchall()
 			self.conn.commit()
-			suitearch = SuiteArch(res[0]['id'],self.get_suite_id(suite_id),self.get_arch_id(arch_id))
+			suitearch = SuiteArch(res[0]['id'],self.get_suite_id(suite_id),self.get_arch_id(arch_id),master_weight)
 			cur.close()
 			return suitearch
 		except psycopg2.Error as e:
