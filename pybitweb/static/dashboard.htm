@@ -135,10 +135,6 @@
                         {
                             return "error";
                         }
-                        else
-                        {
-                            return "warning";
-                        }
                     }
 
                     function delete_click ( id )
@@ -191,7 +187,7 @@
                                     }
                                     else
                                     {
-                                        _class = get_status_class ( "" );
+                                        _class = get_status_class ( jobstatuses [ field.id ] );
                                         bid = "";
                                         bname = "Unassigned";
                                         shortname = bname.replace ( "build_client_" , "" );
