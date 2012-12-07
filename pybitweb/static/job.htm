@@ -165,7 +165,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <th>ID</th><th>Package Instance</th><th>Buildclient</th><th>Status</th><th>Operations</th>
+                                <th>ID</th><th>Package Instance</th><th>Buildclient</th><th>Master</th><th>Status</th><th>Operations</th>
                             </tr>
                         </tbody>
                     </table>
@@ -335,6 +335,10 @@ function changePackage()
                                         statuses.push ( field2.status );
                                     } );
                                     jobstatuses [ field.id ] = statuses [ statuses.length - 1 ];
+                                    master = "";
+                                    if (field.packageinstance.master) {
+                                    	master = "\u2714";
+                                    }
                                     if ( field.buildclient )
                                     {
                                         bid = field.buildclient.id;
@@ -342,7 +346,7 @@ function changePackage()
                                         _class = get_status_class ( jobstatuses [ field.id ] );
                                         shortname = bname.replace ( "build_client_" , "" );
                                         // TODO: HACKS
-                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + " (" + field.packageinstance.arch.name + " " + field.packageinstance.format.name + ")" + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>" + bname + "</a></td><td>" + jobstatuses [ field.id ] + "<br> Master: " + field.packageinstance.master + "</td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel' onclick='cancel_click(" + field.id + ")'></input><br><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id + ")'>View Status History</a></td></tr>" );
+                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + " (" + field.packageinstance.arch.name + " " + field.packageinstance.format.name + ")" + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>" + bname + "</a></td><td>" + master + "</td><td>" + jobstatuses [ field.id ] + "</td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel' onclick='cancel_click(" + field.id + ")'></input><br><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id + ")'>View Status History</a></td></tr>" );
                                     }
                                     else
                                     {
@@ -351,7 +355,7 @@ function changePackage()
                                         bname = "Unassigned";
                                         shortname = bname.replace ( "build_client_" , "" );
                                         // TODO: HACKS
-                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + " (" + field.packageinstance.arch.name + " " + field.packageinstance.format.name + ")" + "</td><td>" + bname + "</td><td>" + jobstatuses [ field.id ] + "<br> Master: " + field.packageinstance.master + "</td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel' onclick='cancel_click(" + field.id + ")'></input><br><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id + ")'>View Status History</a></td></tr>" );
+                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + " (" + field.packageinstance.arch.name + " " + field.packageinstance.format.name + ")" + "</td><td>" + bname + "</td><td>" + master + "</td><td>" + jobstatuses [ field.id ] + "</td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel' onclick='cancel_click(" + field.id + ")'></input><br><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id + ")'>View Status History</a></td></tr>" );
                                     }
                                 } );
                             } );
