@@ -164,6 +164,11 @@ contacted or None if the job doesn't exist
 							self.republish_job(current_req)
 						else:
 							self.set_status(ClientMessage.failed, current_req)
+			elif self.state == "FATAL_ERROR":
+				current_req = self.current_request			
+				self._clean_current()
+				self.set_status(ClientMessage.failed, current_req)
+				self.republish_job(current_req)
 
 			logging.debug ("Moved from %s to %s" % (self.old_state, self.state))
 		else:
