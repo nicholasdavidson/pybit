@@ -1292,7 +1292,7 @@ class Database(object):
 		try:
 			if suite :
 				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-				cur.execute("SELECT arch.id, arch.name, suitearches.master_weight FROM suite LEFT JOIN suitearches ON suite.id=suite_id LEFT JOIN arch ON arch_id = arch.id WHERE suite.name=%s ORDER BY master_weight, random()",[suite])
+				cur.execute("SELECT arch.id, arch.name, suitearches.master_weight FROM suite LEFT JOIN suitearches ON suite.id=suite_id LEFT JOIN arch ON arch_id = arch.id WHERE suite.name=%s ORDER BY master_weight DESC, random()",[suite])
 				res = cur.fetchall()
 				self.conn.commit()
 
