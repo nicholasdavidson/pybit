@@ -39,7 +39,7 @@ class AptClient(VersionControlHandler):
 				command = "(cd %s && apt-get -d source %s && dpkg-source -x %s_%s.dsc)" % (self.workdir,
 				buildreq.get_package(), buildreq.get_package(), buildreq.get_version() )
 		if not retval :
-			if not pybitclient.run_cmd (command, self.settings["dry_run"], None) :
+			if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 				retval = "fetch_source"
 		if not retval :
 			retval = "success"
@@ -60,7 +60,7 @@ class AptClient(VersionControlHandler):
 			self.cleandir = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method,
 				buildreq.get_package())
 			command = "rm -rf %s" % (self.cleandir)
-			if not pybitclient.run_cmd (command, self.settings["dry_run"], None) :
+			if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 				retval = "failed_clean"
 		if not retval :
 			retval = "success"

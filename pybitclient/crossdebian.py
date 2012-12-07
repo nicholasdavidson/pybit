@@ -32,7 +32,7 @@ class DebianBuildClient(PackageHandler):
 	def update_environment(self,name,pkg, conn_data):
 		retval = "success"
 		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
-		if not pybitclient.run_cmd (command, self.settings["dry_run"], None) :
+		if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 			retval = "build_update"
 		pybitclient.send_message (conn_data, retval)
 		if retval == "success":
@@ -53,12 +53,12 @@ class DebianBuildClient(PackageHandler):
 				buildreq.get_suite(), buildreq.transport.method)
 		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
 		command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % (package_dir)
-		if not pybitclient.run_cmd (command, self.options["dry_run"], logfile):
+		if pybitclient.run_cmd (command, self.options["dry_run"], logfile):
 			retval = "build-dep-wait"
 		if not retval :
 			command = "sbuild --debbuildopt=\"-a%s\" --setup-hook=\"/usr/bin/sbuild-cross.sh\" --arch=%s -A -s -d %s %s/%s_%s.dsc" % (
 				pkg.architecture, pkg.architecture, pkg.suite, srcdir, pkg.source, pkg.version)
-			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
+			if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "build_binary"
 		if not retval :
 			changes = "%s/%s_%s_%s.changes" % (os.getcwd(), buildreq.get_package(),
@@ -88,11 +88,11 @@ class DebianBuildClient(PackageHandler):
 		if not retval :
 			command = "dput -c %s %s %s %s" % (self.dput_cfg,
 				self.settings["dput"], self.settings["dput_dest"], changes)
-			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
+			if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "upload_fail"
 		if not retval :
 			command = "dcmd rm %s" % (changes)
-			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
+			if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "post-upload-clean-fail"
 			else :
 				retval = "success"
@@ -111,13 +111,13 @@ class DebianBuildClient(PackageHandler):
 		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
 		if os.path.isdir(package_dir) or self.settings["dry_run"]:
 			command = "(cd %s ; dpkg-buildpackage -S -d -uc -us)" % package_dir
-			if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
+			if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "build_dsc"
 			if not retval :
 				command = "sbuild --apt-update -d %s %s/%s_%s.dsc" % (
 					buildreq.get_suite(), srcdir,
 					buildreq.get_package(), buildreq.get_version())
-				if not pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
+				if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 					retval = "build_binary"
 			if not retval :
 				changes = "%s/%s_%s_%s.changes" % (os.getcwd(),

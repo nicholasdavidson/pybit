@@ -41,7 +41,7 @@ class SubversionClient(VersionControlHandler):
 				logging.debug ("Could not fetch source, no method URI found")
 				retval = "unrecognised uri"
 		if not retval :
-			if not pybitclient.run_cmd (command, self.settings["dry_run"], None) :
+			if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 				retval = "fetch_source"
 		if not retval :
 			retval = "success"
@@ -62,7 +62,7 @@ class SubversionClient(VersionControlHandler):
 			self.cleandir = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method,
 				buildreq.get_package())
 			command = "rm -rf %s" % (self.cleandir)
-			if not pybitclient.run_cmd (command, self.settings["dry_run"], None) :
+			if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 				retval = "failed_clean"
 		if not retval :
 			retval = "success"

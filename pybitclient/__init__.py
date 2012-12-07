@@ -389,7 +389,7 @@ contacted or None if the job doesn't exist
 	def __exit__(self, type, value, traceback):
 		self.disconnect()
 
-
+# returns zero on success or the exit value of the command.
 def run_cmd (cmd, simulate, logfile):
 	if simulate == True :
 		logging.debug ("I: Simulating: %s" % cmd)
