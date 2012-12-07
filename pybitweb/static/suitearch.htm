@@ -133,8 +133,12 @@
                                         <label for="arch_id">Arch: </label>
                                         <select name="arch_id"  id="arch_id" size="1" style="width:480px; display:block;"></select>
 
+										<br/>
+
                                         <label for="master_weight">Weight: </label>
                                         <input name="master_weight"  id="master_weight" type="text" value="0"></input>
+
+										<br/>
 
                                         <button type="submit" class="btn  btn-primary">
                                             Submit
@@ -144,9 +148,14 @@
                                         </button>
                                     </form>
                                     <table id="tbl_suitearches"  class="table table-bordered table-condensed">
+										<thead>
                                         <tr>
                                             <th colspan='2'>Suite Arches</th>
                                         </tr>
+										<tr><th>Name</th><th>Master Weight</th></tr>
+										</thead>
+										<tbody>
+										</tbody>
                                     </table>
                                 </div>
                             </div>
@@ -232,7 +241,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_suitearches" ).append ( "<tr><td>" + field.suite.name + "/" + field.arch.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
+                                $ ( "#tbl_suitearches" ).append ( "<tr><td>" + field.suite.name + "/" + field.arch.name + "<td>" + field.master_weight + "</td><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
                             } );
                         } );
                     } );
