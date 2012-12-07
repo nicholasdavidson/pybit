@@ -1,5 +1,6 @@
 db/schema.sql ./usr/share/dbconfig-common/data/pybit-web/install/postgresql
 db/populate.sql ./usr/share/dbconfig-common/data/pybit-web/install/postgresql
+db/updates/v1.sql ./usr/share/dbconfig-common/data/pybit-web/upgrade/postgresql/0.3.1
 pybitweb/static/ ./usr/share/pybit-web/
 configs/web/web.conf ./usr/share/pybit-web/
 debian/pybit-web-json.pl ./usr/share/pybit-web/
