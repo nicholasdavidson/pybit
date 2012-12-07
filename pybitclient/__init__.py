@@ -274,7 +274,7 @@ contacted or None if the job doesn't exist
 			self.listen_list[suite] = {
 				'route': route,
 				'queue': queue}
-		
+
 		self.conn_info = conn_info
 
 
@@ -393,16 +393,17 @@ contacted or None if the job doesn't exist
 def run_cmd (cmd, simulate, logfile):
 	if simulate == True :
 		logging.debug ("I: Simulating: %s" % cmd)
-		return True
+		return 0
 	else:
 		logging.debug("Running: %s" % cmd)
 		if logfile is not None :
 			command = cmd
 			cmd = "%s >> %s 2>&1" % (command, logfile)
-		if os.system (cmd) :
-			logging.debug("%s returned error" % cmd)
-			return False
-	return True
+		ret = os.system (cmd)
+		if (ret) :
+			logging.debug("%s returned error: %d" % (cmd, ret))
+			return ret
+	return 0
 
 def send_message (conn_data, msg) :
 	conn = None
