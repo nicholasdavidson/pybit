@@ -35,17 +35,22 @@ from pybit.models import BuildRequest, checkValue
 class DebianBuildClient(PackageHandler):
 	dput_cfg = "" #FIXME
 	dput_dest = ""
+	def _overall_success(self, message, conn_data):
+		error = 1
+		#If we have a message set we send back the message and failure 
+		if message :
+			pybitclient.send_message (conn_data, message)
+		else:
+			pybitclient.send_message (conn_data, "success")
+			error = 0
+		return error
 
 	def update_environment(self,name,pkg, conn_data):
-		retval = "success"
+		retval = None
 		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
 		if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 			retval = "build_update"
-		pybitclient.send_message (conn_data, retval)
-		if retval == "success":
-			return 0
-		else :
-			return 1
+		return retval
 
 	def build_command_handler (self, buildreq, conn_data) :
 		retval = None
@@ -117,8 +122,7 @@ class DebianBuildClient(PackageHandler):
 		if (not isinstance(buildreq, BuildRequest)):
 			logging.debug ("E: not able to identify package name.")
 			retval = "misconfigured"
-			pybitclient.send_message (conn_data, retval)
-			return
+			return self._overall_success(retval, conn_data)
 		srcdir = os.path.join (self.settings["buildroot"],
 				buildreq.get_suite(), buildreq.transport.method)
 		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
@@ -132,33 +136,34 @@ class DebianBuildClient(PackageHandler):
 			update_name = "%s-source" % buildreq.get_suite()
 		else :
 			update_name = buildreq.get_suite()
-		self.update_environment (update_name, buildreq, conn_data)
+		retval = self.update_environment (update_name, buildreq, conn_data)
 		# need an extra uscan stage to deal with non-native packages
 		# this requires the upstream release to be accessible to the client.
 		# i.e. unreleased versions of non-native packages cannot be built this way.
 		# See #18 for the unreleased build support issue.
-		if hasattr (buildreq, 'commands') and buildreq.commands :
-			retval = self.build_command_handler (buildreq, conn_data)
-		else : #61 - avoid dependency check if not using lvm
-			if self.settings["use_lvm"] and (os.path.isdir(package_dir) or self.settings["dry_run"]) :
-				control = os.path.join (package_dir, 'debian', 'control')
-				dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
-				command = "schroot -u root -c %s -- %s %s" % (buildreq.get_suite(), dep_check, os.path.realpath(control))
-				if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
-					retval = "build-dep-wait"
-			if not retval :
-				retval = self.orig_source_handler (buildreq, conn_data)
-			if not retval :
-				dsc_file = "%s/%s_%s.dsc" % (srcdir, buildreq.get_package(), buildreq.get_version())
-				if not os.path.exists (dsc_file) :
-					command = "(cd %s && dpkg-buildpackage -nc -S -d -uc -us)" % (package_dir)
+		if not retval:
+			if hasattr (buildreq, 'commands') and buildreq.commands :
+				retval = self.build_command_handler (buildreq, conn_data)
+			else : #61 - avoid dependency check if not using lvm
+				if self.settings["use_lvm"] and (os.path.isdir(package_dir) or self.settings["dry_run"]) :
+					control = os.path.join (package_dir, 'debian', 'control')
+					dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
+					command = "schroot -u root -c %s -- %s %s" % (buildreq.get_suite(), dep_check, os.path.realpath(control))
 					if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
-						retval = "build_dsc"
+						retval = "build-dep-wait"
+				if not retval :
+					retval = self.orig_source_handler (buildreq, conn_data)
+				if not retval :
+					dsc_file = "%s/%s_%s.dsc" % (srcdir, buildreq.get_package(), buildreq.get_version())
+					if not os.path.exists (dsc_file) :
+						command = "(cd %s && dpkg-buildpackage -nc -S -d -uc -us)" % (package_dir)
+						if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
+							retval = "build_dsc"
 		if not retval :
 			command = "sbuild -A -n -s -d %s %s/%s_%s.dsc" % (buildreq.get_suite(),
 				srcdir, buildreq.get_package(), buildreq.get_version())
 			ret = pybitclient.run_cmd (command, self.settings["dry_run"], logfile)
-			if (ret == 3):
+			if (ret == 3 or ret == 768):
 				retval = "build-dep-wait"
 			elif (ret):
 				retval = "build_binary"
@@ -172,13 +177,9 @@ class DebianBuildClient(PackageHandler):
 				command = "debsign -k%s %s" % (self.settings['debsignkey'], changes)
 				if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 					retval = "build_sign"
-		if not retval :
-			retval = "success"
-		pybitclient.send_message (conn_data, retval)
-		if retval == "success":
-			return 0
-		else :
-			return 1
+
+		return self._overall_success(retval, conn_data)
+
 
 	def upload (self, buildreq, conn_data):
 		retval = None
@@ -197,13 +198,8 @@ class DebianBuildClient(PackageHandler):
 			command = "dcmd rm %s" % (changes)
 			if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "post-upload-clean-fail"
-		if not retval :
-			retval = "success"
-		pybitclient.send_message (conn_data, retval)
-		if retval == "success":
-			return 0
-		else :
-			return 1
+
+		return self._overall_success(retval, conn_data)
 
 	def build_slave (self, buildreq, conn_data):
 		retval = None
@@ -228,7 +224,7 @@ class DebianBuildClient(PackageHandler):
 					buildreq.get_suite(), srcdir,
 					buildreq.get_package(), buildreq.get_version())
 				ret = pybitclient.run_cmd (command, self.settings["dry_run"], logfile)
-				if (ret == 3):
+				if (ret == 3 or ret == 768):
 					retval = "build-dep-wait"
 				elif (ret):
 					retval = "build_binary"
@@ -245,13 +241,9 @@ class DebianBuildClient(PackageHandler):
 						retval = "build_sign"
 		else:
 			retval = "Can't find build dir."
-		if not retval :
-			retval = "success"
-		pybitclient.send_message (conn_data, retval)
-		if retval == "success":
-			return 0
-		else :
-			return 1
+				#If we have a message set we send back the message and failure
+		
+		return self._overall_success(retval, conn_data)
 
 	def __init__(self, settings):
 		PackageHandler.__init__(self, settings)
