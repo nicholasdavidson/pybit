@@ -113,7 +113,7 @@ class DebianBuildClient(PackageHandler):
 		else :
 			command = "(cd ../ ; apt-get -d source %s/%s)" % (buildreq.get_package(), buildreq.get_suite())
 			if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
-				retval = "apt-get-source-failed"
+				logging.debug("apt-get source failed, proceeding anyway incase its a tcl update of a debian package.")
 		return retval
 
 	def build_master (self, buildreq, conn_data):
