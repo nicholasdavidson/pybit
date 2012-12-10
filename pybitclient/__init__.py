@@ -165,8 +165,10 @@ contacted or None if the job doesn't exist
 						else:
 							self.set_status(ClientMessage.failed, current_req)
 			elif self.state == "FATAL_ERROR":
-				current_req = self.current_request			
+				current_req = self.current_request
+				current_msg = self.current_msg
 				self._clean_current()
+				self.message_chan.basic_ack(current_msg.delivery_tag)			
 				self.set_status(ClientMessage.failed, current_req)
 				self.republish_job(current_req)
 
@@ -396,9 +398,9 @@ contacted or None if the job doesn't exist
 
 # returns zero on success or the exit value of the command.
 def run_cmd (cmd, simulate, logfile):
+	ret = 0
 	if simulate == True :
 		logging.debug ("I: Simulating: %s" % cmd)
-		return 0
 	else:
 		logging.debug("Running: %s" % cmd)
 		if logfile is not None :
@@ -407,8 +409,7 @@ def run_cmd (cmd, simulate, logfile):
 		ret = os.system (cmd)
 		if (ret) :
 			logging.debug("%s returned error: %d" % (cmd, ret))
-			return ret
-	return 0
+	return ret
 
 def send_message (conn_data, msg) :
 	conn = None
