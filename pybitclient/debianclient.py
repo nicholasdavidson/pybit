@@ -163,7 +163,7 @@ class DebianBuildClient(PackageHandler):
 			command = "sbuild -A -n -s -d %s %s/%s_%s.dsc" % (buildreq.get_suite(),
 				srcdir, buildreq.get_package(), buildreq.get_version())
 			ret = pybitclient.run_cmd (command, self.settings["dry_run"], logfile)
-			if (ret == 3 or ret == 768):
+			if (ret == 3 or ret == 768 or ret == 256):
 				retval = "build-dep-wait"
 			elif (ret):
 				retval = "build_binary"
