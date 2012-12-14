@@ -29,7 +29,7 @@
 import os
 import logging
 import pybitclient
-from buildclient import PackageHandler
+from pybitclient.buildclient import PackageHandler
 from pybit.models import BuildRequest, checkValue
 
 class DebianBuildClient(PackageHandler):
@@ -245,6 +245,9 @@ class DebianBuildClient(PackageHandler):
 
 		return self._overall_success(retval, conn_data)
 
+	def get_distribution (self) :
+		return 'Debian'
+
 	def __init__(self, settings):
 		PackageHandler.__init__(self, settings)
 		# Specific buildd options
@@ -253,3 +256,6 @@ class DebianBuildClient(PackageHandler):
 		self.dput_cfg = "/etc/pybit/client/dput.cf"
 		if not settings["dry_run"] :
 			os.chdir (settings["buildroot"])
+
+def createPlugin (settings) :
+	return DebianBuildClient (settings)

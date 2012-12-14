@@ -137,11 +137,11 @@ if __name__ == '__main__':
 			signal.SIGHUP:  signal_handler,
 			signal.SIGUSR1: None,
 			}
-		logging.debug ("I: Daemonised")
+		logging.debug ("Daemonised")
 	else :
 #		FORMAT = format or '%(asctime)s %(msg)s'
 		logging.basicConfig(level=logging.DEBUG)
-		logging.debug ("I: Not daemonised")
+		logging.debug ("Not daemonised")
 
 	(settings, opened_path) = pybit.load_settings(options.conf_file)
 

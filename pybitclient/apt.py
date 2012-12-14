@@ -22,7 +22,7 @@
 
 import os
 import pybitclient
-from buildclient import VersionControlHandler
+from pybitclient.buildclient import VersionControlHandler
 
 class AptClient(VersionControlHandler):
 	def fetch_source(self, buildreq, conn_data):
@@ -72,3 +72,7 @@ class AptClient(VersionControlHandler):
 
 	def __init__(self, settings):
 		VersionControlHandler.__init__(self, settings)
+		self.method = "apt"
+
+def createPlugin (settings) :
+	return AptClient (settings)

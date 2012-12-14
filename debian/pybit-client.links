@@ -1,0 +1,4 @@
+/usr/share/pyshared/pybitclient/subversion.py ./var/lib/pybit-client.d/subversion.py
+/usr/share/pyshared/pybitclient/git.py ./var/lib/pybit-client.d/git.py
+/usr/share/pyshared/pybitclient/debianclient.py ./var/lib/pybit-client.d/debianclient.py
+/usr/share/pyshared/pybitclient/apt.py ./var/lib/pybit-client.d/apt.py
