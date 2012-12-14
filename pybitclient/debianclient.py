@@ -237,7 +237,7 @@ class DebianBuildClient(PackageHandler):
 			return 1
 
 	def get_distribution (self) :
-		return self.settings['distribution']
+		return 'Debian'
 
 	def __init__(self, settings):
 		PackageHandler.__init__(self, settings)
