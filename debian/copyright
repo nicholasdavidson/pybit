@@ -4,7 +4,7 @@ Licence: GPL-2+
 
 Files: pybitclient/daemonlogger.py
 Copyright: 2010 Bud P. Bruegger <bud@sistema.it>
-           2012 Neil Williams <linux@codehelp.co.uk>
+           2012 Neil Williams <codehelp@debian.org>
 Licence: BSD
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions are
@@ -32,8 +32,45 @@ Licence: BSD
    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+Files: pybitweb/bootstrap/css/*
+Copyright: 2012 Twitter, Inc
+           2012 James Bennet <James.Bennet@toby-churchill.com>
+License: Apache License v2.0
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+On Debian systems, the complete text of the Apache License v2.0
+can be found in `/usr/share/common-licenses/Apache-2.0'.
+
+Files: pybitweb/bootstrap/js/*
+Copyright: 2012 Twitter, Inc
+License: Apache License v2.0
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+On Debian systems, the complete text of the Apache License v2.0
+can be found in `/usr/share/common-licenses/Apache-2.0'.
+
 Files: *
-Copyright: 2012 Neil Williams <linux@codehelp.co.uk>
+Copyright: 2012 Neil Williams <codehelp@debian.org>
            2012 Nick Davidson <nickd@toby-churchill.com>,
            2012 Simon Haswell <simonh@toby-churchill.com>,
            2012 Neil Williams <neilw@toby-churchill.com>,
