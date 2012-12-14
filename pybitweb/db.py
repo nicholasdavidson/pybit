@@ -851,8 +851,9 @@ class Database(object):
 			jobs = []
 			for i in res:
 				jobs.append(self.get_job(i['job_id']))
-			return jobs
 			cur.close()
+			return jobs
+
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving unfinished jobs. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
@@ -898,14 +899,21 @@ class Database(object):
 	def delete_job(self,job_id):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("DELETE FROM jobstatus WHERE job_id=%s  RETURNING id",(job_id,))
-			self.conn.commit()
-			cur.execute("DELETE FROM job WHERE id=%s  RETURNING id",(job_id,))
+			cur.execute("WITH latest_status AS (SELECT DISTINCT ON (job_id) job_id, status.name FROM jobstatus LEFT JOIN status ON status_id=status.id WHERE job_id=%s ORDER BY job_id, time DESC) SELECT job_id, name FROM latest_status WHERE name!='Building'",(job_id,))
 			res = cur.fetchall()
 			self.conn.commit()
-			if res[0]['id'] == job_id:
-				cur.close()
-				return True
+			if len(res) > 0:
+				cur.execute("DELETE FROM jobstatus WHERE job_id=%s RETURNING id",(job_id,))
+				self.conn.commit()
+				cur.execute("DELETE FROM job WHERE id=%s  RETURNING id",(job_id,))
+				res = cur.fetchall()
+				self.conn.commit()
+				if res[0]['id'] == job_id:
+					cur.close()
+					return True
+				else:
+					cur.close()
+					return False
 			else:
 				cur.close()
 				return False
