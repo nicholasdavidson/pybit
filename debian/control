@@ -66,8 +66,8 @@ Description: pybit web frontend
 
 Package: pybit-common
 Architecture: all
-Depends: python-amqplib, python-debian, python-jsonpickle,
- python-daemon, ${python:Depends}, ${misc:Depends}
+Depends: python-amqplib, python-jsonpickle, python-daemon,
+ ${python:Depends}, ${misc:Depends}
 Description: Common objects for pybit
  Contains object definitions to common
  Python objects between Pybit services
