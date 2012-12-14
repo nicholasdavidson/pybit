@@ -168,7 +168,7 @@ contacted or None if the job doesn't exist
 				current_req = self.current_request
 				current_msg = self.current_msg
 				self._clean_current()
-				self.message_chan.basic_ack(current_msg.delivery_tag)			
+				self.message_chan.basic_ack(current_msg.delivery_tag)
 				self.set_status(ClientMessage.failed, current_req)
 				self.republish_job(current_req)
 
@@ -406,7 +406,7 @@ def run_cmd (cmd, simulate, logfile):
 		if logfile is not None :
 			command = cmd
 			cmd = "%s >> %s 2>&1" % (command, logfile)
-		ret = os.system (cmd)
+		ret = os.system (cmd) >> 8
 		if (ret) :
 			logging.debug("%s returned error: %d" % (cmd, ret))
 	return ret
