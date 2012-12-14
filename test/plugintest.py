@@ -35,12 +35,10 @@ def main():
 	plugins = []
 	distros = {}
 	handlers = {}
-#	plugin_dir = "/tmp/plugin/pybit.d/"
 	plugin_dir = "/var/lib/pybit-client.d/"
 	(settings, opened_path) = pybit.load_settings("client/client.conf")
 	if not os.path.exists (plugin_dir):
-		plugin_dir = os.path.realpath ("../pybitclient/")
-#		os.sys.exit (1)
+		plugin_dir = os.path.join (os.getcwd(), "pybitclient/")
 	for name in os.listdir(plugin_dir):
 		if name.endswith(".py"):
 			plugins.append(name.strip('.py'))
@@ -58,7 +56,6 @@ def main():
 			plugin = mod.createPlugin(settings)
 			if (hasattr(plugin, 'get_distribution') and plugin.get_distribution() is not None) :
 				client = plugin
-				print dir(plugin)
 			elif (hasattr(plugin, 'method') and plugin.method is not None) :
 				vcs = plugin
 			else :
@@ -75,11 +72,8 @@ def main():
 		if vcs :
 			if (vcs.method not in handlers) :
 				handlers[vcs.method] = vcs;
-	if ('Debian' in distros):
-		dist = distros["Debian"]
-		print "Have a build client for %s" % dist.get_distribution()
-	if ('svn' in handlers):
-		print "Have a %s Handler for %s method" % (handlers['svn'].__class__.__name__, 'svn')
+	print "List of available handlers: %s" % list(handlers.keys())
+	print "List of available distributions: %s" % list(distros.keys())
 	return 0
 
 if __name__ == '__main__':
