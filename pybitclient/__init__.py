@@ -23,6 +23,7 @@
 
 import re
 import os
+import imp
 import errno
 import json
 import time
@@ -32,10 +33,7 @@ from amqplib import client_0_8 as amqp
 import pybit
 from pybit.models import TaskComplete, PackageInstance, ClientMessage, BuildRequest, CommandRequest, AMQPConnection,\
 	CancelRequest
-from debianclient import DebianBuildClient
-from subversion import SubversionClient
-from git import GitClient
-from apt import AptClient
+from pybitclient.buildclient import PackageHandler, VersionControlHandler
 import multiprocessing
 import socket
 import requests
@@ -169,7 +167,48 @@ contacted or None if the job doesn't exist
 		else:
 			logging.debug ("Unhandled state: %s" % (new_state))
 
-
+	def plugin_handler (self):
+		plugin = None
+		vcs = None
+		client = None
+		plugins = []
+		plugin_dir = "/var/lib/pybit-client.d/"
+		if not os.path.exists (plugin_dir):
+			plugin_dir = os.path.realpath ("./pybitclient/")
+		for name in os.listdir(plugin_dir):
+			if name.endswith(".py"):
+				plugins.append(name.strip('.py'))
+		for name in plugins :
+			if (name == "buildclient" or name == "__init__"):
+				continue
+			plugin_path = [ plugin_dir ];
+			fp, pathname, description = imp.find_module(name, plugin_path)
+			try:
+				mod = imp.load_module(name, fp, pathname, description)
+				if not (hasattr(mod, 'createPlugin')) :
+					print "Error: plugin path contains an unrecognised module '%s'." % (name)
+					return
+				plugin = mod.createPlugin(self.settings)
+				if (hasattr(plugin, 'get_distribution') and plugin.get_distribution() is not None) :
+					client = plugin
+				elif (hasattr(plugin, 'method') and plugin.method is not None) :
+					vcs = plugin
+				else :
+					print "Error: plugin path contains a recognised plugin but the plugin API for '%s' is incorrect." % (name)
+					return
+			finally:
+				# Since we may exit via an exception, close fp explicitly.
+				if fp:
+					fp.close()
+			if client:
+				name = client.get_distribution()
+				if (name not in self.distros) :
+					self.distros[name] = client
+			if vcs :
+				if (vcs.method not in self.handlers) :
+					self.handlers[vcs.method] = vcs;
+		print "List of available handlers: %s" % list(self.handlers.keys())
+		print "List of available distributions: %s" % list(self.distros.keys())
 
 	def idle_handler(self, msg, decoded):
 		if isinstance(decoded, BuildRequest):
@@ -179,14 +218,8 @@ contacted or None if the job doesn't exist
 				status = self.get_status()
 				if (status == ClientMessage.waiting or
 					status == ClientMessage.blocked):
-					if (self.current_request.transport.method == "svn" or
-						self.current_request.transport.method == "svn+ssh"):
-						self.vcs_handler = SubversionClient(self.settings)
-					elif (self.current_request.transport.method == "git") :
-						self.vcs_handler = GitClient(self.settings)
-					elif (self.current_request.transport.method == "apt") :
-						self.vcs_handler = AptClient(self.settings)
-					else:
+					self.vcs_handler = self.handlers(self.current_request.transport.method)
+					if (self.vcs_handler is None):
 						self.overall_success = False
 						self.move_state("IDLE")
 						return
@@ -264,6 +297,8 @@ contacted or None if the job doesn't exist
 		self.message_chan = None
 		self.settings = settings
 		self.poll_time = 60
+		self.distros = {}
+		self.handlers = {}
 		if 'poll_time' in self.settings:
 			self.poll_time = self.settings['poll_time']
 		for suite in suites:
@@ -274,12 +309,13 @@ contacted or None if the job doesn't exist
 			self.listen_list[suite] = {
 				'route': route,
 				'queue': queue}
-		
+		self.plugin_handler ()
 		self.conn_info = conn_info
 
-
-		if (pkg_format == "deb") :
-			self.format_handler = DebianBuildClient(self.settings)
+		if (self.distribution in self.distros):
+			self.format_handler = self.distros[self.distribution]
+		elif (self.pkg_format == "deb" and "Debian" in self.distros) :
+			self.format_handler = self.distros['Debian']
 		else:
 			logging.debug ("Empty build client")
 			self.format_handler = None
