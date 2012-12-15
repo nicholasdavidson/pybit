@@ -4,7 +4,6 @@ Priority: extra
 Maintainer: Neil Williams <codehelp@debian.org>
 Uploaders: Nick Davidson <nickd@toby-churchill.com>,
  Simon Haswell <simonh@toby-churchill.com>,
- Neil Williams <neilw@toby-churchill.com>,
  Nick Bane <nick@cecomputing.co.uk>,
  James Bennet <James.Bennet@toby-churchill.com>
 Build-Depends: debhelper (>= 7.0.50~), docbook-xsl, xsltproc, po-debconf,
@@ -21,45 +20,57 @@ Package: pybit-svn
 Architecture: all
 Depends: subversion, curl, ${misc:Depends}
 Description: Subversion post commit hook for pybit
- Provides a Subversion post commit hook to check for
+ pyBit uses message queues to create a distributed, cross-platform
+ buildd toolkit using a collection of buildds, using source from
+ various VCS clients. pyBit is intended to support rapidly evolving
+ software collections and can support multiple VCS frontends and
+ multiple build backends.
+ .
+ This package provides a Subversion post commit hook to check for
  interesting changes in the repository and post a directory back
  to the controller using curl.
  .
  Currently, only Subversion is supported. The svn hook
- does not depend on the rest of Pybit or on Python.
+ does not depend on the rest of pyBit or on Python.
 
 Package: pybit-client
 Architecture: all
 Depends: sbuild, dput, dpkg-dev, pybit-common, python-requests,
  subversion, pbuilder, libcrypt-ssleay-perl, libjson-perl,
  ${python:Depends}, ${misc:Depends}
-Description: buildd client support for Pybit
- This package provides the Debian buildd client for
- Pybit to build packages using sbuild.
+Description: buildd client support for pybit
+ pyBit uses message queues to create a distributed, cross-platform
+ buildd toolkit using a collection of buildds, using source from
+ various VCS clients. pyBit is intended to support rapidly evolving
+ software collections and can support multiple VCS frontends and
+ multiple build backends.
  .
- Each PyBit buildd client needs to install and
- configure this package to give each client a unique
- identifier per pybit-controller.
+ This package provides the Debian buildd client for pyBit to build
+ packages using sbuild.
+ .
+ Each pyBit buildd client needs to install and configure this package
+ to give each client a unique identifier per pyBit database.
 
 Package: pybit-web
 Architecture: all
 Depends: python-psycopg2 (>= 2.4.2-1~), pybit-common,
  dbconfig-common, libjson-perl, ucf,
  ${python:Depends}, ${misc:Depends}
-Recommends: libjs-jquery(>= 1.4.2-2), libjs-jquery-form, postgresql-client, libapache2-mod-wsgi
+Recommends: libjs-jquery(>= 1.4.2-2), libjs-jquery-form,
+ postgresql-client, libapache2-mod-wsgi
 Suggests: rabbitmq-server
 Replaces: pybit-common (<= 0.1.1)
-Description: pybit web frontend
- This package provides a reporting and custom-build
- request interface for the data managed by pybit-controller.
+Description: buildd toolkit based on message queues (web frontend)
+ pyBit uses message queues to create a distributed, cross-platform
+ buildd toolkit using a collection of buildds, using source from
+ various VCS clients. pyBit is intended to support rapidly evolving
+ software collections and can support multiple VCS frontends and
+ multiple build backends.
  .
- This package also provides the controller agent which accepts
- build requests from VCS hooks and the web API to pybit-client
- installations and maintains the status database for PyBit.
- .
- At this time, the static (front-end) web pages do need to be
- served from the same machine as is serving the controller web
- application.
+ This package provides a reporting and custom-build request
+ interface for the status database and the controller agent for
+ PyBit. The static web pages do need to be served from the same
+ machine as is running the pybit-web application.
  .
  A single RabbitMQ server is also required, it can be installed on
  any machine which is visible to the controller and all clients.
@@ -69,18 +80,29 @@ Architecture: all
 Depends: python-amqplib, python-jsonpickle, python-daemon,
  ${python:Depends}, ${misc:Depends}
 Description: Common objects for pybit
- Contains object definitions to common
- Python objects between Pybit services
- and the Postgres database schema for PyBit.
+ pyBit uses message queues to create a distributed, cross-platform
+ buildd toolkit using a collection of buildds, using source from
+ various VCS clients. pyBit is intended to support rapidly evolving
+ software collections and can support multiple VCS frontends and
+ multiple build backends.
+ .
+ This package contains the object definitions of Python objects 
+ common to pyBit components as well as the Postgres database
+ schema for pyBit.
 
 Package: pybit-watcher
 Architecture: all
 Depends: python-pyinotify, python-daemon, pybit-common, reprepro,
  ${python:Depends}, ${misc:Depends}
 Description: watches incoming directories for reprepro
+ pyBit uses message queues to create a distributed, cross-platform
+ buildd toolkit using a collection of buildds, using source from
+ various VCS clients. pyBit is intended to support rapidly evolving
+ software collections and can support multiple VCS frontends and
+ multiple build backends.
+ .
  This package provides a watcher which runs as a daemon and monitors a
  directory for changes files then runs the appropriate reprepro rule.
  .
  This allows pybit clients to upload without waiting for the packages
- to be processed by the archive.
-
+ to be processed by reprepro.

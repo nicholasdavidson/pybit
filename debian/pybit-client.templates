@@ -1,58 +1,57 @@
 Template: pybit-client/clientid
 Type: string
-_Description: Specify pybit client id string:
- Each client needs to have a unique string to identify itself within
- the job list and queues.
+_Description: PyBit client-ID string:
+ Please specify a unique string that can be used to identify this client
+ within the job list and queues.
 
 Template: pybit-client/lvmsnapshot
 Type: boolean
 Default: false
-_Description: Use lvm snapshots on this client?
- If your sbuild configuration uses lvm-snapshots, pybit-client can
- ensure that your snapshot apt cache data remains updated whilst
- keeping the snapshot clean.
+_Description: Use LVM snapshots on this client?
+ If the sbuild configuration uses LVM snapshots, pybit-client can ensure
+ that your snapshot APT cache data is kept up-to-date whilst keeping the
+ snapshot clean.
 
 Template: pybit-client/buildroot
 Type: string
 Default: /home/buildd/pybit
-_Description: Specify the buildd location:
- Please enter a writeable directory where the version control handler
+_Description: Buildd location:
+ Please specify a writeable directory where the version control handler
  and the upload task can write files.
  .
- If this is empty, the default /home/buildd/pybit will be used.
+ If this is left blank, the default /home/buildd/pybit will be used.
 
 Template: pybit-client/rabbitmqhost
 Type: string
-_Description: Specify the host machine running RabbitMQ:
- Each buildd client needs to communicate with a single server running
- rabbitMQ from which it receives the details of the jobs which the
- client needs to attempt to build.
+_Description: Host machine running RabbitMQ:
+ Please specify the server running RabbitMQ that this buildd client will
+ communicate with, receiving details of the jobs it needs to attempt to
+ build.
 
 Template: pybit-client/dputdest
 Type: string
-_Description: Specify the dput destination for packages to be uploaded:
- Each client has a dput config for a specific upload machine, specify
- that config name here.
+_Description: Destination for dput package uploads:
+ Please specify the machine that this client will use as upload host.
+ This destination will be stored in its dput configuration.
  .
  This entry must not be empty.
 
 Template: pybit-client/missingid
 Type: note
-_Description: Client id string cannot be empty!
- Any client with an empty clientid (or a clientid which matches an
- existing clientid) will fail to start.
+_Description: Client-ID string cannot be empty!
+ This client will fail to start until it receives a unique client-ID.
 
 Template: pybit-client/missinghost
 Type: note
-_Description: RabbitMQ host is empty!
- Any client with a missing rabbitmq host will not receive any
- messages from the queue and will not build any packages.
+_Description: Missing RabbitMQ hostname!
+ This client will not receive any messages from the queue and will
+ not build any packages until a RabbitMQ host is specified.
  .
  Please edit /etc/pybit/client/client.conf after configuration.
 
 Template: pybit-client/defaultdput
 Type: note
-_Description: dput destination cannot be empty!
+_Description: Missing dput destination!
  pybit-client is not intended to upload to unspecified dput
  destinations like ftp-master.debian.org and does not currently
  support GnuPG signed uploads.
