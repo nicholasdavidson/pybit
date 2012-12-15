@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pybit\n"
 "Report-Msgid-Bugs-To: pybit@packages.debian.org\n"
-"POT-Creation-Date: 2012-11-23 08:03+0000\n"
+"POT-Creation-Date: 2012-12-15 22:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,79 +20,78 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../pybit-client.templates:1001
-msgid "Specify pybit client id string:"
+msgid "PyBit client-ID string:"
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-client.templates:1001
 msgid ""
-"Each client needs to have a unique string to identify itself within the job "
-"list and queues."
+"Please specify a unique string that can be used to identify this client "
+"within the job list and queues."
 msgstr ""
 
 #. Type: boolean
 #. Description
 #: ../pybit-client.templates:2001
-msgid "Use lvm snapshots on this client?"
+msgid "Use LVM snapshots on this client?"
 msgstr ""
 
 #. Type: boolean
 #. Description
 #: ../pybit-client.templates:2001
 msgid ""
-"If your sbuild configuration uses lvm-snapshots, pybit-client can ensure "
-"that your snapshot apt cache data remains updated whilst keeping the "
-"snapshot clean."
+"If the sbuild configuration uses LVM snapshots, pybit-client can ensure that "
+"your snapshot APT cache data is kept up-to-date whilst keeping the snapshot "
+"clean."
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-client.templates:3001
-msgid "Specify the buildd location:"
+msgid "Buildd location:"
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-client.templates:3001
 msgid ""
-"Please enter a writeable directory where the version control handler and the "
-"upload task can write files."
+"Please specify a writeable directory where the version control handler and "
+"the upload task can write files."
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-client.templates:3001
-msgid "If this is empty, the default /home/buildd/pybit will be used."
+msgid "If this is left blank, the default /home/buildd/pybit will be used."
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-client.templates:4001 ../pybit-web.templates:1001
-msgid "Specify the host machine running RabbitMQ:"
+msgid "Host machine running RabbitMQ:"
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-client.templates:4001
 msgid ""
-"Each buildd client needs to communicate with a single server running "
-"rabbitMQ from which it receives the details of the jobs which the client "
-"needs to attempt to build."
+"Please specify the server running RabbitMQ that this buildd client will "
+"communicate with, receiving details of the jobs it needs to attempt to build."
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-client.templates:5001
-msgid "Specify the dput destination for packages to be uploaded:"
+msgid "Destination for dput package uploads:"
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-client.templates:5001
 msgid ""
-"Each client has a dput config for a specific upload machine, specify that "
-"config name here."
+"Please specify the machine that this client will use as upload host. This "
+"destination will be stored in its dput configuration."
 msgstr ""
 
 #. Type: string
@@ -104,29 +103,27 @@ msgstr ""
 #. Type: note
 #. Description
 #: ../pybit-client.templates:6001
-msgid "Client id string cannot be empty!"
+msgid "Client-ID string cannot be empty!"
 msgstr ""
 
 #. Type: note
 #. Description
 #: ../pybit-client.templates:6001
-msgid ""
-"Any client with an empty clientid (or a clientid which matches an existing "
-"clientid) will fail to start."
+msgid "This client will fail to start until it receives a unique client-ID."
 msgstr ""
 
 #. Type: note
 #. Description
 #: ../pybit-client.templates:7001 ../pybit-web.templates:4001
-msgid "RabbitMQ host is empty!"
+msgid "Missing RabbitMQ hostname!"
 msgstr ""
 
 #. Type: note
 #. Description
 #: ../pybit-client.templates:7001
 msgid ""
-"Any client with a missing rabbitmq host will not receive any messages from "
-"the queue and will not build any packages."
+"This client will not receive any messages from the queue and will not build "
+"any packages until a RabbitMQ host is specified."
 msgstr ""
 
 #. Type: note
@@ -138,7 +135,7 @@ msgstr ""
 #. Type: note
 #. Description
 #: ../pybit-client.templates:8001
-msgid "dput destination cannot be empty!"
+msgid "Missing dput destination!"
 msgstr ""
 
 #. Type: note
@@ -153,56 +150,60 @@ msgstr ""
 #. Description
 #: ../pybit-web.templates:1001
 msgid ""
-"The web frontend and the pybit controller need to communicate with a single "
-"server running rabbitMQ to which it sends the details of the  jobs to be "
-"built."
+"Please specify the server running RabbitMQ with which the web front-end and "
+"the pyBit controller need to communicate, sending the details of the jobs to "
+"be built."
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-web.templates:2001
-msgid "Specify the fully qualified hostname for the web frontend:"
-msgstr ""
-
-#. Type: string
-#. Description
-#: ../pybit-web.templates:2001
-msgid "The pybit controller and the web frontend run on the same machine."
+msgid "Fully qualified hostname for the web front-end:"
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-web.templates:2001
 msgid ""
-"You may choose to use a named apache virtual host or accept the default if "
-"all your pybit clients also run on this one machine."
+"Please specify the host running the web front-end (which will also be "
+"running the pyBit controller)."
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-web.templates:2001
 msgid ""
-"The hostname is passed down to the build clients to allow clients to post "
+"You may choose to use a named Apache virtual host or accept the default if "
+"all the pyBit clients also run on this one machine."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:2001
+msgid ""
+"The hostname is passed down to the build clients to allow them to post "
 "failure messages back to the controller."
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-web.templates:3001
-msgid "Specify the port on which the web frontend should be available:"
-msgstr ""
-
-#. Type: string
-#. Description
-#: ../pybit-web.templates:3001
-msgid "For a localhost installation, it is probably easiest to use 8080."
+msgid "Port for web front-end:"
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../pybit-web.templates:3001
 msgid ""
-"If the web frontend is running on a dedicated host or an apache virtual "
+"Please specify the port that the web front-end should be available on. If it "
+"is serving localhost, it is probably easiest to use port 8080."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:3001
+msgid ""
+"If the web front-end is running on a dedicated host or an Apache virtual "
 "host, it may be preferable to use port 80."
 msgstr ""
 
@@ -210,8 +211,8 @@ msgstr ""
 #. Description
 #: ../pybit-web.templates:4001
 msgid ""
-"If the controller has a missing rabbitmq host, none of the build clients "
-"will receive any messages on the queue and will not build any packages."
+"If no RabbitMQ host is specified for the pyBit controller, the build clients "
+"will not receive any messages on the queue or build any packages."
 msgstr ""
 
 #. Type: note
