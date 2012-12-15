@@ -4,6 +4,8 @@ pybit (0.4.0-2) UNRELEASED; urgency=low
     english and update control information to be more general purpose.
   * Update templates.pot with new text.
   * Remove my duplicate listing in uploaders.
+  * Comment out watch file contents as github have disabled the
+    downloads support.
 
  -- Neil Williams <codehelp@debian.org>  Sat, 15 Dec 2012 22:12:40 +0000
 

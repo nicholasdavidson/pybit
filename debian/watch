@@ -1,4 +1,4 @@
 # Compulsory line, this is a version 3 file
-version=3
-
-http://github.com/nicholasdavidson/pybit/downloads /downloads/nicholasdavidson/pybit/pybit-(.*).tar.gz
+# github have disabled the downloads page.
+#version=3
+#http://github.com/nicholasdavidson/pybit/downloads /downloads/nicholasdavidson/pybit/pybit-(.*).tar.gz
