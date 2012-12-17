@@ -225,7 +225,7 @@ contacted or None if the job doesn't exist
 				status = self.get_status()
 				if (status == ClientMessage.waiting or
 					status == ClientMessage.blocked):
-					self.vcs_handler = self.handlers(self.current_request.transport.method)
+					self.vcs_handler = self.handlers[self.current_request.transport.method]
 					if (self.vcs_handler is None):
 						self.overall_success = False
 						self.move_state("IDLE")
