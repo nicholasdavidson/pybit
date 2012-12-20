@@ -97,13 +97,13 @@ PKG=`basename $PKGDIR`
 CHGLG=`echo ${RES} | sed -e 's/^. //'`
 TMPFILE=`mktemp`
 svn cat file://${REPOS}/${CHGLG} > ${TMPFILE}
-VERSION=`dpkg-parsechangelog -l${TMPFILE} | grep Version | sed -e 's/^.*: //'`
-SUITE=`dpkg-parsechangelog -l${TMPFILE} | grep Distribution | sed -e 's/^.*: //'`
+VERSION=`dpkg-parsechangelog -l${TMPFILE} | grep '^Version: ' | sed -e 's/^.*: //'`
+SUITE=`dpkg-parsechangelog -l${TMPFILE} | grep '^Distribution: ' | sed -e 's/^.*: //'`
 # replace the svndirectory name with the actual source package name, in case it differs
-PKG=`dpkg-parsechangelog -l${TMPFILE} | grep Source |sed -e 's/^.*: //'`
+PKG=`dpkg-parsechangelog -l${TMPFILE} | grep '^Source: ' |sed -e 's/^.*: //'`
 rm ${TMPFILE}
 CTRL=`echo ${CHGLG} | sed -e 's/changelog$/control/'`
-LIST=`svn cat file://${REPOS}/${CTRL} | grep Architecture| cut -d':' -f2|sort -u|tr '\n' ','|sed -e 's/ //g'| sed -e 's/,$//'`
+LIST=`svn cat file://${REPOS}/${CTRL} | grep '^Architecture: '| cut -d':' -f2|sort -u|tr '\n' ','|sed -e 's/ //g'| sed -e 's/,$//'`
 DATASTR="uri=${ANON_SVN}/${PKGDIR}"
 DATASTR="${DATASTR}&method=svn"
 DATASTR="${DATASTR}&distribution=${DISTRO_NAME}"
