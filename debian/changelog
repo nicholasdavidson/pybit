@@ -1,5 +1,6 @@
-pybit (0.4.0-2) UNRELEASED; urgency=low
+pybit (0.4.1-1) experimental; urgency=low
 
+  * New upstream release.
   * Apply updates of debconf templates after review on debian-l10n-
     english and update control information to be more general purpose.
   * Update templates.pot with new text.
@@ -7,8 +8,10 @@ pybit (0.4.0-2) UNRELEASED; urgency=low
   * Comment out watch file contents as github have disabled the
     downloads support.
   * Add homepage to control.
+  * [l10n:cs] Updated Czech translation of PO debconf template for
+    pybit (Closes: #696427)
 
- -- Neil Williams <codehelp@debian.org>  Sat, 15 Dec 2012 22:12:40 +0000
+ -- Neil Williams <codehelp@debian.org>  Fri, 21 Dec 2012 11:24:20 +0000
 
 pybit (0.4.0-1) experimental; urgency=low
 
