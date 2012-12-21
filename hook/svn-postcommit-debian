@@ -104,13 +104,13 @@ PKG=`dpkg-parsechangelog -l${TMPFILE} | grep '^Source: ' |sed -e 's/^.*: //'`
 rm ${TMPFILE}
 CTRL=`echo ${CHGLG} | sed -e 's/changelog$/control/'`
 LIST=`svn cat file://${REPOS}/${CTRL} | grep '^Architecture: '| cut -d':' -f2|sort -u|tr '\n' ','|sed -e 's/ //g'| sed -e 's/,$//'`
-DATASTR="uri=${ANON_SVN}/${PKGDIR}"
-DATASTR="${DATASTR}&method=svn"
-DATASTR="${DATASTR}&distribution=${DISTRO_NAME}"
-DATASTR="${DATASTR}&vcs_id=${REV}"
-DATASTR="${DATASTR}&architecture_list=${LIST}"
-DATASTR="${DATASTR}&package_version=${VERSION}"
-DATASTR="${DATASTR}&package=${PKG}"
-DATASTR="${DATASTR}&suite=${SUITE}"
-DATASTR="${DATASTR}&format=deb"
-echo /usr/bin/curl -i -X POST ${PYBIT_HTTP} --data ${DATASTR} --user "${USERNAME}:${PASSWORD}"
+DATASTR="--data-urlencode method=svn"
+DATASTR="${DATASTR} --data-urlencode distribution=${DISTRO_NAME}"
+DATASTR="${DATASTR} --data-urlencode vcs_id=${REV}"
+DATASTR="${DATASTR} --data-urlencode architecture_list=${LIST}"
+DATASTR="${DATASTR} --data-urlencode package_version=${VERSION}"
+DATASTR="${DATASTR} --data-urlencode package=${PKG}"
+DATASTR="${DATASTR} --data-urlencode suite=${SUITE}"
+DATASTR="${DATASTR} --data-urlencode format=deb"
+DATASTR="${DATASTR} --data-urlencode uri=${ANON_SVN}/${PKGDIR}"
+/usr/bin/curl -i -X POST ${PYBIT_HTTP} ${DATASTR} --user "${USERNAME}:${PASSWORD}"
