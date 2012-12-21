@@ -22,58 +22,82 @@
 
 import imp
 import os
+import logging
+import sys
+import unittest
 import pybit
 from pybitclient.buildclient import PackageHandler, VersionControlHandler
 
 handler_api = [ 'clean_source', 'fetch_source', 'get_srcdir', 'is_dry_run', 'method' ]
 build_api   = [ 'build_master', 'build_slave', 'update_environment', 'upload' ]
 
+class TestClient(unittest.TestCase) :
+	def setUp (self):
+		return
+
+	options = {}
+
+	def test_01_plugin (self) :
+		log = logging.getLogger( "testCase" )
+		log.debug(" ")
+		plugin = None
+		vcs = None
+		client = None
+		plugins = []
+		distros = {}
+		handlers = {}
+		plugin_dir = "/var/lib/pybit-client.d/"
+		(settings, opened_path) = pybit.load_settings("client/client.conf")
+		if not os.path.exists (plugin_dir):
+			plugin_dir = os.path.join (os.getcwd(), "pybitclient/")
+		self.assertTrue (os.path.isdir(plugin_dir))
+		for name in os.listdir(plugin_dir):
+			if name.endswith(".py"):
+				plugins.append(name.strip('.py'))
+		for name in plugins :
+			if (name == "buildclient" or name == "__init__"):
+				continue
+			plugin_path = [ plugin_dir ];
+			fp, pathname, description = imp.find_module(name, plugin_path)
+			try:
+				mod = imp.load_module(name, fp, pathname, description)
+				self.assertTrue (mod)
+				self.assertTrue (hasattr(mod, 'createPlugin'))
+				plugin = mod.createPlugin(settings)
+				self.assertTrue (plugin)
+				self.assertTrue (hasattr(plugin, 'get_distribution') or hasattr(plugin, 'method'))
+				if (hasattr(plugin, 'get_distribution') and plugin.get_distribution() is not None) :
+					client = plugin
+				elif (hasattr(plugin, 'method') and plugin.method is not None) :
+					vcs = plugin
+				else :
+					self.assertTrue(False)
+					continue
+			finally:
+				# Since we may exit via an exception, close fp explicitly.
+				if fp:
+					fp.close()
+			if client:
+				name = client.get_distribution()
+				if (name not in distros) :
+					distros[name] = client
+			if vcs :
+				if (vcs.method not in handlers) :
+					handlers[vcs.method] = vcs;
+		self.assertTrue (len(handlers.keys()) > 0)
+		self.assertTrue (len(distros.keys()) > 0)
+
+
 def main():
-	plugin = None
-	vcs = None
-	client = None
-	plugins = []
-	distros = {}
-	handlers = {}
-	plugin_dir = "/var/lib/pybit-client.d/"
-	(settings, opened_path) = pybit.load_settings("client/client.conf")
-	if not os.path.exists (plugin_dir):
-		plugin_dir = os.path.join (os.getcwd(), "pybitclient/")
-	for name in os.listdir(plugin_dir):
-		if name.endswith(".py"):
-			plugins.append(name.strip('.py'))
-	for name in plugins :
-		if (name == "buildclient" or name == "__init__"):
-			continue
-		print "checking plugin: %s" % name;
-		plugin_path = [ plugin_dir ];
-		fp, pathname, description = imp.find_module(name, plugin_path)
-		try:
-			mod = imp.load_module(name, fp, pathname, description)
-			if not (hasattr(mod, 'createPlugin')) :
-				print "Error: plugin path contains an unrecognised module '%s'." % (name)
-				continue
-			plugin = mod.createPlugin(settings)
-			if (hasattr(plugin, 'get_distribution') and plugin.get_distribution() is not None) :
-				client = plugin
-			elif (hasattr(plugin, 'method') and plugin.method is not None) :
-				vcs = plugin
-			else :
-				print "Error: plugin path contains a recognised plugin but the plugin API for '%s' is incorrect." % (name)
-				continue
-		finally:
-			# Since we may exit via an exception, close fp explicitly.
-			if fp:
-				fp.close()
-		if client:
-			name = client.get_distribution()
-			if (name not in distros) :
-				distros[name] = client
-		if vcs :
-			if (vcs.method not in handlers) :
-				handlers[vcs.method] = vcs;
-	print "List of available handlers: %s" % list(handlers.keys())
-	print "List of available distributions: %s" % list(distros.keys())
+	FORMAT = '%(msg)s'
+	logging.basicConfig(format=FORMAT)
+	logging.basicConfig( stream=sys.stderr )
+	logging.getLogger( "testCase" ).setLevel( logging.DEBUG )
+	suite = unittest.TestLoader().loadTestsFromTestCase(TestClient)
+	runner = unittest.TextTestRunner(verbosity=2)
+	res = runner.run(suite)
+	if not res.wasSuccessful() :
+		sys.exit (1)
 	return 0
 
 if __name__ == '__main__':
