@@ -38,6 +38,7 @@ import multiprocessing
 import socket
 import requests
 from requests.auth import HTTPBasicAuth
+from coherence.extern.louie import disconnect
 
 class PyBITClient(object):
 
@@ -383,7 +384,7 @@ contacted or None if the job doesn't exist
 
 		except socket.error as e:
 			logging.debug ("Couldn't connect rabbitmq server with: %s" % repr(self.conn_info))
-			return
+			return False
 
 		for suite, info in self.listen_list.items():
 			logging.debug("Creating queue with name:" + info['queue'])
@@ -394,7 +395,7 @@ contacted or None if the job doesn't exist
 					exchange=pybit.exchange_name, routing_key=info['route'])
 			except amqp.exceptions.AMQPChannelException :
 				logging.debug ("Unable to declare or bind to message channel.")
-				pass
+				return False
 
 		logging.debug ("Creating private command queue with name:" + self.conn_info.client_name)
 		try:
@@ -404,7 +405,8 @@ contacted or None if the job doesn't exist
 				exchange=pybit.exchange_name, routing_key=self.conn_info.client_name)
 		except amqp.exceptions.AMQPChannelException :
 			logging.debug ("Unable to declare or bind to command channel.")
-			pass
+			return False
+		return True
 
 
 	def disconnect(self):
@@ -428,8 +430,10 @@ contacted or None if the job doesn't exist
 
 
 	def __enter__(self):
-		self.connect()
-		return self
+		if self.connect():
+			return self
+		else:
+			return None
 
 	def __exit__(self, type, value, traceback):
 		self.disconnect()
