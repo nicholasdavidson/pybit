@@ -404,7 +404,9 @@ contacted or None if the job doesn't exist
 			self.command_chan.queue_bind(queue=self.conn_info.client_name,
 				exchange=pybit.exchange_name, routing_key=self.conn_info.client_name)
 		except amqp.exceptions.AMQPChannelException :
-			logging.debug ("Unable to declare or bind to command channel.")
+			logging.debug (
+				"Unable to declare or bind to command channel %s. Does this client already exist?"
+				 % (self.conn_info.client_name, ))
 			return False
 		return True
 
