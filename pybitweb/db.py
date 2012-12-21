@@ -66,7 +66,7 @@ class Database(object):
 	def connect(self):
 		# for catbells
 		if (checkValue('password',self.settings)):
-			if (checkValue('hostname',self.settings)):
+			if (checkValue('hostname',self.settings) and checkValue('port',self.settings)):
 				# remote with password
 				print "REMOTE WITH PASSWORD"
 				self.conn = psycopg2.connect(database=self.settings['databasename'],
@@ -78,7 +78,7 @@ class Database(object):
 				self.conn = psycopg2.connect(database=self.settings['databasename'],
 				user=self.settings['user'], password=self.settings['password'])
 		else:
-			if (checkValue('hostname',self.settings)):
+			if (checkValue('hostname',self.settings) and checkValue('port',self.settings)):
 				# remote without password
 				print "REMOTE WITHOUT PASSWORD"
 				self.conn = psycopg2.connect(database=self.settings['databasename'],user=self.settings['user'], host=self.settings['hostname'],port=self.settings['port'])
