@@ -10,7 +10,8 @@ Build-Depends: debhelper (>= 7.0.50~), docbook-xsl, xsltproc, po-debconf,
  python (>= 2.6.6-3~), python2.6 | python2.7, python-setuptools,
  python-jsonpickle,
  python-requests (>= 0.10.1-1~),
- python-amqplib
+ python-amqplib,
+ python-coherence
 X-Python-Version: 2.6, 2.7
 Standards-Version: 3.9.3
 Homepage: https://github.com/nicholasdavidson/pybit
@@ -37,6 +38,7 @@ Description: Subversion post commit hook for pybit
 Package: pybit-client
 Architecture: all
 Depends: sbuild, dput, dpkg-dev, pybit-common, python-requests,
+ python-coherence,
  subversion, pbuilder, libcrypt-ssleay-perl, libjson-perl,
  ${python:Depends}, ${misc:Depends}
 Description: buildd client support for pybit
