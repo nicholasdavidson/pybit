@@ -1,6 +1,6 @@
 pybit (0.4.1-1) experimental; urgency=low
 
-  * New upstream release.
+  * New upstream release to support multiple suites per client.
   * Apply updates of debconf templates after review on debian-l10n-
     english and update control information to be more general purpose.
   * Update templates.pot with new text.
@@ -11,6 +11,8 @@ pybit (0.4.1-1) experimental; urgency=low
   * [l10n:cs] Updated Czech translation of PO debconf template for
     pybit (Closes: #696427)
   * [INTL:ru] Russian debconf templates translation (Closes: #696518)
+  * Update manpage and add NEWS item describing change to the client
+    configuration for multiple suites.
 
  -- Neil Williams <codehelp@debian.org>  Fri, 21 Dec 2012 11:24:20 +0000
 

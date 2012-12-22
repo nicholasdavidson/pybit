@@ -1,0 +1,11 @@
+pybit (0.4.1-1) experimental; urgency=low
+
+  * The client configuration has changed in this version and
+    clients using the old suite option will fail to start.
+    Edit /etc/pybit/client/client.conf on each client.
+    e.g. Change "suite": "unstable", to read "suites": [ "unstable" ],
+    This change was made to allow clients to build for multiple
+    suites - add extra suites as:
+    e.g. "suites": [ "unstable", "squeeze-backports" ],   
+
+ -- Neil Williams <codehelp@debian.org>  Sat, 22 Dec 2012 10:41:21 +0000

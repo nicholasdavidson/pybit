@@ -79,6 +79,21 @@ and the client restarted or no builds will be started.
     <para><emphasis>port</emphasis> -
 Override the standard port of 5672 for the RabbitMQ server.
 </para>
+    <para><emphasis>suites</emphasis> - <emphasis>NEW in 0.4.1</emphasis>
+JSON list of the suites which this client can support - names must match
+the Distribution: specified in the changelog of relevant packages and
+must also match an alias for a configured schroot chroot.
+</para>
+<programlisting>
+ "suites": [ "unstable" ],
+</programlisting>
+<programlisting>
+ "suites": [ "unstable", "squeeze-backports" ],
+</programlisting>
+    <para>The <emphasis>suite</emphasis> field used in 0.4.0 has been
+removed - clients will not start unless at least one suite is specified
+in the <emphasis>suites</emphasis> list. See also <filename>/usr/share/pybitclient/client.conf</filename>
+</para>
     <para><emphasis>userid</emphasis> -
 If the RabbitMQ server uses authentication, override the default username of <emphasis>guest</emphasis>.
 </para>
@@ -146,9 +161,18 @@ field of the output of <emphasis>dpkg-parsechangelog</emphasis>. Ensure that
 any client has a suitable chroot listed in the output of <emphasis>schroot -l</emphasis>.
 </para>
 <para>
-Currently, pybit-client only listens to queues which match the <emphasis>suite</emphasis>
-configured in <filename>/etc/pybit/client/client.conf</filename>. This configuration
-is likely to change to a list in future versions.
+<command>pybit-client</command> only listens to queues which match the listed
+<emphasis>suites</emphasis> in <filename>/etc/pybit/client/client.conf</filename>.
+</para>
+<para>The syntax for the suites configuration value changed in version 0.4.1
+to support multiple suites within a JSON list:
+</para>
+<programlisting>
+ "suites": [ "unstable", "squeeze-backports" ],
+</programlisting>
+<para>Clients running 0.4.0 need to have the configuration file updated
+for 0.4.1 or the client will fail to start as it will be unable to bind
+to the necessary queues.
 </para>
     </refsect2>
     <refsect2 id="testing">
