@@ -10,6 +10,7 @@ pybit (0.4.1-1) experimental; urgency=low
   * Add homepage to control.
   * [l10n:cs] Updated Czech translation of PO debconf template for
     pybit (Closes: #696427)
+  * [INTL:ru] Russian debconf templates translation (Closes: #696518)
 
  -- Neil Williams <codehelp@debian.org>  Fri, 21 Dec 2012 11:24:20 +0000
 
