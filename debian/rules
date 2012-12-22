@@ -34,9 +34,9 @@ build-arch: build-stamp
 build-indep: build-stamp
 build-stamp: configure-stamp
 	dh_testdir
-	$(cd test ; call pyalldo, plugintest.py)
-	$(cd test ; call pyalldo, pybitclient-test.py)
-	$(cd test ; call pyalldo, webapi-test.py)
+	$(call pyalldo , test/plugintest.py)
+	$(call pyalldo , test/pybitclient-test.py)
+	$(call pyalldo , test/webapi-test.py)
 	touch $@
 
 build-setup: setup.py
