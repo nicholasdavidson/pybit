@@ -1,3 +1,10 @@
+pybit (0.4.1-2) UNRELEASED; urgency=low
+
+  * [INTL:da] Danish translation of the debconf templates
+    (Closes: #696802)
+
+ -- Neil Williams <codehelp@debian.org>  Thu, 27 Dec 2012 11:35:36 +0000
+
 pybit (0.4.1-1) experimental; urgency=low
 
   * New upstream release to support multiple suites per client.

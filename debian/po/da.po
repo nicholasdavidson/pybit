@@ -1,0 +1,255 @@
+# Danish translation pybit.
+# Copyright (C) 2012 pybit og nedenstående oversættere.
+# This file is distributed under the same license as the pybit package.
+# Joe Hansen <joedalton2@yahoo.dk>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pybit\n"
+"Report-Msgid-Bugs-To: pybit@packages.debian.org\n"
+"POT-Creation-Date: 2012-12-15 22:13+0000\n"
+"PO-Revision-Date: 2012-12-27 17:30+01:00\n"
+"Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
+"Language-Team: Danish <debian-l10n-danish@lists.debian.org>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: string
+#. Description
+#: ../pybit-client.templates:1001
+msgid "PyBit client-ID string:"
+msgstr "Klient-id-streng for PyBit:"
+
+#. Type: string
+#. Description
+#: ../pybit-client.templates:1001
+msgid ""
+"Please specify a unique string that can be used to identify this client "
+"within the job list and queues."
+msgstr ""
+"Angiv venligst en unik streng som kan bruges til at identificere denne "
+"klient indenfor joblisten og køer."
+
+#. Type: boolean
+#. Description
+#: ../pybit-client.templates:2001
+msgid "Use LVM snapshots on this client?"
+msgstr "Brug LVM-øjebliksbilleder på denne klient?"
+
+#. Type: boolean
+#. Description
+#: ../pybit-client.templates:2001
+msgid ""
+"If the sbuild configuration uses LVM snapshots, pybit-client can ensure that "
+"your snapshot APT cache data is kept up-to-date whilst keeping the snapshot "
+"clean."
+msgstr ""
+"Hvis sbuild-konfigurationen bruger LVM-øjebliksbilleder, så kan pybit-client "
+"sikre, at dine mellemlagerdata for øjebliksbilledets APT bevares opdateret, "
+"mens du beholder øjebliksbilledet rent."
+
+#. Type: string
+#. Description
+#: ../pybit-client.templates:3001
+msgid "Buildd location:"
+msgstr "Placering for buildd:"
+
+#. Type: string
+#. Description
+#: ../pybit-client.templates:3001
+msgid ""
+"Please specify a writeable directory where the version control handler and "
+"the upload task can write files."
+msgstr ""
+"Angiv venligst en skrivbar mappe hvor versionskontrolprogrammet og "
+"overførselsopgaven kan skrive filer."
+
+#. Type: string
+#. Description
+#: ../pybit-client.templates:3001
+msgid "If this is left blank, the default /home/buildd/pybit will be used."
+msgstr ""
+"Hvis denne efterlades blank, vil standarden /home/buildd/pybit blive anvendt."
+
+#. Type: string
+#. Description
+#: ../pybit-client.templates:4001 ../pybit-web.templates:1001
+msgid "Host machine running RabbitMQ:"
+msgstr "Værtsmaskine der kører RabbitMQ:"
+
+#. Type: string
+#. Description
+#: ../pybit-client.templates:4001
+msgid ""
+"Please specify the server running RabbitMQ that this buildd client will "
+"communicate with, receiving details of the jobs it needs to attempt to build."
+msgstr ""
+"Angiv venligst serveren der kører RabbitMQ, som denne buildd-klient skal "
+"kommunikere med, og som modtager nødvendige detaljer om jobbene den forsøger "
+"at bygge."
+
+#. Type: string
+#. Description
+#: ../pybit-client.templates:5001
+msgid "Destination for dput package uploads:"
+msgstr "Destination for dput-pakkeoverførsler:"
+
+#. Type: string
+#. Description
+#: ../pybit-client.templates:5001
+msgid ""
+"Please specify the machine that this client will use as upload host. This "
+"destination will be stored in its dput configuration."
+msgstr ""
+"Angiv venligst maskinen som denne klient vil bruge som overførselsvært. "
+"Denne destination vil blive gemt i dens dput-konfiguration."
+
+#. Type: string
+#. Description
+#: ../pybit-client.templates:5001
+msgid "This entry must not be empty."
+msgstr "Denne post må ikke være tom."
+
+#. Type: note
+#. Description
+#: ../pybit-client.templates:6001
+msgid "Client-ID string cannot be empty!"
+msgstr "Klient-id-streng kan ikke være tom!"
+
+#. Type: note
+#. Description
+#: ../pybit-client.templates:6001
+msgid "This client will fail to start until it receives a unique client-ID."
+msgstr "Denne klient vil fejle i at starte indtil den modtager en unik klient-id."
+
+#. Type: note
+#. Description
+#: ../pybit-client.templates:7001 ../pybit-web.templates:4001
+msgid "Missing RabbitMQ hostname!"
+msgstr "Manglende RabbitMQ-værtsnavn!"
+
+#. Type: note
+#. Description
+#: ../pybit-client.templates:7001
+msgid ""
+"This client will not receive any messages from the queue and will not build "
+"any packages until a RabbitMQ host is specified."
+msgstr ""
+"Denne klient vil ikke modtage nogen beskeder fra køen og vil ikke bygge "
+"nogen pakker før end at RabbitMQ-værten er angivet."
+
+#. Type: note
+#. Description
+#: ../pybit-client.templates:7001
+msgid "Please edit /etc/pybit/client/client.conf after configuration."
+msgstr "Rediger venlisgt /etc/pybit/client/client.conf efter konfiguration."
+
+#. Type: note
+#. Description
+#: ../pybit-client.templates:8001
+msgid "Missing dput destination!"
+msgstr "Manglende dput-destination!"
+
+#. Type: note
+#. Description
+#: ../pybit-client.templates:8001
+msgid ""
+"pybit-client is not intended to upload to unspecified dput destinations like "
+"ftp-master.debian.org and does not currently support GnuPG signed uploads."
+msgstr ""
+"pybit-client er ikke lavet til at overføre til uangivne dput-destinationer "
+"såsom ftp-master.debian.org og understøtter aktuelt ikke GnuPG-underskrevne "
+"overførsler."
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:1001
+msgid ""
+"Please specify the server running RabbitMQ with which the web front-end and "
+"the pyBit controller need to communicate, sending the details of the jobs to "
+"be built."
+msgstr ""
+"Angiv venligst serveren, der kører RabbitMQ, som netbrugerfladen og "
+"pyBit-controlleren skal bruge til at kommunikere med ved at sende detaljer "
+"om jobbene, der skal bygges."
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:2001
+msgid "Fully qualified hostname for the web front-end:"
+msgstr "Fuldt kvalificeret værtsnavn for netbrugerfladen:"
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:2001
+msgid ""
+"Please specify the host running the web front-end (which will also be "
+"running the pyBit controller)."
+msgstr ""
+"Angiv venligst værten der kører netbrugerfladen (som også vil køre "
+"pyBit-controlleren)."
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:2001
+msgid ""
+"You may choose to use a named Apache virtual host or accept the default if "
+"all the pyBit clients also run on this one machine."
+msgstr ""
+"Du kan vælge at bruge en navngivet Apache-virtuel vært eller acceptere "
+"standarden, hvis alle pyBit-klienterne også kører på denne ene maskine."
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:2001
+msgid ""
+"The hostname is passed down to the build clients to allow them to post "
+"failure messages back to the controller."
+msgstr ""
+"Værtsnavnet sendes videre til byggeklienterne så de kan sende fejlbeskeder "
+"tilbage til controlleren."
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:3001
+msgid "Port for web front-end:"
+msgstr "Port for netbrugerflade:"
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:3001
+msgid ""
+"Please specify the port that the web front-end should be available on. If it "
+"is serving localhost, it is probably easiest to use port 8080."
+msgstr ""
+"Angiv venligst porten som netbrugerfladen skal være tilgængelig på. Hvis "
+"den betjener localhost, er det sikkert nemmest at bruge port 8080."
+
+#. Type: string
+#. Description
+#: ../pybit-web.templates:3001
+msgid ""
+"If the web front-end is running on a dedicated host or an Apache virtual "
+"host, it may be preferable to use port 80."
+msgstr ""
+"Hvis netbrugerfladen kører på en dedikeret vært eller på en Apache-virtuel "
+"vært, kan det være at fortrække at bruge port 80."
+
+#. Type: note
+#. Description
+#: ../pybit-web.templates:4001
+msgid ""
+"If no RabbitMQ host is specified for the pyBit controller, the build clients "
+"will not receive any messages on the queue or build any packages."
+msgstr ""
+"Hvis ingen RabbitMQ-vært er angivet for pyBit-controlleren, vil byggeklienterne "
+"ikke modtage nogen beskeder på køen eller bygge nogen pakker."
+
+#. Type: note
+#. Description
+#: ../pybit-web.templates:4001
+msgid "Please edit /etc/pybit/web/web.conf after configuration."
+msgstr "Rediger venligst /etc/pybit/web/web.conf efter konfiguration."
+
