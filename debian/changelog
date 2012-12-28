@@ -4,6 +4,7 @@ pybit (0.4.1-2) UNRELEASED; urgency=low
     (Closes: #696802)
   * [INTL:ja] Add Japanese translation of debconf templates. 
     Thanks to victory <victory.deb@gmail.com>
+  * [INTL:de] Initial German debconf translation (Closes: #696898)
 
  -- Neil Williams <codehelp@debian.org>  Thu, 27 Dec 2012 11:35:36 +0000
 
