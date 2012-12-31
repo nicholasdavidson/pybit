@@ -1,4 +1,4 @@
-pybit (0.4.1-2) UNRELEASED; urgency=low
+pybit (0.4.1-2) experimental; urgency=low
 
   * [INTL:da] Danish translation of the debconf templates
     (Closes: #696802)
@@ -9,7 +9,7 @@ pybit (0.4.1-2) UNRELEASED; urgency=low
   * [INTL:pt] Portuguese translation for debconf messages
     (Closes: #696980)
 
- -- Neil Williams <codehelp@debian.org>  Thu, 27 Dec 2012 11:35:36 +0000
+ -- Neil Williams <codehelp@debian.org>  Mon, 31 Dec 2012 13:06:06 +0000
 
 pybit (0.4.1-1) experimental; urgency=low
 
