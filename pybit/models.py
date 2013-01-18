@@ -204,3 +204,8 @@ def checkValue(value,container):
 	else:
 		return False
 
+class Blacklist(Model):
+	def __init__(self,blacklist_id,field,regex):
+		self.id = blacklist_id
+		self.field = field
+		self.regex = regex

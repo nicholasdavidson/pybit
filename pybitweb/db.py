@@ -26,6 +26,7 @@ import psycopg2.extras
 import jsonpickle
 import cgi
 import math
+import re
 
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage, checkValue
 
@@ -1315,4 +1316,28 @@ class Database(object):
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving supported architectures for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def check_blacklist(self,field,value):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT id,field,regex FROM blacklist ORDER BY id WHERE field=%s",[field])
+			res = cur.fetchall()
+			self.conn.commit()
+
+			for i in res:
+				# Check passed in value using i.regex
+				match = re.match(i['regex'], value)
+				if match is not None:
+					print "BLACKLISTED!"
+					cur.close()
+					return true;
+				else:
+					cur.close()
+					return false;
+
+			return blacklists
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving blacklist. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
