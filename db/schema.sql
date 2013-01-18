@@ -39,7 +39,7 @@ CREATE TABLE schema_version
 -- The schema version has to be updated every time we change the schema.
 -- Make sure to create an update script in vN.sql in updates to allow
 -- existing databases to be upgraded
-INSERT INTO schema_version(id) VALUES (1);
+INSERT INTO schema_version(id) VALUES (2);
 
 CREATE TABLE Arch ( 
 	id SERIAL PRIMARY KEY NOT NULL,
@@ -94,6 +94,16 @@ CREATE TABLE Package (
 	Version text NOT NULL,
 	Name text NOT NULL
 )
+;
+
+CREATE TABLE Blacklist (
+	id SERIAL PRIMARY KEY NOT NULL,
+	field text NOT NULL,
+	regex text NOT NULL
+);
+
+COMMENT ON TABLE Blacklist
+	IS 'Blacklist is used internally by submitjob to determine if certain packages are centrally blacklisted using regexes'
 ;
 
 CREATE TABLE PackageInstance ( 
