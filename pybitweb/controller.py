@@ -61,10 +61,7 @@ class Controller(object):
 		try:
 			# Look at blacklist, dont build excluded package names
 			if self.db.check_blacklist("name",name):
-				print "Name IS in blacklist " + str(name)
 				return
-			else:
-				print "Name NOT in blacklist " + str(name)
         	except Exception as e:
 				print "Exception checking blacklist " + str(e)
 				return

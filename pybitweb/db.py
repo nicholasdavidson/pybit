@@ -1321,20 +1321,20 @@ class Database(object):
 	def check_blacklist(self,field,value):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,field,regex FROM blacklist ORDER BY id WHERE field=%s",[field])
+			cur.execute("SELECT id,field,regex FROM blacklist WHERE field=%s",[field])
 			res = cur.fetchall()
 			self.conn.commit()
 
 			for i in res:
-				# Check passed in value using i.regex
-				match = re.match(i['regex'], value)
+				# Check passed in value using i.regex - Search() or Match() ?
+				match = re.search(i['regex'], value) # An invalid regexp will throw an exception here. Valid regexp is i.e: (.*-dev)
 				if match is not None:
-					print "BLACKLISTED!"
+					print "BLACKLISTED!" + str(i['regex']) + " matches" + str(value)
 					cur.close()
-					return true;
+					return True
 				else:
 					cur.close()
-					return false;
+					return False
 
 			return blacklists
 		except psycopg2.Error as e:
