@@ -231,7 +231,7 @@ class Database(object):
 
 			suite_arches = []
 			for i in res:
-				suite_arches.append(SuiteArch(i['id'],self.get_suite_id(i['suite_id']),self.get_arch_id(i['arch_id']),self.get_arch_id(i['master_weight'])))
+				suite_arches.append(SuiteArch(i['id'],self.get_suite_id(i['suite_id']),self.get_arch_id(i['arch_id']),i['master_weight']))
 			cur.close()
 			return suite_arches
 		except psycopg2.Error as e:
