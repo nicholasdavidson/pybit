@@ -1336,7 +1336,7 @@ class Database(object):
 					cur.close()
 					return False
 
-			return blacklists
+			return True # If no results, that is fine too.
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving blacklist. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
