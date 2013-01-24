@@ -38,7 +38,6 @@ import multiprocessing
 import socket
 import requests
 from requests.auth import HTTPBasicAuth
-from coherence.extern.louie import disconnect
 
 class PyBITClient(object):
 
