@@ -61,10 +61,13 @@ class Controller(object):
 		try:
 			# Look at blacklist, dont build excluded package names
 			if self.db.check_blacklist("name",name):
-				return
-        	except Exception as e:
-				print "Exception checking blacklist " + str(e)
-				return
+				return False
+			# Look at blacklist, dont build packages from SVN paths which match the blacklist rule.
+			if self.db.check_blacklist("vcs_uri",transport.uri):
+				return False
+		except Exception as e:
+			print "Exception checking blacklist " + str(e)
+			return False
 
 		try:
 			build_arches = self.process_achitectures(architectures, suite)

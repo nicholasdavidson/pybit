@@ -57,8 +57,10 @@ def get_job_app(settings, db, controller) :
 					return None
 				else :
 					print "RECEIVED BUILD REQUEST FOR", package_name, version, suite, architectures
-					app.config['controller'].process_job(dist, architectures, version, package_name, suite, pkg_format, Transport(None, method, uri, vcs_id))
-					return
+					if app.config['controller'].process_job(dist, architectures, version, package_name, suite, pkg_format, Transport(None, method, uri, vcs_id)):
+						return
+					else:
+						response.status = "403 - Forbidden. Blacklisted."
 		except Exception as e:
 			raise Exception('Exception encountered in vcs_hook: ' + str(e))
 			response.status = "500 - Exception encountered in vcs_hook"
@@ -170,7 +172,11 @@ def get_job_app(settings, db, controller) :
 
 				# Pass to controller to queue up
 				transport = Transport(None, method, uri, vcs_id)
-				app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,commands)
+				if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,commands):
+					return
+				else:
+					response.status = "403 - Forbidden. Blacklisted."
+					return False
 			else:
 				response.status = "400 - Required fields missing."
 			return

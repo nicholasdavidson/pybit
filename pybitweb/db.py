@@ -1327,9 +1327,9 @@ class Database(object):
 
 			for i in res:
 				# Check passed in value using i.regex - Search() or Match() ?
-				match = re.search(i['regex'], value) # An invalid regexp will throw an exception here. Valid regexp is i.e: (.*-dev)
+				match = re.search(i['regex'], value) # An invalid regexp will throw an exception here. Valid regexp is i.e: name field and (.*-dev) or vcs_uri field and (.*/users/*)
 				if match is not None:
-					print "BLACKLISTED!" + str(i['regex']) + " matches" + str(value)
+					print "BLACKLISTED!" + str(i['regex']) + " matches " + str(field) + ":" + str(value)
 					cur.close()
 					return True
 				else:
