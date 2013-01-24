@@ -225,13 +225,13 @@ class Database(object):
 	def get_suitearches(self):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,suite_id,arch_id,master_weight FROM suitearches ORDER BY id")
+			cur.execute("SELECT id,suite_id,arch_id,master_weight FROM suitearches ORDER BY master_weight DESC")
 			res = cur.fetchall()
 			self.conn.commit()
 
 			suite_arches = []
 			for i in res:
-				suite_arches.append(SuiteArch(i['id'],self.get_suite_id(i['suite_id']),self.get_arch_id(i['arch_id'])))
+				suite_arches.append(SuiteArch(i['id'],self.get_suite_id(i['suite_id']),self.get_arch_id(i['arch_id']),self.get_arch_id(i['master_weight'])))
 			cur.close()
 			return suite_arches
 		except psycopg2.Error as e:
