@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id="pybit-web">
+  <refmeta>
+    <refentrytitle>pybit-web</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">January 2013</refmiscinfo>
+    <refmiscinfo class="manual">pybit-web</refmiscinfo>
+  </refmeta>
+  <refnamediv id="name">
+    <refname>pybit-web</refname>
+    <refpurpose>buildd server to isuse build jobs to pybit clients.</refpurpose>
+  </refnamediv>
+  <!-- body begins here -->
+  <refsect1 id="description">
+    <title>DESCRIPTION</title>
+    <para>pybit-web provides a database connection and the controller to
+    send messages to pybit clients to create a specific package build
+    using the specified version control system. The client feeds status
+    messages back to the controller which are displayed via the web
+    interface.
+    </para>
+  </refsect1>
+  <refsect1 id="setup">
+     <title>Setting up the pybit-web server</title>
+     <para>The Debian packaging of pybit-web uses dbconfig-common to 
+     configure the database.
+     </para>
+     <para>For a local postgres instance, choose the unix socket option 
+     and the default ident authentication, then postgres as the database 
+     administrative user and www-data as the pybit-web database user. 
+     You can use whatever name you prefer for the pybit-web database itself.
+     </para>
+     <para>Note: Ensure that the www-data user is specified or apache 
+     will not be granted permission to use the database connection. 
+     It's not enough to just set the user to www-data in 
+     <filename>/etc/pybit/web/web.conf</filename> - this setting is 
+     correct but needs postgres to be configured to allow access to 
+     www-data.
+     </para>
+     <para>Also check that the pybit-web database owner is set to 
+     www-data and that all the tables in the database have the owner 
+     set to www-data. Use ALTER DATABASE OWNER name TO "www-data" 
+     and ALTER TABLE name OWNER to "www-data" if necessary.
+     </para>
+  </refsect1>
+  <refsect1 id="blacklisting">
+     <title>Blacklisting packages</title>
+     <para>Sometimes there will be packages being committed to the VCS
+     with updated debian/changelog files but which either cannot or should
+     not be built automatically.
+     </para>
+     <para>pybit-web supports a postgres table called Blacklist, with
+     fields "field" and "regex". Blacklist is used internally by 
+     process_job() in controller to determine if certain packages are 
+     centrally blacklisted using regexes. If there is a match on the 
+     field in question, pybit-web will not issue a build request for
+     this package. process_job() is called by both the WebGUI and the 
+     VCS hook.
+     </para>
+     <para>For example "name" and "(.*-dev)" will mean we do not 
+     autobuild any development packages, while "vcs_uri" and 
+     "(.*/users/*)" will block sources from locations such as 
+     /repo/users/jamesb/somebadcode
+     </para>
+     <para>The controller log will print 
+     "BLACKLISTED! - [regex] matches [fieldname]:[data]" 
+     if a package is blacklisted.
+     </para>
+     <para>A 403 will be returned, as well as a False, from 
+     process_job to its caller (previously it returned void)
+     </para>
+  </refsect1>
+  <refsect1 id="also">
+     <title>See Also</title>
+     <para>The pybit wiki has more information on setting up the
+     server as well as the rabbitmq server and the watcher.
+     https://github.com/nicholasdavidson/pybit/wiki/Server-Setup
+     </para>
+  </refsect1>
+  <refsect1>
+    <title>Author</title>
+    <para>This  manual  page  was  written by Neil Williams
+      <email>codehelp@debian.org</email>
+    </para>
+  </refsect1>
+</refentry>

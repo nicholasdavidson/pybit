@@ -29,7 +29,8 @@ client feeds status messages back to the controller.
   </refsect1>
   <refsect1 id="usage">
     <title>Usage</title>
-    <para>pybit-client runs as a single-instance daemon by default. The standard daemon control interface is supported:
+    <para>pybit-client runs as a single-instance daemon by default. The standard 
+    daemon control interface is supported:
 </para>
     <programlisting>
 invoke-rc.d pybit-client stop
@@ -287,6 +288,12 @@ See dput.cf (5)
       </varlistentry>
     </variablelist>
   </refsect1>
+  <refsect id="server">
+      <title>Setting up the pybit server to work with clients</title>
+      <para>The clients are only one part of pybit. pybit-web provides
+      the server which will provide jobs for the clients. See pybit-web (1).
+      </para>
+  </refsect>
   <refsect1>
     <title>Author</title>
     <para>This  manual  page  was  written by Neil Williams

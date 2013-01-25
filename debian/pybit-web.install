@@ -6,3 +6,4 @@ configs/web/web.conf ./usr/share/pybit-web/
 debian/pybit-web-json.pl ./usr/share/pybit-web/
 apache_config.txt ./usr/share/pybit-web/
 application.wsgi ./usr/share/pybit-web/
+debian/pybit-web.1 ./usr/share/man/man1/

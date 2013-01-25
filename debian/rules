@@ -44,7 +44,9 @@ build-setup: setup.py
 	python setup.py build
 	xsltproc --nonet http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl debian/pybit-client.1.xml
 	xsltproc --nonet http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl debian/pybit-watcher.1.xml
+	xsltproc --nonet http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl debian/pybit-web.1.xml
 	mv pybit-client.1 debian/
+	mv pybit-web.1 debian/
 	mv pybit-watcher.1 debian/
 
 clean:
@@ -52,7 +54,7 @@ clean:
 	dh_testroot
 	$(RM) build-stamp configure-stamp
 	$(RM) -r build pybit_client.egg-info pybit_common.egg-info pybit_web.egg-info
-	$(RM) -r build dist pybit-client.1 pybit.egg-info
+	$(RM) -r build dist pybit-client.1 pybit.egg-info pybit-web.1 pybit-watcher.1
 	[ ! -f Makefile ] || $(MAKE) clean
 	find . -name '*.pyc' -delete
 	dh_clean
