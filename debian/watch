@@ -1,4 +1,8 @@
 # Compulsory line, this is a version 3 file
 # github have disabled the downloads page.
-#version=3
+version=3
+opts=uversionmangle=s/_/./g \
+https://github.com/nicholasdavidson/pybit/tags .*/(?:v||pybit[_\-])(\d.*)\.(?:tgz|tbz2|txz|tar\.(?:gz|bz2|xz))
+# Bart Martens <bartm@debian.org>  Sun, 06 Jan 2013 21:16:02 +0000
+# old line
 #http://github.com/nicholasdavidson/pybit/downloads /downloads/nicholasdavidson/pybit/pybit-(.*).tar.gz

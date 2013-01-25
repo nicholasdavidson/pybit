@@ -6,6 +6,7 @@ pybit (0.4.2-1) experimental; urgency=low
   [ Neil Williams ]
   * Drop dependency on python-coherence, added by accient.
   * Add pybit-web manpage to cover some of the dbconfig-common options.
+  * Update the watch file to work with tags. Thanks to Bart Martens.
 
  -- James Bennet <James.Bennet@toby-churchill.com>  Mon, 21 Jan 2013 11:26:19 +0000
 
