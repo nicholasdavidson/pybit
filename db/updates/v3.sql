@@ -3,7 +3,7 @@ $$
 begin
 if not exists (SELECT * FROM information_schema.tables WHERE
 		table_catalog = CURRENT_CATALOG AND table_schema = CURRENT_SCHEMA
-		AND table_name = 'BuildRequest') then
+		AND table_name = 'buildrequest') then
 			CREATE TABLE BuildRequest (
 				id SERIAL PRIMARY KEY NOT NULL,
 				job bigint NOT NULL,
