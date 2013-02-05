@@ -36,6 +36,7 @@ import daemon
 from pybit.daemonlogger import LoggingDaemonContext, FileLikeLogger
 import time
 import logging
+from logging.handlers import WatchedFileHandler
 from pybitclient import PyBITClient
 from pybitclient.debianclient import DebianBuildClient
 from pybitclient.subversion import SubversionClient
@@ -64,9 +65,12 @@ def run(settings) :
 				sys.exit (os.EX_OSERR)
 
 def getDaemonLogger (filePath, format = None) :
-	FORMAT = format or '%(asctime)s %(msg)s'
-	logging.basicConfig(filename=filePath, format=FORMAT, level=logging.DEBUG)
-	return logging.getLogger()
+	logger = logging.getLogger()
+	logger.setLevel(logging.DEBUG)
+	watchedHandler = WatchedFileHandler(filePath)
+	watchedHandler.setFormatter(logging.Formatter(format or '%(asctime)s %(msg)s'))
+	logger.addHandler(watchedHandler)
+	return logger
 
 if __name__ == '__main__':
 	parser = optparse.OptionParser()
@@ -134,8 +138,7 @@ if __name__ == '__main__':
 		context.loggers_preserve=[testLogger]
 		context.signal_map = {
 			signal.SIGTERM: signal_handler,
-			signal.SIGHUP:  signal_handler,
-			signal.SIGUSR1: None,
+			signal.SIGHUP:  signal_handler
 			}
 		logging.debug ("Daemonised")
 	else :
@@ -149,7 +152,7 @@ if __name__ == '__main__':
 	if settings == {}:
 		logging.debug ("No settings found - exiting")
 		sys.exit(os.EX_OSERR)
-	if 'configured'  in settings and settings.configured == False:
+	if 'configured'  in settings and settings['configured'] == False:
 		logging.debug ("Please configure your client.")
 		sys.exit(os.EX_OK)
 

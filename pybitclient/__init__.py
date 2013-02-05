@@ -415,16 +415,19 @@ contacted or None if the job doesn't exist
 			if self.command_chan:
 				#self.command_chan.basic_cancel("build_callback")
 				try:
+					logging.debug("Closing down command channel")
 					self.command_chan.close()
 				except socket.error :
 					pass
 			if self.message_chan:
 				#self.message_chan.basic_cancel("build_callback")
 				try:
+					logging.debug("Closing down message channel")
 					self.message_chan.close()
 				except socket.error :
 					pass
 			try :
+				logging.debug("Closing down rabbitmq connection")
 				self.conn.close()
 			except socket.error :
 				pass
