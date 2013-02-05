@@ -101,6 +101,21 @@ class Database(object):
 			raise Exception("Error disconnecting from database. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return False
 
+	#<<<<<<<< NEW CODE >>>>>>>>
+	def log_buildRequest(self,build_request_obj):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("INSERT into buildrequest(job,method,uri,vcs_id) VALUES (%s,%s,%s,%s) RETURNING id",(remove_nasties(build_request_obj.job),remove_nasties(build_request_obj.transport.method),remove_nasties(build_request_obj.transport.uri),remove_nasties(build_request_obj.transport.vcs_id)))
+			res = cur.fetchall()
+			self.conn.commit()
+			new_id = res[0]['id']
+			cur.close()
+			return new_id
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error logging build. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	#<<<<<<<< Lookup table queries >>>>>>>>
 	# Do we care about update or delete?
 
@@ -1335,8 +1350,8 @@ class Database(object):
 				else:
 					cur.close()
 					return False
-
-			return True # If no results, that is fine too.
+			cur.close()
+			return False # If no results, that is fine too.
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving blacklist. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))

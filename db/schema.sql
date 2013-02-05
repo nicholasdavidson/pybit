@@ -30,7 +30,10 @@ DROP TABLE IF EXISTS Suite CASCADE
 ;
 DROP TABLE IF EXISTS SuiteArches CASCADE
 ;
-
+DROP TABLE IF EXISTS Blacklist CASCADE
+;
+DROP TABLE IF EXISTS BuildRequest CASCADE
+;
 --  Create Tables - Changed to add NOT NULLs
 CREATE TABLE schema_version
 (
@@ -39,7 +42,7 @@ CREATE TABLE schema_version
 -- The schema version has to be updated every time we change the schema.
 -- Make sure to create an update script in vN.sql in updates to allow
 -- existing databases to be upgraded
-INSERT INTO schema_version(id) VALUES (2);
+INSERT INTO schema_version(id) VALUES (3);
 
 CREATE TABLE Arch ( 
 	id SERIAL PRIMARY KEY NOT NULL,
@@ -140,6 +143,18 @@ CREATE TABLE SuiteArches (
 )
 ;
 
+CREATE TABLE BuildRequest (
+	id SERIAL PRIMARY KEY NOT NULL,
+	job bigint NOT NULL,
+	method text NOT NULL,
+	uri text NOT NULL,
+	vcs_id text NOT NULL
+);
+
+COMMENT ON TABLE BuildRequest
+	IS 'BuildRequest is used to log build details so they can in future be requeued.'
+;
+
 --  Create Indexes
 ALTER TABLE Arch
 	ADD CONSTRAINT UQ_Arch_id UNIQUE (id)
@@ -176,6 +191,13 @@ ALTER TABLE SuiteArches
 	ADD CONSTRAINT UQ_Stuite_Arches_id UNIQUE (id)
 ;
 
+ALTER TABLE Blacklist
+	ADD CONSTRAINT UQ_Blacklist_id UNIQUE (id)
+;
+
+ALTER TABLE BuildRequest
+	ADD CONSTRAINT UQ_BuildRequest_id UNIQUE (id)
+;
 --  Create Constraints for uniqueness of some fields
 ALTER TABLE Arch
 	ADD CONSTRAINT UQ_Arch_name UNIQUE (name)
@@ -241,4 +263,8 @@ ALTER TABLE SuiteArches ADD CONSTRAINT FK_SuiteArches_Suite
 
 ALTER TABLE SuiteArches ADD CONSTRAINT FK_SuiteArches_Arch
 	FOREIGN KEY (Arch_id) REFERENCES Arch (id)
+;
+
+ALTER TABLE BuildRequest ADD CONSTRAINT FK_BuildRequest_Job
+	FOREIGN KEY (job) REFERENCES Job (id)
 ;

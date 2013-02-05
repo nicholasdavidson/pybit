@@ -60,7 +60,7 @@ def get_job_app(settings, db, controller) :
 					if app.config['controller'].process_job(dist, architectures, version, package_name, suite, pkg_format, Transport(None, method, uri, vcs_id)):
 						return
 					else:
-						response.status = "403 - Forbidden. Blacklisted."
+						return False
 		except Exception as e:
 			raise Exception('Exception encountered in vcs_hook: ' + str(e))
 			response.status = "500 - Exception encountered in vcs_hook"
@@ -175,7 +175,6 @@ def get_job_app(settings, db, controller) :
 				if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,commands):
 					return
 				else:
-					response.status = "403 - Forbidden. Blacklisted."
 					return False
 			else:
 				response.status = "400 - Required fields missing."

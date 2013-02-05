@@ -73,16 +73,16 @@ class Controller(object):
 			build_arches = self.process_achitectures(architectures, suite)
 			if (len(build_arches) == 0):
 				response.status = "404 - no build architectures for this suite."
-				return
+				return False
 		except Exception as e:
 			raise Exception('Error parsing arch information: ' + str(e))
 			response.status = "500 - Error parsing arch information"
-			return
+			return False
 
 		try:
 			current_package = self.process_package(name, version)
 			if not current_package.id :
-				return
+				return False
 			current_suite = self.db.get_suite_byname(suite)[0]
 			current_dist = self.db.get_dist_byname(dist)[0]
 			current_format = self.db.get_format_byname(pkg_format)[0]
@@ -97,8 +97,12 @@ class Controller(object):
 					print "CREATED NEW JOB ID", new_job.id
 					if new_job.id :
 						self.cancel_superceded_jobs(new_job)
-						build_req = jsonpickle.encode(BuildRequest(new_job,transport,
-							"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port']),commands))
+						# NEW STUFF FOR RESUBMITTING JOBS
+						build_request_obj = BuildRequest(new_job.id,transport,
+							"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port']),commands);
+						build_req = jsonpickle.encode(build_request_obj)
+						self.db.log_buildRequest(build_request_obj)
+						#print "SENDING REQUEST WITH DATA", str(build_req)
 						msg = amqp.Message(build_req)
 						msg.properties["delivery_mode"] = 2
 						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name,
@@ -119,15 +123,17 @@ class Controller(object):
 					else :
 						print "FAILED TO ADD JOB"
 						response.status = "404 - failed to add job."
+						return False
 					master = False
 				else :
 					print "PACKAGE INSTANCE ERROR"
 					response.status = "404 - failed to add/retrieve package instance."
+					return False
 		except Exception as e:
 			raise Exception('Error submitting job: ' + str(e))
 			response.status = "500 - Error submitting job"
-			return
-		return
+			return False
+		return True # success
 
 	def add_message_queue(self, queue, routing_key, chan):
 		print "CREATING", chan.queue_declare(queue=queue, durable=True,
