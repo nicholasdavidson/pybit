@@ -15,3 +15,4 @@ include pybitclient/README
 include apache_config.txt
 include application.wsgi
 include pybit-watcher
+include makeme
