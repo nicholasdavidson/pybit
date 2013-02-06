@@ -4,7 +4,24 @@
 --   DBMS       : PostgreSQL 
 --   -------------------------------------------------- 
 
+CREATE OR REPLACE FUNCTION make_plpgsql()
+RETURNS VOID
+LANGUAGE SQL
+AS $$
 CREATE LANGUAGE plpgsql;
+$$;
+ 
+SELECT
+    CASE
+    WHEN EXISTS(
+        SELECT 1
+        FROM pg_catalog.pg_language
+        WHERE lanname='plpgsql'
+    )
+    THEN NULL
+    ELSE make_plpgsql() END;
+ 
+DROP FUNCTION make_plpgsql();
 
 --  Drop Tables, Stored Procedures and Views 
 
@@ -161,20 +178,20 @@ CREATE TABLE BuildRequest (
 
 
 CREATE TABLE BuildEnv
-{
+(
     id SERIAL PRIMARY KEY NOT NULL,
-    Name, text NOT NULL
-}
+    Name text NOT NULL
+)
 ;
 
 CREATE TABLE BuildEnvSuiteArch
-{
+(
     id SERIAL PRIMARY KEY NOT NULL,
     BuildEnv_id BIGINT NOT NULL,
     SuiteArch_id BIGINT NOT NULL,
     FOREIGN KEY (BuildEnv_id) REFERENCES BuildEnv (id),
-    FOREIGN KEY (SuiteArch_id) REFERENCES SuiteArch (id),
-}
+    FOREIGN KEY (SuiteArch_id) REFERENCES SuiteArches (id)
+)
 ;
 
 COMMENT ON TABLE BuildRequest
