@@ -10,9 +10,10 @@ if not exists (SELECT * FROM information_schema.tables WHERE
 				job bigint NOT NULL,
 				method text NOT NULL,
 				uri text NOT NULL,
-				vcs_id text NOT NULL
+				vcs_id text NOT NULL,
+				FOREIGN KEY (job) REFERENCES Job (id)
 			);
-			insert into schema_version(id) values (3);
+			UPDATE schema_version SET id=3;
 end if;
 end;
 $$ LANGUAGE plpgsql;

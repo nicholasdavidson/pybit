@@ -34,6 +34,13 @@ DROP TABLE IF EXISTS Blacklist CASCADE
 ;
 DROP TABLE IF EXISTS BuildRequest CASCADE
 ;
+DROP TABLE IF EXISTS BuildEnv CASCADE
+;
+DROP TABLE IF EXISTS BuildEnvSuiteArch CASCADE
+;
+
+DROP TABLE IF EXISTS schema_version CASCADE
+;
 --  Create Tables - Changed to add NOT NULLs
 CREATE TABLE schema_version
 (
@@ -42,7 +49,7 @@ CREATE TABLE schema_version
 -- The schema version has to be updated every time we change the schema.
 -- Make sure to create an update script in vN.sql in updates to allow
 -- existing databases to be upgraded
-INSERT INTO schema_version(id) VALUES (3);
+INSERT INTO schema_version(id) VALUES (4);
 
 CREATE TABLE Arch ( 
 	id SERIAL PRIMARY KEY NOT NULL,
@@ -148,8 +155,27 @@ CREATE TABLE BuildRequest (
 	job bigint NOT NULL,
 	method text NOT NULL,
 	uri text NOT NULL,
-	vcs_id text NOT NULL
+	vcs_id text NOT NULL,
+	buildenv_name text DEFAULT ''
 );
+
+
+CREATE TABLE BuildEnv
+{
+    id SERIAL PRIMARY KEY NOT NULL,
+    Name, text NOT NULL
+}
+;
+
+CREATE TABLE BuildEnvSuiteArch
+{
+    id SERIAL PRIMARY KEY NOT NULL,
+    BuildEnv_id BIGINT NOT NULL,
+    SuiteArch_id BIGINT NOT NULL,
+    FOREIGN KEY (BuildEnv_id) REFERENCES BuildEnv (id),
+    FOREIGN KEY (SuiteArch_id) REFERENCES SuiteArch (id),
+}
+;
 
 COMMENT ON TABLE BuildRequest
 	IS 'BuildRequest is used to log build details so they can in future be requeued.'

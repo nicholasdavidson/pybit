@@ -10,7 +10,7 @@ if not exists (SELECT * FROM information_schema.tables WHERE
 				field text NOT NULL,
 				regex text NOT NULL
 			);
-			insert into schema_version(id) values (2);
+			update schema_version set id =2;
 end if;
 end;
 $$ LANGUAGE plpgsql;
