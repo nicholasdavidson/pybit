@@ -73,5 +73,5 @@ $$json_hash{'debconf'} = JSON::true;
 open (CONF, ">$cfgfile") or die;
 print CONF $json->encode ($json_hash);
 close (CONF);
-
+chmod (0600, $cfgfile);
 exit 0
