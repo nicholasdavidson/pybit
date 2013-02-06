@@ -59,7 +59,7 @@ Depends: python-psycopg2 (>= 2.4.2-1~), pybit-common,
  ${python:Depends}, ${misc:Depends}
 Recommends: libjs-jquery(>= 1.4.2-2), libjs-jquery-form,
  postgresql-client, libapache2-mod-wsgi
-Suggests: rabbitmq-server
+Suggests: rabbitmq-server (>=1.8), postgresql (>=8.4)
 Replaces: pybit-common (<= 0.1.1)
 Description: buildd toolkit based on message queues (web frontend)
  pyBit uses message queues to create a distributed, cross-platform
