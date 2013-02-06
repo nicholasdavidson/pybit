@@ -1,3 +1,9 @@
+pybit (0.4.3-1) experimental; urgency=low
+
+  * New upstream release.
+
+ -- Neil Williams <neilw@toby-churchill.com>  Wed, 06 Feb 2013 09:37:07 +0000
+
 pybit (0.4.2-1) experimental; urgency=low
 
   [ James Bennet ]
