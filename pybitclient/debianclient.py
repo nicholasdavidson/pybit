@@ -47,7 +47,7 @@ class DebianBuildClient(PackageHandler):
 
 	def update_environment(self,name,pkg, conn_data):
 		retval = None
-		command = "schroot -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
+		command = "schroot --directory / -u root -c %s -- apt-get update > /dev/null 2>&1" % (name)
 		if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 			retval = "build_update"
 		return retval
@@ -103,7 +103,11 @@ class DebianBuildClient(PackageHandler):
 			# have .bz2
 			return retval
 		# use a debian/watch file and uscan
-		if os.path.isfile ("./debian/watch") :
+		package_dir = "%s/%s" % (srcdir, buildreq.get_package())
+		watch = os.path.join (srcdir, package_dir, "debian", "watch")
+		logging.debug ("I: Looking for '%s' as watch file." % watch)
+		if os.path.isfile (watch) or self.settings["dry_run"] :
+			logging.debug ("I: Using '%s' as watch file." % watch)
 			command = "(cd %s ; uscan --destdir ../ --repack --force-download --download-version %s)" % (os.path.join(srcdir,
 				buildreq.get_package()), origversion)
 			if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
