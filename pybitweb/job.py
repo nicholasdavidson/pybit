@@ -147,6 +147,42 @@ def get_job_app(settings, db, controller) :
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 
+	@app.route('/<jobid:int>/retry', method='GET')
+	@requires_auth
+	def retry_job(jobid):
+		#  TODO: Improve this.
+		# This will retry a job, using the same stashed Transport data, from the buildrequest table.
+
+		print "Retry job request recieved for job id", jobid
+
+		job = app.config['db'].get_job(jobid)
+		transport = app.config['db'].get_jobTransportDetails(jobid)
+
+		print "Got stored transport data with id", transport.id
+
+		package_version = job.packageinstance.package.version
+		package_name = job.packageinstance.package.name
+		arch =  job.packageinstance.arch.name # TODO: parse list
+		dist = job.packageinstance.distribution.name
+		suite = job.packageinstance.suite.name
+		pkg_format = job.packageinstance.format.name
+
+		method = transport.method
+		vcs_id = transport.vcs_id
+		uri = transport.uri
+		# TODO: commands?
+
+		print ("Retrying now. Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id)
+
+		# Pass to controller to queue up
+		if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,None):
+			print "Retry Job processed OK!"
+			return
+		else:
+			print "Error retrying job!"
+			return False
+
+
 	@app.route('/', method='POST')
 	@app.route('/', method='PUT')
 	@requires_auth

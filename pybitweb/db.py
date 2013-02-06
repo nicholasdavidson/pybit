@@ -28,7 +28,7 @@ import cgi
 import math
 import re
 
-from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage, checkValue
+from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage, checkValue, Transport
 
 def remove_nasties(nastystring):
 	try:
@@ -111,6 +111,22 @@ class Database(object):
 			new_id = res[0]['id']
 			cur.close()
 			return new_id
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error logging build. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_jobTransportDetails(self, jobid):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT * FROM buildrequest WHERE job = %s",(remove_nasties(jobid),))
+			res = cur.fetchall()
+			self.conn.commit()
+
+			# Get transport details so we can check out the same source to retry a job.
+			transport = Transport(None,res[0]['method'],res[0]['uri'],res[0]['vcs_id'])
+			cur.close()
+			return transport
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error logging build. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
