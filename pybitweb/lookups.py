@@ -479,3 +479,80 @@ def get_suite_app(settings, db):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 	return app
+
+def get_env_app(settings, db):
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
+	@app.route('/', method='GET')
+	@app.route('/page/<page:int>', method='GET')
+	def get_build_envs(page = None):
+		try:
+			#return list of suites
+			if page:
+				build_envs = app.config['db'].get_build_environments(page)
+			else:
+				build_envs = app.config['db'].get_build_environments()
+			encoded = jsonpickle.encode(suites)
+			response.content_type = "application/json"
+			return encoded
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/count', method='GET')
+	def get_count():
+		#return count of suites
+		count = app.config['db'].count_build_environments()
+		encoded = jsonpickle.encode(count)
+		response.content_type = "application/json"
+		return encoded
+
+	@app.route('/<build_env_id:int>', method='GET')
+	def get_build_env_id(build_env_id):
+		try:
+			# Returns all information about a specific suite
+			res = app.config['db'].get_build_env_id(build_env_id)
+
+			# check results returned
+			if res:
+				encoded = jsonpickle.encode(res)
+				response.content_type = "application/json"
+				return encoded
+			else:
+				response.status = "404 - No suite found with this ID."
+				return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/', method='POST')
+	@app.route('/', method='PUT')
+	@requires_auth
+	def put_build_env():
+		try:
+			# Add a new suite.
+			name = request.forms.get('name')
+
+			if name:
+				app.config['db'].put_build_env(name)
+			else:
+				response.status = "400 - Required fields missing."
+			return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/<build_env_id:int>/delete', method='GET')
+	@app.route('/<build_env_id:int>', method='DELETE')
+	@requires_auth
+	def delete_build_env(build_env_id):
+		try:
+			# Deletes a specific suite
+			response.status = "202 - DELETE request received"
+			app.config['db'].delete_build_environment(build_env_id)
+			return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+	return app

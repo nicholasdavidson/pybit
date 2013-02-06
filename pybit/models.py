@@ -62,6 +62,11 @@ class Arch(Model):
 		self.id = arch_id
 		self.name = name
 
+class BuildEnv(Model):
+	def __init__(self,build_env_id,name):
+		self.id = build_env_id
+		self.name = name
+
 class Dist(Model):
 	def __init__(self,dist_id,name):
 		self.id = dist_id
@@ -101,10 +106,11 @@ class Transport(Model) :
 		self.vcs_id = vcs_id
 
 class PackageInstance(Model):
-	def __init__(self, packageinstance_id, package, arch, suite, distribution, pkg_format, master) :
+	def __init__(self, packageinstance_id, package, arch, build_env, suite, distribution, pkg_format, master) :
 		self.id = packageinstance_id
 		self.package = package
 		self.arch = arch
+		self.build_env = build_env
 		self.suite = suite
 		self.distribution = distribution
 		self.format = pkg_format
