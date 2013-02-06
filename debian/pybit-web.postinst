@@ -49,6 +49,7 @@ case "$1" in
 	if [ $fCode -eq 0 -a -n "$RET" ]; then
 		dbc_dbname="$RET"
 		adduser --debug --system --shell /bin/sh --home /var/lib/pybit-web --no-create-home $dbc_dbname
+		chown $dbc_dbname /etc/pybit/web/web.conf
 	fi
 	dbc_share="/usr/share/dbconfig-common"
 	dbc_package="pybit-web"
