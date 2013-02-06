@@ -52,6 +52,9 @@
                                     <li>
                                         <a href="buildd.htm">Build Boxes</a>
                                     </li>
+                   <li>
+                            <a href="envs.htm">Build Environments</a>
+                        </li>
                                 </ul>
                             </div>
                             <!--/.nav-collapse -->
@@ -108,6 +111,9 @@
                         <li>
                             <a href="buildd.htm">BuildBoxes</a>
                         </li>
+                   <li>
+                            <a href="envs.htm">Build Environments</a>
+                        </li>
                     </ul>
                 </div>
                 <!--/.well -->
@@ -129,7 +135,7 @@
                                         <legend>
                                             Submit a Job
                                         </legend>
- <span class="help-block">To submit a job, firstly choose a <strong>Existing</strong> Package, and PackageInstance. <br/> Next, enter the path to he source, the method to use to retrieve it (i.e. 'SVN') , and the VCS revision, as well as any [Optional] build commands.</span>
+ <span class="help-block">To submit a job, firstly choose a <strong>Existing</strong> Package, and PackageInstance. <br/> Next, enter the path to he source, the method to use to retrieve it (i.e. 'SVN') , and the VCS revision.</span>
                                         <label for="package">Package Name: </label>
                                         <select name="package"  id="package" size="1" onclick="changePackage()" style="width:480px; display:block;"></select>
                                         <label for="packageinstance_id">Package Instance ID: </label>
@@ -140,7 +146,6 @@
                                         <input type="text" name="method" id="method">
                                         <label for='revision'>Revision: </label>
                                         <input type="text" name="vcs_id" id="vcs_id">
-                                        <label for='commands'>Additional Build Commands: </label>                                        <textarea id='commands' name='commands' rows="4" cols="50"></textarea>
                                         <br>
                                         <button type="submit" class="btn  btn-primary">
                                             Submit

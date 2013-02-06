@@ -126,11 +126,10 @@ class SuiteArch(Model):
 		self.master_weight = master_weight
 
 class BuildRequest(Model):
-	def __init__(self,job,transport,web_host,commands = None):
+	def __init__(self,job,transport,web_host):
 		self.job = job
 		self.transport = transport
 		self.web_host = web_host
-		self.commands = commands # NEW: Any additional build commands
 		self.timestamp = None
 
 	def stamp_request (self) :

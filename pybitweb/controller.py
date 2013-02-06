@@ -57,7 +57,7 @@ class Controller(object):
 		self.db = db
 		self.settings = settings
 
-	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport, commands = None) :
+	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport) :
 		try:
 			# Look at blacklist, dont build excluded package names
 			if self.db.check_blacklist("name",name):
@@ -99,7 +99,7 @@ class Controller(object):
 						self.cancel_superceded_jobs(new_job)
 						# NEW STUFF FOR RESUBMITTING JOBS
 						build_request_obj = BuildRequest(new_job.id,transport,
-							"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port']),commands);
+							"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port']));
 						build_req = jsonpickle.encode(build_request_obj)
 						self.db.log_buildRequest(build_request_obj)
 						#print "SENDING REQUEST WITH DATA", str(build_req)

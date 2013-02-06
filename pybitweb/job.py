@@ -170,9 +170,8 @@ def get_job_app(settings, db, controller) :
 		method = transport.method
 		vcs_id = transport.vcs_id
 		uri = transport.uri
-		# TODO: commands?
 
-		print ("Retrying now. Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id)
+		print ("Retrying now. Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + ")")
 
 		# Pass to controller to queue up
 		if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,None):
@@ -193,7 +192,6 @@ def get_job_app(settings, db, controller) :
 			method = request.forms.get('method')
 			vcs_id = request.forms.get('vcs_id')
 			uri = request.forms.get('uri')
-			commands = request.forms.get('commands') # NEW: Any additional build commands
 
 			if  packageinstance_id and method and uri:
 				packageinstance = app.config['db'].get_packageinstance_id(packageinstance_id)
@@ -204,11 +202,11 @@ def get_job_app(settings, db, controller) :
 				suite = packageinstance.suite.name
 				pkg_format = packageinstance.format.name
 
-				print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + commands + ")")
+				print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + ")")
 
 				# Pass to controller to queue up
 				transport = Transport(None, method, uri, vcs_id)
-				if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,commands):
+				if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport):
 					return
 				else:
 					return False

@@ -75,7 +75,7 @@
                         <li class="nav-header">
                             Lookups
                         </li>
-                        <li>
+                        <li class="active">
                             <a href="arches.htm">Architectures</a>
                         </li>
                         <li>
@@ -90,7 +90,7 @@
                         <li>
                             <a href="suites.htm">Suites</a>
                         </li>
-                                                 <li class="active">
+                         <li>
                             <a href="suitearch.htm">Suite Arches</a>
                         </li>
                         <li class="nav-header">
@@ -122,30 +122,18 @@
                 <!--Body content-->
                 <div class="container-fluid">
                     <h1>PyBit - python Buildd Integration Toolkit.</h1>
-                    <h3>Add Supported Arches to Software Suites</h3>
+                    <h3> Add Build Environments</h3>
                     <div class="accordion" id="accordion1">
                         <div class="accordion-group">
                             <div class="accordion-heading">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Suite Arches</a>
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Build Environments</a>
                             </div>
                             <div id="collapseOne" class="accordion-body collapse in">
                                 <div class="accordion-inner">
-                                    <form class="form-inline" method="POST" action="suitearch"  id="suitearch_form" name="suitearch_form">
- <span class="help-block">Choose an existing arch to add to the list of supported ones for a particular software suite </span>
-
-                                        <label for="suite_id">Suite: </label>
-                                        <select name="suite_id"  id="suite_id" size="1" style="width:480px; display:block;"></select>
-
-                                        <label for="arch_id">Arch: </label>
-                                        <select name="arch_id"  id="arch_id" size="1" style="width:480px; display:block;"></select>
-
-										<br/>
-
-                                        <label for="master_weight">Weight: </label>
-                                        <input name="master_weight"  id="master_weight" type="text" value="0"></input>
-
-										<br/>
-
+                                    <form class="form-inline" method="POST" action="env"  id="env_form" name="env_form">
+ <span class="help-block">Enter the name of a build environment, to add it to the database. Examples of such environments include 'wheezy'.</span>
+                                        <label for="name">Name</label>
+                                        <input name="name" type="text" />
                                         <button type="submit" class="btn  btn-primary">
                                             Submit
                                         </button>
@@ -153,15 +141,10 @@
                                             Cancel
                                         </button>
                                     </form>
-                                    <table id="tbl_suitearches"  class="table table-bordered table-condensed">
-										<thead>
+                                    <table id="tbl_envs"  class="table table-bordered table-condensed">
                                         <tr>
-                                            <th colspan='3'>Suite Arches</th>
+                                            <th colspan='2'>Build Environments</th>
                                         </tr>
-										<tr><th>Name</th><th>Master Weight</th><th>Operations</th></tr>
-										</thead>
-										<tbody>
-										</tbody>
                                     </table>
                                 </div>
                             </div>
@@ -192,8 +175,8 @@
                     {
                         switch (target)
                         {
-                            case 5:
-                                target = "suitearch"
+                            case 1:
+                                target = "env"
                                 break;
                         }
                         $.ajax (
@@ -215,40 +198,51 @@
                     }
                     $ ( ).ready ( function ( )
                     {
-                        var suitearch_page = 1;
+                        var env_page = 1;
 
-                        $ ( '#suitearch_form' ).ajaxForm ( function ( )
+                        $ ( '#env_form' ).ajaxForm ( function ( )
                         {
-                            alert ( "Suite Arch Added!" );
+                            alert ( "Environment Added!" );
                             location.reload ( );
                         } );
-
-                        var suite_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite"
-                        $.getJSON ( suite_names , function ( json )
+                        if ( getUrlVars() [ "env_page" ] )
                         {
-                            $.each ( json , function ( i , field )
-                            {
-							$ ( "#suite_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
-                            } );
-                        } );
-
-                        var arch_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch"
-                        $.getJSON ( arch_names , function ( json )
+                            env_page = getUrlVars() [ "env_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env/page/" + env_page
+                        }
+                        else
                         {
-                            $.each ( json , function ( i , field )
-                            {
-							$ ( "#arch_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
-                            } );
-                        } );
-
-						var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suitearch"
-
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env/page/1"
+                        }
+                        new_env_page = parseInt ( env_page ) + 1;
+                        last_env_page = parseInt ( env_page ) - 1;
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_suitearches" ).append ( "<tr><td>" + field.suite.name + "/" + field.arch.name + "</td><td>" + field.master_weight + "</td><td><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
+                                $ ( "#tbl_envs" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
                             } );
+
+                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env/count"
+                            $.getJSON ( url2 , function ( json2 )
+							{
+
+							var html_part1 = "";
+							if (env_page > 0)
+							{
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/envs.htm?env_page=" + last_env_page + "'>Prev</a></li><li><a>" + env_page + "/" + json2 + "</a></li>";
+							}
+
+							var html_part2 = "";
+							if (env_page < json2) // Not last page
+							{
+								html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/envs.htm?env_page=" + new_env_page + "'>Next</a></li>";
+							}
+
+							 $ ( '#tbl_envs' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );
+
+							});
+
                         } );
                     } );
                 </script>

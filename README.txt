@@ -1,11 +1,11 @@
 pyBit (πβ or πβιϑ) itself is what it says on the tin, the Python Build Integration Toolkit.
 
-The aim was to create a distributed cross platform AMQP based build system system using python and RabbitMQ. We talk to the queue using python-amqplib, with messages being encoded using python-jsonpickle. python-bottle is used to provide a lightweight HTTP based API, which the associated web GUI can query using python-requests.
+The aim was to create a distributed AMQP based build system system using python and RabbitMQ. We talk to the queue using python-amqplib, with messages being encoded using python-jsonpickle. python-bottle is used to provide a lightweight HTTP based API, which the associated (static) web GUI can query using the jQuery javascript library.
 
 Design
 The system consists of two parts, a single server, and one to many clients. pybit-web is the server part, and pybit-client the client part. You will also need a PostgreSQL database, which we speak to using python-psycopg2.
 
-The web GUI queries the back-end controller API using the jQuery Javascript library. The web GUI is not coupled otherwise to the system, as it does not speak to the queue or database directly.
+The front-end (Static HTML) web GUI queries the back-end (python) HTTP API using the jQuery Javascript library. The [HTML side] of the web GUI is not coupled otherwise to the system, as it does not speak to the queue or database directly.
 
 Likewise, the client only speaks to the controller using the queue, and the HTTP API, never the database. By loosely coupling components, we aim to make it easy to extend the system to support a variety of different configurations and scenarios.
 
@@ -22,10 +22,10 @@ Note that bottle.py, although in the debian repos as python-bottle, does not dep
 python-requests is available from squeeze-backports, as is python-psycopg2. Do NOT use the version of psycopg2 from squeeze/main, if you intend to use a multi-threaded web server, this is unsupported.
 
 Installation
-In /db, there are schema.sql and populate.sql, which will create and populate a (pre-existing) database so the system can run.
+In /db, there are scripts to create and populate the database manually. However, we reccomend you use the dbconfig-common wizard, during the package installation process.
 
 Running the software
-The connection string, hostname, etc.... are stored in /configs/*. You must configure these appropriately. You must also set the hostname and port in the (static) WebUI settings.json file. Then simply start the server first, then the client(s) second. The client will pick up any suitable queued jobs when it comes up.
+The connection string, hostname, etc.... are stored in /etc/pybit/configs/*. These should be set during the package installation process, but you may edit and configure these as you wish. Then simply start the server first, then the client(s) second. The client will pick up any suitable queued jobs when it comes up.
 
 For support:
 IRC - #pybit on irc.oftc.net irc://irc.oftc.org/pybit (Or use github issues)
