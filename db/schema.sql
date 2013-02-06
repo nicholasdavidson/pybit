@@ -4,7 +4,7 @@
 --   DBMS       : PostgreSQL 
 --   -------------------------------------------------- 
 
-
+CREATE LANGUAGE plpgsql;
 
 --  Drop Tables, Stored Procedures and Views 
 

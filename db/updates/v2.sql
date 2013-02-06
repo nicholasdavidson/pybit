@@ -1,3 +1,4 @@
+CREATE LANGUAGE plpgsql;
 create or replace function run_update() returns void as
 $$
 begin
