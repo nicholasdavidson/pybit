@@ -51,20 +51,20 @@ case "$1" in
 		adduser --debug --system --shell /bin/sh --home /var/lib/pybit-web --no-create-home $dbc_dbname
 		chown $dbc_dbname /etc/pybit/web/web.conf
 	fi
-	dbc_share="/usr/share/dbconfig-common"
-	dbc_package="pybit-web"
-	dbc_basepackage=`echo $dbc_package | cut -d_ -f1`
-	dbc_hardcoded_dbtype=pgsql
-	dbc_dbtype="$dbc_hardcoded_dbtype"
-	dbc_sqldir=$dbc_share/data/$dbc_basepackage/install/$dbc_dbtype
-	if [ -d "$dbc_sqldir" ]; then
-		dbc_logpart "populating database via sql... for $dbc_dbname $dbc_sqldir "
-		su -s /bin/sh postgres -c "psql -d $dbc_dbname -c \"ALTER DATABASE $dbc_dbname OWNER TO $dbc_dbname;\""
-		su -s /bin/sh $dbc_dbname -c "psql -d $dbc_dbname -f $dbc_sqlfile/schema.sql"
-		dbc_logline "done"
-	else
-		dbc_logpart "sqlfile not found\n"
-	fi
+#	dbc_share="/usr/share/dbconfig-common"
+#	dbc_package="pybit-web"
+#	dbc_basepackage=`echo $dbc_package | cut -d_ -f1`
+#	dbc_hardcoded_dbtype=pgsql
+#	dbc_dbtype="$dbc_hardcoded_dbtype"
+#	dbc_sqldir=$dbc_share/data/$dbc_basepackage/install/$dbc_dbtype
+#	if [ -d "$dbc_sqldir" ]; then
+#		dbc_logpart "populating database via sql... for $dbc_dbname $dbc_sqldir "
+#		su -s /bin/sh postgres -c "psql -d $dbc_dbname -c \"ALTER DATABASE $dbc_dbname OWNER TO $dbc_dbname;\""
+#		su -s /bin/sh $dbc_dbname -c "psql -d $dbc_dbname -f $dbc_sqlfile/schema.sql"
+#		dbc_logline "done"
+#	else
+#		dbc_logpart "sqlfile not found\n"
+#	fi
 	;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)
