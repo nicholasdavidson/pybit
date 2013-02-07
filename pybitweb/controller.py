@@ -79,15 +79,6 @@ class Controller(object):
 			response.status = "500 - Error parsing arch information"
 			return False
 		
-		try:
-			build_envs = self.process_build_environments(build_environments, suite)
-			if (len(build_envs) == 0):
-				response.status = "404 - no build environments for this suite."
-				return False
-		except Exception as e:
-			raise Exception('Error parsing arch information: ' + str(e))
-			response.status = "500 - Error parsing build environment information"
-			return False
 
 		try:
 			current_package = self.process_package(name, version)
@@ -96,12 +87,13 @@ class Controller(object):
 			current_suite = self.db.get_suite_byname(suite)[0]
 			current_dist = self.db.get_dist_byname(dist)[0]
 			current_format = self.db.get_format_byname(pkg_format)[0]
+			build_envs = self.process_build_environments(build_environment, suite)
 			master = True
 			#for arch in supported_arches:
 			chan = self.get_amqp_channel()
-			for build_env in build_envs:
-				for arch in build_arches:
-					current_arch = self.db.get_arch_byname(arch)[0]
+			for arch in build_arches:
+				current_arch = self.db.get_arch_byname(arch)[0]
+				for build_env in build_envs :
 					current_packageinstance = self.process_packageinstance(build_env, current_arch, current_package, current_dist, current_format, current_suite, master)
 					if current_packageinstance.id :
 						new_job = self.db.put_job(current_packageinstance,None)
@@ -161,7 +153,7 @@ class Controller(object):
 			response.status = "404 - no build environments for this suite."
 		else :
 			print "SUPPORTED BUILD ENVIRONMENTS:", supported_build_envs
-			if (len(requested_environments) == 0):
+			if (requested_environments == None):
 				envs_to_build = supported_build_envs
 			else :
 				for build_env in supported_build_envs :

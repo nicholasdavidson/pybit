@@ -1455,7 +1455,7 @@ class Database(object):
 		try:
 			if build_env and arch and distribution and pkg_format and package and suite:
 				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-				cur.execute("SELECT id FROM packageinstance WHERE buildenv_id,=%s AND arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(build_env.id,arch.id,distribution.id,pkg_format.id,package.id,suite.id))
+				cur.execute("SELECT id FROM packageinstance WHERE buildenv_id=%s AND arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(build_env.id,arch.id,distribution.id,pkg_format.id,package.id,suite.id))
 				res = cur.fetchall()
 				self.conn.commit()
 
@@ -1536,7 +1536,7 @@ class Database(object):
 		try:
 			if suite :
 				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-				cur.execute("SELECT suitearches.id, buildenv.name FROM suitearches LEFT JOIN buildenvsuitearch ON suitearches.id=suitearch_id LEFT JOIN buildenv ON buildenvsuitearch.buildenv_id=buildenv.id WHERE suitearches.suite_id=(SELECT id FROM suite WHERE name=%s",(remove_nasties(suite),))
+				cur.execute("SELECT suitearches.id, buildenv.name FROM suitearches LEFT JOIN buildenvsuitearch ON suitearches.id=suitearch_id LEFT JOIN buildenv ON buildenvsuitearch.buildenv_id=buildenv.id WHERE suitearches.suite_id=(SELECT id FROM suite WHERE name=%s)",(remove_nasties(suite),))
 				res = cur.fetchall()
 				self.conn.commit()
 
