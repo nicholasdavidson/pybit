@@ -139,14 +139,6 @@ def get_app(settings, db, controller):
             jqueryurl=settings['web']['jqueryurl'],
             jqueryformurl=settings['web']['jqueryformurl'])
 
-    # static HTML page listing suitearches
-    @app.route('/suitearch.htm', method='GET')
-    def serve_static_suitearches():
-            return template(getStaticResource("/suitearch.htm"),
-            protocol=settings['web']['protocol'],
-            jqueryurl=settings['web']['jqueryurl'],
-            jqueryformurl=settings['web']['jqueryformurl'])
-
     # static HTML page listing buildboxes
     @app.route('/buildd.htm', method='GET')
     def serve_static_buildboxes():
