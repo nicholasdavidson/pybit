@@ -264,6 +264,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
+								console.log("test");
                                 $ ( "#tbl_envs" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
                             } );
 
@@ -343,7 +344,8 @@
 
                     $ ( ).ready ( function ( )
                     {
-                       
+                       doEnvs();
+                       doBuildenv_suitearches();
                     } );
                 </script>
             </div>
