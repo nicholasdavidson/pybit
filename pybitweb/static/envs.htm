@@ -291,8 +291,31 @@
                         } );
 					}
 
+					function populateDropdowns()
+					{
+                       var buildenv_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env"
+                        $.getJSON ( buildenv_names , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+							$ ( "#buildenv_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
+                            } );
+                        } );
+
+                        var suitearch_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suitearch"
+                        $.getJSON ( suitearch_names , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+							$ ( "#suitearch_id" ).append ( "<option value='" + field.id + "'>" + field.arch.name + "/" + field.suite.name + "</option>" );
+                            } );
+                        } );
+					}
+
 					function doBuildenv_suitearches()
 					{
+
+						populateDropdowns();
 					 var buildenv_suitearch_page = 1;
 
                         $ ( '#buildenv_suitearch_form' ).ajaxForm ( function ( )
