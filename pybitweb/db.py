@@ -1307,12 +1307,12 @@ class Database(object):
 	def get_packageinstance_id(self,packageinstance_id):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,package_id,build_env_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance  WHERE id=%s",(packageinstance_id,))
+			cur.execute("SELECT id,package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance  WHERE id=%s",(packageinstance_id,))
 			res = cur.fetchall()
 			self.conn.commit()
 
 			package = self.get_package_id(res[0]['package_id'])
-			build_env = self.get_build_env_id(res[0]['build_env_id'])
+			build_env = self.get_build_env_id(res[0]['buildenv_id'])
 			arch = self.get_arch_id(res[0]['arch_id'])
 			suite = self.get_suite_id(res[0]['suite_id'])
 			dist = self.get_dist_id(res[0]['dist_id'])
@@ -1347,9 +1347,9 @@ class Database(object):
 			if page:
 				 # CONSTANT
 				offset = (page -1) * self.limit_high;
-				cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id LIMIT %s OFFSET %s", (self.limit_high,offset,))
+				cur.execute("SELECT id,package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:
-				cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id")
+				cur.execute("SELECT id,package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -1366,7 +1366,7 @@ class Database(object):
 	def get_packageinstances_byname(self, name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT packageinstance.id AS id,package.id AS package_id ,arch_id,suite_id,dist_id,format_id,master FROM packageinstance,package WHERE packageinstance.package_id = package.id AND name = %s ORDER BY package_id, id",(name,))
+			cur.execute("SELECT packageinstance.id AS id,package.id AS package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance,package WHERE packageinstance.package_id = package.id AND name = %s ORDER BY package_id, id",(name,))
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -1384,7 +1384,7 @@ class Database(object):
 	def get_packageinstance_byvalues(self,package,build_env,arch,suite,dist,pkg_format):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND build_env=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package.id,build_env.id,arch.id,suite.id,dist.id,pkg_format.id))
+			cur.execute("SELECT id,package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND buildenv_id,=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package.id,build_env.id,arch.id,suite.id,dist.id,pkg_format.id))
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -1401,7 +1401,7 @@ class Database(object):
 	def put_packageinstance(self,package,build_env,arch,suite,dist,pkg_format,master):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into packageinstance(package_id,build_env_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s, %s)  RETURNING id",(remove_nasties(package.id),remove_nasties(build_env.id),remove_nasties(arch.id),remove_nasties(suite.id),remove_nasties(dist.id),remove_nasties(pkg_format.id),remove_nasties(master)))
+			cur.execute("INSERT into packageinstance(package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s, %s)  RETURNING id",(remove_nasties(package.id),remove_nasties(build_env.id),remove_nasties(arch.id),remove_nasties(suite.id),remove_nasties(dist.id),remove_nasties(pkg_format.id),remove_nasties(master)))
 			self.conn.commit()
 			res = cur.fetchall()
 			self.conn.commit()
@@ -1455,7 +1455,7 @@ class Database(object):
 		try:
 			if build_env and arch and distribution and pkg_format and package and suite:
 				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-				cur.execute("SELECT id FROM packageinstance WHERE build_env_id=%s AND arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(build_env.id,arch.id,distribution.id,pkg_format.id,package.id,suite.id))
+				cur.execute("SELECT id FROM packageinstance WHERE buildenv_id,=%s AND arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(build_env.id,arch.id,distribution.id,pkg_format.id,package.id,suite.id))
 				res = cur.fetchall()
 				self.conn.commit()
 
