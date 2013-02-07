@@ -490,10 +490,10 @@ def get_env_app(settings, db):
 		try:
 			#return list of environments
 			if page:
-				build_envs = app.config['db'].get_build_environments(page)
+				build_envs = app.config['db'].get_build_envs(page)
 			else:
-				build_envs = app.config['db'].get_build_environments()
-			encoded = jsonpickle.encode(suites)
+				build_envs = app.config['db'].get_build_envs()
+			encoded = jsonpickle.encode(build_envs)
 			response.content_type = "application/json"
 			return encoded
 		except Exception as e:
@@ -503,7 +503,7 @@ def get_env_app(settings, db):
 	@app.route('/count', method='GET')
 	def get_count():
 		#return count of environments
-		count = app.config['db'].count_build_environments()
+		count = app.config['db'].count_build_envs()
 		encoded = jsonpickle.encode(count)
 		response.content_type = "application/json"
 		return encoded
