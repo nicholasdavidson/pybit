@@ -57,7 +57,8 @@ def get_job_app(settings, db, controller) :
 					return None
 				else :
 					print "RECEIVED BUILD REQUEST FOR", package_name, version, suite, architectures
-					if app.config['controller'].process_job(dist, architectures, version, package_name, suite, pkg_format, Transport(None, method, uri, vcs_id)):
+					# NOTE:VCS Hook does not send build_environment.
+					if app.config['controller'].process_job(dist, architectures, version, package_name, suite, pkg_format, Transport(None, method, uri, vcs_id),None):
 						return
 					else:
 						return False
@@ -166,15 +167,16 @@ def get_job_app(settings, db, controller) :
 		dist = job.packageinstance.distribution.name
 		suite = job.packageinstance.suite.name
 		pkg_format = job.packageinstance.format.name
+		build_environment = app.config['db'].get_build_env_id(job.packageinstance.build_env.id).name # Lookup and send build_environment name
 
 		method = transport.method
 		vcs_id = transport.vcs_id
 		uri = transport.uri
 
-		print ("Retrying now. Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + ")")
+		print ("Retrying now. Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + build_environment + ")")
 
-		# Pass to controller to queue up
-		if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,None):
+		# Pass to controller to queue up - Pass build_environment if any.
+		if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,build_environment):
 			print "Retry Job processed OK!"
 			return
 		else:
@@ -201,12 +203,13 @@ def get_job_app(settings, db, controller) :
 				dist = packageinstance.distribution.name
 				suite = packageinstance.suite.name
 				pkg_format = packageinstance.format.name
+				build_environment = app.config['db'].get_build_env_id(packageinstance.build_env.id).name # Lookup build_environment name for the package instance
 
-				print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + ")")
+				print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + build_environment + ")")
 
-				# Pass to controller to queue up
+				# Pass to controller to queue up - Pass build_environment if any.
 				transport = Transport(None, method, uri, vcs_id)
-				if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport):
+				if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,build_environment):
 					return
 				else:
 					return False
