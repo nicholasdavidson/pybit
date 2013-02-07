@@ -201,6 +201,7 @@ def get_app(settings, db, controller):
     app.mount('/arch',lookups.get_arch_app(settings, db))
     app.mount('/format', lookups.get_format_app(settings, db))
     app.mount('/env', lookups.get_env_app(settings, db))
+    app.mount('/buildenv_suitearch', lookups.get_buildenv_suitearch_app(settings, db))
     app.mount('/buildd', buildd.get_buildd_app(settings, db, controller))
     app.mount('/package', package.get_packages_app(settings, db, controller))
     app.mount('/packageinstance', packageinstance.get_packageinstance_app(settings, db))

@@ -143,6 +143,49 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="accordion-group">
+
+
+                                                        <div class="accordion-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">Environment / Suite Arch Mappings</a>
+                            </div>
+                            <div id="collapseTwo" class="accordion-body collapse in">
+                                <div class="accordion-inner">
+                                    <form class="form-inline" method="POST" action="buildenv_suitearch"  id="buildenv_suitearch_form" name="buildenv_suitearch_form">
+ <span class="help-block">Choose an existing arch to add to the list of supported ones for a particular software suite </span>
+
+                                        <label for="buildenv_id">Environment: </label>
+                                        <select name="buildenv_id"  id="buildenv_id" size="1" style="width:480px; display:block;"></select>
+
+                                        <label for="suitearch_id">Suite Arch: </label>
+                                        <select name="suitearch_id"  id="suitearch_id" size="1" style="width:480px; display:block;"></select>
+
+										<br/>
+
+                                        <button type="submit" class="btn  btn-primary">
+                                            Submit
+                                        </button>
+                                        <button type="button" class="btn">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    <table id="tbl_buildenv_suitearches"  class="table table-bordered table-condensed">
+										<thead>
+                                        <tr>
+                                            <th colspan='3'>Environment / Suite Arch Mappings</th>
+                                        </tr>
+										<tr><th>Environment</th><th>Suite Arch</th><th>Operations</th></tr>
+										</thead>
+										<tbody>
+										</tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
                     </div>
                     <hr>
                     <footer>
@@ -172,6 +215,9 @@
                             case 1:
                                 target = "env"
                                 break;
+                            case 2:
+                                target = "buildenv_suitearch"
+                                break;
                         }
                         $.ajax (
                         {
@@ -190,9 +236,10 @@
 
                         } );
                     }
-                    $ ( ).ready ( function ( )
-                    {
-                        var env_page = 1;
+
+					function doEnvs()
+					{
+					 var env_page = 1;
 
                         $ ( '#env_form' ).ajaxForm ( function ( )
                         {
@@ -238,6 +285,62 @@
 							});
 
                         } );
+					}
+
+					function doBuildenv_suitearches()
+					{
+					 var buildenv_suitearch_page = 1;
+
+                        $ ( '#buildenv_suitearch_form' ).ajaxForm ( function ( )
+                        {
+                            alert ( "Environmrnt / Suite Arch Mapping Added!" );
+                            location.reload ( );
+                        } );
+                        if ( getUrlVars() [ "buildenv_suitearch_page" ] )
+                        {
+                            buildenv_suitearch_page = getUrlVars() [ "buildenv_suitearch_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildenv_suitearch/page/" + env_page
+                        }
+                        else
+                        {
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildenv_suitearch/page/1"
+                        }
+                        new_buildenv_suitearch_page = parseInt ( buildenv_suitearch_page ) + 1;
+                        last_buildenv_suitearch_page = parseInt ( buildenv_suitearch_page ) - 1;
+                        $.getJSON ( url , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#tbl_buildenv_suitearches" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
+                            } );
+
+                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildenv_suitearch/count"
+                            $.getJSON ( url2 , function ( json2 )
+							{
+
+							var html_part1 = "";
+							if (buildenv_suitearch_page > 0)
+							{
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/envs.htm?buildenv_suitearch_page=" + last_buildenv_suitearch_page + "'>Prev</a></li><li><a>" + buildenv_suitearch_page + "/" + json2 + "</a></li>";
+							}
+
+							var html_part2 = "";
+							if (buildenv_suitearch_page < json2) // Not last page
+							{
+								html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/envs.htm?buildenv_suitearch_page=" + new_buildenv_suitearch_page + "'>Next</a></li>";
+							}
+
+							 $ ( '#tbl_buildenv_suitearches' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );
+
+							});
+
+                        } );
+					}
+
+
+                    $ ( ).ready ( function ( )
+                    {
+                       
                     } );
                 </script>
             </div>

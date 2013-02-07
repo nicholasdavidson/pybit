@@ -564,7 +564,7 @@ def get_buildenv_suitearch_app(settings, db):
 	@app.route('/', method='GET')
 	def get_buildenv_suitearch():
 		try:
-			#return list of suitearch
+			#return list of buildenv_suitearches
 			buildenv_suitearch = app.config['db'].get_buildenv_suitearches()
 			encoded = jsonpickle.encode(buildenv_suitearch)
 			response.content_type = "application/json"
@@ -585,7 +585,7 @@ def get_buildenv_suitearch_app(settings, db):
 	@app.route('/<buildenv_suitearch_id:int>', method='GET')
 	def get_suitearch_id(buildenv_suitearch_id):
 		try:
-			# Returns all information about a specific suitearch
+			# Returns all information about a specific buildenv_suitearch
 			res = app.config['db'].get_buildenv_suitearch_id(buildenv_suitearch_id)
 
 			# check results returned
@@ -594,7 +594,7 @@ def get_buildenv_suitearch_app(settings, db):
 				response.content_type = "application/json"
 				return encoded
 			else:
-				response.status = "404 - No suitearch found with this ID."
+				response.status = "404 - No buildenv_suitearch found with this ID."
 				return
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
