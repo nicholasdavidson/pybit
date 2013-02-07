@@ -9,22 +9,16 @@ dbc_package=$1
 dbc_basepackage=`echo $dbc_package | cut -d_ -f1`
 dbc_dbtype=pgsql
 dbc_sqldir=$dbc_share/data/$dbc_basepackage/install/$dbc_dbtype
-
-dbc_scriptfile=$dbc_share/scripts/$dbc_basepackage/install/$dbc_dbtype
-dbc_logline "$dbc_scriptfile $dbc_package"
-
 dbc_dbname=`grep -v '#' /etc/dbconfig-common/pybit-web.conf  |grep dbc_dbname|cut -d= -f2|sed -e "s:'::g"`
 
 if [ -d "$dbc_sqldir" ]; then
-	if [ -f "$dbc_sqldir/schema.sql" ]; then
-		dbc_logline "altering database ownership via sql... for $dbc_dbname"
-		su -s /bin/sh postgres -c "psql -d $dbc_dbname -c \"ALTER DATABASE $dbc_dbname OWNER TO $dbc_dbname;\" > /dev/null 2>&1"
-		dbc_logline "populating database via sql... for $dbc_dbname ${dbc_sqldir}/schema.sql "
-		su -s /bin/sh $dbc_dbname -c "psql -d $dbc_dbname -f ${dbc_sqldir}/schema.sql > /dev/null 2>&1"
-		dbc_logline "done"
-	else
-		dbc_logline "$dbc_sqldir/schema.sql not found."
-	fi
+	dbc_logline "altering database ownership via sql... for $dbc_dbname"
+	su -s /bin/sh postgres -c "psql -d $dbc_dbname -c \"ALTER DATABASE $dbc_dbname OWNER TO $dbc_dbname;\" > /dev/null"
+	for FILE in $dbc_sqldir/* ; do
+		dbc_logline "populating database for $dbc_dbname using $FILE "
+		su -s /bin/sh $dbc_dbname -c "psql -d $dbc_dbname -f $FILE > /dev/null"
+		dbc_logline "$FILE done"
+	done
 else
 	dbc_logline "$dbc_sqldir not found\n"
 fi
