@@ -130,7 +130,7 @@ class SuiteArch(Model):
 		self.suite = suite
 		self.arch = arch
 		self.master_weight = master_weight
-		
+
 class BuildEnvSuiteArch(Model):
 	def __init__(self,buildenv_suitearch_id,buildenv,suitearch):
 		self.id = buildenv_suitearch_id
@@ -152,6 +152,11 @@ class BuildRequest(Model):
 
 	def get_suite(self):
 		return self.job.packageinstance.suite.name
+
+	def get_buildenv(self):
+		if self.job.packageinstance.build_env is None:
+			return None
+		return self.job.packageinstance.build_env.name
 
 	def get_package(self):
 		return self.job.packageinstance.package.name
