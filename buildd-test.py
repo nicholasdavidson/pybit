@@ -102,9 +102,9 @@ def main():
 		test_suite = Suite (0, suite)
 		test_transport = Transport (0, method_type, uri, vcs_id)
 		test_package = Package(0, version, package)
-		test_packageinstance = PackageInstance(1, test_package, test_arch, test_suite, pkg_format, distribution, True)
+		test_packageinstance = PackageInstance(1, test_package, test_arch, test_suite, test_suite, distribution, pkg_format, True)
 		test_job =  Job(2, test_packageinstance,None)
-		test_req = BuildRequest(test_job,test_transport,None,commands)
+		test_req = BuildRequest(test_job,test_transport,None)
 		test_req.stamp_request()
 		# clean up in case the last test failed.
 		if (method_type == "svn") :
