@@ -103,7 +103,7 @@ def get_packageinstance_app(settings, db):
 			if not slave:
 				slave = "false"
 
-			if package and version and build_env_id and arch_id  and suite_id  and dist_id and format_id and slave:
+			if package and version and arch_id and suite_id  and dist_id and format_id and slave:
 
 				package_obj = app.config['db'].get_package_byvalues(package,version)[0]
 				build_env = app.config['db'].get_build_env_id(build_env_id)

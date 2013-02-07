@@ -132,6 +132,7 @@
                                         <label for="package">Package: </label>
                                         <select name="package" id="package" onclick="changePackage()"></select>                                        <label for="version">Package Version: </label>
                                         <select name="version" id="version"></select><label for="arch_id">Architecture: </label><select name="arch_id" id="arch_id"></select><label for="suite_id">Suite: </label><select name="suite_id"  id="suite_id"></select><label for="dist_id">Distribution: </label><select name="dist_id" id="dist_id"></select><label for="format_id">Package Format: </label><select name="format_id"  id="format_id"></select>
+<label for="build_env_id">Build Environment</label><select name="build_env_id" id="build_env_id"></select>
                                         <br>
                                         <input type="checkbox" name="slave" value="0" id="slave">
                                         Slave</input>
@@ -245,6 +246,14 @@ changePackage();
                             $.each ( json , function ( i , field )
                             {
                                 $ ( "#format_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
+                            } );
+                        } );
+                        var envs = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env"
+                        $.getJSON ( envs , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#build_env_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
                             } );
                         } );
 
