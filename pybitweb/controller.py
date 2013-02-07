@@ -57,7 +57,7 @@ class Controller(object):
 		self.db = db
 		self.settings = settings
 
-	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport) :
+	def process_job(self, dist, architectures, build_environments, version, name, suite, pkg_format, transport) :
 		try:
 			# Look at blacklist, dont build excluded package names
 			if self.db.check_blacklist("name",name):
@@ -78,6 +78,16 @@ class Controller(object):
 			raise Exception('Error parsing arch information: ' + str(e))
 			response.status = "500 - Error parsing arch information"
 			return False
+		
+		try:
+			build_envs = self.process_build_environments(build_environments, suite)
+			if (len(build_envs) == 0):
+				response.status = "404 - no build environments for this suite."
+				return False
+		except Exception as e:
+			raise Exception('Error parsing arch information: ' + str(e))
+			response.status = "500 - Error parsing build environment information"
+			return False
 
 		try:
 			current_package = self.process_package(name, version)
@@ -89,46 +99,47 @@ class Controller(object):
 			master = True
 			#for arch in supported_arches:
 			chan = self.get_amqp_channel()
-			for arch in build_arches:
-				current_arch = self.db.get_arch_byname(arch)[0]
-				current_packageinstance = self.process_packageinstance(current_arch, current_package, current_dist, current_format, current_suite, master)
-				if current_packageinstance.id :
-					new_job = self.db.put_job(current_packageinstance,None)
-					print "CREATED NEW JOB ID", new_job.id
-					if new_job.id :
-						self.cancel_superceded_jobs(new_job)
-						# NEW STUFF FOR RESUBMITTING JOBS
-						build_request_obj = BuildRequest(new_job.id,transport,
-							"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port']));
-						build_req = jsonpickle.encode(build_request_obj)
-						self.db.log_buildRequest(build_request_obj)
-						#print "SENDING REQUEST WITH DATA", str(build_req)
-						msg = amqp.Message(build_req)
-						msg.properties["delivery_mode"] = 2
-						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name,
-												new_job.packageinstance.arch.name,
-												new_job.packageinstance.suite.name,
-												new_job.packageinstance.format.name)
-						build_queue = pybit.get_build_queue_name(new_job.packageinstance.distribution.name,
-												new_job.packageinstance.arch.name,
-												new_job.packageinstance.suite.name,
-												new_job.packageinstance.format.name)
-						self.add_message_queue(build_queue, routing_key, chan)
-
-						if chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True) :
-							#print "\n____________SENDING", build_req, "____________TO____________", routing_key
-							print "SENDING BUILD REQUEST FOR JOB ID", new_job.id, new_job.packageinstance.package.name, new_job.packageinstance.package.version, new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name
+			for build_env in build_envs:
+				for arch in build_arches:
+					current_arch = self.db.get_arch_byname(arch)[0]
+					current_packageinstance = self.process_packageinstance(build_env, current_arch, current_package, current_dist, current_format, current_suite, master)
+					if current_packageinstance.id :
+						new_job = self.db.put_job(current_packageinstance,None)
+						print "CREATED NEW JOB ID", new_job.id
+						if new_job.id :
+							self.cancel_superceded_jobs(new_job)
+							# NEW STUFF FOR RESUBMITTING JOBS
+							build_request_obj = BuildRequest(new_job.id,transport,
+								"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port']));
+							build_req = jsonpickle.encode(build_request_obj)
+							self.db.log_buildRequest(build_request_obj)
+							#print "SENDING REQUEST WITH DATA", str(build_req)
+							msg = amqp.Message(build_req)
+							msg.properties["delivery_mode"] = 2
+							routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name,
+													new_job.packageinstance.arch.name,
+													new_job.packageinstance.suite.name,
+													new_job.packageinstance.format.name)
+							build_queue = pybit.get_build_queue_name(new_job.packageinstance.distribution.name,
+													new_job.packageinstance.arch.name,
+													new_job.packageinstance.suite.name,
+													new_job.packageinstance.format.name)
+							self.add_message_queue(build_queue, routing_key, chan)
+	
+							if chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True) :
+								#print "\n____________SENDING", build_req, "____________TO____________", routing_key
+								print "SENDING BUILD REQUEST FOR JOB ID", new_job.id, new_job.packageinstance.package.name, new_job.packageinstance.package.version, new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name
+							else :
+								print "UNABLE TO ROUTE BUILD REQUEST TO", routing_key
 						else :
-							print "UNABLE TO ROUTE BUILD REQUEST TO", routing_key
+							print "FAILED TO ADD JOB"
+							response.status = "404 - failed to add job."
+							return False
+						master = False
 					else :
-						print "FAILED TO ADD JOB"
-						response.status = "404 - failed to add job."
+						print "PACKAGE INSTANCE ERROR"
+						response.status = "404 - failed to add/retrieve package instance."
 						return False
-					master = False
-				else :
-					print "PACKAGE INSTANCE ERROR"
-					response.status = "404 - failed to add/retrieve package instance."
-					return False
 		except Exception as e:
 			raise Exception('Error submitting job: ' + str(e))
 			response.status = "500 - Error submitting job"
@@ -141,6 +152,23 @@ class Controller(object):
 		print "BINDING", queue, routing_key, chan.queue_bind(queue=queue,
 										exchange=pybit.exchange_name, routing_key=routing_key)
 		return
+	
+	def process_build_environments(self, requested_environments, suite) :
+		print "REQUESTED BUILD ENVIRONMENTS:", requested_environments
+		envs_to_build = list()
+		supported_build_envs = self.db.get_supported_build_environments(suite)
+		if (len(supported_build_envs) == 0):
+			response.status = "404 - no build environments for this suite."
+		else :
+			print "SUPPORTED BUILD ENVIRONMENTS:", supported_build_envs
+			if (len(requested_environments) == 0):
+				envs_to_build = supported_build_envs
+			else :
+				for build_env in supported_build_envs :
+					if build_env in requested_environments :
+						envs_to_build.append(build_env)
+				print "ENVIRONMENTS TO BUILD:", envs_to_build
+		return envs_to_build
 
 	def process_achitectures(self, requested_arches, suite) :
 #		print "REQUESTED ARCHITECTURES:", requested_arches
@@ -180,12 +208,12 @@ class Controller(object):
 				print "ADDED NEW PACKAGE (", package.id, package.name, package.version, ")"
 		return package
 
-	def process_packageinstance(self, arch, package, dist, pkg_format, suite, master) :
+	def process_packageinstance(self, build_env, arch, package, dist, pkg_format, suite, master) :
 		# check & retrieve existing package or try to add a new one
 		packageinstance = None
-		if self.db.check_specific_packageinstance_exists(arch, package, dist, pkg_format, suite) :
+		if self.db.check_specific_packageinstance_exists(build_env, arch, package, dist, pkg_format, suite) :
 			# retrieve existing package instance from db
-			packageinstance = self.db.get_packageinstance_byvalues(package, arch, suite, dist, pkg_format)[0]
+			packageinstance = self.db.get_packageinstance_byvalues(package, build_env, arch, suite, dist, pkg_format)[0]
 			if packageinstance.id :
 				print "MATCHING PACKAGE INSTANCE FOUND (", packageinstance.id, ")"
 				# Temporarily disable master update for Issue #84, this should not be default behaviour.
@@ -195,7 +223,7 @@ class Controller(object):
 #					packageinstance.master = master
 		else :
 			# add new package instance to db
-			packageinstance = self.db.put_packageinstance(package, arch, suite, dist, pkg_format, master)
+			packageinstance = self.db.put_packageinstance(package, build_env, arch, suite, dist, pkg_format, master)
 			if packageinstance.id :
 				print "ADDED NEW PACKAGE INSTANCE (", packageinstance.id, ")"
 		return packageinstance
