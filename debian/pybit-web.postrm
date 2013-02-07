@@ -7,18 +7,11 @@ if [ -f /usr/share/debconf/confmodule ]; then
 fi
 if [ -f /usr/share/dbconfig-common/dpkg/postrm.pgsql  ]; then
 	. /usr/share/dbconfig-common/dpkg/postrm.pgsql
-	dbc_go pybit-web $@
 fi
+dbc_go pybit-web $@
 
 case "$1" in
 	purge)
-	if [ -x /usr/sbin/deluser ]; then
-		fCode=0
-		db_get pybit-web/db/dbname || fCode=$?
-		if [ $fCode -eq 0 -a -n "$RET" ]; then
-			deluser --debug $RET
-		fi
-	fi
 	if [ -f /etc/pybit/web/web.conf ]; then
 		rm /etc/pybit/web/web.conf
 	fi

@@ -1,0 +1,12 @@
+pybit-web for Debian
+
+  pybit-web creates a system user matching the name of the configured
+  database user, if one is set. This system user is not removed when
+  pybit-web is removed or purged.
+
+  See #621833 for the complications of removing system users
+  also, as the virtual host may well be active, locking the user
+  would disable apache and the local apache sites-available config
+  is out of bounds to this maintainer script.
+
+ -- Neil Williams <codehelp@debian.org>  Wed, 06 Feb 2013 13:23:06 +0000
