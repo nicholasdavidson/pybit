@@ -100,8 +100,15 @@ def get_packageinstance_app(settings, db):
 			format_id =  request.forms.get('format_id')
 			slave = request.forms.get('slave')
 
-			if not slave:
-				slave = "false"
+			# This but is confusing
+			if slave: 
+				print "SLAVE NOT NULL:" + str (slave)
+				slave = "true"
+				master = "false"
+			else:
+				print "SLAVE NULL"
+				slave = "false" # not slave means master
+				master = "true"
 
 			if package and version and arch_id and suite_id  and dist_id and format_id and slave:
 
@@ -112,7 +119,7 @@ def get_packageinstance_app(settings, db):
 				dist = app.config['db'].get_dist_id(dist_id)
 				pkg_format = app.config['db'].get_format_id(format_id)
 
-				app.config['db'].put_packageinstance(package_obj,build_env,arch,suite,dist,pkg_format,slave)
+				app.config['db'].put_packageinstance(package_obj,build_env,arch,suite,dist,pkg_format,master)
 			else:
 				response.status = "400 - Required fields missing."
 			return
