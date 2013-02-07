@@ -12,11 +12,16 @@ dbc_sqldir=$dbc_share/data/$dbc_basepackage/install/$dbc_dbtype
 dbc_dbname=`grep -v '#' /etc/dbconfig-common/pybit-web.conf  |grep dbc_dbname|cut -d= -f2|sed -e "s:'::g"`
 
 if [ -d "$dbc_sqldir" ]; then
-	dbc_logline "altering database ownership via sql... for $dbc_dbname"
-	su -s /bin/sh postgres -c "psql -d $dbc_dbname -c \"ALTER DATABASE $dbc_dbname OWNER TO $dbc_dbname;\" > /dev/null"
+	CHK=`getent passwd $dbc_dbname || true`
+	if [ "$CHK" = "" ]; then
+		dbc_logline "adding system user $dbc_dbname -- see /usr/share/doc/pybit-web/README.Debian"
+		adduser --quiet --system --shell /bin/sh --home /var/lib/pybit-web --no-create-home --group $dbc_dbname
+	fi
+	dbc_logline "altering database ownership for $dbc_dbname"
+	su -s /bin/sh postgres -c "psql -d $dbc_dbname -c \"ALTER DATABASE $dbc_dbname OWNER TO $dbc_dbname;\" 2>/dev/null"
 	for FILE in $dbc_sqldir/* ; do
-		dbc_logline "populating database for $dbc_dbname using $FILE "
-		su -s /bin/sh $dbc_dbname -c "psql -d $dbc_dbname -f $FILE > /dev/null"
+		dbc_logline "creating tables in database for $dbc_dbname using $FILE "
+		su -s /bin/sh $dbc_dbname -c "psql -d $dbc_dbname -f $FILE 2> /dev/null"
 		dbc_logline "$FILE done"
 	done
 else
