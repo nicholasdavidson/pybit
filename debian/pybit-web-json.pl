@@ -8,12 +8,7 @@ use vars qw/ $command $ret $dbuser $dbpass $cfgfile %cfg $ret
  @json_list $json_text $fh $json_hash %dbhash $json $dbini /;
 # postinst helper script for pybit-web
 $cfgfile   = '/etc/pybit/web/web.conf';
-$dbexport  = '/etc/pybit/debian-db.pl'; # contains the intermediate db export data
 $dbini     = '/etc/pybit/debian-db.ini'; # other debconf data
-# pull in the exported db data
-if (-f $dbexport) {
-	require $dbexport;
-}
 # extract the ordinary debconf data
 if (-f $dbini) {
 	open (INI, $dbini);
@@ -74,4 +69,13 @@ open (CONF, ">$cfgfile") or die;
 print CONF $json->encode ($json_hash);
 close (CONF);
 chmod (0600, $cfgfile);
+# pybitweb is hardcoded in apache_config.txt too
+# See Debian bug #621833 for the complications of removing system users
+if (`getent passwd pybitweb || true` eq "") {
+	system ("adduser --quiet --system --shell /bin/sh --home /var/lib/pybit-web --no-create-home --group pybitweb");
+}
+my ($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) = getpwnam("pybitweb");
+if (defined $uid and $uid > 1) {
+	chown ($uid, -1, $cfgfile);
+}
 exit 0
