@@ -709,7 +709,7 @@ class Database(object):
 	def count_build_envs(self):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT COUNT(*) FROM build_env AS num_build_envs")
+			cur.execute("SELECT COUNT(*) FROM buildenv AS num_build_envs")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -719,7 +719,7 @@ class Database(object):
 			return math.ceil(pages);
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error retrieving build_env count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			raise Exception("Error retrieving buildenv count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_build_envs(self,page=None):
@@ -728,9 +728,9 @@ class Database(object):
 			if page:
 
 				offset = (page -1) * self.limit_low;
-				cur.execute("SELECT id,name FROM build_env ORDER BY name LIMIT %s OFFSET %s", (self.limit_low,offset,))
+				cur.execute("SELECT id,name FROM buildenv ORDER BY name LIMIT %s OFFSET %s", (self.limit_low,offset,))
 			else:
-				cur.execute("SELECT id,name FROM build_env ORDER BY name")
+				cur.execute("SELECT id,name FROM buildenv ORDER BY name")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -741,13 +741,13 @@ class Database(object):
 			return build_envs
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error retrieving build_env list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			raise Exception("Error retrieving buildenv list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_build_env_id(self,build_env_id):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM build_env WHERE id=%s",(build_env_id,))
+			cur.execute("SELECT id,name FROM buildenv WHERE id=%s",(build_env_id,))
 			res = cur.fetchall()
 			self.conn.commit()
 			build_env = BuildEnv(res[0]['id'],res[0]['name'])
@@ -755,13 +755,13 @@ class Database(object):
 			return build_env
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error retrieving build_env with id:" + str(build_env_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			raise Exception("Error retrieving buildenv with id:" + str(build_env_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def get_build_env_byname(self,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,name FROM build_env WHERE name=%s",(name,))
+			cur.execute("SELECT id,name FROM buildenv WHERE name=%s",(name,))
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -772,13 +772,13 @@ class Database(object):
 			return build_envs
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error retrieving build_env with name:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			raise Exception("Error retrieving buildenv with name:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_build_env(self,name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into build_env(name) VALUES (%s)  RETURNING id",(remove_nasties(name),))
+			cur.execute("INSERT INTO buildenv(name) VALUES (%s)  RETURNING id",(remove_nasties(name),))
 			res = cur.fetchall()
 			self.conn.commit()
 			build_env = BuildEnv(res[0]['id'],name)
@@ -792,7 +792,7 @@ class Database(object):
 	def delete_build_env(self,build_env_id):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("DELETE FROM build_env WHERE id=%s RETURNING id",(build_env_id,))
+			cur.execute("DELETE FROM buildenv WHERE id=%s RETURNING id",(build_env_id,))
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -804,7 +804,7 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting build_env with id:" + str(build_env_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			raise Exception("Error deleting buildenv with id:" + str(build_env_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	#<<<<<<<< BuildD related database functions >>>>>>>>
@@ -1457,8 +1457,8 @@ class Database(object):
 			if suite :
 				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 				cur.execute("SELECT buildenv.id, buildenv.name FROM buildenv"
-							"LEFT JOIN buildenvsuitearches ON buildenv.id=buildenv_id" 
-							"LEFT JOIN suitearches ON suite.id=suite_id" 
+							"LEFT JOIN buildenvsuitearch ON buildenv.id=buildenv_id"
+							"LEFT JOIN suitearches ON suite.id=suite_id"
  							"WHERE suite.name=%s",[suite])
 				res = cur.fetchall()
 				self.conn.commit()
