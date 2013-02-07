@@ -73,5 +73,12 @@ $$json_hash{'debconf'} = JSON::true;
 open (CONF, ">$cfgfile") or die;
 print CONF $json->encode ($json_hash);
 close (CONF);
-chmod (0600, $cfgfile);
-exit 0
+chmod (0440, $cfgfile);
+my $retval = system ("adduser --quiet --system --shell /bin/sh --home /var/lib/pybit-web --no-create-home $dbname") >> 8;
+if ($retval == 0) {
+	my ($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) = getpwnam($dbname);
+	if ($uid > 1) {
+		chown ($uid, $cfgfile);
+	}
+}
+exit $retval
