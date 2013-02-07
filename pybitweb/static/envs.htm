@@ -323,43 +323,18 @@
                             alert ( "Environmrnt / Suite Arch Mapping Added!" );
                             location.reload ( );
                         } );
-                        if ( getUrlVars() [ "buildenv_suitearch_page" ] )
-                        {
-                            buildenv_suitearch_page = getUrlVars() [ "buildenv_suitearch_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildenv_suitearch/page/" + env_page
-                        }
-                        else
-                        {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildenv_suitearch/page/1"
-                        }
+
+							// TODO: Paging
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildenv_suitearch"
+
                         new_buildenv_suitearch_page = parseInt ( buildenv_suitearch_page ) + 1;
                         last_buildenv_suitearch_page = parseInt ( buildenv_suitearch_page ) - 1;
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_buildenv_suitearches" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
+                                $ ( "#tbl_buildenv_suitearches" ).append ( "<tr><td>" + field.buildenv.name + " " + field.suitearch.arch.name + "/" + field.suitearch.suite.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
                             } );
-
-                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildenv_suitearch/count"
-                            $.getJSON ( url2 , function ( json2 )
-							{
-
-							var html_part1 = "";
-							if (buildenv_suitearch_page > 0)
-							{
-							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/envs.htm?buildenv_suitearch_page=" + last_buildenv_suitearch_page + "'>Prev</a></li><li><a>" + buildenv_suitearch_page + "/" + json2 + "</a></li>";
-							}
-
-							var html_part2 = "";
-							if (buildenv_suitearch_page < json2) // Not last page
-							{
-								html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/envs.htm?buildenv_suitearch_page=" + new_buildenv_suitearch_page + "'>Next</a></li>";
-							}
-
-							 $ ( '#tbl_buildenv_suitearches' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );
-
-							});
 
                         } );
 					}
