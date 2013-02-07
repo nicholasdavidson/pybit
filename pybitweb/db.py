@@ -29,7 +29,7 @@ import math
 import re
 
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage, checkValue, Transport,\
-	BuildEnv
+	BuildEnv, BuildEnvSuiteArch
 
 def remove_nasties(nastystring):
 	try:
@@ -315,6 +315,87 @@ class Database(object):
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error deleting suitearch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def count_buildenv_suitearches(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM buildenvsuitearch AS num_buildenv_suitearches")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+			pages = res[0][0] / self.limit_low;
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving buildenv suitearch count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_buildenv_suitearches(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT id,buildenv_id,suitearch_id FROM buildenvsuitearch")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			buildenv_suitearches = []
+			for i in res:
+				buildenv_suitearches.append(BuildEnvSuiteArch(i['id'],self.get_suitearch_id(i['suitearch_id']),self.get_buildenv_id(i['buildenv_id'])))
+			cur.close()
+			return buildenv_suitearches
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving buildenv suitearch list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_buildenv_suitearch_id(self,buildenv_suitearch_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT id,buildenv_id,suitearch_id FROM buildenvsuitearch WHERE id=%s",(buildenv_suitearch_id,))
+			res = cur.fetchall()
+			self.conn.commit()
+			buildenv_suitearch = BuildEnvSuiteArch(res[0]['id'],self.get_buildenv_id(res[0]['buildenv_id']),self.get_suitearch_id(res[0]['suitearch_id']))
+			
+			cur.close()
+			return buildenv_suitearch
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving buildenv suitearch with id:" + str(buildenv_suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+
+	def put_buildenv_suitearch(self,buildenv_id,suitearch_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("INSERT into buildenvsuitearch(buildenv_id,suitearch_id) VALUES (%s, %s) RETURNING id",(remove_nasties(buildenv_id),remove_nasties(suitearch_id)))
+			res = cur.fetchall()
+			self.conn.commit()
+			buildenv_suitearch = BuildEnvSuiteArch(res[0]['id'],self.get_buildenv_id(res[0]['buildenv_id']),self.get_suitearch_id(res[0]['suitearch_id']))
+			cur.close()
+			return buildenv_suitearch
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error adding buildenv suitearch:" + buildenv_id + suitearch_id + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def delete_buildenv_suitearch(self,buildenv_suitearch_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("DELETE FROM buildenvsuitearch WHERE id=%s RETURNING id",(buildenv_suitearch_id,))
+			res = cur.fetchall()
+			self.conn.commit()
+
+			if res[0]['id'] == buildenv_suitearch_id:
+				cur.close()
+				return True
+			else:
+				cur.close()
+				return False
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error deleting buildenvsuitearch with id:" + str(buildenv_suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def count_dists(self):

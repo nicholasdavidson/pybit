@@ -130,6 +130,12 @@ class SuiteArch(Model):
 		self.suite = suite
 		self.arch = arch
 		self.master_weight = master_weight
+		
+class BuildEnvSuiteArch(Model):
+	def __init__(self,buildenv_suitearch_id,buildenv,suitearch):
+		self.id = buildenv_suitearch_id
+		self.buildenv = buildenv
+		self.suitearch = suitearch
 
 class BuildRequest(Model):
 	def __init__(self,job,transport,web_host):
