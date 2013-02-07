@@ -550,7 +550,7 @@ def get_env_app(settings, db):
 		try:
 			# Deletes a specific environment
 			response.status = "202 - DELETE request received"
-			app.config['db'].delete_build_environment(build_env_id)
+			app.config['db'].delete_build_env(build_env_id)
 			return
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))

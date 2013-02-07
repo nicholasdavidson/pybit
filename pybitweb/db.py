@@ -342,7 +342,7 @@ class Database(object):
 
 			buildenv_suitearches = []
 			for i in res:
-				buildenv_suitearches.append(BuildEnvSuiteArch(i['id'],self.get_suitearch_id(i['suitearch_id']),self.get_buildenv_id(i['buildenv_id'])))
+				buildenv_suitearches.append(BuildEnvSuiteArch(i['id'],self.get_suitearch_id(i['suitearch_id']),self.get_build_env_id(i['buildenv_id'])))
 			cur.close()
 			return buildenv_suitearches
 		except psycopg2.Error as e:
@@ -356,7 +356,7 @@ class Database(object):
 			cur.execute("SELECT id,buildenv_id,suitearch_id FROM buildenvsuitearch WHERE id=%s",(buildenv_suitearch_id,))
 			res = cur.fetchall()
 			self.conn.commit()
-			buildenv_suitearch = BuildEnvSuiteArch(res[0]['id'],self.get_buildenv_id(res[0]['buildenv_id']),self.get_suitearch_id(res[0]['suitearch_id']))
+			buildenv_suitearch = BuildEnvSuiteArch(res[0]['id'],self.get_build_env_id(res[0]['buildenv_id']),self.get_suitearch_id(res[0]['suitearch_id']))
 			
 			cur.close()
 			return buildenv_suitearch
@@ -372,7 +372,7 @@ class Database(object):
 			cur.execute("INSERT into buildenvsuitearch(buildenv_id,suitearch_id) VALUES (%s, %s) RETURNING id",(remove_nasties(buildenv_id),remove_nasties(suitearch_id)))
 			res = cur.fetchall()
 			self.conn.commit()
-			buildenv_suitearch = BuildEnvSuiteArch(res[0]['id'],self.get_buildenv_id(res[0]['buildenv_id']),self.get_suitearch_id(res[0]['suitearch_id']))
+			buildenv_suitearch = BuildEnvSuiteArch(res[0]['id'],self.get_build_env_id(res[0]['buildenv_id']),self.get_suitearch_id(res[0]['suitearch_id']))
 			cur.close()
 			return buildenv_suitearch
 		except psycopg2.Error as e:
