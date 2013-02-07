@@ -74,11 +74,8 @@ open (CONF, ">$cfgfile") or die;
 print CONF $json->encode ($json_hash);
 close (CONF);
 chmod (0440, $cfgfile);
-my $retval = system ("adduser --quiet --system --shell /bin/sh --home /var/lib/pybit-web --no-create-home $dbname") >> 8;
-if ($retval == 0) {
-	my ($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) = getpwnam($dbname);
-	if ($uid > 1) {
-		chown ($uid, $cfgfile);
-	}
+my ($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) = getpwnam($dbname);
+if (defined $uid and $uid > 1) {
+	chown ($uid, -1, $cfgfile);
 }
-exit $retval
+exit 0;
