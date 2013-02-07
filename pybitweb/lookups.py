@@ -556,3 +556,74 @@ def get_env_app(settings, db):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 	return app
+
+def get_buildenv_suitearch_app(settings, db):
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
+	@app.route('/', method='GET')
+	def get_buildenv_suitearch():
+		try:
+			#return list of suitearch
+			buildenv_suitearch = app.config['db'].get_buildenv_suitearches()
+			encoded = jsonpickle.encode(buildenv_suitearch)
+			response.content_type = "application/json"
+			return encoded
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/count', method='GET')
+	def get_count():
+		#return count of suitearches
+		count = app.config['db'].count_buildenv_suitearch()
+		encoded = jsonpickle.encode(count)
+		response.content_type = "application/json"
+		return encoded
+
+
+	@app.route('/<buildenv_suitearch_id:int>', method='GET')
+	def get_suitearch_id(buildenv_suitearch_id):
+		try:
+			# Returns all information about a specific suitearch
+			res = app.config['db'].get_buildenv_suitearch_id(buildenv_suitearch_id)
+
+			# check results returned
+			if res:
+				encoded = jsonpickle.encode(res)
+				response.content_type = "application/json"
+				return encoded
+			else:
+				response.status = "404 - No suitearch found with this ID."
+				return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/', method='POST')
+	@app.route('/', method='PUT')
+	@requires_auth
+	def put_buildenv_suitearch():
+		# Add a new buildenv_suitearch.
+		buildenv_id = request.forms.get('buildenv_id')
+		suitearch_id = request.forms.get('suitearch_id')
+
+		if buildenv_id and suitearch_id:
+			app.config['db'].put_buildenv_suitearch(buildenv_id,suitearch_id)
+		else:
+			response.status = "400 - Required fields missing."
+		return
+
+	@app.route('/<buildenv_suitearch_id:int>/delete', method='GET')
+	@app.route('/<buildenv_suitearch_id:int>', method='DELETE')
+	@requires_auth
+	def delete_buildenv_suitearch(buildenv_suitearch_id):
+		try:
+			# Deletes a specific buildenv_suitearch
+			response.status = "202 - DELETE request received"
+			app.config['db'].delete_buildenv_suitearch(buildenv_suitearch_id)
+			return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+	return app
