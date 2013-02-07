@@ -57,7 +57,7 @@ class Controller(object):
 		self.db = db
 		self.settings = settings
 
-	def process_job(self, dist, architectures, build_environments, version, name, suite, pkg_format, transport) :
+	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport,build_environment = None) :
 		try:
 			# Look at blacklist, dont build excluded package names
 			if self.db.check_blacklist("name",name):

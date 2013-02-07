@@ -1,12 +1,5 @@
-db/schema.sql ./usr/share/dbconfig-common/data/pybit-web/install/pgsql/
-debian/pgsql ./usr/share/dbconfig-common/scripts/pybit-web/install/
-#db/updates/v1.sql ./usr/share/dbconfig-common/data/pybit-web/upgrade/pgsql/0.3.1
-#db/updates/v2.sql ./usr/share/dbconfig-common/data/pybit-web/upgrade/pgsql/0.4.3
-#db/updates/v3.sql ./usr/share/dbconfig-common/data/pybit-web/upgrade/pgsql/0.4.3
-#db/updates/v4.sql ./usr/share/dbconfig-common/data/pybit-web/upgrade/pgsql/0.4.3
 pybitweb/static/ ./usr/share/pybit-web/
 configs/web/web.conf ./usr/share/pybit-web/
-debian/pybit-web-json.pl ./usr/share/pybit-web/
 apache_config.txt ./usr/share/pybit-web/
 application.wsgi ./usr/share/pybit-web/
 debian/pybit-web.1 ./usr/share/man/man1/
