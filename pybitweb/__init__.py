@@ -205,4 +205,5 @@ def get_app(settings, db, controller):
     app.mount('/buildd', buildd.get_buildd_app(settings, db, controller))
     app.mount('/package', package.get_packages_app(settings, db, controller))
     app.mount('/packageinstance', packageinstance.get_packageinstance_app(settings, db))
+    app.mount('/blacklist',lookups.get_blacklist_app(settings, db))
     return app

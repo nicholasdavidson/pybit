@@ -262,7 +262,7 @@ def get_dist_app(settings, db):
 			if page:
 				dists = app.config['db'].get_dists(page)
 			else:
-				dists = app.config['db'].get_dists(page)
+				dists = app.config['db'].get_dists()
 			encoded = jsonpickle.encode(dists)
 			response.content_type = "application/json"
 			return encoded
@@ -622,6 +622,83 @@ def get_buildenv_suitearch_app(settings, db):
 			# Deletes a specific buildenv_suitearch
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_buildenv_suitearch(buildenv_suitearch_id)
+			return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+	return app
+
+def get_blacklist_app(settings, db):
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
+	@app.route('/', method='GET')
+	@app.route('/page/<page:int>', method='GET')
+	def get_blacklist(page = None):
+		try:
+			#return full blacklist
+			if page:
+				blacklist = app.config['db'].get_blacklist(page)
+			else:
+				blacklist = app.config['db'].get_blacklist()
+			encoded = jsonpickle.encode(blacklist)
+			response.content_type = "application/json"
+			return encoded
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/count', method='GET')
+	def get_count():
+		#return count of blacklist rules
+		count = app.config['db'].count_blacklist()
+		encoded = jsonpickle.encode(count)
+		response.content_type = "application/json"
+		return encoded
+
+	@app.route('/<blacklist_id:int>', method='GET')
+	def get_blacklist_id(blacklist_id):
+		try:
+			# Returns all information about a specific blacklist rule
+			res = app.config['db'].get_blacklist_id(blacklist_id)
+
+			# check results returned
+			if res:
+				encoded = jsonpickle.encode(res)
+				response.content_type = "application/json"
+				return encoded
+			else:
+				response.status = "404 - No blacklist found with this ID."
+				return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/', method='POST')
+	@app.route('/', method='PUT')
+	@requires_auth
+	def put_blacklist():
+		try:
+			# Add a new blacklist rule.
+			name = request.forms.get('name')
+
+			if name:
+				app.config['db'].put_blacklist(name)
+			else:
+				response.status = "400 - Required fields missing."
+			return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/<blacklist_id:int>/delete', method='GET')
+	@app.route('/<blacklist_id:int>', method='DELETE')
+	@requires_auth
+	def delete_blacklist(blacklist_id):
+		try:
+			# Deletes a specific blacklist rule.
+			response.status = "202 - DELETE request received"
+			app.config['db'].delete_blacklist(blacklist_id)
 			return
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))

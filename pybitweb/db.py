@@ -1557,6 +1557,7 @@ class Database(object):
 			raise Exception("Error retrieving supported build environments for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	# Note: True = failed, false = Ok. Should probably be renamed isInBlacklist() or similar.
 	def check_blacklist(self,field,value):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -1578,5 +1579,89 @@ class Database(object):
 			return False # If no results, that is fine too.
 		except psycopg2.Error as e:
 			self.conn.rollback()
+			raise Exception("Error checking blacklist. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def count_blacklist(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM blacklist AS num_blacklist")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+			pages = res[0][0] / self.limit_low;
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving blacklist count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_blacklist(self,page=None):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			if page:
+
+				offset = (page -1) * self.limit_low;
+				cur.execute("SELECT id,field,regex FROM blacklist ORDER BY field LIMIT %s OFFSET %s", (self.limit_low,offset,))
+			else:
+				cur.execute("SELECT id,field,regex FROM blacklist ORDER BY field")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			blacklist = []
+			for i in res:
+				blacklist.append(Blacklist(i['id'],i['field'],i['regex']))
+			cur.close()
+			return blacklist
+		except psycopg2.Error as e:
+			self.conn.rollback()
 			raise Exception("Error retrieving blacklist. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_blacklist_id(self,blacklist_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT id,field,regex FROM blacklist WHERE id=%s",(blacklist_id,))
+			res = cur.fetchall()
+			self.conn.commit()
+			blacklist = Blacklist(res[0]['id'],res[0]['field'],res['0']['regex'])
+			cur.close()
+			return blacklist
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving blacklist rule with id:" + str(blacklist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def put_blacklist(self,field,regex):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("INSERT into blacklist(field,regex) VALUES (%s,%s)  RETURNING id",(remove_nasties(field),remove_nasties(regex)))
+			res = cur.fetchall()
+			self.conn.commit()
+			blacklist = Blacklist(res[0]['id'],field,regex)
+			cur.close()
+			return blacklist
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error adding blacklist rule:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def delete_blacklist(self,blacklist_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("DELETE FROM blacklist WHERE id=%s RETURNING id",(blacklist_id,))
+			res = cur.fetchall()
+			self.conn.commit()
+
+			if res[0]['id'] == blacklist_id:
+				cur.close()
+				return True
+			else:
+				cur.close()
+				return False
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error deleting blacklist rule with id:" + str(blacklist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
