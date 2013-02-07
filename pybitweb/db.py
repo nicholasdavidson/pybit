@@ -1536,10 +1536,7 @@ class Database(object):
 		try:
 			if suite :
 				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-				cur.execute("SELECT buildenv.id, buildenv.name FROM buildenv"
-							"LEFT JOIN buildenvsuitearch ON buildenv.id=buildenv_id"
-							"LEFT JOIN suitearches ON suite.id=suite_id"
- 							"WHERE suite.name=%s",[suite])
+				cur.execute("SELECT suitearches.id, buildenv.name FROM suitearches LEFT JOIN buildenvsuitearch ON suitearches.id=suitearch_id LEFT JOIN buildenv ON buildenvsuitearch.buildenv_id=buildenv.id WHERE suitearches.suite_id=(SELECT id FROM suite WHERE name=%s",(remove_nasties(suite),))
 				res = cur.fetchall()
 				self.conn.commit()
 
