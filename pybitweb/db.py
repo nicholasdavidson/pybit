@@ -1237,7 +1237,7 @@ class Database(object):
 			suite = self.get_suite_id(res[0]['suite_id'])
 			dist = self.get_dist_id(res[0]['dist_id'])
 			pkg_format = self.get_format_id(res[0]['format_id'])
-			p_i = PackageInstance(res[0]['id'],package,build_env,arch,suite,dist,pkg_format,res[0]['master'])
+			p_i = PackageInstance(res[0]['id'],package,arch,build_env,suite,dist,pkg_format,res[0]['master'])
 			cur.close()
 			return p_i
 		except psycopg2.Error as e:
@@ -1325,7 +1325,7 @@ class Database(object):
 			self.conn.commit()
 			res = cur.fetchall()
 			self.conn.commit()
-			p_i = PackageInstance(res[0]['id'],package,arch,suite,dist,pkg_format,master)
+			p_i = PackageInstance(res[0]['id'],package,arch,build_env,suite,dist,pkg_format,master)
 			cur.close()
 			return p_i
 		except psycopg2.Error as e:
@@ -1417,13 +1417,13 @@ class Database(object):
 	def get_report_package_instance(self):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT packageinstance.id, suite.name AS suite, package.name AS package, package.version AS version, arch.name AS arch, format.name AS format, distribution.name AS dist, packageinstance.master AS master FROM packageinstance LEFT JOIN arch ON arch.id=arch_id LEFT JOIN suite ON suite.id=suite_id LEFT JOIN distribution ON distribution.id=dist_id LEFT JOIN package ON package_id=package.id LEFT JOIN format ON format_id=format.id")
+			cur.execute("SELECT packageinstance.id, suite.name AS suite, package.name AS package, package.version AS version, arch.name AS arch, packageinstance.build_env_id AS build_env_id, format.name AS format, distribution.name AS dist, packageinstance.master AS master FROM packageinstance LEFT JOIN arch ON arch.id=arch_id LEFT JOIN suite ON suite.id=suite_id LEFT JOIN distribution ON distribution.id=dist_id LEFT JOIN package ON package_id=package.id LEFT JOIN format ON format_id=format.id")
 			res = cur.fetchall()
 			self.conn.commit()
 
 			package_instances = []
 			for i in res :
-				package_instances.append(PackageInstance(i['id'], i['package'], i['arch'], i['suite'], i['dist'], i['format'], i['master']))
+				package_instances.append(PackageInstance(i['id'], i['package'], i['arch'], i['build_env_id'], i['suite'], i['dist'], i['format'], i['master']))
 			cur.close()
 			return package_instances
 		except psycopg2.Error as e:

@@ -488,7 +488,7 @@ def get_env_app(settings, db):
 	@app.route('/page/<page:int>', method='GET')
 	def get_build_envs(page = None):
 		try:
-			#return list of suites
+			#return list of environments
 			if page:
 				build_envs = app.config['db'].get_build_environments(page)
 			else:
@@ -502,7 +502,7 @@ def get_env_app(settings, db):
 
 	@app.route('/count', method='GET')
 	def get_count():
-		#return count of suites
+		#return count of environments
 		count = app.config['db'].count_build_environments()
 		encoded = jsonpickle.encode(count)
 		response.content_type = "application/json"
@@ -511,7 +511,7 @@ def get_env_app(settings, db):
 	@app.route('/<build_env_id:int>', method='GET')
 	def get_build_env_id(build_env_id):
 		try:
-			# Returns all information about a specific suite
+			# Returns all information about a specific environment
 			res = app.config['db'].get_build_env_id(build_env_id)
 
 			# check results returned
@@ -520,7 +520,7 @@ def get_env_app(settings, db):
 				response.content_type = "application/json"
 				return encoded
 			else:
-				response.status = "404 - No suite found with this ID."
+				response.status = "404 - No environment found with this ID."
 				return
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
@@ -531,7 +531,7 @@ def get_env_app(settings, db):
 	@requires_auth
 	def put_build_env():
 		try:
-			# Add a new suite.
+			# Add a new environment.
 			name = request.forms.get('name')
 
 			if name:
@@ -548,7 +548,7 @@ def get_env_app(settings, db):
 	@requires_auth
 	def delete_build_env(build_env_id):
 		try:
-			# Deletes a specific suite
+			# Deletes a specific environment
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_build_environment(build_env_id)
 			return
