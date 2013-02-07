@@ -193,6 +193,15 @@ def get_app(settings, db, controller):
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
+    # static HTML page listing package instances
+    @app.route('/blacklist.htm', method='GET')
+    def serve_static_package_instances():
+            return template(getStaticResource("/blacklist.htm"),
+            protocol=settings['web']['protocol'],
+            jqueryurl=settings['web']['jqueryurl'],
+            jqueryformurl=settings['web']['jqueryformurl']
+)
+
     app.mount('/job', job.get_job_app(settings, db, controller))
     app.mount('/suite', lookups.get_suite_app(settings, db))
     app.mount('/suitearch', lookups.get_suitearch_app(settings, db))

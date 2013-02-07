@@ -29,7 +29,7 @@ import math
 import re
 
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage, checkValue, Transport,\
-	BuildEnv, BuildEnvSuiteArch
+	BuildEnv, BuildEnvSuiteArch,Blacklist
 
 def remove_nasties(nastystring):
 	try:
@@ -1645,7 +1645,7 @@ class Database(object):
 			return blacklist
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error adding blacklist rule:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			raise Exception("Error adding blacklist rule:" + " .Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def delete_blacklist(self,blacklist_id):

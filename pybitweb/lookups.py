@@ -24,7 +24,7 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import Database
-from pybit.models import Arch,Dist,Format,Status,Suite,SuiteArch
+from pybit.models import Arch,Dist,Format,Status,Suite,SuiteArch,Blacklist
 import bottle_basic_auth
 from bottle_basic_auth import requires_auth
 
@@ -680,15 +680,16 @@ def get_blacklist_app(settings, db):
 	def put_blacklist():
 		try:
 			# Add a new blacklist rule.
-			name = request.forms.get('name')
+			field = request.forms.get('field')
+			regex = request.forms.get('regex')
 
-			if name:
-				app.config['db'].put_blacklist(name)
+			if field and regex:
+				app.config['db'].put_blacklist(field,regex)
 			else:
 				response.status = "400 - Required fields missing."
 			return
 		except Exception as e:
-			raise Exception('Exception encountered: ' + str(e))
+			raise Exception('Exception encountered in put_blacklist(): ' + str(e))
 			return None
 
 	@app.route('/<blacklist_id:int>/delete', method='GET')
