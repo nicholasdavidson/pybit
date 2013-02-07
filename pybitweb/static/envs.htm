@@ -333,7 +333,7 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_buildenv_suitearches" ).append ( "<tr><td>" + field.buildenv.name + " " + field.suitearch.arch.name + "/" + field.suitearch.suite.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
+                                $ ( "#tbl_buildenv_suitearches" ).append ( "<tr><td>" + field.buildenv.name + "</td><td>" + field.suitearch.arch.name + "/" + field.suitearch.suite.name + "</td><td><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
                             } );
 
                         } );
