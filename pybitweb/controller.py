@@ -28,7 +28,8 @@ from amqplib import client_0_8 as amqp
 import jsonpickle
 import os
 import pybit
-from pybit.models import BuildRequest, CancelRequest, JobHistory
+from pybit.models import BuildRequest, CancelRequest, JobHistory, BuildEnv,\
+	BuildEnvSuiteArch, SuiteArch
 
 class Controller(object):
 
@@ -57,7 +58,7 @@ class Controller(object):
 		self.db = db
 		self.settings = settings
 
-	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport,build_environment = None) :
+	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport, build_environment = None) :
 		try:
 			# Look at blacklist, dont build excluded package names
 			if self.db.check_blacklist("name",name):
@@ -70,69 +71,62 @@ class Controller(object):
 			return False
 
 		try:
-			build_arches = self.process_achitectures(architectures, suite)
-			if (len(build_arches) == 0):
-				response.status = "404 - no build architectures for this suite."
-				return False
-		except Exception as e:
-			raise Exception('Error parsing arch information: ' + str(e))
-			response.status = "500 - Error parsing arch information"
-			return False
-		
-
-		try:
 			current_package = self.process_package(name, version)
 			if not current_package.id :
 				return False
 			current_suite = self.db.get_suite_byname(suite)[0]
 			current_dist = self.db.get_dist_byname(dist)[0]
 			current_format = self.db.get_format_byname(pkg_format)[0]
-			build_envs = self.process_build_environments(build_environment, suite)
-			master = True
-			#for arch in supported_arches:
+
+			build_env_suite_arch = self.process_build_environment_architectures(current_suite,architectures,build_environment)
+			current_build_env = build_env_suite_arch[0].buildenv
+			master_flag = True
+			
 			chan = self.get_amqp_channel()
-			for arch in build_arches:
-				current_arch = self.db.get_arch_byname(arch)[0]
-				for current_build_env in build_envs :
-					print "CURRENT BUILD ENVIRONMENT: " + current_build_env.name
-					current_packageinstance = self.process_packageinstance(current_build_env, current_arch, current_package, current_dist, current_format, current_suite, master)
-					if current_packageinstance.id :
-						new_job = self.db.put_job(current_packageinstance,None)
-						print "CREATED NEW JOB ID", new_job.id
-						if new_job.id :
-							self.cancel_superceded_jobs(new_job)
-							# NEW STUFF FOR RESUBMITTING JOBS
-							build_request_obj = BuildRequest(new_job.id,transport,
-								"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port']));
-							build_req = jsonpickle.encode(build_request_obj)
-							self.db.log_buildRequest(build_request_obj)
-							#print "SENDING REQUEST WITH DATA", str(build_req)
-							msg = amqp.Message(build_req)
-							msg.properties["delivery_mode"] = 2
-							routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name,
-													new_job.packageinstance.arch.name,
-													new_job.packageinstance.suite.name,
-													new_job.packageinstance.format.name)
-							build_queue = pybit.get_build_queue_name(new_job.packageinstance.distribution.name,
-													new_job.packageinstance.arch.name,
-													new_job.packageinstance.suite.name,
-													new_job.packageinstance.format.name)
-							self.add_message_queue(build_queue, routing_key, chan)
-	
-							if chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True) :
-								#print "\n____________SENDING", build_req, "____________TO____________", routing_key
-								print "SENDING BUILD REQUEST FOR JOB ID", new_job.id, new_job.packageinstance.package.name, new_job.packageinstance.package.version, new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name
-							else :
-								print "UNABLE TO ROUTE BUILD REQUEST TO", routing_key
+			for build_env_suite_arch in build_env_suite_arch :
+				current_arch = build_env_suite_arch.suitearch.arch
+				if current_build_env != build_env_suite_arch.buildenv :
+					#first packageinstance for each build environment should have master flag set
+					master_flag = True
+					current_build_env = build_env_suite_arch.buildenv
+				current_packageinstance = self.process_packageinstance(current_build_env, current_arch, current_package, current_dist, current_format, current_suite, master_flag)
+				if current_packageinstance.id :
+					new_job = self.db.put_job(current_packageinstance,None)
+					print "CREATED NEW JOB ID", new_job.id
+					if new_job.id :
+#							self.cancel_superceded_jobs(new_job)
+						# NEW STUFF FOR RESUBMITTING JOBS
+						build_request_obj = BuildRequest(new_job.id,transport,
+							"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port']));
+						build_req = jsonpickle.encode(build_request_obj)
+						self.db.log_buildRequest(build_request_obj)
+#							#print "SENDING REQUEST WITH DATA", str(build_req)
+						msg = amqp.Message(build_req)
+						msg.properties["delivery_mode"] = 2
+						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name,
+												new_job.packageinstance.arch.name,
+												new_job.packageinstance.suite.name,
+												new_job.packageinstance.format.name)
+						build_queue = pybit.get_build_queue_name(new_job.packageinstance.distribution.name,
+												new_job.packageinstance.arch.name,
+												new_job.packageinstance.suite.name,
+												new_job.packageinstance.format.name)
+						self.add_message_queue(build_queue, routing_key, chan)
+
+						if chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True) :
+							#print "\n____________SENDING", build_req, "____________TO____________", routing_key
+							print "SENDING BUILD REQUEST FOR JOB ID", new_job.id, new_job.packageinstance.package.name, new_job.packageinstance.package.version, new_job.packageinstance.distribution.name, new_job.packageinstance.arch.name, new_job.packageinstance.suite.name, new_job.packageinstance.format.name
 						else :
-							print "FAILED TO ADD JOB"
-							response.status = "404 - failed to add job."
-							return False
-						master = False
+							print "UNABLE TO ROUTE BUILD REQUEST TO", routing_key
 					else :
-						print "PACKAGE INSTANCE ERROR"
-						response.status = "404 - failed to add/retrieve package instance."
+						print "FAILED TO ADD JOB"
+						response.status = "404 - failed to add job."
 						return False
+					master_flag = False
+				else :
+					print "PACKAGE INSTANCE ERROR"
+					response.status = "404 - failed to add/retrieve package instance."
+					return False
 		except Exception as e:
 			raise Exception('Error submitting job: ' + str(e))
 			response.status = "500 - Error submitting job"
@@ -185,6 +179,37 @@ class Controller(object):
 						arches_to_build.append(arch)
 				print "ARCHES TO BUILD:", arches_to_build
 		return arches_to_build
+	
+	def process_build_environment_architectures(self, suite, requested_arches, requested_environments) :
+		print "REQUESTED ARCHITECTURES:", requested_arches, "BUILD ENVS:", requested_environments
+
+		env_arches_to_build = list()
+		supported_build_env_suite_arches = self.db.get_supported_build_env_suite_arches(suite.name)
+
+		if (len(supported_build_env_suite_arches) == 0):
+			response.status = "404 - no supported build environments arch combinations for this suite."
+		else :
+			if ("all" in requested_arches) and ("any" not in requested_arches) :
+				# this is an arch-all request so we only need to build for the first supported arch (for each build env)
+				print "ARCH-ALL REQUEST, ONLY NEED TO BUILD FOR FIRST SUPPORTED ARCH FOR EACH (", suite.name, ") BUILD ENV..."
+				build_env_name = ""
+				for build_env_suite_arch in supported_build_env_suite_arches :
+					if build_env_name != build_env_suite_arch.buildenv.name :
+						build_env_name = build_env_suite_arch.buildenv.name
+						env_arches_to_build.append(build_env_suite_arch)
+			elif ("any" in requested_arches) :
+				print "ARCH-ALL-ANY REQUEST, BUILDING FOR ALL SUPPORTED BUILD ENV ARCH COMBINATIONS FOR (", suite.name, ")..."
+				env_arches_to_build = supported_build_env_suite_arches
+#			else : #TODO: fix explicit arch requests
+#				for arch in supported_arches :
+#					if arch in requested_arches :
+#						arches_to_build.append(arch)
+#				print "ARCHES TO BUILD:", arches_to_build
+
+		for i in env_arches_to_build :
+			print "	", i.buildenv.name, i.suitearch.arch.name
+		
+		return env_arches_to_build
 
 	def process_package(self, name, version) :
 		# retrieve existing package or try to add a new one
@@ -304,7 +329,6 @@ class Controller(object):
 			response.status = "500 - Error parsing job information"
 			return
 		return
-
 
 	def buildd_command_queue_exists(self, build_client):
 		try:

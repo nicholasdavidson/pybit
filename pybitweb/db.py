@@ -292,6 +292,20 @@ class Database(object):
 			self.conn.rollback()
 			raise Exception("Error retrieving suite arch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
+		
+	def get_suitearch_by_suite_name(self,suite,arch):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT id,suite_id,arch_id,master_weight FROM suitearches WHERE suite.id=%s, arch.id=%s",(suite.id,arch.id))
+			res = cur.fetchall()
+			self.conn.commit()
+			suitearch = SuiteArch(res[0]['id'],self.get_suite_id(res[0]['suite_id']),self.get_arch_id(res[0]['arch_id']))
+			cur.close()
+			return suitearch
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving suite arch with suite and arch:. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
 
 	def put_suitearch(self,suite_id,arch_id,master_weight = 0):
 		try:
@@ -1583,13 +1597,14 @@ class Database(object):
 		try:
 			if suite :
 				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-				cur.execute("SELECT suitearches.id, buildenv.name FROM suitearches LEFT JOIN buildenvsuitearch ON suitearches.id=suitearch_id LEFT JOIN buildenv ON buildenvsuitearch.buildenv_id=buildenv.id WHERE suitearches.suite_id=(SELECT id FROM suite WHERE name=%s)",(remove_nasties(suite),))
+				cur.execute("SELECT DISTINCT ON (buildenv.id) buildenv.id AS buildenv_id FROM suitearches LEFT JOIN buildenvsuitearch ON suitearches.id=suitearch_id LEFT JOIN buildenv ON buildenvsuitearch.buildenv_id=buildenv.id WHERE suitearches.suite_id=(SELECT id FROM suite WHERE name=%s)",(remove_nasties(suite),))
 				res = cur.fetchall()
 				self.conn.commit()
-
 				env_list = []
 				for i in res :
-					env_list.append(BuildEnv(i['id'],i['name']))
+					build_env = self.get_build_env_id(i['buildenv_id'])
+#					print "SUITE (", suite, ") HAS SUPPORTED BUILD ENV:", build_env.name
+					env_list.append(build_env)
 				cur.close()
 				return env_list
 			else:
@@ -1599,6 +1614,33 @@ class Database(object):
 			self.conn.rollback()
 			raise Exception("Error retrieving supported build environments for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
+		
+	def get_supported_build_env_suite_arches(self,suite) :
+		try:
+			if suite :
+				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+				cur.execute("SELECT buildenv.id AS buildenv_id, suitearches.id AS suitearch_id, buildenvsuitearch.id AS buildenvsuitearch_id FROM suitearches LEFT JOIN buildenvsuitearch ON suitearches.id=suitearch_id LEFT JOIN buildenv ON buildenvsuitearch.buildenv_id=buildenv.id WHERE suitearches.suite_id=(SELECT id FROM suite WHERE name=%s ORDER BY buildenv_id)",(remove_nasties(suite),))
+				res = cur.fetchall()
+				self.conn.commit()
+				build_env_suite_arch_list = []
+				for i in res :
+					suitearch = self.get_suitearch_id(i['suitearch_id'])
+					build_env = self.get_build_env_id(i['buildenv_id'])
+					if build_env == None :
+						buildenvsuitearch = BuildEnvSuiteArch(i['buildenvsuitearch_id'],BuildEnv(None,None),suitearch)
+					else :
+						buildenvsuitearch = BuildEnvSuiteArch(i['buildenvsuitearch_id'],build_env,suitearch)
+					build_env_suite_arch_list.append(buildenvsuitearch)
+				cur.close()
+				return build_env_suite_arch_list
+			else:
+				cur.close()
+				return False
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving supported build environments for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+		
 
 	# Note: True = failed, false = Ok. Should probably be renamed isInBlacklist() or similar.
 	def check_blacklist(self,field,value):
