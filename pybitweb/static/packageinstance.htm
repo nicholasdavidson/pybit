@@ -277,7 +277,12 @@ if ( getUrlVars() [ "packageinstance_page" ] )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_packageinstances" ).append ( "<tr><td>" + field.id + "</td><td>" + field.package.name + " " + field.package.version + "</a></td><td>" + field.arch.name + "</td><td>" + field.distribution.name + "</td><td>" + field.format.name + "</td><td>" + field.suite.name + "</td><td>" + field.build_env.name + "</td><td>" + field.master + "</td></tr>" );
+                                if (field.build_env == null) {
+                                	env_name = ""
+                                } else {
+                                    env_name = field.build_env.name
+                                }
+                                $ ( "#tbl_packageinstances" ).append ( "<tr><td>" + field.id + "</td><td>" + field.package.name + " " + field.package.version + "</a></td><td>" + field.arch.name + "</td><td>" + field.distribution.name + "</td><td>" + field.format.name + "</td><td>" + field.suite.name + "</td><td>" + env_name + "</td><td>" + field.master + "</td></tr>" );
                             } );
 
                             var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/count"
