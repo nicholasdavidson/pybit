@@ -157,7 +157,7 @@
                             <th colspan='8'>Package Instances</th>
                         </tr>
                         <tr>
-                            <th>ID</th><th>Package</th><th>Architecture</th><th>Distribution</th><th>Format</th><th>Suite</th><th>Master?</th>
+                            <th>ID</th><th>Package</th><th>Architecture</th><th>Distribution</th><th>Format</th><th>Suite</th><th>Environment</th><th>Master?</th>
                         </tr>
                     </table>
                     <hr>
@@ -277,7 +277,7 @@ if ( getUrlVars() [ "packageinstance_page" ] )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_packageinstances" ).append ( "<tr><td>" + field.id + "</td><td>" + field.package.name + " " + field.package.version + "</a></td><td>" + field.arch.name + "</td><td>" + field.distribution.name + "</td><td>" + field.format.name + "</td><td>" + field.suite.name + "</td><td>" + field.master + "</td></tr>" );
+                                $ ( "#tbl_packageinstances" ).append ( "<tr><td>" + field.id + "</td><td>" + field.package.name + " " + field.package.version + "</a></td><td>" + field.arch.name + "</td><td>" + field.distribution.name + "</td><td>" + field.format.name + "</td><td>" + field.suite.name + "</td><td>" + field.build_env.name + "</td><td>" + field.master + "</td></tr>" );
                             } );
 
                             var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/count"
