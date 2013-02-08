@@ -144,7 +144,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -246,7 +250,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -325,7 +333,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -405,7 +417,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -507,7 +523,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -608,7 +628,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages); # ALWAYS round up.
 		except psycopg2.Error as e:
@@ -692,7 +716,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -794,7 +822,10 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -830,7 +861,12 @@ class Database(object):
 			cur.execute("SELECT id,name FROM buildenv WHERE id=%s",(build_env_id,))
 			res = cur.fetchall()
 			self.conn.commit()
-			build_env = BuildEnv(res[0]['id'],res[0]['name'])
+
+			if res:
+				build_env = BuildEnv(res[0]['id'],res[0]['name'])
+			else:
+				build_env = None
+
 			cur.close()
 			return build_env
 		except psycopg2.Error as e:
@@ -897,7 +933,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_high;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_high;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -1174,7 +1214,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_high;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_high;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -1333,7 +1377,10 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_high;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_high;
+			pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -1497,13 +1544,13 @@ class Database(object):
 	def get_report_package_instance(self):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT packageinstance.id, suite.name AS suite, package.name AS package, package.version AS version, arch.name AS arch, packageinstance.build_env_id AS build_env_id, format.name AS format, distribution.name AS dist, packageinstance.master AS master FROM packageinstance LEFT JOIN arch ON arch.id=arch_id LEFT JOIN suite ON suite.id=suite_id LEFT JOIN distribution ON distribution.id=dist_id LEFT JOIN package ON package_id=package.id LEFT JOIN format ON format_id=format.id")
+			cur.execute("SELECT packageinstance.id, suite.name AS suite, package.name AS package, package.version AS version, arch.name AS arch, packageinstance.buildenv_id AS buildenv_id, format.name AS format, distribution.name AS dist, packageinstance.master AS master FROM packageinstance LEFT JOIN arch ON arch.id=arch_id LEFT JOIN suite ON suite.id=suite_id LEFT JOIN distribution ON distribution.id=dist_id LEFT JOIN package ON package_id=package.id LEFT JOIN format ON format_id=format.id")
 			res = cur.fetchall()
 			self.conn.commit()
 
 			package_instances = []
 			for i in res :
-				package_instances.append(PackageInstance(i['id'], i['package'], i['arch'], i['build_env_id'], i['suite'], i['dist'], i['format'], i['master']))
+				package_instances.append(PackageInstance(i['id'], i['package'], i['arch'], i['buildenv_id'], i['suite'], i['dist'], i['format'], i['master']))
 			cur.close()
 			return package_instances
 		except psycopg2.Error as e:
@@ -1586,7 +1633,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
