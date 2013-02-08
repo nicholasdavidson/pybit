@@ -356,7 +356,7 @@ class Database(object):
 			cur.execute("SELECT id,buildenv_id,suitearch_id FROM buildenvsuitearch WHERE id=%s",(buildenv_suitearch_id,))
 			res = cur.fetchall()
 			self.conn.commit()
-			buildenv_suitearch = BuildEnvSuiteArch(res[0]['id'],self.get_build_env_id(buildenv_id),self.get_suitearch_id(suitearch_id))
+			buildenv_suitearch = BuildEnvSuiteArch(res[0]['id'],self.get_build_env_id(res[0]['buildenv_id']),self.get_suitearch_id(res[0]['suitearch_id']))
 			cur.close()
 			return buildenv_suitearch
 		except psycopg2.Error as e:
