@@ -1384,7 +1384,7 @@ class Database(object):
 	def get_packageinstance_byvalues(self,package,build_env,arch,suite,dist,pkg_format):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND buildenv_id,=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package.id,build_env.id,arch.id,suite.id,dist.id,pkg_format.id))
+			cur.execute("SELECT id,package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND buildenv_id=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package.id,build_env.id,arch.id,suite.id,dist.id,pkg_format.id))
 			res = cur.fetchall()
 			self.conn.commit()
 

@@ -93,8 +93,9 @@ class Controller(object):
 			chan = self.get_amqp_channel()
 			for arch in build_arches:
 				current_arch = self.db.get_arch_byname(arch)[0]
-				for build_env in build_envs :
-					current_packageinstance = self.process_packageinstance(build_env, current_arch, current_package, current_dist, current_format, current_suite, master)
+				for current_build_env in build_envs :
+					print "CURRENT BUILD ENVIRONMENT: " + current_build_env.name
+					current_packageinstance = self.process_packageinstance(current_build_env, current_arch, current_package, current_dist, current_format, current_suite, master)
 					if current_packageinstance.id :
 						new_job = self.db.put_job(current_packageinstance,None)
 						print "CREATED NEW JOB ID", new_job.id
@@ -152,14 +153,14 @@ class Controller(object):
 		if (len(supported_build_envs) == 0):
 			response.status = "404 - no build environments for this suite."
 		else :
-			print "SUPPORTED BUILD ENVIRONMENTS:", supported_build_envs
+#			print "SUPPORTED BUILD ENVIRONMENTS:", supported_build_envs
 			if (requested_environments == None):
 				envs_to_build = supported_build_envs
 			else :
 				for build_env in supported_build_envs :
 					if build_env in requested_environments :
 						envs_to_build.append(build_env)
-				print "ENVIRONMENTS TO BUILD:", envs_to_build
+#				print "ENVIRONMENTS TO BUILD:", envs_to_build
 		return envs_to_build
 
 	def process_achitectures(self, requested_arches, suite) :
