@@ -106,7 +106,7 @@ class Database(object):
 	def log_buildRequest(self,build_request_obj):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into buildrequest(job,method,uri,vcs_id) VALUES (%s,%s,%s,%s) RETURNING id",(remove_nasties(build_request_obj.job),remove_nasties(build_request_obj.transport.method),remove_nasties(build_request_obj.transport.uri),remove_nasties(build_request_obj.transport.vcs_id)))
+			cur.execute("INSERT into buildrequest(job,method,uri,vcs_id) VALUES (%s,%s,%s,%s) RETURNING id",(remove_nasties(build_request_obj.job.id),remove_nasties(build_request_obj.transport.method),remove_nasties(build_request_obj.transport.uri),remove_nasties(build_request_obj.transport.vcs_id)))
 			res = cur.fetchall()
 			self.conn.commit()
 			new_id = res[0]['id']

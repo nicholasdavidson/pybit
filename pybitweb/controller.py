@@ -30,6 +30,7 @@ import os
 import pybit
 from pybit.models import BuildRequest, CancelRequest, JobHistory, BuildEnv,\
 	BuildEnvSuiteArch, SuiteArch
+from jsonpickle import json
 
 class Controller(object):
 
@@ -92,11 +93,11 @@ class Controller(object):
 				current_packageinstance = self.process_packageinstance(current_build_env, current_arch, current_package, current_dist, current_format, current_suite, master_flag)
 				if current_packageinstance.id :
 					new_job = self.db.put_job(current_packageinstance,None)
-					print "CREATED NEW JOB ID", new_job.id
+					print "\nCREATED NEW JOB ID", jsonpickle.encode(new_job), "\n"
 					if new_job.id :
 						self.cancel_superceded_jobs(new_job)
 						# NEW STUFF FOR RESUBMITTING JOBS
-						build_request_obj = BuildRequest(new_job.id,transport,
+						build_request_obj = BuildRequest(new_job,transport,
 							"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port']));
 						build_req = jsonpickle.encode(build_request_obj)
 						self.db.log_buildRequest(build_request_obj)
