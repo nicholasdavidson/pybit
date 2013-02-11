@@ -140,8 +140,8 @@ class Controller(object):
 										exchange=pybit.exchange_name, routing_key=routing_key)
 		return
 
-	def process_build_environment_architectures(self, suite, requested_arches, requested_environments) :
-		print "REQUESTED ARCHITECTURES:", requested_arches, "BUILD ENVS:", requested_environments
+	def process_build_environment_architectures(self, suite, requested_arches, requested_environment) :
+		print "REQUESTED ARCHITECTURES:", requested_arches, "BUILD ENV:", requested_environment
 
 		env_arches_to_build = list()
 		supported_build_env_suite_arches = self.db.get_supported_build_env_suite_arches(suite.name)
@@ -161,17 +161,18 @@ class Controller(object):
 				print "ARCH-ALL-ANY REQUEST, BUILDING FOR ALL SUPPORTED BUILD ENV ARCH COMBINATIONS FOR (", suite.name, ")..."
 				env_arches_to_build = supported_build_env_suite_arches
 			else :
-				print "SPECIFIC ARCH/BUILD ENV REQUEST..."
 				for build_env_suite_arch in supported_build_env_suite_arches :
-#					if ((build_env_suite_arch.suitearch.arch.name in requested_arches) and ((requested_environments == None) or (build_env_suite_arch.buil.name in requested_arches)):
-					if build_env_suite_arch.suitearch.arch.name in requested_arches :
+					build_env_name = None
+					if build_env_suite_arch.buildenv is not None:
+						build_env_name = build_env_suite_arch.buildenv.name
+					if ((requested_environment == None) or (requested_environment == build_env_name)) \
+					and (build_env_suite_arch.suitearch.arch.name in requested_arches) :
 						env_arches_to_build.append(build_env_suite_arch)
-						print "ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") IN REQUESTED ARCH LIST"
+						print "ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") MATCHING ARCH/BUILD ENV REQUEST( ", requested_arches, requested_environment, ")" 
 					else :
-						print "IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") NOT IN REQUESTED ARCH LIST"
-
-		for i in env_arches_to_build :
-			print "	", i.buildenv.name, i.suitearch.arch.name
+						print "IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") DOES NOT MATCH ARCH/BUILD ENV REQUEST (", requested_arches, requested_environment, ")" 
+#		for i in env_arches_to_build :
+#			print "	", i.buildenv.name, i.suitearch.arch.name
 		
 		return env_arches_to_build
 
