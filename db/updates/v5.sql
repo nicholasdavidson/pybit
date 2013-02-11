@@ -1,8 +1,7 @@
 create or replace function run_update() returns void as
 $$
 begin
-if not exists (SELECT * FROM information_schema.tables WHERE
-		table_catalog = CURRENT_CATALOG AND table_schema = CURRENT_SCHEMA)
+if (SELECT count(*) from schema_version WHERE id=4)
 then
 			ALTER TABLE PackageInstance ADD COLUMN buildenv_id bigint;
 			UPDATE schema_version SET id=5;
