@@ -151,16 +151,29 @@ class Controller(object):
 		else :
 			if ("all" in requested_arches) and ("any" not in requested_arches) :
 				# this is an arch-all request so we only need to build for the first supported arch (for each build env)
-				print "ARCH-ALL REQUEST, ONLY NEED TO BUILD FOR FIRST SUPPORTED ARCH FOR EACH (", suite.name, ") BUILD ENV..."
-				build_env_name = ""
+				print "ARCH-ALL REQUEST, ONLY NEED TO BUILD FOR FIRST SUPPORTED ARCH IN EACH BUILD ENV/ARCH COMBINATION MATCHING (", suite.name, ") (", requested_environment, ")"
+				supported_build_env_name = ""
 				for build_env_suite_arch in supported_build_env_suite_arches :
-					if build_env_name != build_env_suite_arch.buildenv.name :
-						build_env_name = build_env_suite_arch.buildenv.name
-						env_arches_to_build.append(build_env_suite_arch)
+					if ((requested_environment == None) or (requested_environment == build_env_suite_arch.buildenv.name)) :
+						if supported_build_env_name != build_env_suite_arch.buildenv.name :
+							supported_build_env_name = build_env_suite_arch.buildenv.name
+							env_arches_to_build.append(build_env_suite_arch)
+							print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")"
+#						else :
+#							print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")
+#					else :
+#						print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") DOES NOT MATCH REQUESTED BUILD ENV (", requested_environment, ")"
+
 			elif ("any" in requested_arches) :
-				print "ARCH-ALL-ANY REQUEST, BUILDING FOR ALL SUPPORTED BUILD ENV ARCH COMBINATIONS FOR (", suite.name, ")..."
-				env_arches_to_build = supported_build_env_suite_arches
+				print "ARCH-ALL-ANY REQUEST, BUILDING FOR ALL SUPPORTED BUILD ENV/ARCH COMBINATIONS MATCHING (", suite.name, ") (", requested_environment, ")"
+				for build_env_suite_arch in supported_build_env_suite_arches :
+					if ((requested_environment == None) or (requested_environment == build_env_suite_arch.buildenv.name)) :
+						env_arches_to_build.append(build_env_suite_arch)
+						print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")"
+#					else :
+#						print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") DOES NOT MATCH REQUESTED BUILD ENV (", requested_environment, ")"
 			else :
+				print "SPECIFIC ARCH (", requested_arches, ") BUILD ENV (", requested_environment, ") REQUEST..." 
 				for build_env_suite_arch in supported_build_env_suite_arches :
 					build_env_name = None
 					if build_env_suite_arch.buildenv is not None:
@@ -168,9 +181,10 @@ class Controller(object):
 					if ((requested_environment == None) or (requested_environment == build_env_name)) \
 					and (build_env_suite_arch.suitearch.arch.name in requested_arches) :
 						env_arches_to_build.append(build_env_suite_arch)
-						print "ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") MATCHING ARCH/BUILD ENV REQUEST( ", requested_arches, requested_environment, ")" 
-					else :
-						print "IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") DOES NOT MATCH ARCH/BUILD ENV REQUEST (", requested_arches, requested_environment, ")" 
+						print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")" 
+#					else :
+#						print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")" 
+
 #		for i in env_arches_to_build :
 #			print "	", i.buildenv.name, i.suitearch.arch.name
 		
