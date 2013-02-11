@@ -139,47 +139,7 @@ class Controller(object):
 		print "BINDING", queue, routing_key, chan.queue_bind(queue=queue,
 										exchange=pybit.exchange_name, routing_key=routing_key)
 		return
-	
-	def process_build_environments(self, requested_environments, suite) :
-		print "REQUESTED BUILD ENVIRONMENTS:", requested_environments
-		envs_to_build = list()
-		supported_build_envs = self.db.get_supported_build_environments(suite)
-		if (len(supported_build_envs) == 0):
-			response.status = "404 - no build environments for this suite."
-		else :
-#			print "SUPPORTED BUILD ENVIRONMENTS:", supported_build_envs
-			if (requested_environments == None):
-				envs_to_build = supported_build_envs
-			else :
-				for build_env in supported_build_envs :
-					if build_env in requested_environments :
-						envs_to_build.append(build_env)
-#				print "ENVIRONMENTS TO BUILD:", envs_to_build
-		return envs_to_build
 
-	def process_achitectures(self, requested_arches, suite) :
-#		print "REQUESTED ARCHITECTURES:", requested_arches
-		arches_to_build = list()
-		supported_arches = self.db.get_supported_architectures(suite)
-		if (len(supported_arches) == 0):
-			response.status = "404 - no build architectures for this suite."
-		else :
-#			print "SUPPORTED ARCHITECTURES:", supported_arches
-			if ("all" in requested_arches) and ("any" not in requested_arches) :
-				# this is an arch-all request so we only need to build for the first supported arch
-				arches_to_build.append(supported_arches[0])
-				print "ARCH-ALL REQUEST, ONLY NEED TO BUILD FOR FIRST SUPPORTED ARCH...", arches_to_build
-			elif ("any" in requested_arches) :
-				# build for all supported arches
-				arches_to_build = supported_arches
-				print "ARCH-ALL-ANY REQUEST, BUILDING FOR ALL SUPPORTED ARCHES...", arches_to_build
-			else :
-				for arch in supported_arches :
-					if arch in requested_arches :
-						arches_to_build.append(arch)
-				print "ARCHES TO BUILD:", arches_to_build
-		return arches_to_build
-	
 	def process_build_environment_architectures(self, suite, requested_arches, requested_environments) :
 		print "REQUESTED ARCHITECTURES:", requested_arches, "BUILD ENVS:", requested_environments
 
@@ -200,11 +160,14 @@ class Controller(object):
 			elif ("any" in requested_arches) :
 				print "ARCH-ALL-ANY REQUEST, BUILDING FOR ALL SUPPORTED BUILD ENV ARCH COMBINATIONS FOR (", suite.name, ")..."
 				env_arches_to_build = supported_build_env_suite_arches
-#			else : #TODO: fix explicit arch requests
-#				for arch in supported_arches :
-#					if arch in requested_arches :
-#						arches_to_build.append(arch)
-#				print "ARCHES TO BUILD:", arches_to_build
+			else :
+				print "SPECIFIC ARCH/BUILD ENV REQUEST..."
+				for build_env_suite_arch in supported_build_env_suite_arches :
+					if build_env_suite_arch.suitearch.arch.name in requested_arches : #TODO: add build env checking....
+						env_arches_to_build.append(build_env_suite_arch)
+						print "ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") IN REQUESTED ARCH LIST"
+					else :
+						print "IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") NOT IN REQUESTED ARCH LIST"
 
 		for i in env_arches_to_build :
 			print "	", i.buildenv.name, i.suitearch.arch.name
