@@ -140,8 +140,8 @@ class Controller(object):
 										exchange=pybit.exchange_name, routing_key=routing_key)
 		return
 
-	def process_build_environment_architectures(self, suite, requested_arches, requested_environments) :
-		print "REQUESTED ARCHITECTURES:", requested_arches, "BUILD ENVS:", requested_environments
+	def process_build_environment_architectures(self, suite, requested_arches, requested_environment) :
+		print "REQUESTED ARCHITECTURES:", requested_arches, "BUILD ENV:", requested_environment
 
 		env_arches_to_build = list()
 		supported_build_env_suite_arches = self.db.get_supported_build_env_suite_arches(suite.name)
@@ -151,27 +151,42 @@ class Controller(object):
 		else :
 			if ("all" in requested_arches) and ("any" not in requested_arches) :
 				# this is an arch-all request so we only need to build for the first supported arch (for each build env)
-				print "ARCH-ALL REQUEST, ONLY NEED TO BUILD FOR FIRST SUPPORTED ARCH FOR EACH (", suite.name, ") BUILD ENV..."
-				build_env_name = ""
+				print "ARCH-ALL REQUEST, ONLY NEED TO BUILD FOR FIRST SUPPORTED ARCH IN EACH BUILD ENV/ARCH COMBINATION MATCHING (", suite.name, ") (", requested_environment, ")"
+				supported_build_env_name = ""
 				for build_env_suite_arch in supported_build_env_suite_arches :
-					if build_env_name != build_env_suite_arch.buildenv.name :
-						build_env_name = build_env_suite_arch.buildenv.name
-						env_arches_to_build.append(build_env_suite_arch)
-			elif ("any" in requested_arches) :
-				print "ARCH-ALL-ANY REQUEST, BUILDING FOR ALL SUPPORTED BUILD ENV ARCH COMBINATIONS FOR (", suite.name, ")..."
-				env_arches_to_build = supported_build_env_suite_arches
-			else :
-				print "SPECIFIC ARCH/BUILD ENV REQUEST..."
-				for build_env_suite_arch in supported_build_env_suite_arches :
-					#if ((build_env_suite_arch.suitearch.arch.name in requested_arches) and ((requested_environments == None) or (build_env_suite_arch.buil.name in requested_arches)):
-					if build_env_suite_arch.suitearch.arch.name in requested_arches :
-						env_arches_to_build.append(build_env_suite_arch)
-						print "ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") IN REQUESTED ARCH LIST"
-					else :
-						print "IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") NOT IN REQUESTED ARCH LIST"
+					if ((requested_environment == None) or (requested_environment == build_env_suite_arch.buildenv.name)) :
+						if supported_build_env_name != build_env_suite_arch.buildenv.name :
+							supported_build_env_name = build_env_suite_arch.buildenv.name
+							env_arches_to_build.append(build_env_suite_arch)
+							print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")"
+#						else :
+#							print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")
+#					else :
+#						print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") DOES NOT MATCH REQUESTED BUILD ENV (", requested_environment, ")"
 
-		for i in env_arches_to_build :
-			print "	", i.buildenv.name, i.suitearch.arch.name
+			elif ("any" in requested_arches) :
+				print "ARCH-ALL-ANY REQUEST, BUILDING FOR ALL SUPPORTED BUILD ENV/ARCH COMBINATIONS MATCHING (", suite.name, ") (", requested_environment, ")"
+				for build_env_suite_arch in supported_build_env_suite_arches :
+					if ((requested_environment == None) or (requested_environment == build_env_suite_arch.buildenv.name)) :
+						env_arches_to_build.append(build_env_suite_arch)
+						print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")"
+#					else :
+#						print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") DOES NOT MATCH REQUESTED BUILD ENV (", requested_environment, ")"
+			else :
+				print "SPECIFIC ARCH (", requested_arches, ") BUILD ENV (", requested_environment, ") REQUEST..." 
+				for build_env_suite_arch in supported_build_env_suite_arches :
+					build_env_name = None
+					if build_env_suite_arch.buildenv is not None:
+						build_env_name = build_env_suite_arch.buildenv.name
+					if ((requested_environment == None) or (requested_environment == build_env_name)) \
+					and (build_env_suite_arch.suitearch.arch.name in requested_arches) :
+						env_arches_to_build.append(build_env_suite_arch)
+						print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")" 
+#					else :
+#						print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")" 
+
+#		for i in env_arches_to_build :
+#			print "	", i.buildenv.name, i.suitearch.arch.name
 		
 		return env_arches_to_build
 
@@ -241,9 +256,13 @@ class Controller(object):
 						unfinished_job_dist_id = unfinished_job.packageinstance.distribution.id
 						unfinished_job_arch_id = unfinished_job.packageinstance.arch.id
 						unfinished_job_suite_id = unfinished_job.packageinstance.suite.id
-						unfinished_job_build_env_id = unfinished_job.packageinstance.build_env.id
-						if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) and (unfinished_job_build_env_id == packageinstance.build_env.id) :
-							self.process_cancel(unfinished_job, chan)
+						if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) :
+							#check build env...
+							if (((unfinished_job.packageinstance.build_env is None) and (packageinstance.build_env is None)) or 
+								(unfinished_job.packageinstance.build_env.id == packageinstance.build_env.id)):
+								self.process_cancel(unfinished_job, chan)
+#							else :
+#								print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(build environment differs)"
 #						else :
 #							print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(dist/arch/suite differs)"
 #					else :
