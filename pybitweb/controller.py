@@ -163,7 +163,7 @@ class Controller(object):
 			else :
 				print "SPECIFIC ARCH/BUILD ENV REQUEST..."
 				for build_env_suite_arch in supported_build_env_suite_arches :
-					#if ((build_env_suite_arch.suitearch.arch.name in requested_arches) and ((requested_environments == None) or (build_env_suite_arch.buil.name in requested_arches)):
+#					if ((build_env_suite_arch.suitearch.arch.name in requested_arches) and ((requested_environments == None) or (build_env_suite_arch.buil.name in requested_arches)):
 					if build_env_suite_arch.suitearch.arch.name in requested_arches :
 						env_arches_to_build.append(build_env_suite_arch)
 						print "ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") IN REQUESTED ARCH LIST"
@@ -241,9 +241,13 @@ class Controller(object):
 						unfinished_job_dist_id = unfinished_job.packageinstance.distribution.id
 						unfinished_job_arch_id = unfinished_job.packageinstance.arch.id
 						unfinished_job_suite_id = unfinished_job.packageinstance.suite.id
-						unfinished_job_build_env_id = unfinished_job.packageinstance.build_env.id
-						if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) and (unfinished_job_build_env_id == packageinstance.build_env.id) :
-							self.process_cancel(unfinished_job, chan)
+						if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) :
+							#check build env...
+							if (((unfinished_job.packageinstance.build_env is None) and (packageinstance.build_env is None)) or 
+								(unfinished_job.packageinstance.build_env.id == packageinstance.build_env.id)):
+								self.process_cancel(unfinished_job, chan)
+#							else :
+#								print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(build environment differs)"
 #						else :
 #							print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(dist/arch/suite differs)"
 #					else :
