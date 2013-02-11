@@ -69,7 +69,7 @@ class Controller(object):
 		except Exception as e:
 			print "Exception checking blacklist " + str(e)
 			return False
-
+		
 		try:
 			current_package = self.process_package(name, version)
 			if not current_package.id :
@@ -85,22 +85,22 @@ class Controller(object):
 			chan = self.get_amqp_channel()
 			for build_env_suite_arch in build_env_suite_arch :
 				current_arch = build_env_suite_arch.suitearch.arch
-				if current_build_env != build_env_suite_arch.buildenv :
+				if current_build_env.name != build_env_suite_arch.buildenv.name :
 					#first packageinstance for each build environment should have master flag set
 					master_flag = True
-					current_build_env = build_env_suite_arch.buildenv
+				current_build_env = build_env_suite_arch.buildenv
 				current_packageinstance = self.process_packageinstance(current_build_env, current_arch, current_package, current_dist, current_format, current_suite, master_flag)
 				if current_packageinstance.id :
 					new_job = self.db.put_job(current_packageinstance,None)
 					print "CREATED NEW JOB ID", new_job.id
 					if new_job.id :
-#							self.cancel_superceded_jobs(new_job)
+						self.cancel_superceded_jobs(new_job)
 						# NEW STUFF FOR RESUBMITTING JOBS
 						build_request_obj = BuildRequest(new_job.id,transport,
 							"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port']));
 						build_req = jsonpickle.encode(build_request_obj)
 						self.db.log_buildRequest(build_request_obj)
-#							#print "SENDING REQUEST WITH DATA", str(build_req)
+						#print "SENDING REQUEST WITH DATA", str(build_req)
 						msg = amqp.Message(build_req)
 						msg.properties["delivery_mode"] = 2
 						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name,
@@ -163,7 +163,8 @@ class Controller(object):
 			else :
 				print "SPECIFIC ARCH/BUILD ENV REQUEST..."
 				for build_env_suite_arch in supported_build_env_suite_arches :
-					if build_env_suite_arch.suitearch.arch.name in requested_arches : #TODO: add build env checking....
+					#if ((build_env_suite_arch.suitearch.arch.name in requested_arches) and ((requested_environments == None) or (build_env_suite_arch.buil.name in requested_arches)):
+					if build_env_suite_arch.suitearch.arch.name in requested_arches :
 						env_arches_to_build.append(build_env_suite_arch)
 						print "ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") IN REQUESTED ARCH LIST"
 					else :
@@ -196,7 +197,7 @@ class Controller(object):
 			# retrieve existing package instance from db
 			packageinstance = self.db.get_packageinstance_byvalues(package, build_env, arch, suite, dist, pkg_format)[0]
 			if packageinstance.id :
-				print "MATCHING PACKAGE INSTANCE FOUND (", packageinstance.id, ")"
+				print "MATCHING PACKAGE INSTANCE FOUND (", packageinstance.id, ") MASTER:", packageinstance.master
 				# Temporarily disable master update for Issue #84, this should not be default behaviour.
 #				if packageinstance.master != master :
 #					print "UPDATING PACKAGE INSTANCE MASTER FLAG (", master, ")"
@@ -206,7 +207,7 @@ class Controller(object):
 			# add new package instance to db
 			packageinstance = self.db.put_packageinstance(package, build_env, arch, suite, dist, pkg_format, master)
 			if packageinstance.id :
-				print "ADDED NEW PACKAGE INSTANCE (", packageinstance.id, ")"
+				print "ADDED NEW PACKAGE INSTANCE (", packageinstance.id, ") MASTER:", packageinstance.master
 		return packageinstance
 
 	def process_cancel(self, job, chan):
@@ -240,7 +241,8 @@ class Controller(object):
 						unfinished_job_dist_id = unfinished_job.packageinstance.distribution.id
 						unfinished_job_arch_id = unfinished_job.packageinstance.arch.id
 						unfinished_job_suite_id = unfinished_job.packageinstance.suite.id
-						if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) :
+						unfinished_job_build_env_id = unfinished_job.packageinstance.build_env.id
+						if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) and (unfinished_job_build_env_id == packageinstance.build_env.id) :
 							self.process_cancel(unfinished_job, chan)
 #						else :
 #							print "IGNORING UNFINISHED JOB", unfinished_job.id, unfinished_job_package_name, unfinished_job_package_version, "(dist/arch/suite differs)"
