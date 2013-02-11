@@ -179,6 +179,11 @@
                                     if (field.packageinstance.master) {
                                     	master = "\u2714";
                                     }
+                                    if (field.packageinstance.build_env == null) {
+                                    	env_name = ""
+                                    } else {
+                                        env_name = field.packageinstance.build_env.name
+                                    }
                                     if ( field.buildclient )
                                     {
                                         bid = field.buildclient.id;
@@ -187,7 +192,7 @@
                                         shortname = bname.replace ( "build_client_" , "" );
                                         // TODO: HACKS
                                         $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/" + field.id + "'>" + field.id + "</a></td><td>" + field.packageinstance.package.name + 
-"</td><td>" + field.packageinstance.package.version + "</td><td>" + field.packageinstance.arch.name + "</td><td>" + field.packageinstance.distribution.name + "/" +  field.packageinstance.suite.name + "/" + field.packageinstance.build_env.name + "</td>" + "<td><a href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>" + bname + "</a></td><td>" + master + "</td><td>" + jobstatuses [ field.id ] + "</td></tr>" );
+"</td><td>" + field.packageinstance.package.version + "</td><td>" + field.packageinstance.arch.name + "</td><td>" + field.packageinstance.distribution.name + "/" +  field.packageinstance.suite.name + "/" + env_name + "</td>" + "<td><a href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>" + bname + "</a></td><td>" + master + "</td><td>" + jobstatuses [ field.id ] + "</td></tr>" );
                                     }
                                     else
                                     {
@@ -197,7 +202,7 @@
                                         shortname = bname.replace ( "build_client_" , "" );
                                         // TODO: HACKS
                                         $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/" + field.id + "'>" + field.id + "</a></td><td>" + field.packageinstance.package.name + 
-"</td><td>" + field.packageinstance.package.version + "</td><td>" + field.packageinstance.arch.name + "</td><td>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + "/" + field.packageinstance.build_env.name + "</td><td>" + bname + "</td><td>" + master + "</td><td>" + jobstatuses [ field.id ] + "</td></tr>" );
+"</td><td>" + field.packageinstance.package.version + "</td><td>" + field.packageinstance.arch.name + "</td><td>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + "/" + env_name + "</td><td>" + bname + "</td><td>" + master + "</td><td>" + jobstatuses [ field.id ] + "</td></tr>" );
                                     }
                                 } );
                             } );
