@@ -11,7 +11,7 @@
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="favicon.png" />
-        <style>
+        <style type="text/css">
             body
             {
                 padding-top : 60px; /* 60px to make the container go all the way
@@ -20,9 +20,9 @@
             }
         </style>
         <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <script src="{{protocol}}{{jqueryurl}}"></script>
-        <script src="{{protocol}}{{jqueryformurl}}"></script>
-        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="{{protocol}}{{jqueryurl}}" type="text/javascript"></script>
+        <script src="{{protocol}}{{jqueryformurl}}" type="text/javascript"></script>
+        <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
     </head>
     <body>
         <div class="container-fluid">
@@ -134,9 +134,9 @@
                                         </legend>
  <span class="help-block">To submit a job, firstly choose a <strong>Existing</strong> Package, and PackageInstance. <br/> Next, enter the path to he source, the method to use to retrieve it (i.e. 'SVN') , and the VCS revision.</span>
                                         <label for="package">Package Name: </label>
-                                        <select name="package"  id="package" size="1" onclick="changePackage()" style="width:480px; display:block;"></select>
+                                        <select name="package"  id="package" size="1" onclick="changePackage()" style="width: 480px; display: block;"></select>
                                         <label for="packageinstance_id">Package Instance ID: </label>
-                                        <select name="packageinstance_id"  id="packageinstance_id" size="1" style="width:480px; display:block;"></select>
+                                        <select name="packageinstance_id"  id="packageinstance_id" size="1" style="width: 480px; display: block;"></select>
                                         <label for='uri'>URI: </label>
                                         <input type="text" name="uri" id="uri">
                                         <label for='method'>Method: </label>
@@ -156,13 +156,13 @@
                         </div>
                     </div>
 <span class="help-block">Use this dropdown to filter the list of jobs (shown below), by  their status.</span>
-                    <select name="status_filter_element"  id="status_filter_element" size="1" style="width:480px; display:block;" onchange="status_filter()">
+                    <select name="status_filter_element"  id="status_filter_element" size="1" style="width: 480px; display: block;" onchange="status_filter()">
                         <option value='Unfinished'>Unfinished</option>
                     </select>
                     <table id="tbl_jobs"  class="table table-bordered table-condensed">
                         <thead>
                             <tr>
-                                <th colspan='5'>Current Jobs</th>
+                                <th colspan='6'>Current Jobs</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -220,7 +220,7 @@
                     </footer>
                 </div>
                 <!--/.fluid-container-->
-                <script>
+                <script type="text/javascript">
 
                     function cancel_click ( id )
                     {
@@ -266,6 +266,13 @@ function changePackage()
 {
                         var element = document.getElementById ( "package" );
  $ ( "#packageinstance_id" ).empty();
+
+						if(element.options [ element.selectedIndex ]  == null)
+						{
+							return;
+						}
+						else
+						{
 						packageName = element.options [ element.selectedIndex ].value;
 
                         var named_versions = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/details/" + packageName
@@ -277,6 +284,7 @@ function changePackage()
                                 $ ( "#packageinstance_id" ).append ( "<option value='" + field2.id + "'>" + field2.package.name + " " + field2.package.version + "." + field2.format.name + " - " + field2.distribution.name + "/" + field2.suite.name + " (" + field2.arch.name + ") </option>" );
                             } );
                         } );
+}
 }
 
                     function status_filter ( )
@@ -361,11 +369,6 @@ function changePackage()
                                     if (field.packageinstance.master) {
                                     	master = "\u2714";
                                     }
-                                    if (field.packageinstance.build_env == null) {
-                                    	env_name = ""
-                                    } else {
-                                        env_name = field.packageinstance.build_env.name
-                                    }
                                     if ( field.buildclient )
                                     {
                                         bid = field.buildclient.id;
@@ -373,7 +376,7 @@ function changePackage()
                                         _class = get_status_class ( jobstatuses [ field.id ] );
                                         shortname = bname.replace ( "build_client_" , "" );
                                         // TODO: HACKS
-                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + "/" + env_name + " (" + field.packageinstance.arch.name + " " + field.packageinstance.format.name + ")" + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>" + bname + "</a></td><td>" + master + "</td><td><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id + ")'>" + jobstatuses [ field.id ] + "</a></td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel' onclick='cancel_click(" + field.id + ")'></input><br/><input id='retry' class='.btn-small  btn-danger' type='button' value='Retry' onclick='retry_click(" + field.id +")'></input></td></tr>" );
+                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + "/" + field.packageinstance.build_env.name + " (" + field.packageinstance.arch.name + " " + field.packageinstance.format.name + ")" + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>" + bname + "</a></td><td>" + master + "</td><td><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id + ")'>" + jobstatuses [ field.id ] + "</a></td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel' onclick='cancel_click(" + field.id + ")'></input><br/><input id='retry' class='.btn-small  btn-danger' type='button' value='Retry' onclick='retry_click(" + field.id +")'></input></td></tr>" );
                                     }
                                     else
                                     {
@@ -382,7 +385,7 @@ function changePackage()
                                         bname = "Unassigned";
                                         shortname = bname.replace ( "build_client_" , "" );
                                         // TODO: HACKS
-                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + "/" + env_name + " (" + field.packageinstance.arch.name + " " + field.packageinstance.format.name + ")" + "</td><td>" + bname + "</td><td>" + master + "</td><td><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id + ")'>" + jobstatuses [ field.id ] + "</a></td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel' onclick='cancel_click(" + field.id + ")'></input><br/><input id='retry' class='.btn-small  btn-danger' type='button' value='Retry' onclick='retry_click(" + field.id +")'></input></td></tr></tr>" );
+                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + "/" + field.packageinstance.build_env.name + " (" + field.packageinstance.arch.name + " " + field.packageinstance.format.name + ")" + "</td><td>" + bname + "</td><td>" + master + "</td><td><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id + ")'>" + jobstatuses [ field.id ] + "</a></td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel' onclick='cancel_click(" + field.id + ")'></input><br/><input id='retry' class='.btn-small  btn-danger' type='button' value='Retry' onclick='retry_click(" + field.id +")'></input></td></tr></tr>" );
                                     }
                                 } );
                             } );
