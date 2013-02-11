@@ -41,7 +41,7 @@ def remove_nasties(nastystring):
 			#print "Not escaping: " + str(nastystring) + " as it is not a string."
 			return nastystring;
 	except Exception as e:
-		raise Exception("Error escaping string: " + str(nastystring))
+		raise Exception("Error escaping string: " + str(nastystring) + str(e))
 		return None
 
 class Database(object):
@@ -578,9 +578,9 @@ class Database(object):
 			cur.execute("SELECT id,name FROM format WHERE id=%s",(format_id,))
 			res = cur.fetchall()
 			self.conn.commit()
-			format = Format(res[0]['id'],res[0]['name'])
+			ret_format = Format(res[0]['id'],res[0]['name'])
 			cur.close()
-			return  format
+			return  ret_format
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving format with id:" + str(format_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
@@ -608,9 +608,9 @@ class Database(object):
 			cur.execute("INSERT into format(name) VALUES (%s)  RETURNING id",(remove_nasties(name),))
 			res = cur.fetchall()
 			self.conn.commit()
-			format = Format(res[0]['id'],name)
+			ret_format = Format(res[0]['id'],name)
 			cur.close()
-			return format
+			return ret_format
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error adding format:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
@@ -963,7 +963,7 @@ class Database(object):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				 # CONSTANT
+				# CONSTANT
 				offset = (page -1) * self.limit_high;
 				cur.execute("SELECT id,name FROM buildclients ORDER BY name LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:
@@ -1072,7 +1072,7 @@ class Database(object):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				 # CONSTANT
+				# CONSTANT
 				offset = (page -1) * self.limit_high;
 				cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job ORDER BY id LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:
@@ -1244,7 +1244,7 @@ class Database(object):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				 # CONSTANT
+				# CONSTANT
 				offset = (page -1) * self.limit_high;
 				cur.execute("SELECT id,version,name FROM package ORDER BY name,id LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:
@@ -1406,7 +1406,7 @@ class Database(object):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				 # CONSTANT
+				# CONSTANT
 				offset = (page -1) * self.limit_high;
 				cur.execute("SELECT id,package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:

@@ -70,20 +70,20 @@ def get_app(settings, db, controller):
     def serve_static_res(filepath):
             return static_file(filepath, root=getPath() + "/bootstrap/")
 
-    # Serve javascript resources from local system - TODO: new.
+    # Serve javascript resources from local system
     @app.route('/resources/jquery.min.js', method='GET')
-    def serve_static_res():
+    def serve_static_jquery():
             response.content_type = "application/javascript"
             return static_file('jquery.min.js',root='/usr/share/javascript/jquery/')
-    # static resources like CSS
+
     @app.route('/resources/jquery.form.min.js', method='GET')
-    def serve_static_res():
+    def serve_static_jquery_forms():
             response.content_type = "application/javascript"
             return static_file('jquery.form.min.js',root='/usr/share/javascript/jquery-form/')
 
     # static HTML index page
     @app.route('/index.htm', method='GET')
-    def serve_static_idex():
+    def serve_static_index():
             return template(getStaticResource("/index.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
@@ -92,7 +92,7 @@ def get_app(settings, db, controller):
 
     # static HTML index page
     @app.route('/dashboard.htm', method='GET')
-    def serve_static_idex():
+    def serve_static_dash():
             return template(getStaticResource("/dashboard.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
@@ -186,7 +186,7 @@ def get_app(settings, db, controller):
 
     # static HTML page listing package instances
     @app.route('/envs.htm', method='GET')
-    def serve_static_package_instances():
+    def serve_static_envs():
             return template(getStaticResource("/envs.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
@@ -195,7 +195,7 @@ def get_app(settings, db, controller):
 
     # static HTML page listing package instances
     @app.route('/blacklist.htm', method='GET')
-    def serve_static_package_instances():
+    def serve_static_blacklist():
             return template(getStaticResource("/blacklist.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
