@@ -31,13 +31,30 @@ class AptClient(VersionControlHandler):
 			retval = "wrong_method"
 		if not retval :
 			self.workdir = os.path.join (self.settings["buildroot"],
-				buildreq.get_suite(), buildreq.transport.method)
+				buildreq.get_suite(), buildreq.transport.method, buildreq.get_package())
+			if not os.path.isdir (self.workdir):
+				pybitclient.mkdir_p (self.workdir)
+			apt_path = os.path.join (self.workdir, "lists", "partial")
+			pybitclient.mkdir_p (apt_path)
+			apt_path = os.path.join (self.workdir, "archives", "partial")
+			pybitclient.mkdir_p (apt_path)
+			apt_path = os.path.join (self.workdir, "etc", "apt", "preferences.d")
+			pybitclient.mkdir_p (apt_path)
+			apt_path = os.path.join (self.workdir, "sources.list")
+			src_list = os.open (apt_path, os.O_CREAT | os.O_WRONLY)
+			url = "deb-src http://cdn.debian.net/debian %s main" % (buildreq.get_suite())
+			os.write (src_list, url)
+			cfg_str = "-o Apt::Get::AllowUnauthenticated=true -o Dir=%s -o Dir::State=%s -o Dir::Etc::SourceList=%s/sources.list -o Dir::Cache=%s" % \
+				(self.workdir, self.workdir, self.workdir, self.workdir)
+			command = "(cd %s && apt-get %s update 2>/dev/null || true)" % (self.workdir, cfg_str)
+			if not retval :
+				if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
+					retval = "update_apt"
 			if (buildreq.get_version() is not None):
-				command = "(cd %s && apt-get -d source %s=%s && dpkg-source -x %s_%s.dsc)" % (self.workdir,
-				buildreq.get_package(), buildreq.get_version(), buildreq.get_package(), buildreq.get_version() )
+				command = "(cd %s/.. && apt-get %s -d source %s=%s )" % (self.workdir, cfg_str,
+				buildreq.get_package(), buildreq.get_version() )
 			else :
-				command = "(cd %s && apt-get -d source %s && dpkg-source -x %s_%s.dsc)" % (self.workdir,
-				buildreq.get_package(), buildreq.get_package(), buildreq.get_version() )
+				command = "(cd %s && apt-get %s -d source %s )" % (self.workdir, cfg_str, buildreq.get_package() )
 		if not retval :
 			if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 				retval = "fetch_source"
@@ -57,9 +74,15 @@ class AptClient(VersionControlHandler):
 		if buildreq.transport.method != "apt":
 			retval = "wrong_method"
 		if not retval :
+			src_dir = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method)
+			src_changes = "%s/%s_%s.dsc" % (src_dir, buildreq.get_package(), buildreq.get_version() )
+			command = "dcmd rm %s" % (src_changes)
+			if pybitclient.run_cmd (command, self.settings["dry_run"], None):
+				retval = "source-clean-fail"
+		if not retval :
 			self.cleandir = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method,
 				buildreq.get_package())
-			command = "rm -rf %s" % (self.cleandir)
+			command = "rm -rf %s/" % (self.cleandir)
 			if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
 				retval = "failed_clean"
 		if not retval :
