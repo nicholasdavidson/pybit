@@ -37,7 +37,7 @@ class GitClient(VersionControlHandler):
 			elif (buildreq.transport.uri is not None):
 				command = "git clone %s %s" % (buildreq.transport.uri, self.workdir)
 			else:
-				logging.debug ("Could not fetch source, no method URI found")
+				logging.warn ("E: Could not fetch source, no method URI found")
 				retval = "unrecognised uri"
 		if not retval :
 			if pybitclient.run_cmd (command, self.settings["dry_run"], None) :

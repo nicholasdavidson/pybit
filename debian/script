@@ -1,0 +1,42 @@
+#!/bin/bash
+set -e
+
+if [ -z "$YESNO" ]; then
+	YESNO=$"yYnN"
+fi
+
+cat <<EOF
+I can automatically include various information about your pybit-client
+configuration and debug output in your bug report. This information may help
+to diagnose your problem.
+
+It may also help if you provide /var/log/apache2/pybit-error.log from
+the machine running the pybit-web package.
+
+EOF
+
+if [ -f "/var/log/pybitclient.log" ]; then
+	yesno "May I include /var/log/pybitclient.log ? [Y/n] " yep
+	if [ "$REPLY" = "yep" ]; then
+		echo >&3
+		echo "-- /var/log/pybitclient.log --" >&3
+		echo >&3
+		cat $config >&3
+	else
+		echo >&3
+		echo "-- ( /var/log/pybitclient.log present, but not submitted) --" >&3
+		echo >&3
+	fi
+fi
+
+yesno "May I include /etc/pybit/client/client.conf ? [Y/n] " yep
+if [ "$REPLY" = "yep" ]; then
+	echo >&3
+	echo "-- /etc/pybit/client/client.conf --" >&3
+	echo >&3
+	cat /etc/dpkg-cross/cross-compile >&3
+else
+	echo >&3
+	echo "-- (/etc/pybit/client/client.conf not submitted) --" >&3
+	echo >&3
+fi

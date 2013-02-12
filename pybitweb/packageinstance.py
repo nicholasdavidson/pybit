@@ -107,11 +107,11 @@ def get_packageinstance_app(settings, db):
 
 			# This but is confusing
 			if slave:
-				print "SLAVE NOT NULL:" + str (slave)
+				#print "SLAVE NOT NULL:" + str (slave)
 				slave = "true"
 				master = "false"
 			else:
-				print "SLAVE NULL"
+				#print "SLAVE NULL"
 				slave = "false" # not slave means master
 				master = "true"
 

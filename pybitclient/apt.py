@@ -42,7 +42,7 @@ class AptClient(VersionControlHandler):
 			pybitclient.mkdir_p (apt_path)
 			apt_path = os.path.join (self.workdir, "sources.list")
 			src_list = os.open (apt_path, os.O_CREAT | os.O_WRONLY)
-			url = "deb-src http://cdn.debian.net/debian %s main" % (buildreq.get_suite())
+			url = "deb-src %s %s main" % (buildreq.transport.uri, buildreq.get_suite())
 			os.write (src_list, url)
 			cfg_str = "-o Apt::Get::AllowUnauthenticated=true -o Dir=%s -o Dir::State=%s -o Dir::Etc::SourceList=%s/sources.list -o Dir::Cache=%s" % \
 				(self.workdir, self.workdir, self.workdir, self.workdir)
