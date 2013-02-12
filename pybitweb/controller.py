@@ -59,7 +59,7 @@ class Controller(object):
 	def __init__(self, settings, db):
 		self.db = db
 		self.settings = settings
-		if (hasattr (self.settings['controller'], 'debug') and ( self.settings['controller']['debug'])) :
+		if (('debug' in self.settings['controller']) and ( self.settings['controller']['debug'])) :
 				FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
 				logging.basicConfig( stream=sys.stderr, level=logging.DEBUG)
 				logging.basicConfig( format=FORMAT )
