@@ -38,12 +38,9 @@ def get_job_app(settings, db, controller) :
 	app = Bottle()
 	app.config={'settings':settings, 'db':db, 'controller': controller}
 	
-	if (('debug' in settings['web']) and ( settings['web']['debug'])) :
-		FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
-		logging.basicConfig(format=FORMAT)
-		logging.basicConfig( stream=sys.stderr )
-		logging.getLogger( "web" ).setLevel( logging.DEBUG )
 	app.log = logging.getLogger( "web" )
+	if (('debug' in settings['web']) and ( settings['web']['debug'])) :
+		app.log.setLevel( logging.DEBUG )
 
 	@app.route('/vcshook', method='POST')
 	@app.route('/vcshook', method='PUT')

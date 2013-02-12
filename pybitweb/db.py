@@ -60,12 +60,9 @@ class Database(object):
 
 	def __init__(self, settings):
 		self.settings = settings
+		self.log = logging.getLogger("db" )
 		if (('debug' in self.settings) and ( self.settings['debug'])) :
-			FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
-			logging.basicConfig(format=FORMAT)
-			logging.basicConfig( stream=sys.stderr )
-			logging.getLogger( "db" ).setLevel( logging.DEBUG )
-		self.log = logging.getLogger( "db" )
+			self.log.setLevel( logging.DEBUG )
 		self.log.debug("DB constructor called.")
 		self.connect()
 	#Deconstructor, disconnects on disposal.

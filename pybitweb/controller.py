@@ -59,12 +59,9 @@ class Controller(object):
 	def __init__(self, settings, db):
 		self.db = db
 		self.settings = settings
-		if (('debug' in self.settings['controller']) and ( self.settings['controller']['debug'])) :
-			FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
-			logging.basicConfig(format=FORMAT)
-			logging.basicConfig( stream=sys.stderr )
-			logging.getLogger( "controller" ).setLevel( logging.DEBUG )
 		self.log = logging.getLogger( "controller" )
+		if (('debug' in self.settings['controller']) and ( self.settings['controller']['debug'])) :
+			self.log.setLevel( logging.DEBUG )
 		self.log.debug("Controller constructor called.")
 
 	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport, build_environment = None) :
