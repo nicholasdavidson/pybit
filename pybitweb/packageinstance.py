@@ -94,6 +94,11 @@ def get_packageinstance_app(settings, db):
 			version = request.forms.get('version')
 
 			build_env_id = request.forms.get('build_env_id')
+
+			# If thet chose "Not specified"
+			if (build_env_id == ""):
+				build_env_id = None
+
 			arch_id = request.forms.get('arch_id')
 			suite_id = request.forms.get('suite_id')
 			dist_id = request.forms.get('dist_id')

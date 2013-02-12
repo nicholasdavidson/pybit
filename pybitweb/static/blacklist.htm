@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'>
+        <META HTTP-EQUIV="Expires" CONTENT="-1">
+        <meta charset="utf-8">
+        <title>pyBit - Lookups</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="favicon.png" />
+        <style type="text/css">
+            body
+            {
+                padding-top : 60px; /* 60px to make the container go all the way
+                 * to the bottom of the topbar */
+                padding-bottom : 40px;
+            }
+        </style>
+        <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <script src="{{protocol}}{{jqueryurl}}" type="text/javascript"></script>
+        <script src="{{protocol}}{{jqueryformurl}}" type="text/javascript"></script>
+        <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="navbar navbar-inverse navbar-fixed-top">
+                    <div class="navbar-inner">
+                        <div class="container-fluid">
+                            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a>
+                            <a class="brand" href="index.htm">pyBit</a>
+                            <div class="nav-collapse collapse">
+                                <ul class="nav">
+                                    <li>
+                                        <a href="index.htm">Home</a>
+                                    </li>
+                                    <li class="active">
+                                        <a href="lookups.htm">Lookups</a>
+                                    </li>
+                                    <li>
+                                        <a href="package.htm">Packages</a>
+                                    </li>
+                                    <li>
+                                        <a href="packageinstance.htm">Package Instances</a>
+                                    </li>
+                                    <li>
+                                        <a href="job.htm">Jobs</a>
+                                    </li>
+                                    <li>
+                                        <a href="buildd.htm">Build Boxes</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!--/.nav-collapse -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="span2">
+                <!--Sidebar content-->
+                <div class="well sidebar-nav">
+                    <ul class="nav  nav-list">
+                        <li class="nav-header">
+                            Navigation
+                        </li>
+                        <li>
+                            <a href="index.htm">Home</a>
+                        </li>
+                        <li class="nav-header">
+                            Lookups
+                        </li>
+                        <li>
+                            <a href="arches.htm">Architectures</a>
+                        </li>
+                        <li>
+                            <a href="statuses.htm">Statuses</a>
+                        </li>
+                        <li>
+                            <a href="dists.htm">Dists</a>
+                        </li>
+                        <li>
+                            <a href="formats.htm">Formats</a>
+                        </li>
+                        <li>
+                            <a href="suites.htm">Suites</a>
+                        </li>
+                        <li>
+                            <a href="envs.htm">Build Environments</a>
+                        </li>
+                        <li class="nav-header">
+                            Packages
+                        </li>
+                        <li>
+                            <a href="package.htm">All Packages</a>
+                        </li>
+                        <li>
+                            <a href="packageinstance.htm">Package Instances</a>
+                        </li>
+                        <li class="nav-header">
+                            Jobs
+                        </li>
+                        <li>
+                            <a href="job.htm">Jobs</a>
+                        </li>
+                        <li>
+                            <a href="buildd.htm">BuildBoxes</a>
+                        </li>
+                        <li class="active">
+                            <a href="blacklist.htm">Blacklist Rules</a>
+                        </li>
+                    </ul>
+                </div>
+                <!--/.well -->
+            </div>
+            <div class="span10">
+                <!--Body content-->
+                <div class="container-fluid">
+                    <h1>PyBit - python Buildd Integration Toolkit.</h1>
+                    <h3>Add Blacklist Rule</h3>
+                    <div class="accordion" id="accordion1">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Blacklist Rules </a>
+                            </div>
+                            <div id="collapseOne" class="accordion-body collapse in">
+                                <div class="accordion-inner">
+                                    <form class="form-inline" method="POST" action="blacklist"  id="blacklist_form" name="blacklist_form">
+ <span class="help-block">Blacklist rules consist of a "field" and a "regex". If there is a pattern match on the field in question , we will not build.<br/>For example "name" and "(.*-dev)" will mean we do not autobuild any development packages, while "vcs_uri" and "(.*/users/*)" will block sources from locations such as /repo/users/jamesb/somebadcode</span>
+                                        <label for="field">Field</label>
+                                        <input name="field" type="text" />
+                                        <label for="regex">Regex</label>
+                                        <input name="regex" type="text" />
+                                        <button type="submit" class="btn  btn-primary">
+                                            Submit
+                                        </button>
+                                        <button type="button" class="btn">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    <table id="tbl_blacklist"  class="table table-bordered table-condensed">
+                                        <tr>
+                                            <th colspan='3'>Blacklist Rules</th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <footer>
+                        <p>
+                            &copy; TCL 2012
+                        </p>
+                    </footer>
+                </div>
+                <!--/.fluid-container-->
+                <script type="text/javascript">
+                    function getUrlVars ( )
+                    {
+                        var vars =
+                        {
+                        };
+                        var parts = window.location.href.replace ( /[?&]+([^=&]+)=([^&]*)/gi , function ( m , key , value )
+                        {
+                            vars [ key ] = value;
+                        } );
+                        return vars;
+                    }
+
+                    function delete_click ( id , target )
+                    {
+                        switch (target)
+                        {
+                            case 3:
+                                target = "blacklist"
+                                break;
+                        }
+                        $.ajax (
+                        {
+                            type : "GET" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/" + target + "/" + id + "/delete" ,
+                            error : function ( data )
+                            {
+                                alert ( 'Error deleting ' + target + ' with id: ' + id + "\n" + data.responseText );
+                                location.reload ( );
+                            } ,
+                            success : function ( data )
+                            {
+                                alert ( 'OK deleting ' + target + ' with id: ' + id );
+                                location.reload ( );
+                            }
+
+                        } );
+                    }
+                    $ ( ).ready ( function ( )
+                    {
+                        var blacklist_page = 1;
+                        $ ( '#blacklist_form' ).ajaxForm ( function ( )
+                        {
+                            alert ( "blacklist Added!" );
+                            location.reload ( );
+                        } );
+                        if ( getUrlVars() [ "blacklist_page" ] )
+                        {
+                            blacklist_page = getUrlVars() [ "blacklist_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist/page/" + blacklist_page
+                        }
+                        else
+                        {
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist/page/1"
+                        }
+                        new_blacklist_page = parseInt ( blacklist_page ) + 1;
+                        last_blacklist_page = parseInt ( blacklist_page ) - 1;
+
+                        $.getJSON ( url , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#tbl_blacklist" ).append ( "<tr><td>" + field.field + "</td><td>" + field.regex + "</td><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
+                            } );
+var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist/count"
+                            $.getJSON ( url2 , function ( json2 )
+							{
+
+							var html_part1 = "";
+							if (blacklist_page > 0)
+							{
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist.htm?blacklist_page=" + last_blacklist_page + "'>Prev</a></li><li><a>" + blacklist_page + "/" + json2 + "</a></li>";
+							}
+
+							var html_part2 = "";
+							if (blacklist_page < json2) // Not last page
+							{
+							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist.htm?blacklist_page=" + new_blacklist_page + "'>Next</a></li>";
+							}
+
+                            $ ( '#tbl_blacklist' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );
+
+							});                        
+						} );
+                    } );
+                </script>
+            </div>
+        </div>
+    </body>
+</html>
