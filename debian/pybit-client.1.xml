@@ -29,7 +29,7 @@ client feeds status messages back to the controller.
   </refsect1>
   <refsect1 id="usage">
     <title>Usage</title>
-    <para>pybit-client runs as a single-instance daemon by default. The standard 
+    <para>pybit-client runs as a single-instance daemon by default. The standard
     daemon control interface is supported:
 </para>
     <programlisting>
