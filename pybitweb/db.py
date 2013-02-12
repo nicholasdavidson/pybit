@@ -1627,7 +1627,7 @@ class Database(object):
 		try:
 			if suite :
 				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-				cur.execute("SELECT buildenv.id AS buildenv_id, suitearches.id AS suitearch_id, suitearches.master_weight AS suitearch_master_weight, buildenvsuitearch.id AS buildenvsuitearch_id FROM suitearches LEFT JOIN buildenvsuitearch ON suitearches.id=suitearch_id LEFT JOIN buildenv ON buildenvsuitearch.buildenv_id=buildenv.id WHERE suitearches.suite_id=(SELECT id FROM suite WHERE name=%s ORDER BY buildenv_id) ORDER BY suitearch_master_weight DESC",(remove_nasties(suite),))
+				cur.execute("SELECT buildenv.id AS buildenv_id, suitearches.id AS suitearch_id, suitearches.master_weight AS suitearch_master_weight, buildenvsuitearch.id AS buildenvsuitearch_id FROM suitearches LEFT JOIN buildenvsuitearch ON suitearches.id=suitearch_id LEFT JOIN buildenv ON buildenvsuitearch.buildenv_id=buildenv.id WHERE suitearches.suite_id=(SELECT id FROM suite WHERE name=%s) ORDER BY buildenv_id, suitearch_master_weight DESC",(remove_nasties(suite),))
 				res = cur.fetchall()
 				self.conn.commit()
 				build_env_suite_arch_list = []
