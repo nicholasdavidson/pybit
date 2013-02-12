@@ -261,6 +261,10 @@ changePackage();
                             } );
                         } );
                         var envs = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env"
+
+						// Special case
+						$ ( "#build_env_id" ).append ( "<option value=''>Not Specified</option>" );
+
                         $.getJSON ( envs , function ( json )
                         {
                             $.each ( json , function ( i , field )
