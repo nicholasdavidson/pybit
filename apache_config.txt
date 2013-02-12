@@ -9,4 +9,7 @@
         Order deny,allow
         Allow from all
     </Directory>
+    LogLevel info
+    ErrorLog ${APACHE_LOG_DIR}/pybit-error.log
+    CustomLog ${APACHE_LOG_DIR}/pybit-access.log combined
 </VirtualHost>
