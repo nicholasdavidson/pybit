@@ -292,7 +292,7 @@ class Database(object):
 			self.conn.rollback()
 			raise Exception("Error retrieving suite arch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
-		
+
 	def get_suitearch_by_suite_name(self,suite,arch):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -1146,7 +1146,7 @@ class Database(object):
 
 	def put_job_status(self, jobid, status, client=None):
 		try:
-			print "put_job_status: %s %s %s", (jobid, status, client)
+			print "put_job_status: %s %s %s" % (jobid, status, client)
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s))",
 					 (remove_nasties(jobid),remove_nasties(status),))
@@ -1622,7 +1622,7 @@ class Database(object):
 			self.conn.rollback()
 			raise Exception("Error retrieving supported build environments for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
-		
+
 	def get_supported_build_env_suite_arches(self,suite) :
 		try:
 			if suite :
@@ -1648,7 +1648,7 @@ class Database(object):
 			self.conn.rollback()
 			raise Exception("Error retrieving supported build environments for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
-		
+
 
 	# Note: True = failed, false = Ok. Should probably be renamed isInBlacklist() or similar.
 	def check_blacklist(self,field,value):
