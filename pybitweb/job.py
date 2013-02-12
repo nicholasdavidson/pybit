@@ -25,6 +25,8 @@
 
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
+import logging
+import sys
 from db import Database
 import bottle_basic_auth
 from bottle_basic_auth import requires_auth
@@ -35,6 +37,13 @@ from pybit.models import Transport,JobHistory
 def get_job_app(settings, db, controller) :
 	app = Bottle()
 	app.config={'settings':settings, 'db':db, 'controller': controller}
+	
+	if (('debug' in settings['web']) and ( settings['web']['debug'])) :
+		FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
+		logging.basicConfig(format=FORMAT)
+		logging.basicConfig( stream=sys.stderr )
+		logging.getLogger( "web" ).setLevel( logging.DEBUG )
+	app.log = logging.getLogger( "web" )
 
 	@app.route('/vcshook', method='POST')
 	@app.route('/vcshook', method='PUT')
@@ -56,7 +65,7 @@ def get_job_app(settings, db, controller) :
 					response.status = "400 - Required fields missing."
 					return None
 				else :
-					print "RECEIVED BUILD REQUEST FOR", package_name, version, suite, architectures
+					app.log.debug("RECEIVED BUILD REQUEST FOR %s, %s, %s, %s", package_name, version, suite, architectures)
 					# NOTE:VCS Hook does not send build_environment.
 					if app.config['controller'].process_job(dist, architectures, version, package_name, suite, pkg_format, Transport(None, method, uri, vcs_id),None):
 						return
@@ -128,7 +137,7 @@ def get_job_app(settings, db, controller) :
 		if job_status:
 			job = app.config['db'].get_job(jobid)
 			if job is not None:
-				#print "Setting ", job.id, " to ", job_status
+				app.log.debug("Setting job:%i to %s", job.id, job_status)
 				app.config['db'].put_job_status(job.id, job_status, job_client)
 			else:
 				response.status = "404 - No job found with this ID."
@@ -154,12 +163,10 @@ def get_job_app(settings, db, controller) :
 		#  TODO: Improve this.
 		# This will retry a job, using the same stashed Transport data, from the buildrequest table.
 
-		#print "Retry job request recieved for job id", jobid
+		app.log.debug("Retry job request recieved for job id:%i", jobid)
 
 		job = app.config['db'].get_job(jobid)
 		transport = app.config['db'].get_jobTransportDetails(jobid)
-
-		#print "Got stored transport data with id", transport.id
 
 		package_version = job.packageinstance.package.version
 		package_name = job.packageinstance.package.name
@@ -173,14 +180,12 @@ def get_job_app(settings, db, controller) :
 		vcs_id = transport.vcs_id
 		uri = transport.uri
 
-		#print ("Retrying now. Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + build_environment + ")")
-
 		# Pass to controller to queue up - Pass build_environment if any.
 		if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,build_environment):
-			#print "Retry Job processed OK!"
+			app.log.debug("Retry job processed OK!")
 			return
 		else:
-			#print "Error retrying job!"
+			app.log.debug("Error retrying job!")
 			return False
 
 
@@ -206,11 +211,6 @@ def get_job_app(settings, db, controller) :
 				build_environment = None
 				if (packageinstance.build_env) :
 					build_environment = app.config['db'].get_build_env_id(packageinstance.build_env.id).name # Lookup build_environment name for the package instance
-				#if (build_environment):
-					#print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + build_environment + ")")
-				#else :
-					#print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + ")")
-
 				# Pass to controller to queue up - Pass build_environment if any.
 				transport = Transport(None, method, uri, vcs_id)
 				if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,build_environment):
