@@ -285,7 +285,7 @@ class Database(object):
 			cur.execute("SELECT id,suite_id,arch_id,master_weight FROM suitearches WHERE id=%s",(suitearch_id,))
 			res = cur.fetchall()
 			self.conn.commit()
-			suitearch = SuiteArch(res[0]['id'],self.get_suite_id(res[0]['suite_id']),self.get_arch_id(res[0]['arch_id']))
+			suitearch = SuiteArch(res[0]['id'],self.get_suite_id(res[0]['suite_id']),self.get_arch_id(res[0]['arch_id']),res[0]['master_weight'])
 			cur.close()
 			return suitearch
 		except psycopg2.Error as e:
@@ -299,7 +299,7 @@ class Database(object):
 			cur.execute("SELECT id,suite_id,arch_id,master_weight FROM suitearches WHERE suite.id=%s, arch.id=%s",(suite.id,arch.id))
 			res = cur.fetchall()
 			self.conn.commit()
-			suitearch = SuiteArch(res[0]['id'],self.get_suite_id(res[0]['suite_id']),self.get_arch_id(res[0]['arch_id']))
+			suitearch = SuiteArch(res[0]['id'],self.get_suite_id(res[0]['suite_id']),self.get_arch_id(res[0]['arch_id']),res[0]['master_weight'])
 			cur.close()
 			return suitearch
 		except psycopg2.Error as e:
@@ -1619,7 +1619,7 @@ class Database(object):
 		try:
 			if suite :
 				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-				cur.execute("SELECT buildenv.id AS buildenv_id, suitearches.id AS suitearch_id, buildenvsuitearch.id AS buildenvsuitearch_id FROM suitearches LEFT JOIN buildenvsuitearch ON suitearches.id=suitearch_id LEFT JOIN buildenv ON buildenvsuitearch.buildenv_id=buildenv.id WHERE suitearches.suite_id=(SELECT id FROM suite WHERE name=%s ORDER BY buildenv_id)",(remove_nasties(suite),))
+				cur.execute("SELECT buildenv.id AS buildenv_id, suitearches.id AS suitearch_id, suitearches.master_weight AS suitearch_master_weight, buildenvsuitearch.id AS buildenvsuitearch_id FROM suitearches LEFT JOIN buildenvsuitearch ON suitearches.id=suitearch_id LEFT JOIN buildenv ON buildenvsuitearch.buildenv_id=buildenv.id WHERE suitearches.suite_id=(SELECT id FROM suite WHERE name=%s ORDER BY buildenv_id) ORDER BY suitearch_master_weight DESC",(remove_nasties(suite),))
 				res = cur.fetchall()
 				self.conn.commit()
 				build_env_suite_arch_list = []
