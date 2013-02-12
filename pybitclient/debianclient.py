@@ -124,7 +124,7 @@ class DebianBuildClient(PackageHandler):
 		retval = None
 		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		if (not isinstance(buildreq, BuildRequest)):
-			logging.debug ("E: not able to identify package name.")
+			logging.warn ("E: not able to identify package name.")
 			retval = "misconfigured"
 			return self._overall_success(retval, conn_data)
 		srcdir = os.path.join (self.settings["buildroot"],
@@ -178,7 +178,7 @@ class DebianBuildClient(PackageHandler):
 			changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"], buildreq.get_package(),
 				buildreq.get_version(), buildreq.get_arch())
 			if not self.settings["dry_run"] and not os.path.isfile (changes) :
-				logging.debug("E: build_master: Failed to find %s file." % (changes))
+				logging.warn("E: build_master: Failed to find %s file." % (changes))
 				retval = "build_changes"
 			if not retval and checkValue ('debsignkey', self.settings) :
 				command = "debsign -k%s %s" % (self.settings['debsignkey'], changes)
@@ -193,7 +193,7 @@ class DebianBuildClient(PackageHandler):
 		changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"], buildreq.get_package(),
 			buildreq.get_version(), buildreq.get_arch())
 		if not os.path.isfile (changes) and not self.settings["dry_run"]:
-			logging.debug("E: upload: Failed to find %s file." % (changes))
+			logging.warn("E: upload: Failed to find %s file." % (changes))
 			retval = "upload_changes"
 		if not retval :
 			command = "dput -c %s %s %s %s" % (self.dput_cfg,
@@ -241,7 +241,7 @@ class DebianBuildClient(PackageHandler):
 					buildreq.get_package(), buildreq.get_version(),
 					buildreq.get_arch())
 				if not self.settings["dry_run"] and not os.path.isfile (changes) :
-					logging.debug ("E: build_slave: Failed to find %s file." % (changes))
+					logging.warn ("E: build_slave: Failed to find %s file." % (changes))
 					retval = "build_changes"
 				if not retval and checkValue ('debsignkey', self.settings) :
 					command = "debsign -k%s %s" % (self.settings['debsignkey'], changes)
