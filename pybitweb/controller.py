@@ -81,13 +81,20 @@ class Controller(object):
 			current_package = self.process_package(name, version)
 			if not current_package.id :
 				return False
+
 			current_suite = self.db.get_suite_byname(suite)[0]
 			current_dist = self.db.get_dist_byname(dist)[0]
 			current_format = self.db.get_format_byname(pkg_format)[0]
 
 			build_env_suite_arch = self.process_build_environment_architectures(current_suite,architectures,build_environment)
-			current_build_env = build_env_suite_arch[0].buildenv
-			master_flag = True
+
+			if len(build_env_suite_arch) == 0:
+				logging.warn("Invalid build_env_suite_arch mappings. Check you have some congfigured.")
+				response.status = "500 - Error submitting job"
+				return
+			else:
+				current_build_env = build_env_suite_arch[0].buildenv
+				master_flag = True
 
 			chan = self.get_amqp_channel()
 			for build_env_suite_arch in build_env_suite_arch :

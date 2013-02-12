@@ -281,7 +281,16 @@ function changePackage()
                         {
                             $.each ( json2 , function ( j , field2 )
                             {
-                                $ ( "#packageinstance_id" ).append ( "<option value='" + field2.id + "'>" + field2.package.name + " " + field2.package.version + "." + field2.format.name + " - " + field2.distribution.name + "/" + field2.suite.name + " (" + field2.arch.name + ") </option>" );
+								if (field2.build_env != null)
+								{
+									build_env = field2.build_env.name;
+								}
+								else
+								{
+									build_env = "";
+								}
+
+								$ ( "#packageinstance_id" ).append ( "<option value='" + field2.id + "'>" + field2.package.name + " " + field2.package.version + "." + field2.format.name + " - " + field2.distribution.name + "/" + field2.suite.name + "/" + build_env + " ("  + field2.arch.name + ") </option>" );
                             } );
                         } );
 }
