@@ -8,3 +8,4 @@ pybit-client ./usr/bin/
 buildd-test.py ./usr/share/pybitclient/
 debian/pybit-client.1 ./usr/share/man/man1/
 debian/pybitclientlog ./etc/logrotate.d/
+debian/script debian/dpkg-cross/usr/share/bug/pybit-client/
