@@ -70,7 +70,7 @@ class Controller(object):
 		except Exception as e:
 			print "Exception checking blacklist " + str(e)
 			return False
-		
+
 		try:
 			current_package = self.process_package(name, version)
 			if not current_package.id :
@@ -82,7 +82,7 @@ class Controller(object):
 			build_env_suite_arch = self.process_build_environment_architectures(current_suite,architectures,build_environment)
 			current_build_env = build_env_suite_arch[0].buildenv
 			master_flag = True
-			
+
 			chan = self.get_amqp_channel()
 			for build_env_suite_arch in build_env_suite_arch :
 				current_arch = build_env_suite_arch.suitearch.arch
@@ -93,7 +93,8 @@ class Controller(object):
 				current_packageinstance = self.process_packageinstance(current_build_env, current_arch, current_package, current_dist, current_format, current_suite, master_flag)
 				if current_packageinstance.id :
 					new_job = self.db.put_job(current_packageinstance,None)
-					print "\nCREATED NEW JOB ID", jsonpickle.encode(new_job), "\n"
+					if (new_job):
+						print "\nCREATED NEW JOB ID", jsonpickle.encode(new_job.id), "\n"
 					if new_job.id :
 						self.cancel_superceded_jobs(new_job)
 						# NEW STUFF FOR RESUBMITTING JOBS
@@ -159,7 +160,7 @@ class Controller(object):
 						if supported_build_env_name != build_env_suite_arch.buildenv.name :
 							supported_build_env_name = build_env_suite_arch.buildenv.name
 							env_arches_to_build.append(build_env_suite_arch)
-							print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")"
+							print "ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")"
 #						else :
 #							print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")
 #					else :
@@ -170,11 +171,11 @@ class Controller(object):
 				for build_env_suite_arch in supported_build_env_suite_arches :
 					if ((requested_environment == None) or (requested_environment == build_env_suite_arch.buildenv.name)) :
 						env_arches_to_build.append(build_env_suite_arch)
-						print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")"
+						print "ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")"
 #					else :
 #						print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") DOES NOT MATCH REQUESTED BUILD ENV (", requested_environment, ")"
 			else :
-				print "SPECIFIC ARCH (", requested_arches, ") BUILD ENV (", requested_environment, ") REQUEST..." 
+				print "SPECIFIC ARCH (", requested_arches, ") BUILD ENV (", requested_environment, ") REQUEST..."
 				for build_env_suite_arch in supported_build_env_suite_arches :
 					build_env_name = None
 					if build_env_suite_arch.buildenv is not None:
@@ -182,13 +183,13 @@ class Controller(object):
 					if ((requested_environment == None) or (requested_environment == build_env_name)) \
 					and (build_env_suite_arch.suitearch.arch.name in requested_arches) :
 						env_arches_to_build.append(build_env_suite_arch)
-						print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")" 
+						print "ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")"
 #					else :
-#						print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")" 
+#						print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")"
 
 #		for i in env_arches_to_build :
 #			print "	", i.buildenv.name, i.suitearch.arch.name
-		
+
 		return env_arches_to_build
 
 	def process_package(self, name, version) :
@@ -259,7 +260,7 @@ class Controller(object):
 						unfinished_job_suite_id = unfinished_job.packageinstance.suite.id
 						if (unfinished_job_dist_id == packageinstance.distribution.id) and (unfinished_job_arch_id == packageinstance.arch.id) and (unfinished_job_suite_id == packageinstance.suite.id) :
 							#check build env...
-							if (((unfinished_job.packageinstance.build_env is None) and (packageinstance.build_env is None)) or 
+							if (((unfinished_job.packageinstance.build_env is None) and (packageinstance.build_env is None)) or
 								(unfinished_job.packageinstance.build_env.id == packageinstance.build_env.id)):
 								self.process_cancel(unfinished_job, chan)
 #							else :
