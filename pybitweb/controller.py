@@ -59,10 +59,10 @@ class Controller(object):
 	def __init__(self, settings, db):
 		self.db = db
 		self.settings = settings
-		if self.settings['controller']['debug'] :
-			FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
-			logging.basicConfig( stream=sys.stderr, level=logging.DEBUG)
-			logging.basicConfig( format=FORMAT )
+		if (hasattr (self.settings['controller'], 'debug') and ( self.settings['controller']['debug'])) :
+				FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
+				logging.basicConfig( stream=sys.stderr, level=logging.DEBUG)
+				logging.basicConfig( format=FORMAT )
 		logging.debug("Controller constructor called.")
 
 	def process_job(self, dist, architectures, version, name, suite, pkg_format, transport, build_environment = None) :
@@ -122,13 +122,13 @@ class Controller(object):
 
 						if chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True) :
 							#logging.debug("\n____________SENDING %s ____________TO____________ %s", build_req, routing_key)
-							logging.debug("SENDING BUILD REQUEST FOR JOB ID %i %s %s %s %s %s %s", 
-										new_job.id, 
-										new_job.packageinstance.package.name, 
-										new_job.packageinstance.package.version, 
-										new_job.packageinstance.distribution.name, 
-										new_job.packageinstance.arch.name, 
-										new_job.packageinstance.suite.name, 
+							logging.debug("SENDING BUILD REQUEST FOR JOB ID %i %s %s %s %s %s %s",
+										new_job.id,
+										new_job.packageinstance.package.name,
+										new_job.packageinstance.package.version,
+										new_job.packageinstance.distribution.name,
+										new_job.packageinstance.arch.name,
+										new_job.packageinstance.suite.name,
 										new_job.packageinstance.format.name)
 						else :
 							logging.warn("UNABLE TO ROUTE BUILD REQUEST TO %s", routing_key)
@@ -195,7 +195,7 @@ class Controller(object):
 					if ((requested_environment == None) or (requested_environment == build_env_name)) \
 					and (build_env_suite_arch.suitearch.arch.name in requested_arches) :
 						env_arches_to_build.append(build_env_suite_arch)
-						logging.debug("	ADDING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight) 
+						logging.debug("	ADDING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
 					else :
 						logging.debug("	IGNORING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
 		return env_arches_to_build
