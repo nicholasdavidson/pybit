@@ -93,7 +93,7 @@ class Controller(object):
 				current_packageinstance = self.process_packageinstance(current_build_env, current_arch, current_package, current_dist, current_format, current_suite, master_flag)
 				if current_packageinstance.id :
 					new_job = self.db.put_job(current_packageinstance,None)
-					print "\nCREATED NEW JOB ID", jsonpickle.encode(new_job), "\n"
+#					print "\nCREATED NEW JOB ID", jsonpickle.encode(new_job), "\n"
 					if new_job.id :
 						self.cancel_superceded_jobs(new_job)
 						# NEW STUFF FOR RESUBMITTING JOBS
@@ -159,7 +159,7 @@ class Controller(object):
 						if supported_build_env_name != build_env_suite_arch.buildenv.name :
 							supported_build_env_name = build_env_suite_arch.buildenv.name
 							env_arches_to_build.append(build_env_suite_arch)
-							print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")"
+							print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight, ")"
 #						else :
 #							print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")
 #					else :
@@ -170,7 +170,7 @@ class Controller(object):
 				for build_env_suite_arch in supported_build_env_suite_arches :
 					if ((requested_environment == None) or (requested_environment == build_env_suite_arch.buildenv.name)) :
 						env_arches_to_build.append(build_env_suite_arch)
-						print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")"
+						print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight, ")"
 #					else :
 #						print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ") DOES NOT MATCH REQUESTED BUILD ENV (", requested_environment, ")"
 			else :
@@ -182,7 +182,7 @@ class Controller(object):
 					if ((requested_environment == None) or (requested_environment == build_env_name)) \
 					and (build_env_suite_arch.suitearch.arch.name in requested_arches) :
 						env_arches_to_build.append(build_env_suite_arch)
-						print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")" 
+						print "	ADDING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight, ")" 
 #					else :
 #						print "	IGNORING (", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, ")" 
 
