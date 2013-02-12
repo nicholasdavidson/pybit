@@ -89,7 +89,7 @@ class Controller(object):
 			build_env_suite_arch = self.process_build_environment_architectures(current_suite,architectures,build_environment)
 
 			if len(build_env_suite_arch) == 0:
-				logging.warn("Invalid build_env_suite_arch mappings. Check you have some congfigured.")
+				logging.warn("INVALID BUILD ENV SUITE ARCH MAPPINGS FOR %s, %s, %s - CHECK YOU HAVE SOME CONFIGURED.", current_suite,architectures,build_environment)
 				response.status = "500 - Error submitting job"
 				return
 			else:
@@ -220,6 +220,8 @@ class Controller(object):
 			package = self.db.put_package(version,name)
 			if package.id :
 				logging.debug("ADDED NEW PACKAGE (%i, %s, %s)", package.id, package.name, package.version)
+			else :
+				logging.warn("FAILED TO ADD NEW PACKAGE (%s, %s)", package.name, package.version)
 		return package
 
 	def process_packageinstance(self, build_env, arch, package, dist, pkg_format, suite, master) :
@@ -229,7 +231,9 @@ class Controller(object):
 			# retrieve existing package instance from db
 			packageinstance = self.db.get_packageinstance_byvalues(package, build_env, arch, suite, dist, pkg_format)[0]
 			if packageinstance.id :
-				logging.debug("MATCHING PACKAGE INSTANCE FOUND (%i, MASTER: %s)", packageinstance.id, packageinstance.master)
+				logging.debug("MATCHING PACKAGE INSTANCE FOUND (%i, MASTER: %s) FOR [%s, %s, %s, %s, %s, %s, %s]", 
+							packageinstance.id, packageinstance.master, 
+							package.name, package.version, build_env.name, arch.name, dist.name, pkg_format.name, suite.name)
 				# Temporarily disable master update for Issue #84, this should not be default behaviour.
 #				if packageinstance.master != master :
 #					logging.debug("UPDATING PACKAGE INSTANCE MASTER FLAG (%s)", master)
@@ -239,7 +243,12 @@ class Controller(object):
 			# add new package instance to db
 			packageinstance = self.db.put_packageinstance(package, build_env, arch, suite, dist, pkg_format, master)
 			if packageinstance.id :
-				logging.debug("ADDED NEW PACKAGE INSTANCE (%i, MASTER: %s)", packageinstance.id, packageinstance.master)
+				logging.debug("ADDED NEW PACKAGE INSTANCE (%i, MASTER: %s) FOR [%s, %s, %s, %s, %s, %s, %s]", 
+							packageinstance.id, packageinstance.master, 
+							package.name, package.version, build_env.name, arch.name, dist.name, pkg_format.name, suite.name)
+			else :
+				logging.warn("FAILED TO ADD NEW PACKAGE INSTANCE FOR [%s, %s, %s, %s, %s, %s, %s]", 
+							package.name, package.version, build_env.name, arch.name, dist.name, pkg_format.name, suite.name)
 		return packageinstance
 
 	def process_cancel(self, job, chan):
