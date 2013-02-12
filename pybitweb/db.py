@@ -27,6 +27,8 @@ import jsonpickle
 import cgi
 import math
 import re
+import logging
+import sys
 
 from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage, checkValue, Transport,\
 	BuildEnv, BuildEnvSuiteArch,Blacklist
@@ -57,8 +59,11 @@ class Database(object):
 	#Constructor, connects on initialisation.
 
 	def __init__(self, settings):
-		print "DEBUG: DB constructor called."
 		self.settings = settings
+		self.log = logging.getLogger("db" )
+		if (('debug' in self.settings) and ( self.settings['debug'])) :
+			self.log.setLevel( logging.DEBUG )
+		self.log.debug("DB constructor called.")
 		self.connect()
 	#Deconstructor, disconnects on disposal.
 	def __del__(self):
@@ -70,23 +75,23 @@ class Database(object):
 		if (checkValue('password',self.settings)):
 			if (checkValue('hostname',self.settings) and checkValue('port',self.settings)):
 				# remote with password
-				print "REMOTE WITH PASSWORD"
+				self.log.debug("REMOTE WITH PASSWORD")
 				self.conn = psycopg2.connect(database=self.settings['databasename'],
 				user=self.settings['user'], host=self.settings['hostname'],
 				port=self.settings['port'], password=self.settings['password'])
 			else:
 				# local with password
-				print "LOCAL WITH PASSWORD"
+				self.log.debug("LOCAL WITH PASSWORD")
 				self.conn = psycopg2.connect(database=self.settings['databasename'],
 				user=self.settings['user'], password=self.settings['password'])
 		else:
 			if (checkValue('hostname',self.settings) and checkValue('port',self.settings)):
 				# remote without password
-				print "REMOTE WITHOUT PASSWORD"
+				self.log.debug("REMOTE WITHOUT PASSWORD")
 				self.conn = psycopg2.connect(database=self.settings['databasename'],user=self.settings['user'], host=self.settings['hostname'],port=self.settings['port'])
 			else:
 				# local without password
-				print "LOCAL WITHOUT PASSWORD"
+				self.log.debug("LOCAL WITHOUT PASSWORD")
 				self.conn = psycopg2.connect(database=self.settings['databasename'],
 				user=self.settings['user'])
 
@@ -1146,7 +1151,7 @@ class Database(object):
 
 	def put_job_status(self, jobid, status, client=None):
 		try:
-			print "put_job_status: %s %s %s" % (jobid, status, client)
+			self.log.debug("put_job_status: %s %s %s", jobid, status, client)
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s))",
 					 (remove_nasties(jobid),remove_nasties(status),))
@@ -1611,7 +1616,7 @@ class Database(object):
 				env_list = []
 				for i in res :
 					build_env = self.get_build_env_id(i['buildenv_id'])
-#					print "SUITE (", suite, ") HAS SUPPORTED BUILD ENV:", build_env.name
+					#self.log.debug("SUITE (%s) HAS SUPPORTED BUILD ENV:%s",suite,build_env.name)
 					env_list.append(build_env)
 				cur.close()
 				return env_list
@@ -1662,7 +1667,7 @@ class Database(object):
 				# Check passed in value using i.regex - Search() or Match() ?
 				match = re.search(i['regex'], value) # An invalid regexp will throw an exception here. Valid regexp is i.e: name field and (.*-dev) or vcs_uri field and (.*/users/*)
 				if match is not None:
-					print "BLACKLISTED!" + str(i['regex']) + " matches " + str(field) + ":" + str(value)
+					self.log.debug("BLACKLISTED! %s matches %s : %s", str(i['regex']), str(field), str(value))
 					cur.close()
 					return True
 				else:

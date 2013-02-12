@@ -31,6 +31,8 @@ import optparse
 import pybitweb
 from pybitweb import bottle
 import pybit
+import logging
+import sys
 
 META="PYBIT_WEB_"
 
@@ -51,6 +53,10 @@ if __name__ == '__main__':
 	(options, args) = parser.parse_args()
 	(settings, opened_file) = pybit.load_settings(options.config)
 	settings = pybit.merge_options(settings, groupConfigFile, options)
+	
+	FORMAT = '%(asctime)s %(filename)s:%(lineno)d %(msg)s'
+	logging.basicConfig( stream=sys.stderr, level=logging.WARN)
+	logging.basicConfig( format=FORMAT )
 	
 	myDb = Database(settings['db']) # singleton instance
 	buildController = Controller(settings, myDb) # singleton instance - Needs access to both controller and web settings
