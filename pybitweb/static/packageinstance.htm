@@ -138,7 +138,7 @@
 <label for="build_env_id">Build Environment</label><select name="build_env_id" id="build_env_id"></select>
                                         <br>
                                         <input type="checkbox" name="slave" value="0" id="slave">
-                                        Slave<input/>
+                                        Slave</input>
                                         <br>
                                         <button type="submit" class="btn  btn-primary">
                                             Submit
@@ -261,6 +261,10 @@ changePackage();
                             } );
                         } );
                         var envs = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env"
+
+						// Special case
+						$ ( "#build_env_id" ).append ( "<option value=''>Not Specified</option>" );
+
                         $.getJSON ( envs , function ( json )
                         {
                             $.each ( json , function ( i , field )

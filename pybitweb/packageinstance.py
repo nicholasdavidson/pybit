@@ -94,6 +94,11 @@ def get_packageinstance_app(settings, db):
 			version = request.forms.get('version')
 
 			build_env_id = request.forms.get('build_env_id')
+
+			# If thet chose "Not specified"
+			if (build_env_id == ""):
+				build_env_id = None
+
 			arch_id = request.forms.get('arch_id')
 			suite_id = request.forms.get('suite_id')
 			dist_id = request.forms.get('dist_id')
@@ -101,7 +106,7 @@ def get_packageinstance_app(settings, db):
 			slave = request.forms.get('slave')
 
 			# This but is confusing
-			if slave: 
+			if slave:
 				print "SLAVE NOT NULL:" + str (slave)
 				slave = "true"
 				master = "false"
@@ -111,9 +116,10 @@ def get_packageinstance_app(settings, db):
 				master = "true"
 
 			if package and version and arch_id and suite_id  and dist_id and format_id and slave:
-
+				build_env = None
 				package_obj = app.config['db'].get_package_byvalues(package,version)[0]
-				build_env = app.config['db'].get_build_env_id(build_env_id)
+				if (build_env_id):
+					build_env = app.config['db'].get_build_env_id(build_env_id)
 				arch = app.config['db'].get_arch_id(arch_id)
 				suite = app.config['db'].get_suite_id(suite_id)
 				dist = app.config['db'].get_dist_id(dist_id)

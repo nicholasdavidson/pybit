@@ -87,7 +87,7 @@
                         <li>
                             <a href="suites.htm">Suites</a>
                         </li>
-                        <li class="active">
+                        <li>
                             <a href="envs.htm">Build Environments</a>
                         </li>
                         <li class="nav-header">
@@ -108,7 +108,7 @@
                         <li>
                             <a href="buildd.htm">BuildBoxes</a>
                         </li>
-                        <li>
+                        <li class="active">
                             <a href="blacklist.htm">Blacklist Rules</a>
                         </li>
                     </ul>
@@ -119,18 +119,20 @@
                 <!--Body content-->
                 <div class="container-fluid">
                     <h1>PyBit - python Buildd Integration Toolkit.</h1>
-                    <h3> Add Build Environments</h3>
+                    <h3>Add Blacklist Rule</h3>
                     <div class="accordion" id="accordion1">
                         <div class="accordion-group">
                             <div class="accordion-heading">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Build Environments</a>
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne"> Blacklist Rules </a>
                             </div>
                             <div id="collapseOne" class="accordion-body collapse in">
                                 <div class="accordion-inner">
-                                    <form class="form-inline" method="POST" action="env"  id="env_form" name="env_form">
- <span class="help-block">Enter the name of a build environment, to add it to the database. Examples of such environments include 'wheezy'.</span>
-                                        <label for="name">Name</label>
-                                        <input name="name" type="text" />
+                                    <form class="form-inline" method="POST" action="blacklist"  id="blacklist_form" name="blacklist_form">
+ <span class="help-block">Blacklist rules consist of a "field" and a "regex". If there is a pattern match on the field in question , we will not build.<br/>For example "name" and "(.*-dev)" will mean we do not autobuild any development packages, while "vcs_uri" and "(.*/users/*)" will block sources from locations such as /repo/users/jamesb/somebadcode</span>
+                                        <label for="field">Field</label>
+                                        <input name="field" type="text" />
+                                        <label for="regex">Regex</label>
+                                        <input name="regex" type="text" />
                                         <button type="submit" class="btn  btn-primary">
                                             Submit
                                         </button>
@@ -138,56 +140,13 @@
                                             Cancel
                                         </button>
                                     </form>
-                                    <table id="tbl_envs"  class="table table-bordered table-condensed">
+                                    <table id="tbl_blacklist"  class="table table-bordered table-condensed">
                                         <tr>
-                                            <th colspan='2'>Build Environments</th>
+                                            <th colspan='3'>Blacklist Rules</th>
                                         </tr>
                                     </table>
                                 </div>
                             </div>
-                        </div>
-                        <div class="accordion-group">
-
-
-                                                        <div class="accordion-heading">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">Environment / Suite Arch Mappings</a>
-                            </div>
-                            <div id="collapseTwo" class="accordion-body collapse in">
-                                <div class="accordion-inner">
-                                    <form class="form-inline" method="POST" action="buildenv_suitearch"  id="buildenv_suitearch_form" name="buildenv_suitearch_form">
- <span class="help-block">Choose an existing arch to add to the list of supported ones for a particular software suite </span>
-
-                                        <label for="buildenv_id">Environment: </label>
-                                        <select name="buildenv_id"  id="buildenv_id" size="1" style="width: 480px; display: block;"></select>
-
-                                        <label for="suitearch_id">Suite Arch: </label>
-                                        <select name="suitearch_id"  id="suitearch_id" size="1" style="width: 480px; display: block;"></select>
-
-										<br/>
-
-                                        <button type="submit" class="btn  btn-primary">
-                                            Submit
-                                        </button>
-                                        <button type="button" class="btn">
-                                            Cancel
-                                        </button>
-                                    </form>
-                                    <table id="tbl_buildenv_suitearches"  class="table table-bordered table-condensed">
-										<thead>
-                                        <tr>
-                                            <th colspan='3'>Environment / Suite Arch Mappings</th>
-                                        </tr>
-										<tr><th>Environment</th><th>Suite Arch</th><th>Operations</th></tr>
-										</thead>
-										<tbody>
-										</tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-
-
-
                         </div>
                     </div>
                     <hr>
@@ -215,11 +174,8 @@
                     {
                         switch (target)
                         {
-                            case 1:
-                                target = "env"
-                                break;
-                            case 2:
-                                target = "buildenv_suitearch"
+                            case 3:
+                                target = "blacklist"
                                 break;
                         }
                         $.ajax (
@@ -239,110 +195,52 @@
 
                         } );
                     }
-
-					function doEnvs()
-					{
-					 var env_page = 1;
-
-                        $ ( '#env_form' ).ajaxForm ( function ( )
+                    $ ( ).ready ( function ( )
+                    {
+                        var blacklist_page = 1;
+                        $ ( '#blacklist_form' ).ajaxForm ( function ( )
                         {
-                            alert ( "Environment Added!" );
+                            alert ( "blacklist Added!" );
                             location.reload ( );
                         } );
-                        if ( getUrlVars() [ "env_page" ] )
+                        if ( getUrlVars() [ "blacklist_page" ] )
                         {
-                            env_page = getUrlVars() [ "env_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env/page/" + env_page
+                            blacklist_page = getUrlVars() [ "blacklist_page" ]
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist/page/" + blacklist_page
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env/page/1"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist/page/1"
                         }
-                        new_env_page = parseInt ( env_page ) + 1;
-                        last_env_page = parseInt ( env_page ) - 1;
+                        new_blacklist_page = parseInt ( blacklist_page ) + 1;
+                        last_blacklist_page = parseInt ( blacklist_page ) - 1;
+
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_envs" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
+                                $ ( "#tbl_blacklist" ).append ( "<tr><td>" + field.field + "</td><td>" + field.regex + "</td><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
                             } );
-
-                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env/count"
+var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist/count"
                             $.getJSON ( url2 , function ( json2 )
 							{
 
 							var html_part1 = "";
-							if (env_page > 0)
+							if (blacklist_page > 0)
 							{
-							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/envs.htm?env_page=" + last_env_page + "'>Prev</a></li><li><a>" + env_page + "/" + json2 + "</a></li>";
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist.htm?blacklist_page=" + last_blacklist_page + "'>Prev</a></li><li><a>" + blacklist_page + "/" + json2 + "</a></li>";
 							}
 
 							var html_part2 = "";
-							if (env_page < json2) // Not last page
+							if (blacklist_page < json2) // Not last page
 							{
-								html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/envs.htm?env_page=" + new_env_page + "'>Next</a></li>";
+							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist.htm?blacklist_page=" + new_blacklist_page + "'>Next</a></li>";
 							}
 
-							 $ ( '#tbl_envs' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );
+                            $ ( '#tbl_blacklist' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );
 
-							});
-
-                        } );
-					}
-
-					function populateDropdowns()
-					{
-                       var buildenv_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env"
-                        $.getJSON ( buildenv_names , function ( json )
-                        {
-                            $.each ( json , function ( i , field )
-                            {
-							$ ( "#buildenv_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
-                            } );
-                        } );
-
-                        var suitearch_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suitearch"
-                        $.getJSON ( suitearch_names , function ( json )
-                        {
-                            $.each ( json , function ( i , field )
-                            {
-							$ ( "#suitearch_id" ).append ( "<option value='" + field.id + "'>" + field.arch.name + "/" + field.suite.name + "</option>" );
-                            } );
-                        } );
-					}
-
-					function doBuildenv_suitearches()
-					{
-
-						populateDropdowns();
-					 var buildenv_suitearch_page = 1;
-
-                        $ ( '#buildenv_suitearch_form' ).ajaxForm ( function ( )
-                        {
-                            alert ( "Environment / Suite Arch Mapping Added!" );
-                            location.reload ( );
-                        } );
-
-							// TODO: Paging
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildenv_suitearch"
-
-                        new_buildenv_suitearch_page = parseInt ( buildenv_suitearch_page ) + 1;
-                        last_buildenv_suitearch_page = parseInt ( buildenv_suitearch_page ) - 1;
-                        $.getJSON ( url , function ( json )
-                        {
-                            $.each ( json , function ( i , field )
-                            {
-                                $ ( "#tbl_buildenv_suitearches" ).append ( "<tr><td>" + field.buildenv.name + "</td><td>" + field.suitearch.arch.name + "/" + field.suitearch.suite.name + "</td><td><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
-                            } );
-
-                        } );
-					}
-
-
-                    $ ( ).ready ( function ( )
-                    {
-                       doEnvs();
-                       doBuildenv_suitearches();
+							});                        
+						} );
                     } );
                 </script>
             </div>

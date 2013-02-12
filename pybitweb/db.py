@@ -1461,8 +1461,16 @@ class Database(object):
 
 	def put_packageinstance(self,package,build_env,arch,suite,dist,pkg_format,master):
 		try:
+
+			# The buildenv_id field in the DB is allowed to be null.
+			# We may be passed a None build_env object and must handle this.
+			if build_env:
+				build_env_id = build_env.id
+			else:
+				build_env_id = None;
+
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into packageinstance(package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s, %s)  RETURNING id",(remove_nasties(package.id),remove_nasties(build_env.id),remove_nasties(arch.id),remove_nasties(suite.id),remove_nasties(dist.id),remove_nasties(pkg_format.id),remove_nasties(master)))
+			cur.execute("INSERT into packageinstance(package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s, %s)  RETURNING id",(remove_nasties(package.id),remove_nasties(build_env_id),remove_nasties(arch.id),remove_nasties(suite.id),remove_nasties(dist.id),remove_nasties(pkg_format.id),remove_nasties(master)))
 			self.conn.commit()
 			res = cur.fetchall()
 			self.conn.commit()
