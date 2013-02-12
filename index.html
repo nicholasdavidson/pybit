@@ -44,52 +44,22 @@ The system consists of two parts, a single server, and one to many clients. pybi
 
 <p>We aim to be flexible enough to build any combination of package type (i.e. DEB, RPM) for any arch, for any system (even, say .MSI installers for MS Windows). Currently however, we are mostly concerned with building ARM and i386 packages targeting Debian GNU/Linux 'Squeeze', and above, as this is what we develop on/for internally.</p>
 
-<p>Data Exchange
-We use a well known interchange format (JSON, with the JSONPickle library). We will present a RESTful HTTP based API. i.e. using the GET verb on http://[server]/job shall return a list of all running build jobs, while http://[server]/job/1 shall return the specific job instance with the ID 1.</p>
+<h3>Files</h3>
+<ul>
+<li><a href='documentation/db/index.htm'>Database Schema [Data Dictionary]</a></li>
+<li><a href='documentation/db/schema.pdf'>Database Schema [ERD Diagram]</a></li>
+</ul>
 
-<p>Note that we proxy POST and PUT, and map /[object]/[id]/delete to DELETE. This is as HTML forms, in most browsers can only do GET and POST (JQuery can do more using its AJAX functions).</p>
 
-<p>Requirements
-Note that bottle.py, although in the debian repos as python-bottle, does not depend on any external libraries. Therefore, we include our own bottle.py from upstream. We need this as the new route rule syntax, amongst other things, was introduced in Bottle 0.10. Debian squeeze has 0.8x.</p>
-
-<p>python-requests is available from squeeze-backports, as is python-psycopg2. Do NOT use the version of psycopg2 from squeeze/main, if you intend to use a multi-threaded web server, this is unsupported.</p>
-
-<p>Installation
-In /db, there are scripts to create and populate the database manually. However, we reccomend you use the dbconfig-common wizard, during the package installation process.</p>
-
-<p>Running the software
-The connection string, hostname, etc.... are stored in /etc/pybit/configs/*. These should be set during the package installation process, but you may edit and configure these as you wish. Then simply start the server first, then the client(s) second. The client will pick up any suitable queued jobs when it comes up.</p>
+<h3>Links</h3>
+<ul>
+<li><a href='https://github.com/nicholasdavidson/pybit'>Github</a></li>
+<li><a href='https://github.com/nicholasdavidson/pybit/wikit'>Github Wiki</a></li>
+<li><a href='https://github.com/nicholasdavidson/pybit/issues?state=open'>Bug Tracker</a></li>
+<ul>
 
 <p>For support:
 IRC - #pybit on irc.oftc.net irc://irc.oftc.org/pybit (Or use github issues)</p>
-
-<p>Packaging requirements</p>
-
-<ul>
-<li>rabbitmq-server <a href="http://packages.qa.debian.org/r/rabbitmq-server.html">http://packages.qa.debian.org/r/rabbitmq-server.html</a>
-  o <a href="http://www.rabbitmq.com/">http://www.rabbitmq.com/</a>
-</li>
-<li>python-amqplib <a href="http://packages.qa.debian.org/p/python-amqplib.html">http://packages.qa.debian.org/p/python-amqplib.html</a>
-  o <a href="http://code.google.com/p/py-amqplib/">http://code.google.com/p/py-amqplib/</a>
-</li>
-<li>python-debian <a href="http://packages.qa.debian.org/p/python-debian.html">http://packages.qa.debian.org/p/python-debian.html</a>
-</li>
-<li>python-jsonpickle <a href="http://packages.qa.debian.org/j/jsonpickle.html">http://packages.qa.debian.org/j/jsonpickle.html</a>
-</li>
-<li>python-bottle <a href="http://packages.qa.debian.org/p/python-bottle.html">http://packages.qa.debian.org/p/python-bottle.html</a>
-  o <a href="http://bottlepy.org/">http://bottlepy.org/</a>
-</li>
-<li>python-psycopg2 <a href="http://packages.qa.debian.org/p/psycopg2.html">http://packages.qa.debian.org/p/psycopg2.html</a>
-</li>
-<li><p>python-requests <a href="http://packages.qa.debian.org/p/python-requests.html">http://packages.qa.debian.org/p/python-requests.html</a>
-Useful links:</p></li>
-<li><p><a href="http://www.rabbitmq.com/tutorials/tutorial-one-python.html">http://www.rabbitmq.com/tutorials/tutorial-one-python.html</a> - A RabbitMQ tutorial using Python.</p></li>
-<li><p><a href="http://jsonpickle.github.com/">http://jsonpickle.github.com/</a></p></li>
-<li><p><a href="http://initd.org/psycopg/">http://initd.org/psycopg/</a></p></li>
-<li><p><a href="http://www.rabbitmq.com/">http://www.rabbitmq.com/</a></p></li>
-<li><p><a href="http://bottlepy.org/docs/stable/index.html">http://bottlepy.org/docs/stable/index.html</a></p></li>
-<li><p><a href="http://docs.python-requests.org/en/latest/">http://docs.python-requests.org/en/latest/</a></p></li>
-</ul>
       </section>
     </div>
 

@@ -1,0 +1,647 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
+<style>
+      .table {
+        background-color:#F5F5FF;
+        border-left:4px solid gray;
+        border-bottom:4px solid gray;
+        border-top:4px solid gray;
+        border-right:4px solid gray;
+        margin-bottom:3em;
+        margin-left:2em;
+        margin-right:2em;
+        padding:1em;
+      }
+      .tableNameHeading h1 {
+          display: inline;
+        font-family: Segoe UI, Arial, sans-serif;
+        font-size:125%;
+        font-weight:bold;
+      }
+        
+      .tableNameHeading h2 {
+        display: inline;
+        font-family: Segoe UI, Arial, sans-serif;
+        font-size:115%;
+        font-weight:normal;
+      }
+      
+      .tableComment { 
+        background-color:#e4efff; margin-bottom:20px;
+      }
+      
+      .tableDefinition { 
+        padding:2px;
+        border-collapse:collapse;
+        margin-top:1em;
+      }
+
+      .tdTableDefinition {
+        padding-right:10px;
+        vertical-align:top;
+        border-top:1px solid #C0C0C0;
+      }
+
+      .tdLogicalColName {
+        width:20em;
+      }
+      
+      .tdPhysicalColName {
+        width:20em;
+      }
+      
+      .tdDataType {
+        width:10em;
+      }
+
+      .tdPkFlag {
+        width:4em;
+      }
+
+      .tdNullFlag {
+        width:9em;
+      }
+
+      .tdTableHeading {
+        padding:2px;
+        font-family: Segoe UI, Arial, sans-serif;
+        font-weight: bold;
+        vertical-align:top;
+        border-bottom: 1px solid #C0C0C0;
+        background-color: rgb(240,240,240);
+      }
+      
+      .subTitle {
+        font-family: Segoe UI, Arial, sans-serif;
+        font-weight: bold;
+      }
+
+      .references {
+      }
+      .comment {
+        color:#666666;
+        margin-left:3em;
+        padding:0.25em;
+      }
+    </style>
+<title><a href='schema.pdf'>schema.pdf</a></title>
+</head>
+<body>
+<center>
+<h2><a href='schema.pdf'>schema.pdf</a></h2>
+</center>
+<h3>List of tables</h3>
+<ul>
+<li>
+<a href="#arch">arch</a>
+</li>
+<li>
+<a href="#buildclients">buildclients</a>
+</li>
+<li>
+<a href="#buildenv">buildenv</a>
+</li>
+<li>
+<a href="#buildenvsuitearch">buildenvsuitearch</a>
+</li>
+<li>
+<a href="#buildrequest">buildrequest</a>
+</li>
+<li>
+<a href="#distribution">distribution</a>
+</li>
+<li>
+<a href="#format">format</a>
+</li>
+<li>
+<a href="#job">job</a>
+</li>
+<li>
+<a href="#jobstatus">jobstatus</a>
+</li>
+<li>
+<a href="#package">package</a>
+</li>
+<li>
+<a href="#packageinstance">packageinstance</a>
+</li>
+<li>
+<a href="#status">status</a>
+</li>
+<li>
+<a href="#suite">suite</a>
+</li>
+<li>
+<a href="#suitearches">suitearches</a>
+</li>
+</ul>
+<div class="tableNameHeading">
+<h1>arch<a name="arch"></a>
+</h1>
+<h2>
+      (Physical Name: arch)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">name</td><td class="tdTableDefinition">name</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#packageinstance">packageinstance</a> referencing (id)</li>
+<li>
+<a href="#suitearches">suitearches</a> referencing (id)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>buildclients<a name="buildclients"></a>
+</h1>
+<h2>
+      (Physical Name: buildclients)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">name</td><td class="tdTableDefinition">name</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#job">job</a> referencing (id)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>buildenv<a name="buildenv"></a>
+</h1>
+<h2>
+      (Physical Name: buildenv)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">name</td><td class="tdTableDefinition">name</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#buildenvsuitearch">buildenvsuitearch</a> referencing (id)</li>
+<li>
+<a href="#packageinstance">packageinstance</a> referencing (id)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>buildenvsuitearch<a name="buildenvsuitearch"></a>
+</h1>
+<h2>
+      (Physical Name: buildenvsuitearch)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)
+                &nbsp;(<a href="#suitearches">FK</a>)
+              </td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">buildenv_id
+                &nbsp;(<a href="#buildenv">FK</a>)
+              </td><td class="tdTableDefinition">buildenv_id</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">suitearch_id
+                &nbsp;(<a href="#suitearches">FK</a>)
+              </td><td class="tdTableDefinition">suitearch_id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#buildenv">buildenv</a> through (buildenv_id)</li>
+<li>
+<a href="#suitearches">suitearches</a> through (suitearch_id, id)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>buildrequest<a name="buildrequest"></a>
+</h1>
+<h2>
+      (Physical Name: buildrequest)
+      </h2>
+<p class="comment">BuildRequest is used to log build details so they can in future be requeued.</p>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">job
+                &nbsp;(<a href="#job">FK</a>)
+              </td><td class="tdTableDefinition">job</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">method</td><td class="tdTableDefinition">method</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">uri</td><td class="tdTableDefinition">uri</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">vcs_id</td><td class="tdTableDefinition">vcs_id</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">buildenv_name</td><td class="tdTableDefinition">buildenv_name</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap></td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#job">job</a> through (job)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>distribution<a name="distribution"></a>
+</h1>
+<h2>
+      (Physical Name: distribution)
+      </h2>
+<p class="comment">For example this could be Debian Squeeze, Ubuntu, Windows 7</p>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">name</td><td class="tdTableDefinition">name</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#packageinstance">packageinstance</a> referencing (id)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>format<a name="format"></a>
+</h1>
+<h2>
+      (Physical Name: format)
+      </h2>
+<p class="comment">This is the format of the package instance, for example MSI, deb, rpm, tarball</p>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">name</td><td class="tdTableDefinition">name</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#packageinstance">packageinstance</a> referencing (id)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>job<a name="job"></a>
+</h1>
+<h2>
+      (Physical Name: job)
+      </h2>
+<p class="comment">A Job is how we build a given package instance, multiple jobs may be submitted for a single package.</p>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">packageinstance_id
+                &nbsp;(<a href="#packageinstance">FK</a>)
+              </td><td class="tdTableDefinition">packageinstance_id</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">buildclient_id
+                &nbsp;(<a href="#buildclients">FK</a>)
+              </td><td class="tdTableDefinition">buildclient_id</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap></td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#buildclients">buildclients</a> through (buildclient_id)</li>
+<li>
+<a href="#packageinstance">packageinstance</a> through (packageinstance_id)</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#buildrequest">buildrequest</a> referencing (id)</li>
+<li>
+<a href="#jobstatus">jobstatus</a> referencing (id)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>jobstatus<a name="jobstatus"></a>
+</h1>
+<h2>
+      (Physical Name: jobstatus)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)
+                &nbsp;(<a href="#job">FK</a>)
+              </td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">job_id</td><td class="tdTableDefinition">job_id</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">status_id
+                &nbsp;(<a href="#status">FK</a>)
+              </td><td class="tdTableDefinition">status_id</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">time</td><td class="tdTableDefinition">time</td><td class="tdTableDefinition">TIMESTAMP</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#job">job</a> through (id)</li>
+<li>
+<a href="#status">status</a> through (status_id)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>package<a name="package"></a>
+</h1>
+<h2>
+      (Physical Name: package)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">version</td><td class="tdTableDefinition">version</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">name</td><td class="tdTableDefinition">name</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#packageinstance">packageinstance</a> referencing (id)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>packageinstance<a name="packageinstance"></a>
+</h1>
+<h2>
+      (Physical Name: packageinstance)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">package_id
+                &nbsp;(<a href="#package">FK</a>)
+              </td><td class="tdTableDefinition">package_id</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">buildenv_id
+                &nbsp;(<a href="#buildenv">FK</a>)
+              </td><td class="tdTableDefinition">buildenv_id</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap></td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">arch_id
+                &nbsp;(<a href="#arch">FK</a>)
+              </td><td class="tdTableDefinition">arch_id</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">suite_id</td><td class="tdTableDefinition">suite_id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">dist_id
+                &nbsp;(<a href="#distribution">FK</a>)
+              </td><td class="tdTableDefinition">dist_id</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">format_id
+                &nbsp;(<a href="#format">FK</a>)
+              </td><td class="tdTableDefinition">format_id</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">master</td><td class="tdTableDefinition">master</td><td class="tdTableDefinition">BOOLEAN</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr>
+<td colspan="4">
+<div class="comment">Master tell us if this instance is the first submitted for a given package, this information is acted on by certain build clients</div>
+</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#arch">arch</a> through (arch_id)</li>
+<li>
+<a href="#buildenv">buildenv</a> through (buildenv_id)</li>
+<li>
+<a href="#distribution">distribution</a> through (dist_id)</li>
+<li>
+<a href="#format">format</a> through (format_id)</li>
+<li>
+<a href="#package">package</a> through (package_id)</li>
+<li>
+<a href="#suite">suite</a> through ()</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#job">job</a> referencing (id)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>status<a name="status"></a>
+</h1>
+<h2>
+      (Physical Name: status)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">name</td><td class="tdTableDefinition">name</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#jobstatus">jobstatus</a> referencing (id)</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>suite<a name="suite"></a>
+</h1>
+<h2>
+      (Physical Name: suite)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">name</td><td class="tdTableDefinition">name</td><td class="tdTableDefinition">LONGVARCHAR</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#packageinstance">packageinstance</a> referencing ()</li>
+</ul>
+</div>
+</div>
+<div class="tableNameHeading">
+<h1>suitearches<a name="suitearches"></a>
+</h1>
+<h2>
+      (Physical Name: suitearches)
+      </h2>
+</div>
+<div class="table">
+<table class="tableDefinition" width="100%">
+<tr>
+<td class="tdTableHeading tdLogicalColName">Logical Column Name</td><td class="tdTableHeading tdPhysicalColName">Physical Column Name</td><td class="tdTableHeading tdDataType">Type</td><td class="tdTableHeading tdPkFlag">PK</td><td class="tdTableHeading tdNullFlag">Nullable</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">id (PK)</td><td class="tdTableDefinition">id</td><td class="tdTableDefinition">INTEGER</td><td class="tdTableDefinition" nowrap>PK</td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">suite_id</td><td class="tdTableDefinition">suite_id</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">arch_id
+                &nbsp;(<a href="#arch">FK</a>)
+              </td><td class="tdTableDefinition">arch_id</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+<tr valign="top">
+<td class="tdTableDefinition">master_weight</td><td class="tdTableDefinition">master_weight</td><td class="tdTableDefinition">BIGINT</td><td class="tdTableDefinition" nowrap></td><td class="tdTableDefinition" nowrap>NOT NULL</td>
+</tr>
+</table>
+<div class="references">
+<p class="subTitle">References</p>
+<ul>
+<li>
+<a href="#arch">arch</a> through (arch_id)</li>
+</ul>
+<p class="subTitle">Referenced By</p>
+<ul>
+<li>
+<a href="#buildenvsuitearch">buildenvsuitearch</a> referencing (id, id)</li>
+</ul>
+</div>
+</div>
+</body>
+</html>
