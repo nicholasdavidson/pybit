@@ -30,7 +30,7 @@ else
 fi
 
 if [ -d "$dbc_popdir" ]; then
-	for FILE in $dbc_sqldir/* ; do
+	for FILE in $dbc_popdir/* ; do
 		dbc_logline "populating tables in database for $dbc_dbname using $FILE "
 		su -s /bin/sh $dbc_dbname -c "psql -d $dbc_dbname -f $FILE 2> /dev/null"
 		dbc_logline "$FILE done"
