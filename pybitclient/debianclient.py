@@ -117,7 +117,7 @@ class DebianBuildClient(PackageHandler):
 		else :
 			command = "(cd ../ ; apt-get -d source %s/%s)" % (buildreq.get_package(), buildreq.get_suite())
 			if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
-				logging.debug("apt-get source failed, proceeding anyway incase its an update of a debian package.")
+				logging.debug("I: apt-get source failed, proceeding anyway incase its an update of a debian package.")
 		return retval
 
 	def build_master (self, buildreq, conn_data):
@@ -178,7 +178,7 @@ class DebianBuildClient(PackageHandler):
 			changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"], buildreq.get_package(),
 				buildreq.get_version(), buildreq.get_arch())
 			if not self.settings["dry_run"] and not os.path.isfile (changes) :
-				logging.debug("build_master: Failed to find %s file." % (changes))
+				logging.debug("E: build_master: Failed to find %s file." % (changes))
 				retval = "build_changes"
 			if not retval and checkValue ('debsignkey', self.settings) :
 				command = "debsign -k%s %s" % (self.settings['debsignkey'], changes)
@@ -193,7 +193,7 @@ class DebianBuildClient(PackageHandler):
 		changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"], buildreq.get_package(),
 			buildreq.get_version(), buildreq.get_arch())
 		if not os.path.isfile (changes) and not self.settings["dry_run"]:
-			logging.debug("upload: Failed to find %s file." % (changes))
+			logging.debug("E: upload: Failed to find %s file." % (changes))
 			retval = "upload_changes"
 		if not retval :
 			command = "dput -c %s %s %s %s" % (self.dput_cfg,
@@ -241,7 +241,7 @@ class DebianBuildClient(PackageHandler):
 					buildreq.get_package(), buildreq.get_version(),
 					buildreq.get_arch())
 				if not self.settings["dry_run"] and not os.path.isfile (changes) :
-					logging.debug ("build_slave: Failed to find %s file." % (changes))
+					logging.debug ("E: build_slave: Failed to find %s file." % (changes))
 					retval = "build_changes"
 				if not retval and checkValue ('debsignkey', self.settings) :
 					command = "debsign -k%s %s" % (self.settings['debsignkey'], changes)
