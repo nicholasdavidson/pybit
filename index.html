@@ -35,8 +35,7 @@
 
 <p>The aim was to create a distributed AMQP based build system system using python and RabbitMQ. We talk to the queue using python-amqplib, with messages being encoded using python-jsonpickle. python-bottle is used to provide a lightweight HTTP based API, which the associated (static) web GUI can query using the jQuery javascript library.</p>
 
-<p>Design
-The system consists of two parts, a single server, and one to many clients. pybit-web is the server part, and pybit-client the client part. You will also need a PostgreSQL database, which we speak to using python-psycopg2.</p>
+<p>The system consists of two parts, a single server, and one to many clients. pybit-web is the server part, and pybit-client the client part. You will also need a PostgreSQL database, which we speak to using python-psycopg2.</p>
 
 <p>The front-end (Static HTML) web GUI queries the back-end (python) HTTP API using the jQuery Javascript library. The [HTML side] of the web GUI is not coupled otherwise to the system, as it does not speak to the queue or database directly.</p>
 
