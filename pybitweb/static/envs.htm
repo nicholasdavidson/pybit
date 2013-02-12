@@ -264,7 +264,6 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-								console.log("test");
                                 $ ( "#tbl_envs" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
                             } );
 
@@ -320,7 +319,7 @@
 
                         $ ( '#buildenv_suitearch_form' ).ajaxForm ( function ( )
                         {
-                            alert ( "Environmrnt / Suite Arch Mapping Added!" );
+                            alert ( "Environment / Suite Arch Mapping Added!" );
                             location.reload ( );
                         } );
 
