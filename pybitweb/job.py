@@ -206,9 +206,9 @@ def get_job_app(settings, db, controller) :
 				build_environment = None
 				if (packageinstance.build_env) :
 					build_environment = app.config['db'].get_build_env_id(packageinstance.build_env.id).name # Lookup build_environment name for the package instance
-				if (build_environment):
+				#if (build_environment):
 					#print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + build_environment + ")")
-				else :
+				#else :
 					#print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + ")")
 
 				# Pass to controller to queue up - Pass build_environment if any.
