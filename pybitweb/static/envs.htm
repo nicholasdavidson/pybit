@@ -11,7 +11,7 @@
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="favicon.png" />
-        <style>
+        <style type="text/css">
             body
             {
                 padding-top : 60px; /* 60px to make the container go all the way
@@ -20,9 +20,9 @@
             }
         </style>
         <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <script src="{{protocol}}{{jqueryurl}}"></script>
-        <script src="{{protocol}}{{jqueryformurl}}"></script>
-        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="{{protocol}}{{jqueryurl}}" type="text/javascript"></script>
+        <script src="{{protocol}}{{jqueryformurl}}" type="text/javascript"></script>
+        <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
     </head>
     <body>
         <div class="container-fluid">
@@ -72,7 +72,7 @@
                         <li class="nav-header">
                             Lookups
                         </li>
-                        <li class="active">
+                        <li>
                             <a href="arches.htm">Architectures</a>
                         </li>
                         <li>
@@ -87,10 +87,7 @@
                         <li>
                             <a href="suites.htm">Suites</a>
                         </li>
-                         <li>
-                            <a href="suitearch.htm">Suite Arches</a>
-                        </li>
-                        <li>
+                        <li class="active">
                             <a href="envs.htm">Build Environments</a>
                         </li>
                         <li class="nav-header">
@@ -110,6 +107,9 @@
                         </li>
                         <li>
                             <a href="buildd.htm">BuildBoxes</a>
+                        </li>
+                        <li>
+                            <a href="blacklist.htm">Blacklist Rules</a>
                         </li>
                     </ul>
                 </div>
@@ -146,6 +146,49 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="accordion-group">
+
+
+                                                        <div class="accordion-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">Environment / Suite Arch Mappings</a>
+                            </div>
+                            <div id="collapseTwo" class="accordion-body collapse in">
+                                <div class="accordion-inner">
+                                    <form class="form-inline" method="POST" action="buildenv_suitearch"  id="buildenv_suitearch_form" name="buildenv_suitearch_form">
+ <span class="help-block">Choose an existing arch to add to the list of supported ones for a particular software suite </span>
+
+                                        <label for="buildenv_id">Environment: </label>
+                                        <select name="buildenv_id"  id="buildenv_id" size="1" style="width: 480px; display: block;"></select>
+
+                                        <label for="suitearch_id">Suite Arch: </label>
+                                        <select name="suitearch_id"  id="suitearch_id" size="1" style="width: 480px; display: block;"></select>
+
+										<br/>
+
+                                        <button type="submit" class="btn  btn-primary">
+                                            Submit
+                                        </button>
+                                        <button type="button" class="btn">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    <table id="tbl_buildenv_suitearches"  class="table table-bordered table-condensed">
+										<thead>
+                                        <tr>
+                                            <th colspan='3'>Environment / Suite Arch Mappings</th>
+                                        </tr>
+										<tr><th>Environment</th><th>Suite Arch</th><th>Operations</th></tr>
+										</thead>
+										<tbody>
+										</tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
                     </div>
                     <hr>
                     <footer>
@@ -155,7 +198,7 @@
                     </footer>
                 </div>
                 <!--/.fluid-container-->
-                <script>
+                <script type="text/javascript">
                     function getUrlVars ( )
                     {
                         var vars =
@@ -175,6 +218,9 @@
                             case 1:
                                 target = "env"
                                 break;
+                            case 2:
+                                target = "buildenv_suitearch"
+                                break;
                         }
                         $.ajax (
                         {
@@ -193,9 +239,10 @@
 
                         } );
                     }
-                    $ ( ).ready ( function ( )
-                    {
-                        var env_page = 1;
+
+					function doEnvs()
+					{
+					 var env_page = 1;
 
                         $ ( '#env_form' ).ajaxForm ( function ( )
                         {
@@ -241,6 +288,61 @@
 							});
 
                         } );
+					}
+
+					function populateDropdowns()
+					{
+                       var buildenv_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env"
+                        $.getJSON ( buildenv_names , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+							$ ( "#buildenv_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
+                            } );
+                        } );
+
+                        var suitearch_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suitearch"
+                        $.getJSON ( suitearch_names , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+							$ ( "#suitearch_id" ).append ( "<option value='" + field.id + "'>" + field.arch.name + "/" + field.suite.name + "</option>" );
+                            } );
+                        } );
+					}
+
+					function doBuildenv_suitearches()
+					{
+
+						populateDropdowns();
+					 var buildenv_suitearch_page = 1;
+
+                        $ ( '#buildenv_suitearch_form' ).ajaxForm ( function ( )
+                        {
+                            alert ( "Environment / Suite Arch Mapping Added!" );
+                            location.reload ( );
+                        } );
+
+							// TODO: Paging
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildenv_suitearch"
+
+                        new_buildenv_suitearch_page = parseInt ( buildenv_suitearch_page ) + 1;
+                        last_buildenv_suitearch_page = parseInt ( buildenv_suitearch_page ) - 1;
+                        $.getJSON ( url , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#tbl_buildenv_suitearches" ).append ( "<tr><td>" + field.buildenv.name + "</td><td>" + field.suitearch.arch.name + "/" + field.suitearch.suite.name + "</td><td><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
+                            } );
+
+                        } );
+					}
+
+
+                    $ ( ).ready ( function ( )
+                    {
+                       doEnvs();
+                       doBuildenv_suitearches();
                     } );
                 </script>
             </div>

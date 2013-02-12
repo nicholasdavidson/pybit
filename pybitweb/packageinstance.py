@@ -93,24 +93,39 @@ def get_packageinstance_app(settings, db):
 			package = request.forms.get('package')
 			version = request.forms.get('version')
 
+			build_env_id = request.forms.get('build_env_id')
+
+			# If thet chose "Not specified"
+			if (build_env_id == ""):
+				build_env_id = None
+
 			arch_id = request.forms.get('arch_id')
 			suite_id = request.forms.get('suite_id')
 			dist_id = request.forms.get('dist_id')
 			format_id =  request.forms.get('format_id')
 			slave = request.forms.get('slave')
 
-			if not slave:
-				slave = "false"
+			# This but is confusing
+			if slave:
+				#print "SLAVE NOT NULL:" + str (slave)
+				slave = "true"
+				master = "false"
+			else:
+				#print "SLAVE NULL"
+				slave = "false" # not slave means master
+				master = "true"
 
-			if package and version and arch_id  and suite_id  and dist_id and format_id and slave:
-
+			if package and version and arch_id and suite_id  and dist_id and format_id and slave:
+				build_env = None
 				package_obj = app.config['db'].get_package_byvalues(package,version)[0]
+				if (build_env_id):
+					build_env = app.config['db'].get_build_env_id(build_env_id)
 				arch = app.config['db'].get_arch_id(arch_id)
 				suite = app.config['db'].get_suite_id(suite_id)
 				dist = app.config['db'].get_dist_id(dist_id)
 				pkg_format = app.config['db'].get_format_id(format_id)
 
-				app.config['db'].put_packageinstance(package_obj,arch,suite,dist,pkg_format,slave)
+				app.config['db'].put_packageinstance(package_obj,build_env,arch,suite,dist,pkg_format,master)
 			else:
 				response.status = "400 - Required fields missing."
 			return

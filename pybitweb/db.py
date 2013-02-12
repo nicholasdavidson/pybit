@@ -28,7 +28,8 @@ import cgi
 import math
 import re
 
-from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage, checkValue, Transport
+from pybit.models import Arch,Dist,Format,Status,Suite,BuildD,Job,Package,PackageInstance,SuiteArch,JobHistory, ClientMessage, checkValue, Transport,\
+	BuildEnv, BuildEnvSuiteArch,Blacklist
 
 def remove_nasties(nastystring):
 	try:
@@ -40,7 +41,7 @@ def remove_nasties(nastystring):
 			#print "Not escaping: " + str(nastystring) + " as it is not a string."
 			return nastystring;
 	except Exception as e:
-		raise Exception("Error escaping string: " + str(nastystring))
+		raise Exception("Error escaping string: " + str(nastystring) + str(e))
 		return None
 
 class Database(object):
@@ -105,7 +106,7 @@ class Database(object):
 	def log_buildRequest(self,build_request_obj):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into buildrequest(job,method,uri,vcs_id) VALUES (%s,%s,%s,%s) RETURNING id",(remove_nasties(build_request_obj.job),remove_nasties(build_request_obj.transport.method),remove_nasties(build_request_obj.transport.uri),remove_nasties(build_request_obj.transport.vcs_id)))
+			cur.execute("INSERT into buildrequest(job,method,uri,vcs_id) VALUES (%s,%s,%s,%s) RETURNING id",(remove_nasties(build_request_obj.job.id),remove_nasties(build_request_obj.transport.method),remove_nasties(build_request_obj.transport.uri),remove_nasties(build_request_obj.transport.vcs_id)))
 			res = cur.fetchall()
 			self.conn.commit()
 			new_id = res[0]['id']
@@ -143,7 +144,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -245,7 +250,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -276,12 +285,26 @@ class Database(object):
 			cur.execute("SELECT id,suite_id,arch_id,master_weight FROM suitearches WHERE id=%s",(suitearch_id,))
 			res = cur.fetchall()
 			self.conn.commit()
-			suitearch = SuiteArch(res[0]['id'],self.get_suite_id(res[0]['suite_id']),self.get_arch_id(res[0]['arch_id']))
+			suitearch = SuiteArch(res[0]['id'],self.get_suite_id(res[0]['suite_id']),self.get_arch_id(res[0]['arch_id']),res[0]['master_weight'])
 			cur.close()
 			return suitearch
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving suite arch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_suitearch_by_suite_name(self,suite,arch):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT id,suite_id,arch_id,master_weight FROM suitearches WHERE suite.id=%s, arch.id=%s",(suite.id,arch.id))
+			res = cur.fetchall()
+			self.conn.commit()
+			suitearch = SuiteArch(res[0]['id'],self.get_suite_id(res[0]['suite_id']),self.get_arch_id(res[0]['arch_id']),res[0]['master_weight'])
+			cur.close()
+			return suitearch
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving suite arch with suite and arch:. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
 	def put_suitearch(self,suite_id,arch_id,master_weight = 0):
@@ -316,6 +339,90 @@ class Database(object):
 			raise Exception("Error deleting suitearch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	def count_buildenv_suitearches(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM buildenvsuitearch AS num_buildenv_suitearches")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving buildenv suitearch count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_buildenv_suitearches(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT id,buildenv_id,suitearch_id FROM buildenvsuitearch")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			buildenv_suitearches = []
+			for i in res:
+				buildenv_suitearches.append(BuildEnvSuiteArch(i['id'],self.get_build_env_id(i['buildenv_id']),self.get_suitearch_id(i['suitearch_id'])))
+			cur.close()
+			return buildenv_suitearches
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving buildenv suitearch list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_buildenv_suitearch_id(self,buildenv_suitearch_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT id,buildenv_id,suitearch_id FROM buildenvsuitearch WHERE id=%s",(buildenv_suitearch_id,))
+			res = cur.fetchall()
+			self.conn.commit()
+			buildenv_suitearch = BuildEnvSuiteArch(res[0]['id'],self.get_build_env_id(res[0]['buildenv_id']),self.get_suitearch_id(res[0]['suitearch_id']))
+			cur.close()
+			return buildenv_suitearch
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving buildenv suitearch with id:" + str(buildenv_suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+
+	def put_buildenv_suitearch(self,buildenv_id,suitearch_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("INSERT into buildenvsuitearch(buildenv_id,suitearch_id) VALUES (%s, %s) RETURNING id",(remove_nasties(buildenv_id),remove_nasties(suitearch_id)))
+			res = cur.fetchall()
+			self.conn.commit()
+			buildenv_suitearch = BuildEnvSuiteArch(res[0]['id'],self.get_build_env_id(buildenv_id),self.get_suitearch_id(suitearch_id))
+			cur.close()
+			return buildenv_suitearch
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error adding buildenv suitearch:" + buildenv_id + suitearch_id + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def delete_buildenv_suitearch(self,buildenv_suitearch_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("DELETE FROM buildenvsuitearch WHERE id=%s RETURNING id",(buildenv_suitearch_id,))
+			res = cur.fetchall()
+			self.conn.commit()
+
+			if res[0]['id'] == buildenv_suitearch_id:
+				cur.close()
+				return True
+			else:
+				cur.close()
+				return False
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error deleting buildenvsuitearch with id:" + str(buildenv_suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	def count_dists(self):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -324,7 +431,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -426,7 +537,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -463,9 +578,9 @@ class Database(object):
 			cur.execute("SELECT id,name FROM format WHERE id=%s",(format_id,))
 			res = cur.fetchall()
 			self.conn.commit()
-			format = Format(res[0]['id'],res[0]['name'])
+			ret_format = Format(res[0]['id'],res[0]['name'])
 			cur.close()
-			return  format
+			return  ret_format
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error retrieving format with id:" + str(format_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
@@ -493,9 +608,9 @@ class Database(object):
 			cur.execute("INSERT into format(name) VALUES (%s)  RETURNING id",(remove_nasties(name),))
 			res = cur.fetchall()
 			self.conn.commit()
-			format = Format(res[0]['id'],name)
+			ret_format = Format(res[0]['id'],name)
 			cur.close()
-			return format
+			return ret_format
 		except psycopg2.Error as e:
 			self.conn.rollback()
 			raise Exception("Error adding format:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
@@ -527,7 +642,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages); # ALWAYS round up.
 		except psycopg2.Error as e:
@@ -611,7 +730,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_low;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -705,6 +828,115 @@ class Database(object):
 			raise Exception("Error deleting suite with id:" + str(suite_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	def count_build_envs(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM buildenv AS num_build_envs")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving buildenv count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_build_envs(self,page=None):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			if page:
+
+				offset = (page -1) * self.limit_low;
+				cur.execute("SELECT id,name FROM buildenv ORDER BY name LIMIT %s OFFSET %s", (self.limit_low,offset,))
+			else:
+				cur.execute("SELECT id,name FROM buildenv ORDER BY name")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			build_envs = []
+			for i in res:
+				build_envs.append(BuildEnv(i['id'],i['name']))
+			cur.close()
+			return build_envs
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving buildenv list. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_build_env_id(self,build_env_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT id,name FROM buildenv WHERE id=%s",(build_env_id,))
+			res = cur.fetchall()
+			self.conn.commit()
+
+			if res:
+				build_env = BuildEnv(res[0]['id'],res[0]['name'])
+			else:
+				build_env = None
+
+			cur.close()
+			return build_env
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving buildenv with id:" + str(build_env_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_build_env_byname(self,name):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT id,name FROM buildenv WHERE name=%s",(name,))
+			res = cur.fetchall()
+			self.conn.commit()
+
+			build_envs = []
+			for i in res:
+				build_envs.append(BuildEnv(i['id'],i['name']))
+			cur.close()
+			return build_envs
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving buildenv with name:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def put_build_env(self,name):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("INSERT INTO buildenv(name) VALUES (%s)  RETURNING id",(remove_nasties(name),))
+			res = cur.fetchall()
+			self.conn.commit()
+			build_env = BuildEnv(res[0]['id'],name)
+			cur.close()
+			return build_env
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error adding build_env:" + name + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def delete_build_env(self,build_env_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("DELETE FROM buildenv WHERE id=%s RETURNING id",(build_env_id,))
+			res = cur.fetchall()
+			self.conn.commit()
+
+			if res[0]['id'] == build_env_id:
+				cur.close()
+				return True
+			else:
+				cur.close()
+				return False
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error deleting buildenv with id:" + str(build_env_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
 	#<<<<<<<< BuildD related database functions >>>>>>>>
 
 	def count_buildclients(self):
@@ -715,7 +947,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_high;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_high;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -727,7 +963,7 @@ class Database(object):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				 # CONSTANT
+				# CONSTANT
 				offset = (page -1) * self.limit_high;
 				cur.execute("SELECT id,name FROM buildclients ORDER BY name LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:
@@ -836,7 +1072,7 @@ class Database(object):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				 # CONSTANT
+				# CONSTANT
 				offset = (page -1) * self.limit_high;
 				cur.execute("SELECT id,packageinstance_id,buildclient_id FROM job ORDER BY id LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:
@@ -910,7 +1146,7 @@ class Database(object):
 
 	def put_job_status(self, jobid, status, client=None):
 		try:
-			print "put_job_status: %s %s %s", (jobid, status, client)
+			print "put_job_status: %s %s %s" % (jobid, status, client)
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			cur.execute("INSERT INTO jobstatus (job_id, status_id) VALUES (%s, (SELECT id FROM status WHERE name=%s))",
 					 (remove_nasties(jobid),remove_nasties(status),))
@@ -992,7 +1228,11 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_high;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_high;
+			else:
+				pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -1004,7 +1244,7 @@ class Database(object):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				 # CONSTANT
+				# CONSTANT
 				offset = (page -1) * self.limit_high;
 				cur.execute("SELECT id,version,name FROM package ORDER BY name,id LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:
@@ -1125,16 +1365,17 @@ class Database(object):
 	def get_packageinstance_id(self,packageinstance_id):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance  WHERE id=%s",(packageinstance_id,))
+			cur.execute("SELECT id,package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance  WHERE id=%s",(packageinstance_id,))
 			res = cur.fetchall()
 			self.conn.commit()
 
 			package = self.get_package_id(res[0]['package_id'])
+			build_env = self.get_build_env_id(res[0]['buildenv_id'])
 			arch = self.get_arch_id(res[0]['arch_id'])
 			suite = self.get_suite_id(res[0]['suite_id'])
 			dist = self.get_dist_id(res[0]['dist_id'])
 			pkg_format = self.get_format_id(res[0]['format_id'])
-			p_i = PackageInstance(res[0]['id'],package,arch,suite,dist,pkg_format,res[0]['master'])
+			p_i = PackageInstance(res[0]['id'],package,arch,build_env,suite,dist,pkg_format,res[0]['master'])
 			cur.close()
 			return p_i
 		except psycopg2.Error as e:
@@ -1150,7 +1391,10 @@ class Database(object):
 			self.conn.commit()
 
 			cur.close()
-			pages = res[0][0] / self.limit_high;
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_high;
+			pages = 1
 
 			return math.ceil(pages);
 		except psycopg2.Error as e:
@@ -1162,11 +1406,11 @@ class Database(object):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 			if page:
-				 # CONSTANT
+				# CONSTANT
 				offset = (page -1) * self.limit_high;
-				cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id LIMIT %s OFFSET %s", (self.limit_high,offset,))
+				cur.execute("SELECT id,package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id LIMIT %s OFFSET %s", (self.limit_high,offset,))
 			else:
-				cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id")
+				cur.execute("SELECT id,package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance ORDER BY id")
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -1183,7 +1427,7 @@ class Database(object):
 	def get_packageinstances_byname(self, name):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT packageinstance.id AS id,package.id AS package_id ,arch_id,suite_id,dist_id,format_id,master FROM packageinstance,package WHERE packageinstance.package_id = package.id AND name = %s ORDER BY package_id, id",(name,))
+			cur.execute("SELECT packageinstance.id AS id,package.id AS package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance,package WHERE packageinstance.package_id = package.id AND name = %s ORDER BY package_id, id",(name,))
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -1198,10 +1442,10 @@ class Database(object):
 			return None
 
 
-	def get_packageinstance_byvalues(self,package,arch,suite,dist,pkg_format):
+	def get_packageinstance_byvalues(self,package,build_env,arch,suite,dist,pkg_format):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT id,package_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package.id,arch.id,suite.id,dist.id,pkg_format.id))
+			cur.execute("SELECT id,package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master FROM packageinstance WHERE package_id=%s AND buildenv_id=%s AND arch_id=%s AND suite_id=%s AND dist_id=%s AND format_id=%s",(package.id,build_env.id,arch.id,suite.id,dist.id,pkg_format.id))
 			res = cur.fetchall()
 			self.conn.commit()
 
@@ -1215,14 +1459,22 @@ class Database(object):
 			raise Exception("Error retrieving package instance by value. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def put_packageinstance(self,package,arch,suite,dist,pkg_format,master):
+	def put_packageinstance(self,package,build_env,arch,suite,dist,pkg_format,master):
 		try:
+
+			# The buildenv_id field in the DB is allowed to be null.
+			# We may be passed a None build_env object and must handle this.
+			if build_env:
+				build_env_id = build_env.id
+			else:
+				build_env_id = None;
+
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("INSERT into packageinstance(package_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s)  RETURNING id",(remove_nasties(package.id),remove_nasties(arch.id),remove_nasties(suite.id),remove_nasties(dist.id),remove_nasties(pkg_format.id),remove_nasties(master)))
+			cur.execute("INSERT into packageinstance(package_id,buildenv_id,arch_id,suite_id,dist_id,format_id,master) VALUES (%s, %s, %s, %s, %s, %s, %s)  RETURNING id",(remove_nasties(package.id),remove_nasties(build_env_id),remove_nasties(arch.id),remove_nasties(suite.id),remove_nasties(dist.id),remove_nasties(pkg_format.id),remove_nasties(master)))
 			self.conn.commit()
 			res = cur.fetchall()
 			self.conn.commit()
-			p_i = PackageInstance(res[0]['id'],package,arch,suite,dist,pkg_format,master)
+			p_i = PackageInstance(res[0]['id'],package,arch,build_env,suite,dist,pkg_format,master)
 			cur.close()
 			return p_i
 		except psycopg2.Error as e:
@@ -1268,11 +1520,11 @@ class Database(object):
 			raise Exception("Error deleting package instance with:" + str(packageinstance_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
-	def check_specific_packageinstance_exists(self,arch,package,distribution,pkg_format,suite):
+	def check_specific_packageinstance_exists(self,build_env,arch,package,distribution,pkg_format,suite):
 		try:
-			if arch and distribution and pkg_format and package and suite:
+			if build_env and arch and distribution and pkg_format and package and suite:
 				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-				cur.execute("SELECT id FROM packageinstance WHERE arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(arch.id,distribution.id,pkg_format.id,package.id,suite.id))
+				cur.execute("SELECT id FROM packageinstance WHERE buildenv_id=%s AND arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(build_env.id,arch.id,distribution.id,pkg_format.id,package.id,suite.id))
 				res = cur.fetchall()
 				self.conn.commit()
 
@@ -1314,13 +1566,13 @@ class Database(object):
 	def get_report_package_instance(self):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-			cur.execute("SELECT packageinstance.id, suite.name AS suite, package.name AS package, package.version AS version, arch.name AS arch, format.name AS format, distribution.name AS dist, packageinstance.master AS master FROM packageinstance LEFT JOIN arch ON arch.id=arch_id LEFT JOIN suite ON suite.id=suite_id LEFT JOIN distribution ON distribution.id=dist_id LEFT JOIN package ON package_id=package.id LEFT JOIN format ON format_id=format.id")
+			cur.execute("SELECT packageinstance.id, suite.name AS suite, package.name AS package, package.version AS version, arch.name AS arch, packageinstance.buildenv_id AS buildenv_id, format.name AS format, distribution.name AS dist, packageinstance.master AS master FROM packageinstance LEFT JOIN arch ON arch.id=arch_id LEFT JOIN suite ON suite.id=suite_id LEFT JOIN distribution ON distribution.id=dist_id LEFT JOIN package ON package_id=package.id LEFT JOIN format ON format_id=format.id")
 			res = cur.fetchall()
 			self.conn.commit()
 
 			package_instances = []
 			for i in res :
-				package_instances.append(PackageInstance(i['id'], i['package'], i['arch'], i['suite'], i['dist'], i['format'], i['master']))
+				package_instances.append(PackageInstance(i['id'], i['package'], i['arch'], i['buildenv_id'], i['suite'], i['dist'], i['format'], i['master']))
 			cur.close()
 			return package_instances
 		except psycopg2.Error as e:
@@ -1349,6 +1601,56 @@ class Database(object):
 			raise Exception("Error retrieving supported architectures for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None
 
+	def get_supported_build_environments(self,suite) :
+		try:
+			if suite :
+				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+				cur.execute("SELECT DISTINCT ON (buildenv.id) buildenv.id AS buildenv_id FROM suitearches LEFT JOIN buildenvsuitearch ON suitearches.id=suitearch_id LEFT JOIN buildenv ON buildenvsuitearch.buildenv_id=buildenv.id WHERE suitearches.suite_id=(SELECT id FROM suite WHERE name=%s)",(remove_nasties(suite),))
+				res = cur.fetchall()
+				self.conn.commit()
+				env_list = []
+				for i in res :
+					build_env = self.get_build_env_id(i['buildenv_id'])
+#					print "SUITE (", suite, ") HAS SUPPORTED BUILD ENV:", build_env.name
+					env_list.append(build_env)
+				cur.close()
+				return env_list
+			else:
+				cur.close()
+				return False
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving supported build environments for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_supported_build_env_suite_arches(self,suite) :
+		try:
+			if suite :
+				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+				cur.execute("SELECT buildenv.id AS buildenv_id, suitearches.id AS suitearch_id, suitearches.master_weight AS suitearch_master_weight, buildenvsuitearch.id AS buildenvsuitearch_id FROM suitearches LEFT JOIN buildenvsuitearch ON suitearches.id=suitearch_id LEFT JOIN buildenv ON buildenvsuitearch.buildenv_id=buildenv.id WHERE suitearches.suite_id=(SELECT id FROM suite WHERE name=%s) ORDER BY buildenv_id, suitearch_master_weight DESC",(remove_nasties(suite),))
+				res = cur.fetchall()
+				self.conn.commit()
+				build_env_suite_arch_list = []
+				for i in res :
+					suitearch = self.get_suitearch_id(i['suitearch_id'])
+					build_env = self.get_build_env_id(i['buildenv_id'])
+					if build_env == None :
+						buildenvsuitearch = BuildEnvSuiteArch(i['buildenvsuitearch_id'],BuildEnv(None,None),suitearch)
+					else :
+						buildenvsuitearch = BuildEnvSuiteArch(i['buildenvsuitearch_id'],build_env,suitearch)
+					build_env_suite_arch_list.append(buildenvsuitearch)
+				cur.close()
+				return build_env_suite_arch_list
+			else:
+				cur.close()
+				return False
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving supported build environments for:" + suite + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+
+	# Note: True = failed, false = Ok. Should probably be renamed isInBlacklist() or similar.
 	def check_blacklist(self,field,value):
 		try:
 			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -1370,5 +1672,93 @@ class Database(object):
 			return False # If no results, that is fine too.
 		except psycopg2.Error as e:
 			self.conn.rollback()
+			raise Exception("Error checking blacklist. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def count_blacklist(self):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT COUNT(*) FROM blacklist AS num_blacklist")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			cur.close()
+
+			if res[0][0]:
+				pages = res[0][0] / self.limit_low;
+			else:
+				pages = 1
+
+			return math.ceil(pages);
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving blacklist count. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_blacklist(self,page=None):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			if page:
+
+				offset = (page -1) * self.limit_low;
+				cur.execute("SELECT id,field,regex FROM blacklist ORDER BY field LIMIT %s OFFSET %s", (self.limit_low,offset,))
+			else:
+				cur.execute("SELECT id,field,regex FROM blacklist ORDER BY field")
+			res = cur.fetchall()
+			self.conn.commit()
+
+			blacklist = []
+			for i in res:
+				blacklist.append(Blacklist(i['id'],i['field'],i['regex']))
+			cur.close()
+			return blacklist
+		except psycopg2.Error as e:
+			self.conn.rollback()
 			raise Exception("Error retrieving blacklist. Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def get_blacklist_id(self,blacklist_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("SELECT id,field,regex FROM blacklist WHERE id=%s",(blacklist_id,))
+			res = cur.fetchall()
+			self.conn.commit()
+			blacklist = Blacklist(res[0]['id'],res[0]['field'],res['0']['regex'])
+			cur.close()
+			return blacklist
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error retrieving blacklist rule with id:" + str(blacklist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def put_blacklist(self,field,regex):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("INSERT into blacklist(field,regex) VALUES (%s,%s)  RETURNING id",(remove_nasties(field),remove_nasties(regex)))
+			res = cur.fetchall()
+			self.conn.commit()
+			blacklist = Blacklist(res[0]['id'],field,regex)
+			cur.close()
+			return blacklist
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error adding blacklist rule:" + " .Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
+			return None
+
+	def delete_blacklist(self,blacklist_id):
+		try:
+			cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+			cur.execute("DELETE FROM blacklist WHERE id=%s RETURNING id",(blacklist_id,))
+			res = cur.fetchall()
+			self.conn.commit()
+
+			if res[0]['id'] == blacklist_id:
+				cur.close()
+				return True
+			else:
+				cur.close()
+				return False
+		except psycopg2.Error as e:
+			self.conn.rollback()
+			raise Exception("Error deleting blacklist rule with id:" + str(blacklist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
 			return None

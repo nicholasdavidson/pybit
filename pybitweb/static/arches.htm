@@ -11,7 +11,7 @@
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="favicon.png" />
-        <style>
+        <style type="text/css">
             body
             {
                 padding-top : 60px; /* 60px to make the container go all the way
@@ -20,9 +20,9 @@
             }
         </style>
         <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <script src="{{protocol}}{{jqueryurl}}"></script>
-        <script src="{{protocol}}{{jqueryformurl}}"></script>
-        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="{{protocol}}{{jqueryurl}}" type="text/javascript"></script>
+        <script src="{{protocol}}{{jqueryformurl}}" type="text/javascript"></script>
+        <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
     </head>
     <body>
         <div class="container-fluid">
@@ -88,9 +88,6 @@
                             <a href="suites.htm">Suites</a>
                         </li>
                         <li>
-                            <a href="suitearch.htm">Suite Arches</a>
-                        </li>
-                        <li>
                             <a href="envs.htm">Build Environments</a>
                         </li>
                         <li class="nav-header">
@@ -110,6 +107,9 @@
                         </li>
                         <li>
                             <a href="buildd.htm">BuildBoxes</a>
+                        </li>
+                        <li>
+                            <a href="blacklist.htm">Blacklist Rules</a>
                         </li>
                     </ul>
                 </div>
@@ -145,6 +145,54 @@
                                     </table>
                                 </div>
                             </div>
+						</div>
+                        <div class="accordion-group">
+
+
+                                                        <div class="accordion-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo"> Suite Arches</a>
+                            </div>
+                            <div id="collapseTwo" class="accordion-body collapse in">
+                                <div class="accordion-inner">
+                                    <form class="form-inline" method="POST" action="suitearch"  id="suitearch_form" name="suitearch_form">
+ <span class="help-block">Choose an existing arch to add to the list of supported ones for a particular software suite </span>
+
+                                        <label for="suite_id">Suite: </label>
+                                        <select name="suite_id"  id="suite_id" size="1" style="width: 480px; display: block;"></select>
+
+                                        <label for="arch_id">Arch: </label>
+                                        <select name="arch_id"  id="arch_id" size="1" style="width: 480px; display: block;"></select>
+
+										<br/>
+
+                                        <label for="master_weight">Weight: </label>
+                                        <input name="master_weight"  id="master_weight" type="text" value="0"/>
+
+										<br/>
+
+                                        <button type="submit" class="btn  btn-primary">
+                                            Submit
+                                        </button>
+                                        <button type="button" class="btn">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    <table id="tbl_suitearches"  class="table table-bordered table-condensed">
+										<thead>
+                                        <tr>
+                                            <th colspan='3'>Suite Arches</th>
+                                        </tr>
+										<tr><th>Name</th><th>Master Weight</th><th>Operations</th></tr>
+										</thead>
+										<tbody>
+										</tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+
+
+
                         </div>
                     </div>
                     <hr>
@@ -155,7 +203,7 @@
                     </footer>
                 </div>
                 <!--/.fluid-container-->
-                <script>
+                <script type="text/javascript">
                     function getUrlVars ( )
                     {
                         var vars =
@@ -175,6 +223,9 @@
                             case 1:
                                 target = "arch"
                                 break;
+							case 5:
+                                target = "suitearch"
+                                break;
                         }
                         $.ajax (
                         {
@@ -193,9 +244,10 @@
 
                         } );
                     }
-                    $ ( ).ready ( function ( )
+
+                    function doArches()
                     {
-                        var arch_page = 1;
+						  var arch_page = 1;
 
                         $ ( '#arch_form' ).ajaxForm ( function ( )
                         {
@@ -241,6 +293,51 @@
 							});
 
                         } );
+					}
+
+					function doSuiteArches()
+					{
+						                        var suitearch_page = 1;
+
+                        $ ( '#suitearch_form' ).ajaxForm ( function ( )
+                        {
+                            alert ( "Suite Arch Added!" );
+                            location.reload ( );
+                        } );
+
+                        var suite_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite"
+                        $.getJSON ( suite_names , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+							$ ( "#suite_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
+                            } );
+                        } );
+
+                        var arch_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch"
+                        $.getJSON ( arch_names , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+							$ ( "#arch_id" ).append ( "<option value='" + field.id + "'>" + field.name + "</option>" );
+                            } );
+                        } );
+
+						var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suitearch"
+
+                        $.getJSON ( url , function ( json )
+                        {
+                            $.each ( json , function ( i , field )
+                            {
+                                $ ( "#tbl_suitearches" ).append ( "<tr><td>" + field.suite.name + "/" + field.arch.name + "</td><td>" + field.master_weight + "</td><td><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
+                            } );
+                        } );
+                    }
+
+                    $ ( ).ready ( function ( )
+                    {
+                      doArches();
+                      doSuiteArches();
                     } );
                 </script>
             </div>

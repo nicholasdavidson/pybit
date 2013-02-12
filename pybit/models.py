@@ -62,6 +62,11 @@ class Arch(Model):
 		self.id = arch_id
 		self.name = name
 
+class BuildEnv(Model):
+	def __init__(self,build_env_id,name):
+		self.id = build_env_id
+		self.name = name
+
 class Dist(Model):
 	def __init__(self,dist_id,name):
 		self.id = dist_id
@@ -101,10 +106,11 @@ class Transport(Model) :
 		self.vcs_id = vcs_id
 
 class PackageInstance(Model):
-	def __init__(self, packageinstance_id, package, arch, suite, distribution, pkg_format, master) :
+	def __init__(self, packageinstance_id, package, arch, build_env, suite, distribution, pkg_format, master) :
 		self.id = packageinstance_id
 		self.package = package
 		self.arch = arch
+		self.build_env = build_env
 		self.suite = suite
 		self.distribution = distribution
 		self.format = pkg_format
@@ -125,6 +131,12 @@ class SuiteArch(Model):
 		self.arch = arch
 		self.master_weight = master_weight
 
+class BuildEnvSuiteArch(Model):
+	def __init__(self,buildenv_suitearch_id,buildenv,suitearch):
+		self.id = buildenv_suitearch_id
+		self.buildenv = buildenv
+		self.suitearch = suitearch
+
 class BuildRequest(Model):
 	def __init__(self,job,transport,web_host):
 		self.job = job
@@ -140,6 +152,11 @@ class BuildRequest(Model):
 
 	def get_suite(self):
 		return self.job.packageinstance.suite.name
+
+	def get_buildenv(self):
+		if self.job.packageinstance.build_env is None:
+			return None
+		return self.job.packageinstance.build_env.name
 
 	def get_package(self):
 		return self.job.packageinstance.package.name

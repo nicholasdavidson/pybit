@@ -24,7 +24,7 @@
 from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
 import jsonpickle
 from db import Database
-from pybit.models import Arch,Dist,Format,Status,Suite,SuiteArch
+from pybit.models import Arch,Dist,Format,Status,Suite,SuiteArch,Blacklist
 import bottle_basic_auth
 from bottle_basic_auth import requires_auth
 
@@ -262,7 +262,7 @@ def get_dist_app(settings, db):
 			if page:
 				dists = app.config['db'].get_dists(page)
 			else:
-				dists = app.config['db'].get_dists(page)
+				dists = app.config['db'].get_dists()
 			encoded = jsonpickle.encode(dists)
 			response.content_type = "application/json"
 			return encoded
@@ -474,6 +474,232 @@ def get_suite_app(settings, db):
 			# Deletes a specific suite
 			response.status = "202 - DELETE request received"
 			app.config['db'].delete_suite(suite_id)
+			return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+	return app
+
+def get_env_app(settings, db):
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
+	@app.route('/', method='GET')
+	@app.route('/page/<page:int>', method='GET')
+	def get_build_envs(page = None):
+		try:
+			#return list of environments
+			if page:
+				build_envs = app.config['db'].get_build_envs(page)
+			else:
+				build_envs = app.config['db'].get_build_envs()
+			encoded = jsonpickle.encode(build_envs)
+			response.content_type = "application/json"
+			return encoded
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/count', method='GET')
+	def get_count():
+		#return count of environments
+		count = app.config['db'].count_build_envs()
+		encoded = jsonpickle.encode(count)
+		response.content_type = "application/json"
+		return encoded
+
+	@app.route('/<build_env_id:int>', method='GET')
+	def get_build_env_id(build_env_id):
+		try:
+			# Returns all information about a specific environment
+			res = app.config['db'].get_build_env_id(build_env_id)
+
+			# check results returned
+			if res:
+				encoded = jsonpickle.encode(res)
+				response.content_type = "application/json"
+				return encoded
+			else:
+				response.status = "404 - No environment found with this ID."
+				return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/', method='POST')
+	@app.route('/', method='PUT')
+	@requires_auth
+	def put_build_env():
+		try:
+			# Add a new environment.
+			name = request.forms.get('name')
+
+			if name:
+				app.config['db'].put_build_env(name)
+			else:
+				response.status = "400 - Required fields missing."
+			return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/<build_env_id:int>/delete', method='GET')
+	@app.route('/<build_env_id:int>', method='DELETE')
+	@requires_auth
+	def delete_build_env(build_env_id):
+		try:
+			# Deletes a specific environment
+			response.status = "202 - DELETE request received"
+			app.config['db'].delete_build_env(build_env_id)
+			return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+	return app
+
+def get_buildenv_suitearch_app(settings, db):
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
+	@app.route('/', method='GET')
+	def get_buildenv_suitearch():
+		try:
+			#return list of buildenv_suitearches
+			buildenv_suitearch = app.config['db'].get_buildenv_suitearches()
+			encoded = jsonpickle.encode(buildenv_suitearch)
+			response.content_type = "application/json"
+			return encoded
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/count', method='GET')
+	def get_count():
+		#return count of suitearches
+		count = app.config['db'].count_buildenv_suitearch()
+		encoded = jsonpickle.encode(count)
+		response.content_type = "application/json"
+		return encoded
+
+
+	@app.route('/<buildenv_suitearch_id:int>', method='GET')
+	def get_suitearch_id(buildenv_suitearch_id):
+		try:
+			# Returns all information about a specific buildenv_suitearch
+			res = app.config['db'].get_buildenv_suitearch_id(buildenv_suitearch_id)
+
+			# check results returned
+			if res:
+				encoded = jsonpickle.encode(res)
+				response.content_type = "application/json"
+				return encoded
+			else:
+				response.status = "404 - No buildenv_suitearch found with this ID."
+				return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/', method='POST')
+	@app.route('/', method='PUT')
+	@requires_auth
+	def put_buildenv_suitearch():
+		# Add a new buildenv_suitearch.
+		buildenv_id = request.forms.get('buildenv_id')
+		suitearch_id = request.forms.get('suitearch_id')
+
+		if buildenv_id and suitearch_id:
+			app.config['db'].put_buildenv_suitearch(buildenv_id,suitearch_id)
+		else:
+			response.status = "400 - Required fields missing."
+		return
+
+	@app.route('/<buildenv_suitearch_id:int>/delete', method='GET')
+	@app.route('/<buildenv_suitearch_id:int>', method='DELETE')
+	@requires_auth
+	def delete_buildenv_suitearch(buildenv_suitearch_id):
+		try:
+			# Deletes a specific buildenv_suitearch
+			response.status = "202 - DELETE request received"
+			app.config['db'].delete_buildenv_suitearch(buildenv_suitearch_id)
+			return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+	return app
+
+def get_blacklist_app(settings, db):
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
+	@app.route('/', method='GET')
+	@app.route('/page/<page:int>', method='GET')
+	def get_blacklist(page = None):
+		try:
+			#return full blacklist
+			if page:
+				blacklist = app.config['db'].get_blacklist(page)
+			else:
+				blacklist = app.config['db'].get_blacklist()
+			encoded = jsonpickle.encode(blacklist)
+			response.content_type = "application/json"
+			return encoded
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/count', method='GET')
+	def get_count():
+		#return count of blacklist rules
+		count = app.config['db'].count_blacklist()
+		encoded = jsonpickle.encode(count)
+		response.content_type = "application/json"
+		return encoded
+
+	@app.route('/<blacklist_id:int>', method='GET')
+	def get_blacklist_id(blacklist_id):
+		try:
+			# Returns all information about a specific blacklist rule
+			res = app.config['db'].get_blacklist_id(blacklist_id)
+
+			# check results returned
+			if res:
+				encoded = jsonpickle.encode(res)
+				response.content_type = "application/json"
+				return encoded
+			else:
+				response.status = "404 - No blacklist found with this ID."
+				return
+		except Exception as e:
+			raise Exception('Exception encountered: ' + str(e))
+			return None
+
+	@app.route('/', method='POST')
+	@app.route('/', method='PUT')
+	@requires_auth
+	def put_blacklist():
+		try:
+			# Add a new blacklist rule.
+			field = request.forms.get('field')
+			regex = request.forms.get('regex')
+
+			if field and regex:
+				app.config['db'].put_blacklist(field,regex)
+			else:
+				response.status = "400 - Required fields missing."
+			return
+		except Exception as e:
+			raise Exception('Exception encountered in put_blacklist(): ' + str(e))
+			return None
+
+	@app.route('/<blacklist_id:int>/delete', method='GET')
+	@app.route('/<blacklist_id:int>', method='DELETE')
+	@requires_auth
+	def delete_blacklist(blacklist_id):
+		try:
+			# Deletes a specific blacklist rule.
+			response.status = "202 - DELETE request received"
+			app.config['db'].delete_blacklist(blacklist_id)
 			return
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))

@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="favicon.png" />
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <style>
+        <style type="text/css">
             body
             {
 				line-height:100%;
@@ -89,8 +89,8 @@
 			}
 
         </style>
-        <script src="{{protocol}}{{jqueryurl}}"></script>
-<script src="{{protocol}}{{jqueryformurl}}"></script>
+        <script src="{{protocol}}{{jqueryurl}}" type="text/javascript"></script>
+<script src="{{protocol}}{{jqueryformurl}}" type="text/javascript"></script>
     </head>
     <body>
         <div class="container-fluid">
@@ -100,18 +100,18 @@
                     <table id="tbl_jobs"  class="table table-bordered">
                         <thead>
                             <tr>
-                                <th colspan='7'>Unfinished Jobs</th>
+                                <th colspan='8'>Unfinished Jobs</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <th>ID</th><th>Package</th><th>Version</th><th>Arch</th><th>Suite</th><th>Buildclient</th><th>Master</th><th>Status</th>
+                                <th>ID</th><th>Package</th><th>Version</th><th>Arch</th><th>Suite Environment</th><th>Buildclient</th><th>Master</th><th>Status</th>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <!--/.fluid-container-->
-                <script>
+                <script type="text/javascript">
 
                     function get_status_class ( status )
                     {
@@ -179,6 +179,11 @@
                                     if (field.packageinstance.master) {
                                     	master = "\u2714";
                                     }
+                                    if (field.packageinstance.build_env == null) {
+                                    	env_name = ""
+                                    } else {
+                                        env_name = field.packageinstance.build_env.name
+                                    }
                                     if ( field.buildclient )
                                     {
                                         bid = field.buildclient.id;
@@ -187,7 +192,7 @@
                                         shortname = bname.replace ( "build_client_" , "" );
                                         // TODO: HACKS
                                         $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/" + field.id + "'>" + field.id + "</a></td><td>" + field.packageinstance.package.name + 
-"</td><td>" + field.packageinstance.package.version + "</td><td>" + field.packageinstance.arch.name + "</td><td>" + field.packageinstance.distribution.name + "/" +  field.packageinstance.suite.name + "</td>" + "<td><a href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>" + bname + "</a></td><td>" + master + "</td><td>" + jobstatuses [ field.id ] + "</td></tr>" );
+"</td><td>" + field.packageinstance.package.version + "</td><td>" + field.packageinstance.arch.name + "</td><td>" + field.packageinstance.distribution.name + "/" +  field.packageinstance.suite.name + "/" + env_name + "</td>" + "<td><a href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>" + bname + "</a></td><td>" + master + "</td><td>" + jobstatuses [ field.id ] + "</td></tr>" );
                                     }
                                     else
                                     {
@@ -197,7 +202,7 @@
                                         shortname = bname.replace ( "build_client_" , "" );
                                         // TODO: HACKS
                                         $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/" + field.id + "'>" + field.id + "</a></td><td>" + field.packageinstance.package.name + 
-"</td><td>" + field.packageinstance.package.version + "</td><td>" + field.packageinstance.arch.name + "</td><td>" + field.packageinstance.distribution.name + "/" +  field.packageinstance.suite.name + "</td><td>" + bname + "</td><td>" + master + "</td><td>" + jobstatuses [ field.id ] + "</td></tr>" );
+"</td><td>" + field.packageinstance.package.version + "</td><td>" + field.packageinstance.arch.name + "</td><td>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + "/" + env_name + "</td><td>" + bname + "</td><td>" + master + "</td><td>" + jobstatuses [ field.id ] + "</td></tr>" );
                                     }
                                 } );
                             } );

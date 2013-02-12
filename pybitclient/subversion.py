@@ -38,7 +38,7 @@ class SubversionClient(VersionControlHandler):
 			elif (buildreq.transport.uri is not None):
 				command = "svn export %s %s" % (buildreq.transport.uri, self.workdir)
 			else:
-				logging.debug ("Could not fetch source, no method URI found")
+				logging.warn ("E: Could not fetch source, no method URI found")
 				retval = "unrecognised uri"
 		if not retval :
 			if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
@@ -58,6 +58,22 @@ class SubversionClient(VersionControlHandler):
 		retval = None
 		if buildreq.transport.method != self.method:
 			retval = "wrong_method"
+		if not retval :
+			# look for a _source.changes file generated when we made the .dsc
+			src_chgs = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method,
+				("%s_%s_source.changes" % (buildreq.get_package(), buildreq.get_version() ) ) )
+			if (os.path.exists (src_chgs)):
+				command = "dcmd rm %s" % (src_chgs)
+				if pybitclient.run_cmd (command, self.settings["dry_run"], None):
+					retval = "source-clean-fail"
+			else :
+				# check for just the .dsc
+				src_chgs = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method,
+					("%s_%s.dsc" % (buildreq.get_package(), buildreq.get_version() ) ) )
+				if (os.path.exists (src_chgs)):
+					command = "dcmd rm %s" % (src_chgs)
+					if pybitclient.run_cmd (command, self.settings["dry_run"], None):
+						retval = "source-clean-fail"
 		if not retval :
 			self.cleandir = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method,
 				buildreq.get_package())

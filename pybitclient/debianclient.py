@@ -3,7 +3,7 @@
 #
 #       debian.py
 #
-#       Copyright 2012 Neil Williams <codehelp@debian.org>
+#       Copyright 2012, 2013 Neil Williams <codehelp@debian.org>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ class DebianBuildClient(PackageHandler):
 		# chroot and therefore copied to ${HOME} so that schroot copies it again,
 		# into the chroot itself.
 		orig_sh = "/usr/share/pybitclient/sbuild-orig.sh"
-		command = "(cp %s %s/sbuild-orig.sh ; schroot -n -u root -c %s -- %s/sbuild-orig.sh %s %s ; rm %s/sbuild-orig.sh)" % (orig_sh,
+		command = "(cp %s %s/sbuild-orig.sh ; schroot --directory / -n -u root -c %s -- %s/sbuild-orig.sh %s %s ; rm %s/sbuild-orig.sh)" % (orig_sh,
 			self.settings["buildroot"], buildreq.get_suite(), self.settings["buildroot"], package_dir, parts[2], self.settings["buildroot"])
 		if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 			retval = "custom-command-error"
@@ -117,14 +117,14 @@ class DebianBuildClient(PackageHandler):
 		else :
 			command = "(cd ../ ; apt-get -d source %s/%s)" % (buildreq.get_package(), buildreq.get_suite())
 			if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
-				logging.debug("apt-get source failed, proceeding anyway incase its a tcl update of a debian package.")
+				logging.debug("I: apt-get source failed, proceeding anyway incase its an update of a debian package.")
 		return retval
 
 	def build_master (self, buildreq, conn_data):
 		retval = None
 		logfile = self.get_buildlog (self.settings["buildroot"], buildreq)
 		if (not isinstance(buildreq, BuildRequest)):
-			logging.debug ("E: not able to identify package name.")
+			logging.warn ("E: not able to identify package name.")
 			retval = "misconfigured"
 			return self._overall_success(retval, conn_data)
 		srcdir = os.path.join (self.settings["buildroot"],
@@ -136,10 +136,13 @@ class DebianBuildClient(PackageHandler):
 		# once for the dep check and once before the build. The choice depends
 		# on whether two network trips are more efficient than rewriting the
 		# lvm snapshot before even trying to do any build.
+		chroot_name = buildreq.get_suite()
+		if (buildreq.get_buildenv() is not None):
+			chroot_name = "%s-%s" % (buildreq.get_buildenv(), buildreq.get_suite())
 		if self.settings["use_lvm"] :
-			update_name = "%s-source" % buildreq.get_suite()
+			update_name = "%s-source" % chroot_name
 		else :
-			update_name = buildreq.get_suite()
+			update_name = chroot_name
 		retval = self.update_environment (update_name, buildreq, conn_data)
 		# need an extra uscan stage to deal with non-native packages
 		# this requires the upstream release to be accessible to the client.
@@ -152,7 +155,7 @@ class DebianBuildClient(PackageHandler):
 				if self.settings["use_lvm"] and (os.path.isdir(package_dir) or self.settings["dry_run"]) :
 					control = os.path.join (package_dir, 'debian', 'control')
 					dep_check = "/usr/lib/pbuilder/pbuilder-satisfydepends-classic --control"
-					command = "schroot -u root -c %s -- %s %s" % (buildreq.get_suite(), dep_check, os.path.realpath(control))
+					command = "schroot --directory / -u root -c %s -- %s %s" % (chroot_name, dep_check, os.path.realpath(control))
 					if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 						retval = "build-dep-wait"
 				if not retval :
@@ -164,7 +167,7 @@ class DebianBuildClient(PackageHandler):
 						if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 							retval = "build_dsc"
 		if not retval :
-			command = "sbuild -A -n -s -d %s %s/%s_%s.dsc" % (buildreq.get_suite(),
+			command = "sbuild -A -n -s -d %s %s/%s_%s.dsc" % (chroot_name,
 				srcdir, buildreq.get_package(), buildreq.get_version())
 			ret = pybitclient.run_cmd (command, self.settings["dry_run"], logfile)
 			if (ret == 3 or ret == 1):
@@ -175,13 +178,12 @@ class DebianBuildClient(PackageHandler):
 			changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"], buildreq.get_package(),
 				buildreq.get_version(), buildreq.get_arch())
 			if not self.settings["dry_run"] and not os.path.isfile (changes) :
-				logging.debug("build_master: Failed to find %s file." % (changes))
+				logging.warn("E: build_master: Failed to find %s file." % (changes))
 				retval = "build_changes"
 			if not retval and checkValue ('debsignkey', self.settings) :
 				command = "debsign -k%s %s" % (self.settings['debsignkey'], changes)
 				if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 					retval = "build_sign"
-
 		return self._overall_success(retval, conn_data)
 
 
@@ -191,7 +193,7 @@ class DebianBuildClient(PackageHandler):
 		changes = "%s/%s_%s_%s.changes" % (self.settings["buildroot"], buildreq.get_package(),
 			buildreq.get_version(), buildreq.get_arch())
 		if not os.path.isfile (changes) and not self.settings["dry_run"]:
-			logging.debug("upload: Failed to find %s file." % (changes))
+			logging.warn("E: upload: Failed to find %s file." % (changes))
 			retval = "upload_changes"
 		if not retval :
 			command = "dput -c %s %s %s %s" % (self.dput_cfg,
@@ -223,9 +225,11 @@ class DebianBuildClient(PackageHandler):
 			command = "(cd %s ; dpkg-buildpackage -nc -S -d -uc -us)" % (package_dir)
 			if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "build_dsc"
+			chroot_name = buildreq.get_suite()
+			if (buildreq.get_buildenv() is not None):
+				chroot_name = "%s-%s" % (buildreq.get_buildenv(), buildreq.get_suite())
 			if not retval :
-				command = "sbuild -n --apt-update -d %s %s/%s_%s.dsc" % (
-					buildreq.get_suite(), srcdir,
+				command = "sbuild -n --apt-update -d %s %s/%s_%s.dsc" % (chroot_name, srcdir,
 					buildreq.get_package(), buildreq.get_version())
 				ret = pybitclient.run_cmd (command, self.settings["dry_run"], logfile)
 				if (ret == 3 or ret == 768):
@@ -237,7 +241,7 @@ class DebianBuildClient(PackageHandler):
 					buildreq.get_package(), buildreq.get_version(),
 					buildreq.get_arch())
 				if not self.settings["dry_run"] and not os.path.isfile (changes) :
-					logging.debug ("build_slave: Failed to find %s file." % (changes))
+					logging.warn ("E: build_slave: Failed to find %s file." % (changes))
 					retval = "build_changes"
 				if not retval and checkValue ('debsignkey', self.settings) :
 					command = "debsign -k%s %s" % (self.settings['debsignkey'], changes)

@@ -136,6 +136,7 @@ COMMENT ON TABLE Blacklist
 CREATE TABLE PackageInstance ( 
 	id SERIAL PRIMARY KEY NOT NULL,
 	Package_id bigint NOT NULL,
+	BuildEnv_id bigint,
 	Arch_id bigint NOT NULL,
 	Suite_id bigint NOT NULL,
 	Dist_id bigint NOT NULL,
@@ -310,4 +311,8 @@ ALTER TABLE SuiteArches ADD CONSTRAINT FK_SuiteArches_Arch
 
 ALTER TABLE BuildRequest ADD CONSTRAINT FK_BuildRequest_Job
 	FOREIGN KEY (job) REFERENCES Job (id)
+;
+
+ALTER TABLE PackageInstance ADD CONSTRAINT FK_PackageInstance_BuildEnv 
+	FOREIGN KEY (BuildEnv_id) REFERENCES BuildEnv (id)
 ;
