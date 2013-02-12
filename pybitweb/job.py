@@ -203,9 +203,13 @@ def get_job_app(settings, db, controller) :
 				dist = packageinstance.distribution.name
 				suite = packageinstance.suite.name
 				pkg_format = packageinstance.format.name
-				build_environment = app.config['db'].get_build_env_id(packageinstance.build_env.id).name # Lookup build_environment name for the package instance
-
-				print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + build_environment + ")")
+				build_environment = None
+				if (packageinstance.build_env) :
+					build_environment = app.config['db'].get_build_env_id(packageinstance.build_env.id).name # Lookup build_environment name for the package instance
+				if (build_environment):
+					print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + build_environment + ")")
+				else :
+					print ("Calling Controller.process_job(" + dist + "," + arch + "," + package_version + "," + package_name + "," +suite  + "," +  pkg_format + "," + method + "," + uri  + "," + vcs_id + "," + ")")
 
 				# Pass to controller to queue up - Pass build_environment if any.
 				transport = Transport(None, method, uri, vcs_id)
