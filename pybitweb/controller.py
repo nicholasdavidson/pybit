@@ -98,7 +98,7 @@ class Controller(object):
 			chan = self.get_amqp_channel()
 			for build_env_suite_arch in build_env_suite_arch :
 				current_arch = build_env_suite_arch.suitearch.arch
-				if current_build_env.name != build_env_suite_arch.buildenv.name :
+				if current_build_env and current_build_env.name != build_env_suite_arch.get_buildenv_name : #FIXME
 					#first packageinstance for each build environment should have master flag set
 					master_flag = True
 				current_build_env = build_env_suite_arch.buildenv
@@ -126,18 +126,16 @@ class Controller(object):
 												new_job.packageinstance.format.name)
 						self.add_message_queue(build_queue, routing_key, chan)
 
-						if chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True) :
-							#self.log.debug("\n____________SENDING %s ____________TO____________ %s", build_req, routing_key)
-							self.log.debug("SENDING BUILD REQUEST FOR JOB ID %i %s %s %s %s %s %s",
-										new_job.id,
-										new_job.packageinstance.package.name,
-										new_job.packageinstance.package.version,
-										new_job.packageinstance.distribution.name,
-										new_job.packageinstance.arch.name,
-										new_job.packageinstance.suite.name,
-										new_job.packageinstance.format.name)
-						else :
-							self.log.warn("UNABLE TO ROUTE BUILD REQUEST TO %s", routing_key)
+						chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True)
+						#self.log.debug("\n____________SENDING %s ____________TO____________ %s", build_req, routing_key)
+						self.log.debug("SENDING BUILD REQUEST FOR JOB ID %i %s %s %s %s %s %s",
+									new_job.id,
+									new_job.packageinstance.package.name,
+									new_job.packageinstance.package.version,
+									new_job.packageinstance.distribution.name,
+									new_job.packageinstance.arch.name,
+									new_job.packageinstance.suite.name,
+									new_job.packageinstance.format.name)
 					else :
 						self.log.warn("FAILED TO ADD JOB")
 						response.status = "404 - failed to add job."
@@ -174,36 +172,33 @@ class Controller(object):
 				self.log.debug("ARCH-ALL REQUEST, ONLY BUILD FIRST SUPPORTED ARCH IN EACH BUILD ENV/ARCH COMBINATION MATCHING (%s, %s)", suite.name, requested_environment)
 				supported_build_env_name = ""
 				for build_env_suite_arch in supported_build_env_suite_arches :
-					if ((requested_environment == None) or (requested_environment == build_env_suite_arch.buildenv.name)) :
-						if supported_build_env_name != build_env_suite_arch.buildenv.name :
-							supported_build_env_name = build_env_suite_arch.buildenv.name
+					if ((requested_environment == None) or (requested_environment == build_env_suite_arch.get_buildenv_name())) :
+						if supported_build_env_name != build_env_suite_arch.get_buildenv_name() :
+							supported_build_env_name = build_env_suite_arch.get_buildenv_name()
 							env_arches_to_build.append(build_env_suite_arch)
-							self.log.debug("	ADDING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
+							self.log.debug("	ADDING (%s, %s, %s, %i)", build_env_suite_arch.get_suite_name(), build_env_suite_arch.get_arch_name(), build_env_suite_arch.get_buildenv_name(), build_env_suite_arch.get_master_weight())
 						else :
-							self.log.debug("	IGNORING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
+							self.log.debug("	IGNORING (%s, %s, %s, %i)", build_env_suite_arch.get_suite_name(), build_env_suite_arch.get_arch_name(), build_env_suite_arch.get_buildenv_name(), build_env_suite_arch.get_master_weight())
 					else :
-						self.log.debug("	IGNORING (%s, %s, %s, %i) DOES NOT MATCH REQUESTED BUILD ENV (%s)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, requested_environment)
+						self.log.debug("	IGNORING (%s, %s, %s, %i) DOES NOT MATCH REQUESTED BUILD ENV (%s)", build_env_suite_arch.get_suite_name(), build_env_suite_arch.get_arch_name(), build_env_suite_arch.get_buildenv_name(), build_env_suite_arch.get_master_weight(), requested_environment)
 
 			elif ("any" in requested_arches) :
 				self.log.debug("ARCH-ALL-ANY REQUEST, BUILDING FOR ALL SUPPORTED BUILD ENV/ARCH COMBINATIONS MATCHING (%s, %s)", suite.name, requested_environment)
 				for build_env_suite_arch in supported_build_env_suite_arches :
-					if ((requested_environment == None) or (requested_environment == build_env_suite_arch.buildenv.name)) :
+					if ((requested_environment == None) or (requested_environment == build_env_suite_arch.get_buildenv_name())) :
 						env_arches_to_build.append(build_env_suite_arch)
-						self.log.debug("	ADDING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
+						self.log.debug("	ADDING (%s, %s, %s, %i)", build_env_suite_arch.get_suite_name(), build_env_suite_arch.get_arch_name(), build_env_suite_arch.get_buildenv_name(), build_env_suite_arch.get_master_weight())
 					else :
-						self.log.debug("	IGNORING (%s, %s, %s, %i) DOES NOT MATCH REQUESTED BUILD ENV (%s)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, requested_environment)
+						self.log.debug("	IGNORING (%s, %s, %s, %i) DOES NOT MATCH REQUESTED BUILD ENV (%s)", build_env_suite_arch.get_suite_name(), build_env_suite_arch.get_arch_name(), build_env_suite_arch.get_buildenv_name(), build_env_suite_arch.get_master_weight(), requested_environment)
 			else :
-				self.log.debug("SPECIFIC ARCH (%s) BUILD ENV (%s) REQUEST...", requested_arches, requested_environment)
+				self.log.debug("SPECIFIC ARCH (%s) BUILD ENV (%s) REQUEST...%i SUPPORTED CONFIGURATIONS", requested_arches, requested_environment,len(supported_build_env_suite_arches))
+				
 				for build_env_suite_arch in supported_build_env_suite_arches :
-					build_env_name = None
-					if build_env_suite_arch.buildenv is not None:
-						build_env_name = build_env_suite_arch.buildenv.name
-					if ((requested_environment == None) or (requested_environment == build_env_name)) \
-					and (build_env_suite_arch.suitearch.arch.name in requested_arches) :
+					if ((build_env_suite_arch.get_arch_name() in requested_arches) and ((requested_environment is None) or (requested_environment == build_env_suite_arch.get_buildenv_name()))) :
 						env_arches_to_build.append(build_env_suite_arch)
-						self.log.debug("	ADDING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
+						self.log.debug("	ADDING (%s, %s, %s, %i)", build_env_suite_arch.get_suite_name(), build_env_suite_arch.get_arch_name(), build_env_suite_arch.get_buildenv_name(), build_env_suite_arch.get_master_weight())
 					else :
-						self.log.debug("	IGNORING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
+						self.log.debug("	IGNORING (%s, %s, %s, %i)", build_env_suite_arch.get_suite_name(), build_env_suite_arch.get_arch_name(), build_env_suite_arch.get_buildenv_name(), build_env_suite_arch.get_master_weight())
 		return env_arches_to_build
 
 	def process_package(self, name, version) :
@@ -232,7 +227,7 @@ class Controller(object):
 			if packageinstance.id :
 				self.log.debug("MATCHING PACKAGE INSTANCE FOUND (%i, MASTER: %s) FOR [%s, %s, %s, %s, %s, %s, %s]", 
 							packageinstance.id, packageinstance.master, 
-							package.name, package.version, build_env.name, arch.name, dist.name, pkg_format.name, suite.name)
+							package.name, package.version, (build_env.name if build_env else "BUILD ENV (NONE)"), arch.name, dist.name, pkg_format.name, suite.name)
 				# Temporarily disable master update for Issue #84, this should not be default behaviour.
 #				if packageinstance.master != master :
 #					self.log.debug("UPDATING PACKAGE INSTANCE MASTER FLAG (%s)", master)
@@ -244,10 +239,10 @@ class Controller(object):
 			if packageinstance.id :
 				self.log.debug("ADDED NEW PACKAGE INSTANCE (%i, MASTER: %s) FOR [%s, %s, %s, %s, %s, %s, %s]", 
 							packageinstance.id, packageinstance.master, 
-							package.name, package.version, build_env.name, arch.name, dist.name, pkg_format.name, suite.name)
+							package.name, package.version, (build_env.name if build_env else "BUILD ENV (NONE)"), arch.name, dist.name, pkg_format.name, suite.name)
 			else :
 				self.log.warn("FAILED TO ADD NEW PACKAGE INSTANCE FOR [%s, %s, %s, %s, %s, %s, %s]", 
-							package.name, package.version, build_env.name, arch.name, dist.name, pkg_format.name, suite.name)
+							package.name, package.version, (build_env.name if build_env else "BUILD ENV (NONE)"), arch.name, dist.name, pkg_format.name, suite.name)
 		return packageinstance
 
 	def process_cancel(self, job, chan):
