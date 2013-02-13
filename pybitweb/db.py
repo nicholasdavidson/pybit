@@ -1527,9 +1527,9 @@ class Database(object):
 
 	def check_specific_packageinstance_exists(self,build_env,arch,package,distribution,pkg_format,suite):
 		try:
-			if build_env and arch and distribution and pkg_format and package and suite:
+			if arch and distribution and pkg_format and package and suite:
 				cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-				cur.execute("SELECT id FROM packageinstance WHERE buildenv_id=%s AND arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",(build_env.id,arch.id,distribution.id,pkg_format.id,package.id,suite.id))
+				cur.execute("SELECT id FROM packageinstance WHERE buildenv_id=%s AND arch_id=%s AND dist_id=%s AND format_id=%s AND package_id=%s AND suite_id=%s",((build_env.id if build_env else None),arch.id,distribution.id,pkg_format.id,package.id,suite.id))
 				res = cur.fetchall()
 				self.conn.commit()
 
@@ -1639,8 +1639,8 @@ class Database(object):
 				for i in res :
 					suitearch = self.get_suitearch_id(i['suitearch_id'])
 					build_env = self.get_build_env_id(i['buildenv_id'])
-					if build_env == None :
-						buildenvsuitearch = BuildEnvSuiteArch(i['buildenvsuitearch_id'],BuildEnv(None,None),suitearch)
+					if not build_env :
+						buildenvsuitearch = BuildEnvSuiteArch(i['buildenvsuitearch_id'],None,suitearch)
 					else :
 						buildenvsuitearch = BuildEnvSuiteArch(i['buildenvsuitearch_id'],build_env,suitearch)
 					build_env_suite_arch_list.append(buildenvsuitearch)
