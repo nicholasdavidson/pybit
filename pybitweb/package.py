@@ -27,6 +27,7 @@ from db import Database
 from controller import Controller
 import bottle_basic_auth
 from bottle_basic_auth import requires_auth
+import psycopg2.errorcodes
 
 def get_packages_app(settings, db, controller):
 	app = Bottle()
@@ -110,9 +111,18 @@ def get_packages_app(settings, db, controller):
 	def delete_package(package_id):
 		try:
 			# Deletes a specific buildd
-			response.status = "202 - DELETE request received"
-			app.config['db'].delete_package(package_id)
-			return
+			retval = app.config['db'].delete_package(package_id)
+
+			if(retval == True):
+				response.status = "200 DELETE OK"
+			elif(retval == False):
+				response.status = "404 Cannot DELETE"
+			elif(retval == "23503"):
+				response.status = "409 " + str(errorcodes.lookup(retval))
+			else:
+				response.status = "500 " + str(errorcodes.lookup(retval))
+
+			return response.status
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
@@ -151,7 +161,7 @@ def get_packages_app(settings, db, controller):
 				response.content_type = "application/json"
 				return encoded
 			else:
-				response.status = "404 - No packages found with this name."
+				response.status = "404 No packages found with this name."
 				return
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
@@ -177,7 +187,7 @@ def get_packages_app(settings, db, controller):
 				response.content_type = "application/json"
 				return encoded
 			else:
-				response.status = "404 - No package found with this name and version."
+				response.status = "404 No package found with this name and version."
 				return
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))

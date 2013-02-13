@@ -36,9 +36,9 @@ def get_app(settings, db, controller):
         return 'HTTP Error 404 - Not Found.'
 
     # Remove this to get more debug.
-    @app.error(500)
-    def error500(error):
-        return 'HTTP Error 500 - Internal Server Error.'
+    #@app.error(500)
+    #def error500(error):
+    #    return 'HTTP Error 500 - Internal Server Error.'
 
     # Things in here are applied to all requests. We need to set this header so strict browsers can query it using jquery
     #http://en.wikipedia.org/wiki/Cross-origin_resource_sharing

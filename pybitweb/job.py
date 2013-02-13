@@ -32,6 +32,7 @@ import bottle_basic_auth
 from bottle_basic_auth import requires_auth
 from controller import Controller
 from pybit.models import Transport,JobHistory
+import psycopg2.errorcodes
 
 #NEW: proxy to class method controller.add
 def get_job_app(settings, db, controller) :
@@ -244,9 +245,18 @@ def get_job_app(settings, db, controller) :
 	def del_jobid(jobid):
 		try:
 			# Deletes a specific job
-			response.status = "202 - DELETE request received"
-			app.config['db'].delete_job(jobid)
-			return
+			retval = app.config['db'].delete_job(jobid)
+
+			if(retval == True):
+				response.status = "200 DELETE OK"
+			elif(retval == False):
+				response.status = "404 Cannot DELETE"
+			elif(retval == "23503"):
+				response.status = "409 " + str(errorcodes.lookup(retval))
+			else:
+				response.status = "500 " + str(errorcodes.lookup(retval))
+
+			return response.status
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
