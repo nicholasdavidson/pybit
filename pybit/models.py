@@ -64,8 +64,13 @@ class Arch(Model):
 
 class BuildEnv(Model):
 	def __init__(self,build_env_id,name):
-		self.id = build_env_id
-		self.name = name
+
+		if not build_env_id or not name:
+			# We are not allowed to make this with unpopulated fields
+			raise Exception("WARNING: Invalid data passed to BuildEnv() constructor.")
+		else:
+			self.id = build_env_id
+			self.name = name
 
 class Dist(Model):
 	def __init__(self,dist_id,name):

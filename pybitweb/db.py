@@ -1639,8 +1639,8 @@ class Database(object):
 				for i in res :
 					suitearch = self.get_suitearch_id(i['suitearch_id'])
 					build_env = self.get_build_env_id(i['buildenv_id'])
-					if build_env == None :
-						buildenvsuitearch = BuildEnvSuiteArch(i['buildenvsuitearch_id'],BuildEnv(None,None),suitearch)
+					if not build_env :
+						buildenvsuitearch = BuildEnvSuiteArch(i['buildenvsuitearch_id'],None,suitearch)
 					else :
 						buildenvsuitearch = BuildEnvSuiteArch(i['buildenvsuitearch_id'],build_env,suitearch)
 					build_env_suite_arch_list.append(buildenvsuitearch)
