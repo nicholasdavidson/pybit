@@ -113,7 +113,7 @@ class Controller(object):
 							"%s:%s" % (self.settings['web']['hostname'], self.settings['web']['port']));
 						build_req = jsonpickle.encode(build_request_obj)
 						self.db.log_buildRequest(build_request_obj)
-						#print "SENDING REQUEST WITH DATA", str(build_req)
+						#self.log.debug ("SENDING REQUEST WITH DATA", str(build_req))
 						msg = amqp.Message(build_req)
 						msg.properties["delivery_mode"] = 2
 						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name,
@@ -178,20 +178,20 @@ class Controller(object):
 						if supported_build_env_name != build_env_suite_arch.buildenv.name :
 							supported_build_env_name = build_env_suite_arch.buildenv.name
 							env_arches_to_build.append(build_env_suite_arch)
-							self.log.debug("	ADDING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
+							self.log.debug("ADDING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
 						else :
-							self.log.debug("	IGNORING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
+							self.log.debug("IGNORING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
 					else :
-						self.log.debug("	IGNORING (%s, %s, %s, %i) DOES NOT MATCH REQUESTED BUILD ENV (%s)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, requested_environment)
+						self.log.debug("IGNORING (%s, %s, %s, %i) DOES NOT MATCH REQUESTED BUILD ENV (%s)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, requested_environment)
 
 			elif ("any" in requested_arches) :
 				self.log.debug("ARCH-ALL-ANY REQUEST, BUILDING FOR ALL SUPPORTED BUILD ENV/ARCH COMBINATIONS MATCHING (%s, %s)", suite.name, requested_environment)
 				for build_env_suite_arch in supported_build_env_suite_arches :
 					if ((requested_environment == None) or (requested_environment == build_env_suite_arch.buildenv.name)) :
 						env_arches_to_build.append(build_env_suite_arch)
-						self.log.debug("	ADDING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
+						self.log.debug("ADDING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
 					else :
-						self.log.debug("	IGNORING (%s, %s, %s, %i) DOES NOT MATCH REQUESTED BUILD ENV (%s)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, requested_environment)
+						self.log.debug("IGNORING (%s, %s, %s, %i) DOES NOT MATCH REQUESTED BUILD ENV (%s)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, requested_environment)
 			else :
 				self.log.debug("SPECIFIC ARCH (%s) BUILD ENV (%s) REQUEST...", requested_arches, requested_environment)
 				for build_env_suite_arch in supported_build_env_suite_arches :
@@ -201,9 +201,9 @@ class Controller(object):
 					if ((requested_environment == None) or (requested_environment == build_env_name)) \
 					and (build_env_suite_arch.suitearch.arch.name in requested_arches) :
 						env_arches_to_build.append(build_env_suite_arch)
-						self.log.debug("	ADDING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
+						self.log.debug("ADDING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
 					else :
-						self.log.debug("	IGNORING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
+						self.log.debug("IGNORING (%s, %s, %s, %i)", build_env_suite_arch.suitearch.suite.name, build_env_suite_arch.suitearch.arch.name, build_env_suite_arch.buildenv.name, build_env_suite_arch.suitearch.master_weight)
 		return env_arches_to_build
 
 	def process_package(self, name, version) :
@@ -230,8 +230,8 @@ class Controller(object):
 			# retrieve existing package instance from db
 			packageinstance = self.db.get_packageinstance_byvalues(package, build_env, arch, suite, dist, pkg_format)[0]
 			if packageinstance.id :
-				self.log.debug("MATCHING PACKAGE INSTANCE FOUND (%i, MASTER: %s) FOR [%s, %s, %s, %s, %s, %s, %s]", 
-							packageinstance.id, packageinstance.master, 
+				self.log.debug("MATCHING PACKAGE INSTANCE FOUND (%i, MASTER: %s) FOR [%s, %s, %s, %s, %s, %s, %s]",
+							packageinstance.id, packageinstance.master,
 							package.name, package.version, build_env.name, arch.name, dist.name, pkg_format.name, suite.name)
 				# Temporarily disable master update for Issue #84, this should not be default behaviour.
 #				if packageinstance.master != master :
@@ -242,11 +242,11 @@ class Controller(object):
 			# add new package instance to db
 			packageinstance = self.db.put_packageinstance(package, build_env, arch, suite, dist, pkg_format, master)
 			if packageinstance.id :
-				self.log.debug("ADDED NEW PACKAGE INSTANCE (%i, MASTER: %s) FOR [%s, %s, %s, %s, %s, %s, %s]", 
-							packageinstance.id, packageinstance.master, 
+				self.log.debug("ADDED NEW PACKAGE INSTANCE (%i, MASTER: %s) FOR [%s, %s, %s, %s, %s, %s, %s]",
+							packageinstance.id, packageinstance.master,
 							package.name, package.version, build_env.name, arch.name, dist.name, pkg_format.name, suite.name)
 			else :
-				self.log.warn("FAILED TO ADD NEW PACKAGE INSTANCE FOR [%s, %s, %s, %s, %s, %s, %s]", 
+				self.log.warn("FAILED TO ADD NEW PACKAGE INSTANCE FOR [%s, %s, %s, %s, %s, %s, %s]",
 							package.name, package.version, build_env.name, arch.name, dist.name, pkg_format.name, suite.name)
 		return packageinstance
 
