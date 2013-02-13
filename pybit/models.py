@@ -115,6 +115,29 @@ class PackageInstance(Model):
 		self.distribution = distribution
 		self.format = pkg_format
 		self.master = master
+		
+	def get_package_name(self):
+		return self.package.name
+	
+	def get_package_version(self):
+		return self.package.version
+	
+	def get_arch_name(self):
+		return self.arch.name
+	
+	def get_buildenv_name(self):
+		if self.build_env is None:
+			return None
+		return self.build_env.name
+
+	def get_suite_name(self):
+		return self.suite.name
+	
+	def get_distribution_name(self):
+		return self.distribution.name
+	
+	def get_format_name(self):
+		return self.format.name
 
 
 class Job(Model):
