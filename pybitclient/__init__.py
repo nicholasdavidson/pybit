@@ -53,14 +53,15 @@ class PyBITClient(object):
 		if request is None:
 			request = self.current_request
 		if status is not None and request is not None:
-			logging.debug ("Marking JOB id: %s as: %s" % (request.get_job_id(), status)) #FIXME: this clears/resets 'cancelled' state
+			logging.debug ("Marking JOB id: %s as: %s using" % (request.get_job_id(), status)) #FIXME: this clears/resets 'cancelled' state
 			payload = {'status' : status }
 			if client is not None:
 				payload['client']  = client
 			job_status_url = "http://%s/job/%s" % (request.web_host, request.get_job_id())
 			try:
 				requests.put(job_status_url, payload, auth=HTTPBasicAuth('admin', 'pass'))
-			except requests.exceptions.ConnectionError :
+			except Exception as e :
+				logging.warn ("E: Unable to connect to: %s %s" % (job_status_url, e))
 				pass
 		else:
 			logging.debug ("Couldn't find status or current_request")
