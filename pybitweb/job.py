@@ -32,6 +32,7 @@ import bottle_basic_auth
 from bottle_basic_auth import requires_auth
 from controller import Controller
 from pybit.models import Transport,JobHistory
+import psycopg2.errorcodes
 
 #NEW: proxy to class method controller.add
 def get_job_app(settings, db, controller) :
@@ -165,23 +166,20 @@ def get_job_app(settings, db, controller) :
 		job = app.config['db'].get_job(jobid)
 		transport = app.config['db'].get_jobTransportDetails(jobid)
 
-		package_version = job.packageinstance.package.version
-		package_name = job.packageinstance.package.name
-		arch =  job.packageinstance.arch.name # TODO: parse list
-		dist = job.packageinstance.distribution.name
-		suite = job.packageinstance.suite.name
-		pkg_format = job.packageinstance.format.name
-		build_environment = None
+		package_version = job.packageinstance.get_package_version()
+		package_name = job.packageinstance.get_package_name()
+		arch =  job.packageinstance.get_arch_name() # TODO: parse list
+		dist = job.packageinstance.get_distribution_name()
+		suite = job.packageinstance.get_suite_name()
+		pkg_format = job.packageinstance.get_format_name()
+		build_environment = job.packageinstance.get_buildenv_name()
 
 		method = transport.method
 		vcs_id = transport.vcs_id
 		uri = transport.uri
 
-		if (job.packageinstance.build_env) :
-			build_environment = job.packageinstance.build_env.name # Lookup build_environment name for the package instance
-
 		# Pass to controller to queue up - Pass build_environment if any.
-		if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,build_environment):
+		if app.config['controller'].process_job(dist,arch,package_version,package_name,suite,pkg_format,transport,build_environment):
 			app.log.debug("Retry job processed OK!")
 			return
 		else:
@@ -202,20 +200,17 @@ def get_job_app(settings, db, controller) :
 
 			if  packageinstance_id and method and uri:
 				packageinstance = app.config['db'].get_packageinstance_id(packageinstance_id)
-				package_version = packageinstance.package.version
-				package_name = packageinstance.package.name
-				arch =  packageinstance.arch.name # TODO: parse list
-				dist = packageinstance.distribution.name
-				suite = packageinstance.suite.name
-				pkg_format = packageinstance.format.name
-				build_environment = None
-
-				if (packageinstance.build_env) :
-					build_environment = packageinstance.build_env.name # Lookup build_environment name for the package instance
+				package_version = packageinstance.get_package_version()
+				package_name = packageinstance.get_package_name()
+				arch =  packageinstance.get_arch_name() # TODO: parse list
+				dist = packageinstance.get_distribution_name()
+				suite = packageinstance.get_suite_name()
+				pkg_format = packageinstance.get_format_name()
+				build_environment = packageinstance.get_buildenv_name()
 
 				# Pass to controller to queue up - Pass build_environment if any.
 				transport = Transport(None, method, uri, vcs_id)
-				if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,build_environment):
+				if app.config['controller'].process_job(dist,arch,package_version,package_name,suite,pkg_format,transport,build_environment):
 					return
 				else:
 					return False
@@ -250,9 +245,18 @@ def get_job_app(settings, db, controller) :
 	def del_jobid(jobid):
 		try:
 			# Deletes a specific job
-			response.status = "202 - DELETE request received"
-			app.config['db'].delete_job(jobid)
-			return
+			retval = app.config['db'].delete_job(jobid)
+
+			if(retval == True):
+				response.status = "200 DELETE OK"
+			elif(retval == False):
+				response.status = "404 Cannot DELETE"
+			elif(retval == "23503"):
+				response.status = "409 " + str(errorcodes.lookup(retval))
+			else:
+				response.status = "500 " + str(errorcodes.lookup(retval))
+
+			return response.status
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None

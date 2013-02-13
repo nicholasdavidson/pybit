@@ -313,6 +313,12 @@
                         {
                             type : "GET" ,
                             url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/" + target + "/" + id + "/delete" ,
+                            statusCode: {
+								409: function() {
+									alert("This  " + target + " cannot be deleted because other things depend on it in the database.");
+									return;
+								}
+							},
                             error : function ( data )
                             {
                                 alert ( 'Error deleting ' + target + ' with id: ' + id + "\n" + data.responseText );

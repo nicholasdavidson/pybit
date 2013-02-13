@@ -23,6 +23,7 @@
 
 import psycopg2
 import psycopg2.extras
+import psycopg2.errorcodes
 import jsonpickle
 import cgi
 import math
@@ -244,8 +245,8 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting arch with id:" + str(arch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting arch with id: %s. Database error code: %s - Details: %s.",str(arch_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode
 
 	def count_suitearches(self):
 		try:
@@ -341,8 +342,8 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting suitearch with id:" + str(suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting suitearch with id: %s. Database error code: %s - Details: %s.",str(suitearch_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode
 
 	def count_buildenv_suitearches(self):
 		try:
@@ -425,8 +426,8 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting buildenvsuitearch with id:" + str(buildenv_suitearch_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting buildenvsuitearch with id: %s. Database error code: %s - Details: %s.",str(buildenv_suitearch_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode
 
 	def count_dists(self):
 		try:
@@ -531,8 +532,8 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting dist with id:" + str(dist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting dist with id: %s. Database error code: %s - Details: %s.",str(dist_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode
 
 	def count_formats(self):
 		try:
@@ -636,8 +637,8 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting format with id:" + str(format_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting format with id: %s. Database error code: %s - Details: %s.",str(format_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode
 
 	def count_statuses(self):
 		try:
@@ -724,8 +725,8 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting status with id:" + str(status_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting status with id: %s. Database error code: %s - Details: %s.",str(status_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode
 
 	def count_suites(self):
 		try:
@@ -830,8 +831,8 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting suite with id:" + str(suite_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting suite with id: %s. Database error code: %s - Details: %s.",str(suite_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode
 
 	def count_build_envs(self):
 		try:
@@ -939,8 +940,8 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting buildenv with id:" + str(build_env_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting buildenv with id: %s. Database error code: %s - Details: %s.",str(build_env_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode
 
 	#<<<<<<<< BuildD related database functions >>>>>>>>
 
@@ -1032,8 +1033,8 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting buildd with id:" + str(buildclient_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting buildd with id: %s. Database error code: %s - Details: %s.",str(buildclient_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode
 
 	def get_buildd_jobs(self,buildclient_id):
 		try:
@@ -1192,8 +1193,8 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting job with:" + str(job_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting job with id: %s. Database error code: %s - Details: %s.",str(job_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode
 
 	def put_job(self,packageinstance,buildclient):
 		try:
@@ -1362,8 +1363,8 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting package with:" + str(package_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting package with id: %s. Database error code: %s - Details: %s.",str(package_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode
 
 	#<<<<<<<<< Packageinstance related Queries >>>>>>>
 
@@ -1522,8 +1523,8 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting package instance with:" + str(packageinstance_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting package instance with id: %s. Database error code: %s - Details: %s.",str(packageinstance_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode
 
 	def check_specific_packageinstance_exists(self,build_env,arch,package,distribution,pkg_format,suite):
 		try:
@@ -1765,5 +1766,5 @@ class Database(object):
 				return False
 		except psycopg2.Error as e:
 			self.conn.rollback()
-			raise Exception("Error deleting blacklist rule with id:" + str(blacklist_id) + ". Database error code: "  + str(e.pgcode) + " - Details: " + str(e.pgerror))
-			return None
+			self.log.debug("Error deleting blacklist with id: %s. Database error code: %s - Details: %s.",str(blacklist_id),str(e.pgcode),str(e.pgerror))
+			return e.pgcode

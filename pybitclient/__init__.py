@@ -23,6 +23,7 @@
 
 import re
 import os
+import signal
 import imp
 import errno
 import json
@@ -354,7 +355,8 @@ contacted or None if the job doesn't exist
 				if (self.current_request and
 					self.current_request.get_job_id() == cmd_req.get_job_id() and
 					self.process is not None) :
-					self.process.terminate()
+					#We have to sigint because it's completely unsafe to sigkill an sbuild process.
+					os.kill(self.process.pid, signal.SIGINT)
 					self.process.join()
 					self.process = None
 					self.move_state("IDLE")

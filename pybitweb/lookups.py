@@ -27,6 +27,9 @@ from db import Database
 from pybit.models import Arch,Dist,Format,Status,Suite,SuiteArch,Blacklist
 import bottle_basic_auth
 from bottle_basic_auth import requires_auth
+import psycopg2
+import psycopg2.errorcodes
+from psycopg2 import errorcodes
 
 def get_arch_app(settings, db):
 	app = Bottle()
@@ -90,9 +93,18 @@ def get_arch_app(settings, db):
 	def delete_arch(arch_id):
 		try:
 			# Deletes a specific arch
-			response.status = "202 - DELETE request received"
-			app.config['db'].delete_arch(arch_id)
-			return
+			retval = app.config['db'].delete_arch(arch_id)
+
+			if(retval == True):
+				response.status = "200 DELETE OK"
+			elif(retval == False):
+				response.status = "404 Cannot DELETE"
+			elif(retval == "23503"):
+				response.status = "409 " + str(errorcodes.lookup(retval))
+			else:
+				response.status = "500 " + str(errorcodes.lookup(retval))
+
+			return response.status
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
@@ -165,9 +177,18 @@ def get_suitearch_app(settings, db):
 	def delete_suitearch(suitearch_id):
 		try:
 			# Deletes a specific suitearch
-			response.status = "202 - DELETE request received"
-			app.config['db'].delete_suitearch(suitearch_id)
-			return
+			retval = app.config['db'].delete_suitearch(suitearch_id)
+
+			if(retval == True):
+				response.status = "200 DELETE OK"
+			elif(retval == False):
+				response.status = "404 Cannot DELETE"
+			elif(retval == "23503"):
+				response.status = "409 " + str(errorcodes.lookup(retval))
+			else:
+				response.status = "500 " + str(errorcodes.lookup(retval))
+
+			return response.status
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
@@ -242,9 +263,18 @@ def get_status_app(settings, db):
 	def delete_status(status_id):
 		try:
 			# Deletes a specific status
-			response.status = "202 - DELETE request received"
-			app.config['db'].delete_status(status_id)
-			return
+			retval = app.config['db'].delete_status(status_id)
+
+			if(retval == True):
+				response.status = "200 DELETE OK"
+			elif(retval == False):
+				response.status = "404 Cannot DELETE"
+			elif(retval == "23503"):
+				response.status = "409 " + str(errorcodes.lookup(retval))
+			else:
+				response.status = "500 " + str(errorcodes.lookup(retval))
+
+			return response.status
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
@@ -319,9 +349,18 @@ def get_dist_app(settings, db):
 	def delete_dist(dist_id):
 		try:
 			# Deletes a specific dist
-			response.status = "202 - DELETE request received"
-			app.config['db'].delete_dist(dist_id)
-			return
+			retval = app.config['db'].delete_dist(dist_id)
+
+			if(retval == True):
+				response.status = "200 DELETE OK"
+			elif(retval == False):
+				response.status = "404 Cannot DELETE"
+			elif(retval == "23503"):
+				response.status = "409 " + str(errorcodes.lookup(retval))
+			else:
+				response.status = "500 " + str(errorcodes.lookup(retval))
+
+			return response.status
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
@@ -396,9 +435,18 @@ def get_format_app(settings, db):
 	def delete_format(format_id):
 		try:
 			# Deletes a specific format
-			response.status = "202 - DELETE request received"
-			app.config['db'].delete_format(format_id)
-			return
+			retval = app.config['db'].delete_format(format_id)
+
+			if(retval == True):
+				response.status = "200 DELETE OK"
+			elif(retval == False):
+				response.status = "404 Cannot DELETE"
+			elif(retval == "23503"):
+				response.status = "409 " + str(errorcodes.lookup(retval))
+			else:
+				response.status = "500 " + str(errorcodes.lookup(retval))
+
+			return response.status
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
@@ -472,9 +520,18 @@ def get_suite_app(settings, db):
 	def delete_suite(suite_id):
 		try:
 			# Deletes a specific suite
-			response.status = "202 - DELETE request received"
-			app.config['db'].delete_suite(suite_id)
-			return
+			retval = app.config['db'].delete_suite(suite_id)
+
+			if(retval == True):
+				response.status = "200 DELETE OK"
+			elif(retval == False):
+				response.status = "404 Cannot DELETE"
+			elif(retval == "23503"):
+				response.status = "409 " + str(errorcodes.lookup(retval))
+			else:
+				response.status = "500 " + str(errorcodes.lookup(retval))
+
+			return response.status
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
@@ -549,9 +606,18 @@ def get_env_app(settings, db):
 	def delete_build_env(build_env_id):
 		try:
 			# Deletes a specific environment
-			response.status = "202 - DELETE request received"
-			app.config['db'].delete_build_env(build_env_id)
-			return
+			retval = app.config['db'].delete_build_env(build_env_id)
+
+			if(retval == True):
+				response.status = "200 DELETE OK"
+			elif(retval == False):
+				response.status = "404 Cannot DELETE"
+			elif(retval == "23503"):
+				response.status = "409 " + str(errorcodes.lookup(retval))
+			else:
+				response.status = "500 " + str(errorcodes.lookup(retval))
+
+			return response.status
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
@@ -620,9 +686,18 @@ def get_buildenv_suitearch_app(settings, db):
 	def delete_buildenv_suitearch(buildenv_suitearch_id):
 		try:
 			# Deletes a specific buildenv_suitearch
-			response.status = "202 - DELETE request received"
-			app.config['db'].delete_buildenv_suitearch(buildenv_suitearch_id)
-			return
+			retval = app.config['db'].delete_buildenv_suitearch(buildenv_suitearch_id)
+
+			if(retval == True):
+				response.status = "200 DELETE OK"
+			elif(retval == False):
+				response.status = "404 Cannot DELETE"
+			elif(retval == "23503"):
+				response.status = "409 " + str(errorcodes.lookup(retval))
+			else:
+				response.status = "500 " + str(errorcodes.lookup(retval))
+
+			return response.status
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None
@@ -698,9 +773,18 @@ def get_blacklist_app(settings, db):
 	def delete_blacklist(blacklist_id):
 		try:
 			# Deletes a specific blacklist rule.
-			response.status = "202 - DELETE request received"
-			app.config['db'].delete_blacklist(blacklist_id)
-			return
+			retval = app.config['db'].delete_blacklist(blacklist_id)
+
+			if(retval == True):
+				response.status = "200 DELETE OK"
+			elif(retval == False):
+				response.status = "404 Cannot DELETE"
+			elif(retval == "23503"):
+				response.status = "409 " + str(errorcodes.lookup(retval))
+			else:
+				response.status = "500 " + str(errorcodes.lookup(retval))
+
+			return response.status
 		except Exception as e:
 			raise Exception('Exception encountered: ' + str(e))
 			return None

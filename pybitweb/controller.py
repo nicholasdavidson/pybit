@@ -98,7 +98,7 @@ class Controller(object):
 			chan = self.get_amqp_channel()
 			for build_env_suite_arch in build_env_suite_arch :
 				current_arch = build_env_suite_arch.suitearch.arch
-				if current_build_env and current_build_env.name != build_env_suite_arch.get_buildenv_name : #FIXME
+				if current_build_env and current_build_env.name != build_env_suite_arch.get_buildenv_name() : #FIXME
 					#first packageinstance for each build environment should have master flag set
 					master_flag = True
 				current_build_env = build_env_suite_arch.buildenv
@@ -116,26 +116,26 @@ class Controller(object):
 						#print "SENDING REQUEST WITH DATA", str(build_req)
 						msg = amqp.Message(build_req)
 						msg.properties["delivery_mode"] = 2
-						routing_key = pybit.get_build_route_name(new_job.packageinstance.distribution.name,
-												new_job.packageinstance.arch.name,
-												new_job.packageinstance.suite.name,
-												new_job.packageinstance.format.name)
-						build_queue = pybit.get_build_queue_name(new_job.packageinstance.distribution.name,
-												new_job.packageinstance.arch.name,
-												new_job.packageinstance.suite.name,
-												new_job.packageinstance.format.name)
+						routing_key = pybit.get_build_route_name(new_job.packageinstance.get_distribution_name(),
+												new_job.packageinstance.get_arch_name(),
+												new_job.packageinstance.get_suite_name(),
+												new_job.packageinstance.get_format_name())
+						build_queue = pybit.get_build_queue_name(new_job.packageinstance.get_distribution_name(),
+												new_job.packageinstance.get_arch_name(),
+												new_job.packageinstance.get_suite_name(),
+												new_job.packageinstance.get_format_name())
 						self.add_message_queue(build_queue, routing_key, chan)
 
 						chan.basic_publish(msg,exchange=pybit.exchange_name,routing_key=routing_key,mandatory=True)
 						#self.log.debug("\n____________SENDING %s ____________TO____________ %s", build_req, routing_key)
 						self.log.debug("SENDING BUILD REQUEST FOR JOB ID %i %s %s %s %s %s %s",
 									new_job.id,
-									new_job.packageinstance.package.name,
-									new_job.packageinstance.package.version,
-									new_job.packageinstance.distribution.name,
-									new_job.packageinstance.arch.name,
-									new_job.packageinstance.suite.name,
-									new_job.packageinstance.format.name)
+									new_job.packageinstance.get_distribution_name(),
+									new_job.packageinstance.get_package_version(),
+									new_job.packageinstance.get_distribution_name(),
+									new_job.packageinstance.get_arch_name(),
+									new_job.packageinstance.get_suite_name(),
+									new_job.packageinstance.get_format_name())
 					else :
 						self.log.warn("FAILED TO ADD JOB")
 						response.status = "404 - failed to add job."
@@ -266,12 +266,12 @@ class Controller(object):
 		unfinished_jobs_list = self.db.get_unfinished_jobs()
 		chan = self.get_amqp_channel()
 		for unfinished_job in unfinished_jobs_list:
-			unfinished_job_package_name = unfinished_job.packageinstance.package.name
-			if unfinished_job_package_name == packageinstance.package.name :
+			unfinished_job_package_name = unfinished_job.packageinstance.get_package_name()
+			if unfinished_job_package_name == packageinstance.get_package_name() :
 				if new_job.id != unfinished_job.id :
-					unfinished_job_package_version = unfinished_job.packageinstance.package.version
-					command = "dpkg --compare-versions %s '<<' %s" % (packageinstance.package.version, unfinished_job_package_version)
-					if (unfinished_job_package_version == packageinstance.package.version) or (os.system (command)) :
+					unfinished_job_package_version = unfinished_job.packageinstance.get_package_version()
+					command = "dpkg --compare-versions %s '<<' %s" % (packageinstance.get_package_version(), unfinished_job_package_version)
+					if (unfinished_job_package_version == packageinstance.get_package_version()) or (os.system (command)) :
 						unfinished_job_dist_id = unfinished_job.packageinstance.distribution.id
 						unfinished_job_arch_id = unfinished_job.packageinstance.arch.id
 						unfinished_job_suite_id = unfinished_job.packageinstance.suite.id
@@ -309,7 +309,7 @@ class Controller(object):
 		else :
 			unfinished_jobs_list = self.db.get_unfinished_jobs()
 			for unfinished_job in unfinished_jobs_list:
-				if (unfinished_job.packageinstance.package.name == package.name) and (unfinished_job.packageinstance.package.version == package.version):
+				if (unfinished_job.packageinstance.get_package_name() == package.name) and (unfinished_job.packageinstance.get_package_version() == package.version):
 					chan = self.get_amqp_channel()
 					self.process_cancel(unfinished_job, chan)
 		return
