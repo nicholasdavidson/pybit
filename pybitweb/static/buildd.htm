@@ -131,9 +131,9 @@
                                         <legend>
                                             Add a Buildbox
                                         </legend>
- <span class="help-block">To add a BuildBoxes to the database, add its hostname, using the form below.</span>
+ <span class="help-block">To add a BuildBoxes to the database, add its hostname, using the form below.<br/><b>When creating a new BuildBox, prefix its name with "build_client_".</b></span>
                                         <label for="name">Name</label>
-                                        <input name="name" type="text" />
+                                        <input name="name" type="text"value="build_client_" />
                                         <button type="submit" class="btn  btn-primary">
                                             Submit
                                         </button>
@@ -233,13 +233,13 @@ if ( getUrlVars() [ "buildd_page" ] )
                                     if ( status == "Not Active" )
                                     {
                                         _class = "error";
-                                        $ ( "#tbl_buildds" ).append ( "<tr class='" + _class + "'><td>" + field.name + "</td><td>" + status + "</td><td><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ")'></input></td></tr>" );
+                                        $ ( "#tbl_buildds" ).append ( "<tr class='" + _class + "'><td>" + shortname + "</td><td>" + status + "</td><td><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ")'></input></td></tr>" );
                                     }
                                     else
                                     if ( status == "Active" )
                                     {
                                         _class = "success";
-                                        $ ( "#tbl_buildds" ).append ( "<tr class='" + _class + "'><td>" + field.name + "</td><td>" + status + "</td><td><a  href='" + "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>View Logs</a></td></tr>" );
+                                        $ ( "#tbl_buildds" ).append ( "<tr class='" + _class + "'><td>" + shortname + "</td><td>" + status + "</td><td><a  href='" + "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>View Logs</a></td></tr>" );
                                     }
                                 } );
                             } );
