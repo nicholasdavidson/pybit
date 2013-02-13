@@ -98,7 +98,7 @@ class Controller(object):
 			chan = self.get_amqp_channel()
 			for build_env_suite_arch in build_env_suite_arch :
 				current_arch = build_env_suite_arch.suitearch.arch
-				if current_build_env and current_build_env.name != build_env_suite_arch.get_buildenv_name : #FIXME
+				if current_build_env and current_build_env.name != build_env_suite_arch.get_buildenv_name() : #FIXME
 					#first packageinstance for each build environment should have master flag set
 					master_flag = True
 				current_build_env = build_env_suite_arch.buildenv
