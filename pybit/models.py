@@ -64,13 +64,8 @@ class Arch(Model):
 
 class BuildEnv(Model):
 	def __init__(self,build_env_id,name):
-
-		if not build_env_id or not name:
-			# We are not allowed to make this with unpopulated fields
-			raise Exception("WARNING: Invalid data passed to BuildEnv() constructor.")
-		else:
-			self.id = build_env_id
-			self.name = name
+		self.id = build_env_id
+		self.name = name
 
 class Dist(Model):
 	def __init__(self,dist_id,name):
@@ -142,6 +137,26 @@ class BuildEnvSuiteArch(Model):
 		self.buildenv = buildenv
 		self.suitearch = suitearch
 
+	def get_buildenv_name(self):
+		if self.buildenv is None:
+			return None
+		return self.buildenv.name
+
+	def get_suite_name(self):
+		if (self.suitearch is None) or (self.suitearch.suite is None):
+			return None
+		return self.suitearch.suite.name
+
+	def get_arch_name(self):
+		if (self.suitearch is None) or (self.suitearch.arch is None):
+			return None
+		return self.suitearch.arch.name
+	
+	def get_master_weight(self):
+		if (self.suitearch is None):
+			return 0
+		return self.suitearch.master_weight
+	
 class BuildRequest(Model):
 	def __init__(self,job,transport,web_host):
 		self.job = job
