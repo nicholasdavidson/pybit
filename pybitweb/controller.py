@@ -29,7 +29,6 @@ import jsonpickle
 import os
 import pybit
 import logging
-import sys
 from pybit.models import BuildRequest, CancelRequest, JobHistory, BuildEnv,\
 	BuildEnvSuiteArch, SuiteArch
 from jsonpickle import json
