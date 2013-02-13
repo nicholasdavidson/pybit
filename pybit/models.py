@@ -137,6 +137,26 @@ class BuildEnvSuiteArch(Model):
 		self.buildenv = buildenv
 		self.suitearch = suitearch
 
+	def get_buildenv_name(self):
+		if self.buildenv is None:
+			return None
+		return self.buildenv.name
+
+	def get_suite_name(self):
+		if (self.suitearch is None) or (self.suitearch.suite is None):
+			return None
+		return self.suitearch.suite.name
+
+	def get_arch_name(self):
+		if (self.suitearch is None) or (self.suitearch.arch is None):
+			return None
+		return self.suitearch.arch.name
+	
+	def get_master_weight(self):
+		if (self.suitearch is None):
+			return 0
+		return self.suitearch.master_weight
+	
 class BuildRequest(Model):
 	def __init__(self,job,transport,web_host):
 		self.job = job
