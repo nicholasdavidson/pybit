@@ -37,7 +37,7 @@ from pybit.models import Transport,JobHistory
 def get_job_app(settings, db, controller) :
 	app = Bottle()
 	app.config={'settings':settings, 'db':db, 'controller': controller}
-	
+
 	app.log = logging.getLogger( "web" )
 	if (('debug' in settings['web']) and ( settings['web']['debug'])) :
 		app.log.setLevel( logging.DEBUG )
@@ -171,11 +171,14 @@ def get_job_app(settings, db, controller) :
 		dist = job.packageinstance.distribution.name
 		suite = job.packageinstance.suite.name
 		pkg_format = job.packageinstance.format.name
-		build_environment = app.config['db'].get_build_env_id(job.packageinstance.build_env.id).name # Lookup and send build_environment name
+		build_environment = None
 
 		method = transport.method
 		vcs_id = transport.vcs_id
 		uri = transport.uri
+
+		if (job.packageinstance.build_env) :
+			build_environment = job.packageinstance.build_env.name # Lookup build_environment name for the package instance
 
 		# Pass to controller to queue up - Pass build_environment if any.
 		if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,build_environment):
@@ -206,8 +209,10 @@ def get_job_app(settings, db, controller) :
 				suite = packageinstance.suite.name
 				pkg_format = packageinstance.format.name
 				build_environment = None
+
 				if (packageinstance.build_env) :
-					build_environment = app.config['db'].get_build_env_id(packageinstance.build_env.id).name # Lookup build_environment name for the package instance
+					build_environment = packageinstance.build_env.name # Lookup build_environment name for the package instance
+
 				# Pass to controller to queue up - Pass build_environment if any.
 				transport = Transport(None, method, uri, vcs_id)
 				if app.config['controller'].process_job(dist, arch, package_version, package_name, suite, pkg_format, transport,build_environment):
