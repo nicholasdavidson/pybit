@@ -20,7 +20,7 @@ _Description: Fully qualified hostname for the web front-end:
 
 Template: pybit-web/port
 Type: string
-Default: 8080
+Default: 80
 _Description: Port for web front-end:
  Please specify the port that the web front-end should be available on.
  If it is serving localhost, it is probably easiest to use port 8080.
