@@ -196,8 +196,12 @@ class DebianBuildClient(PackageHandler):
 			logging.warn("E: upload: Failed to find %s file." % (changes))
 			retval = "upload_changes"
 		if not retval :
+			if (buildreq.get_buildenv() is not None):
+				upload_target = buildreq.get_buildenv()
+			else :
+				upload_target = self.settings["dput"]
 			command = "dput -c %s %s %s %s" % (self.dput_cfg,
-				self.settings["dput"], self.settings["dput_dest"], changes)
+				upload_target, self.settings["dput_dest"], changes)
 			if pybitclient.run_cmd (command, self.settings["dry_run"], logfile):
 				retval = "upload_fail"
 		if not retval :
