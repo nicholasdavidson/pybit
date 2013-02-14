@@ -28,7 +28,7 @@ Running the software
 The connection string, hostname, etc.... are stored in /etc/pybit/configs/*. These should be set during the package installation process, but you may edit and configure these as you wish. Then simply start the server first, then the client(s) second. The client will pick up any suitable queued jobs when it comes up.
 
 For support:
-IRC - #pybit on irc.oftc.net irc://irc.oftc.org/pybit (Or use github issues)
+IRC - #pybit on irc.oftc.net irc://irc.oftc.net/pybit (Or use github issues)
 
 Packaging requirements
 
