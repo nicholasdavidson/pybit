@@ -62,23 +62,27 @@ class EventHandler(pyinotify.ProcessEvent):
 		if os.path.isfile(event.pathname) and event.pathname.endswith(".changes"):
 			logging.debug("Sleeping for %ss" % self.sleeptime)
 			time.sleep(self.sleeptime)
-			cmd = "reprepro -b %s processincoming %s" % (self.settings['repobase'], self.settings['rule'])
-			if ('user' in self.settings and
-				self.settings['user'] != ''):
-				cmd = "su %s -c '%s'" % (self.settings['user'], cmd)
-			if ('dryrun' not in self.settings or
-				self.settings['dryrun'] == False):
-				
-				process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-				(stdout, stderr) = process.communicate()
-				
-				if process.returncode:
-					logging.debug(stderr)
-					logging.debug("reprepo command failed with code: %s" % process.returncode)
+			if event.path in self.settings['rules'] :
+				rule = self.settings['rules'][event.path]
+				cmd = "reprepro -b %s processincoming %s" % (rule['repobase'], rule['rule'])
+				if ('user' in self.settings and
+					self.settings['user'] != ''):
+					cmd = "su %s -c '%s'" % (self.settings['user'], cmd)
+				if ('dryrun' not in self.settings or
+					self.settings['dryrun'] == False):
+					
+					process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+					(stdout, stderr) = process.communicate()
+					
+					if process.returncode:
+						logging.debug(stderr)
+						logging.debug("reprepo command failed with code: %s" % process.returncode)
+					else:
+						logging.debug(cmd)
 				else:
-					logging.debug(cmd)
+					logging.debug("dry-run: %s" % cmd)
 			else:
-				logging.debug("dry-run: %s" % cmd)
+				logging.debug("couldn't find a rule which matched the watched path.")
 				
 	def __init__(self, settings):
 		self.settings = settings
@@ -94,13 +98,15 @@ def run(settings):
 		signal.signal(signal.SIGTERM, signal_handler)
 	except Exception as e:
 		raise Exception('Error configuring signal handler: ' + str(e))
-	wm = pyinotify.WatchManager()
+	
 	mask = pyinotify.IN_CREATE
 	if 'dryrun' in settings and settings['dryrun'] == True:
 		logging.debug("Starting in dryrun mode")
+	wm = pyinotify.WatchManager()
 	handler = EventHandler(settings)
 	notifier = pyinotify.Notifier(wm, handler)
-	wdd = wm.add_watch(settings['path'], mask, rec=True)
+	for path in settings['rules'].keys():
+		wdd = wm.add_watch(path, mask, rec=True)
 	notifier.loop()
 
 if __name__ == '__main__':
@@ -108,12 +114,6 @@ if __name__ == '__main__':
 	#options we can override in the config file.
 	groupConfigFile = optparse.OptionGroup(parser,
 		"Config File Defaults","All the options which have defaults read from a config file.")
-	
-	groupConfigFile.add_option("--path", dest="path",
-		help="Path to listen on.", metavar=META + "PATH")
-	
-	groupConfigFile.add_option("--repobase", dest="repobase",
-		help="Base of the repository.", metavar=META + "REPOBASE")
 	
 	groupConfigFile.add_option("--dry-run", dest="dryrun", action="store_true",
 		help="Controls if we simulate or do we actually run.", metavar=META + "DRYRUN")
