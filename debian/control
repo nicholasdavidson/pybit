@@ -13,7 +13,7 @@ Build-Depends: debhelper (>= 7.0.50~), docbook-xsl, xsltproc, po-debconf,
  python-amqplib
 X-Python-Version: 2.6, 2.7
 Standards-Version: 3.9.3
-Homepage: https://github.com/nicholasdavidson/pybit
+Homepage: http://nicholasdavidson.github.com/pybit/
 Vcs-Git: git://github.com/nicholasdavidson/pybit.git
 Vcs-Browser: https://github.com/nicholasdavidson/pybit
 
@@ -55,7 +55,7 @@ Description: buildd client support for pybit
 Package: pybit-web
 Architecture: all
 Depends: python-psycopg2 (>= 2.4.2-1~), pybit-common,
- libjson-perl,
+ dbconfig-common, libjson-perl, ucf, adduser,
  ${python:Depends}, ${misc:Depends}
 Recommends: libjs-jquery (>= 1.4.2-2), libjs-jquery-form,
  postgresql-client, libapache2-mod-wsgi

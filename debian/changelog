@@ -1,8 +1,9 @@
 pybit (0.4.3-1) experimental; urgency=low
 
   * New upstream release.
+  * Update Homepage to the new, more friendly, homepage.
 
- -- Neil Williams <codehelp@debian.org>  Wed, 06 Feb 2013 13:23:06 +0000
+ -- Neil Williams <codehelp@debian.org>  Thu, 14 Feb 2013 15:53:55 +0000
 
 pybit (0.4.2-1) experimental; urgency=low
 
