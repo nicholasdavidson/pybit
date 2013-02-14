@@ -66,7 +66,7 @@ CREATE TABLE schema_version
 -- The schema version has to be updated every time we change the schema.
 -- Make sure to create an update script in vN.sql in updates to allow
 -- existing databases to be upgraded
-INSERT INTO schema_version(id) VALUES (4);
+INSERT INTO schema_version(id) VALUES (5);
 
 CREATE TABLE Arch ( 
 	id SERIAL PRIMARY KEY NOT NULL,
