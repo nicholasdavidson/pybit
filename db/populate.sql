@@ -53,9 +53,9 @@ INSERT INTO buildenv(name) VALUES ('squeeze');
 INSERT INTO buildenv(name) VALUES ('wheezy');
 
 INSERT INTO buildclients(name) VALUES 
-	('arm01'),
-	('arm02'),
-	('buildbox');
+	('build_client_pyarm01'),
+	('build_client_arm02'),
+	('build_client_buildbox');
 
 INSERT INTO status(name) VALUES
 	('Waiting'),
