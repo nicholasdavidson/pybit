@@ -1,7 +1,6 @@
-[tcl]
-fqdn                    = buildmaster.tcl.office
-incoming                = /srv/tcl/distros/debian/incoming/
+[local]
+fqdn                    = localhost
+incoming                = /tmp/
 login                   = buildd
-method                  = scp
+method                  = local
 allow_unsigned_uploads  = true
-ssh_config_options      = IdentityFile=/home/buildd/.ssh/id_rsa

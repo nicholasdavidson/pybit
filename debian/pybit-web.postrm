@@ -2,12 +2,24 @@
 
 set -e
 
+if [ -f /usr/share/debconf/confmodule ]; then
+	. /usr/share/debconf/confmodule
+fi
+if [ -f /usr/share/dbconfig-common/dpkg/postrm.pgsql  ]; then
+	. /usr/share/dbconfig-common/dpkg/postrm.pgsql
+fi
+dbc_go pybit-web $@
+
 case "$1" in
 	purge)
 	if [ -f /etc/pybit/web/web.conf ]; then
 		rm /etc/pybit/web/web.conf
 	fi
+	if [ -f /etc/pybit/debian-db.pl ]; then
+		rm /etc/pybit/debian-db.pl
+	fi
 	if which ucf >/dev/null 2>&1; then
+		ucf -p /etc/pybit/debian-db.pl
 		ucf -p /etc/pybit/web/web.conf
 	fi
 	;;

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+set -e
+
+# This is still a dbconfig-common script because we need to ask the
+# admin before upgrading. Each sql file is idempotent and the files need
+# to be executed in sequence. So always run each upgrade SQL.
+
+. /usr/share/dbconfig-common/dpkg/postinst.pgsql
+. /usr/share/dbconfig-common/dpkg/common
+dbc_share="/usr/share/dbconfig-common"
+dbc_package=$1
+dbc_basepackage=`echo $dbc_package | cut -d_ -f1`
+dbc_dbtype=pgsql
+dbc_sqldir=/usr/share/$dbc_basepackage/upgrade/$dbc_dbtype
+dbc_dbname=`grep -v '#' /etc/dbconfig-common/pybit-web.conf  |grep dbc_dbname|cut -d= -f2|sed -e "s:'::g"`
+
+if [ -d "$dbc_sqldir" ]; then
+	for FILE in ` find $dbc_sqldir/* -xtype f -print0 | xargs --no-run-if-empty -0 ls -1 | sort -n | uniq`; do
+		echo "updating tables in database for $dbc_dbname using $FILE "
+		echo su -s /bin/sh $dbc_dbname -c "psql -d $dbc_dbname -f $FILE 2> /dev/null"
+		dbc_logline "$FILE done"
+	done
+else
+	dbc_logline "$dbc_sqldir not found\n"
+fi

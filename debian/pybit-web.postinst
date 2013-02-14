@@ -17,8 +17,19 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+ucf -p /etc/pybit/debian-db.pl
+if [ -f /etc/pybit/debian-db.pl ]; then
+  rm /etc/pybit/debian-db.pl
+fi
 # Source debconf library.
 . /usr/share/debconf/confmodule
+# dbconfig doesn't have perl bindings, so we have to use shell.
+. /usr/share/dbconfig-common/dpkg/postinst.pgsql
+dbc_generate_include=perl:/etc/pybit/debian-db.pl
+# minimal permissions
+dbc_generate_include_owner="root:root"
+dbc_generate_include_perms="600"
+dbc_go pybit-web $@
 
 case "$1" in
 	configure)
