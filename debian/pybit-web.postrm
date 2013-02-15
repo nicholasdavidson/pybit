@@ -7,8 +7,8 @@ if [ -f /usr/share/debconf/confmodule ]; then
 fi
 if [ -f /usr/share/dbconfig-common/dpkg/postrm.pgsql  ]; then
 	. /usr/share/dbconfig-common/dpkg/postrm.pgsql
+	dbc_go pybit-web $@
 fi
-dbc_go pybit-web $@
 
 case "$1" in
 	purge)

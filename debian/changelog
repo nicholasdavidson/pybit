@@ -1,3 +1,10 @@
+pybit (0.5.0-2) UNRELEASED; urgency=low
+
+  * Put call to dbc_go inside the check for dbconfig-common.
+    (Closes: #700615)
+
+ -- Neil Williams <codehelp@debian.org>  Fri, 15 Feb 2013 11:53:58 +0000
+
 pybit (0.5.0-1) experimental; urgency=low
 
   * New upstream release.
