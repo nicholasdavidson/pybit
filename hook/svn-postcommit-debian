@@ -91,26 +91,29 @@ fi
 if [ ! "${PKG}" ]; then
 	exit 0
 fi
-DEBDIR=`dirname $PKG`
-PKGDIR=`dirname $DEBDIR`
-PKG=`basename $PKGDIR`
-CHGLG=`echo ${RES} | sed -e 's/^. //'`
-TMPFILE=`mktemp`
-svn cat file://${REPOS}/${CHGLG} > ${TMPFILE}
-VERSION=`dpkg-parsechangelog -l${TMPFILE} | grep '^Version: ' | sed -e 's/^.*: //'`
-SUITE=`dpkg-parsechangelog -l${TMPFILE} | grep '^Distribution: ' | sed -e 's/^.*: //'`
+for CHANGELOG in $PKG
+do
+	DEBDIR=`dirname $CHANGELOG`
+	PKGDIR=`dirname $DEBDIR`
+	PKG=`basename $PKGDIR`
+	CHGLG=`echo ${CHANGELOG} | sed -e 's/^. //'`
+	TMPFILE=`mktemp`
+	svn cat file://${REPOS}/${CHGLG}@${REV} > ${TMPFILE}
+	VERSION=`dpkg-parsechangelog -l${TMPFILE} | grep '^Version: ' | sed -e 's/^.*: //'`
+	SUITE=`dpkg-parsechangelog -l${TMPFILE} | grep '^Distribution: ' | sed -e 's/^.*: //'`
 # replace the svndirectory name with the actual source package name, in case it differs
-PKG=`dpkg-parsechangelog -l${TMPFILE} | grep '^Source: ' |sed -e 's/^.*: //'`
-rm ${TMPFILE}
-CTRL=`echo ${CHGLG} | sed -e 's/changelog$/control/'`
-LIST=`svn cat file://${REPOS}/${CTRL} | grep '^Architecture: '| cut -d':' -f2|sort -u|tr '\n' ','|sed -e 's/ //g'| sed -e 's/,$//'`
-DATASTR="--data-urlencode method=svn"
-DATASTR="${DATASTR} --data-urlencode distribution=${DISTRO_NAME}"
-DATASTR="${DATASTR} --data-urlencode vcs_id=${REV}"
-DATASTR="${DATASTR} --data-urlencode architecture_list=${LIST}"
-DATASTR="${DATASTR} --data-urlencode package_version=${VERSION}"
-DATASTR="${DATASTR} --data-urlencode package=${PKG}"
-DATASTR="${DATASTR} --data-urlencode suite=${SUITE}"
-DATASTR="${DATASTR} --data-urlencode format=deb"
-DATASTR="${DATASTR} --data-urlencode uri=${ANON_SVN}/${PKGDIR}"
-/usr/bin/curl -i -X POST ${PYBIT_HTTP} ${DATASTR} --user "${USERNAME}:${PASSWORD}"
+	PKG_PATH=`dpkg-parsechangelog -l${TMPFILE} | grep '^Source: ' |sed -e 's/^.*: //'`
+	rm ${TMPFILE}
+	CTRL=`echo ${CHGLG} | sed -e 's/changelog$/control/'`
+	LIST=`svn cat file://${REPOS}/${CTRL}@${REV} | grep '^Architecture: '| cut -d':' -f2|sort -u|tr '\n' ','|sed -e 's/ //g'| sed -e 's/,$//'`
+	DATASTR="--data-urlencode method=svn"
+	DATASTR="${DATASTR} --data-urlencode distribution=${DISTRO_NAME}"
+	DATASTR="${DATASTR} --data-urlencode vcs_id=${REV}"
+	DATASTR="${DATASTR} --data-urlencode architecture_list=${LIST}"
+	DATASTR="${DATASTR} --data-urlencode package_version=${VERSION}"
+	DATASTR="${DATASTR} --data-urlencode package=${PKG_PATH}"
+	DATASTR="${DATASTR} --data-urlencode suite=${SUITE}"
+	DATASTR="${DATASTR} --data-urlencode format=deb"
+	DATASTR="${DATASTR} --data-urlencode uri=${ANON_SVN}/${PKGDIR}"
+	echo /usr/bin/curl -i -X POST ${PYBIT_HTTP} ${DATASTR} --user "${USERNAME}:${PASSWORD}"
+done
