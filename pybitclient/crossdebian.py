@@ -24,7 +24,7 @@ import os
 import logging
 import pybitclient
 from pybitclient.buildclient import PackageHandler
-from pybit.models import BuildRequest, checkValue
+from pybit.models import BuildRequest
 
 class DebianCrossClient(PackageHandler):
 	dput_cfg = ""

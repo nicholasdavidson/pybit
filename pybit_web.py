@@ -23,9 +23,7 @@
 #	   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #	   MA 02110-1301, USA.
 
-import jsonpickle
 from pybitweb.db import Database
-from pybitweb import lookups, buildd, job, package, packageinstance
 from pybitweb.controller import Controller
 import optparse
 import pybitweb

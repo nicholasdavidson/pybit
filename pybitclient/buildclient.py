@@ -21,8 +21,6 @@
 #       MA 02110-1301, USA.
 
 import os
-import pybitclient
-import pybit
 
 class VersionControlHandler(object):
 	def fetch_source(self):

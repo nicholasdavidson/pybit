@@ -29,9 +29,7 @@ import jsonpickle
 import os
 import pybit
 import logging
-from pybit.models import BuildRequest, CancelRequest, JobHistory, BuildEnv,\
-	BuildEnvSuiteArch, SuiteArch
-from jsonpickle import json
+from pybit.models import BuildRequest, CancelRequest
 
 class Controller(object):
 

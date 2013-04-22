@@ -21,14 +21,9 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
+from bottle import Bottle,response,request
 import jsonpickle
-from db import Database
-from pybit.models import Arch,Dist,Format,Status,Suite,SuiteArch,Blacklist
-import bottle_basic_auth
 from bottle_basic_auth import requires_auth
-import psycopg2
-import psycopg2.errorcodes
 from psycopg2 import errorcodes
 
 def get_arch_app(settings, db):

@@ -22,13 +22,9 @@
 #   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #   MA 02110-1301, USA.
 
-import jsonpickle
-import os
-import sys
 import pybit
 
-from os.path import isfile
-from pybitweb.bottle import Bottle,request,response
+from pybitweb.bottle import request,response
 
 # TODO: This is a huge bodge. Query the DB for this!
 def check_auth(username, password):

@@ -23,15 +23,11 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
+from bottle import Bottle,response,request
 import jsonpickle
 import logging
-import sys
-from db import Database
-import bottle_basic_auth
 from bottle_basic_auth import requires_auth
-from controller import Controller
-from pybit.models import Transport,JobHistory
+from pybit.models import Transport
 import psycopg2.errorcodes
 
 #NEW: proxy to class method controller.add
@@ -173,10 +169,6 @@ def get_job_app(settings, db, controller) :
 		suite = job.packageinstance.get_suite_name()
 		pkg_format = job.packageinstance.get_format_name()
 		build_environment = job.packageinstance.get_buildenv_name()
-
-		method = transport.method
-		vcs_id = transport.vcs_id
-		uri = transport.uri
 
 		# Pass to controller to queue up - Pass build_environment if any.
 		if app.config['controller'].process_job(dist,arch,package_version,package_name,suite,pkg_format,transport,build_environment):

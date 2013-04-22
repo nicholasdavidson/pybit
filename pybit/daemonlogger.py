@@ -34,7 +34,6 @@
 
 import os
 import sys
-from logging import Logger
 import daemon
 
 class FileLikeLogger:

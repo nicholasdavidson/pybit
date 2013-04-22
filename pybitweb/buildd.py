@@ -22,11 +22,9 @@
 #       MA 02110-1301, USA.
 
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
+from bottle import Bottle,template,response,request
 import jsonpickle
-import bottle_basic_auth
 from bottle_basic_auth import requires_auth
-from controller import Controller
 import psycopg2.errorcodes
 
 def get_buildd_app(settings, db, controller):

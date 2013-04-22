@@ -21,10 +21,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import psycopg2
 import psycopg2.extras
-import psycopg2.errorcodes
-import jsonpickle
 import cgi
 import math
 import re
