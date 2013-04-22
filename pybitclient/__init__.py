@@ -384,7 +384,7 @@ contacted or None if the job doesn't exist
 			self.command_chan.exchange_declare(exchange=pybit.exchange_name, type="direct", durable=True, auto_delete=False)
 
 		except socket.error as e:
-			logging.debug ("Couldn't connect rabbitmq server with: %s" % repr(self.conn_info))
+			logging.debug ("Couldn't connect rabbitmq server with: %s . Error: %s ." % repr(self.conn_info), str(e))
 			return False
 
 		for suite, info in self.listen_list.items():

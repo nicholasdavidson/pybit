@@ -23,6 +23,7 @@
 import os
 import pybitclient
 from pybitclient.buildclient import VersionControlHandler
+import logging
 
 class SubversionClient(VersionControlHandler):
 	def fetch_source(self, buildreq, conn_data):

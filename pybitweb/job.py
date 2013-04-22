@@ -252,9 +252,9 @@ def get_job_app(settings, db, controller) :
 			elif(retval == False):
 				response.status = "404 Cannot DELETE"
 			elif(retval == "23503"):
-				response.status = "409 " + str(errorcodes.lookup(retval))
+				response.status = "409 " + str(psycopg2.errorcodes.lookup(retval))
 			else:
-				response.status = "500 " + str(errorcodes.lookup(retval))
+				response.status = "500 " + str(psycopg2.errorcodes.lookup(retval))
 
 			return response.status
 		except Exception as e:

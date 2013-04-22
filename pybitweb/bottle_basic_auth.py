@@ -54,7 +54,7 @@ def requires_auth(f):
 	def decorated(*args, **kwargs):
 		auth = request.auth
 		if not auth:
-			  return authenticate()
+			return authenticate()
 		elif not check_auth(auth[0],auth[1]):
 			response.status = "401 - Unauthorized"
 			return authenticate()
