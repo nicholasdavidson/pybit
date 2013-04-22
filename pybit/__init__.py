@@ -26,10 +26,10 @@ import optparse
 
 def merge_options(settings, options_group, options):
 	if not isinstance(options_group, optparse.OptionGroup):
-		print "E: options must be an instance of optparse.OptionsGroup."
+		print("E: options must be an instance of optparse.OptionsGroup.")
 		return {}
 	if settings is None:
-		print "E: can't merge a null settings dictionary."
+		print("E: can't merge a null settings dictionary.")
 		return {}
 	verbose = False
 	if hasattr(options,'verbose'):
@@ -40,13 +40,13 @@ def merge_options(settings, options_group, options):
 		if value is not None and value is not "":
 			settings[option.dest] = value
 			if verbose == True:
-				print "Setting %s to %s" % (option.dest, value)
+				print(("Setting %s to %s" % (option.dest, value)))
 		else:
 			if verbose == True:
 				if option.dest in settings :
-					print "Leaving %s as %s" % (option.dest, settings[option.dest])
+					print(("Leaving %s as %s" % (option.dest, settings[option.dest])))
 				else:
-					print "No such value %s" % option.dest
+					print(("No such value %s" % option.dest))
 
 
 	return settings
@@ -84,7 +84,7 @@ def load_settings(path):
 		try:
 			settings = jsonpickle.decode(encoded_string ) 
 		except ValueError :
-			print "Couldn't load any settings files."
+			print("Couldn't load any settings files.")
 	
 	return (settings, opened_path)
 

@@ -44,8 +44,8 @@ def main():
 	build_client = PyBITClient(settings["host_arch"], settings["distribution"], settings["pkg_format"], settings["suites"], None, settings)
 
 	if not os.path.isfile (testconf):
-		print "E: Unable to find %s - no test data for this buildd" % (testconf)
-		print "I: Copy /usr/share/pybitclient/buildd-test.conf and modify it for your available packages."
+		print(("E: Unable to find %s - no test data for this buildd" % (testconf)))
+		print("I: Copy /usr/share/pybitclient/buildd-test.conf and modify it for your available packages.")
 		return 1
 	else :
 		(test_options, opened_path) = pybit.load_settings(testconf)
@@ -64,7 +64,7 @@ def main():
 		for tag in tags :
 			tag_run = "%s%s" % (tag, count)
 			if tag_run not in test_options :
-				print "E: missing config item in %s \"%s\"" % (testconf, tag_run)
+				print(("E: missing config item in %s \"%s\"" % (testconf, tag_run)))
 				return -2
 			if test_options[tag_run] == '' :
 				test_options[tag_run] = None
@@ -93,7 +93,7 @@ def main():
 			elif tag == "role" :
 				role = test_options[tag_run]
 			else :
-				print "E: unrecognised option: %s" % tag_run
+				print(("E: unrecognised option: %s" % tag_run))
 				return -1
 		logging.debug("I: starting test #%s (%s)" % (count, role))
 		if commands is not None :

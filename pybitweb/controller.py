@@ -70,7 +70,7 @@ class Controller(object):
 			if self.db.check_blacklist("vcs_uri",transport.uri):
 				return False
 		except Exception as e:
-			print "Exception checking blacklist " + str(e)
+			print(("Exception checking blacklist " + str(e)))
 			return False
 
 		try:
@@ -339,13 +339,13 @@ class Controller(object):
 			return False
 		except amqp.AMQPChannelException as e:
 			if e.amqp_reply_code == 405:
-				print "405 from buildd_command_queue_exists. Returning True."
+				print("405 from buildd_command_queue_exists. Returning True.")
 				return True # Locked i.e. exists
 			elif e.amqp_reply_code == 404:
-				print "404 from buildd_command_queue_exists. Returning False."
+				print("404 from buildd_command_queue_exists. Returning False.")
 				return False # doesnt exist
 			else:
 				return False
 		except Exception as e:
-			print "Error in buildd_command_queue_exists. Returning False." + str(e)
+			print(("Error in buildd_command_queue_exists. Returning False." + str(e)))
 			return False;  # Error
