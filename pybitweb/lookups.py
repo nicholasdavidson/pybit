@@ -25,6 +25,7 @@ from bottle import Bottle,response,request
 import jsonpickle
 from bottle_basic_auth import requires_auth
 from psycopg2 import errorcodes
+import logging
 
 def get_arch_app(settings, db):
 	app = Bottle()
@@ -791,6 +792,6 @@ def get_log_app(settings, db):
 
 	@app.route('/', method='POST')
 	def log():
-		logline ="(" + str(request.remote_addr) + ") : %s - %s - %s - %s" % (request.forms['asctime'],request.forms['name'],request.forms['levelname'],request.forms['msg'])
-		print str(logline) # TODO: Just do this for now
+		logline ="(" + str(request.remote_addr) + ") @ %s - %s - %s - %s" % (request.forms['asctime'],request.forms['name'],request.forms['levelname'],request.forms['msg'])
+		logging.debug(logline)
 	return app

@@ -6,6 +6,8 @@ import buildd
 import package
 import packageinstance
 import os
+import logging
+from logging.handlers import WatchedFileHandler
 
 def get_app(settings, db, controller):
     app = Bottle()
@@ -13,6 +15,13 @@ def get_app(settings, db, controller):
 
     local_path = "pybitweb/static"
     installed_path = settings['web']['installed_path']
+    
+    # For logging remote client's logs to disk on server
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    watchedHandler = WatchedFileHandler("/var/log/pybit_rlog.log")
+    watchedHandler.setFormatter(logging.Formatter('%(msg)s'))
+    logger.addHandler(watchedHandler)
 
     def getPath():
         if os.path.exists(local_path):

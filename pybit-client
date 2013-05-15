@@ -75,8 +75,7 @@ def getDaemonLogger (filePath, format = None) :
 		# TODO: This is a work in progress.
 		logging.raiseExceptions = False  # We dont care if server goes away
 		http_handler = logging.handlers.HTTPHandler("localhost:8080",'/log/',method='POST')
-		formatter2 = logging.Formatter(logging.Formatter(format or '%(asctime)s - %(name)s - %(levelname)s - %(msg)s'))
-		http_handler.setFormatter(formatter2)
+		http_handler.setFormatter(logging.Formatter(format or '%(asctime)s - %(name)s - %(levelname)s - %(msg)s'))
 		logger.addHandler(http_handler)
 	except Exception as e:
 		pass # We dont care if server goes away
