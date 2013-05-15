@@ -15,7 +15,7 @@ pybit (0.4.2-1) experimental; urgency=low
   * Add pybit-web manpage to cover some of the dbconfig-common options.
   * Update the watch file to work with tags. Thanks to Bart Martens.
 
- -- James Bennet <James.Bennet@toby-churchill.com>  Mon, 21 Jan 2013 11:26:19 +0000
+ -- James Bennet <github@james-bennet.com>  Mon, 21 Jan 2013 11:26:19 +0000
 
 pybit (0.4.1-2) experimental; urgency=low
 
@@ -66,27 +66,27 @@ pybit (0.1.1-1) unstable; urgency=low
 
   * Update from initial upstream tag.
 
- -- Neil Williams <neilw@toby-churchill.com>  Tue, 06 Nov 2012 17:30:48 +0000
+ -- Neil Williams <codehelp@debian.org>  Tue, 06 Nov 2012 17:30:48 +0000
 
 pybit (0.1.0-1) unstable; urgency=low
 
   * Switch from a native package to the github upstream
   * Switch to using standard Debian suites for eventual upload.
 
- -- Neil Williams <neilw@toby-churchill.com>  Thu, 01 Nov 2012 14:35:57 +0000
+ -- Neil Williams <codehelp@debian.org>  Thu, 01 Nov 2012 14:35:57 +0000
 
 pybit (0.0.42) pybit; urgency=low
 
   * Tweaked to remove buildd option from job submission form
 
- -- James Bennet <James.Bennet@toby-churchill.com>  Thu, 01 Nov 2012 12:54:15 +0000
+ -- James Bennet <github@james-bennet.com>  Thu, 01 Nov 2012 12:54:15 +0000
 
 pybit (0.0.41) pybit; urgency=low
 
   * Integrated new static content for HTML GUI, so it is served by
     python bottle server
 
- -- James Bennet <James.Bennet@toby-churchill.com>  Thu, 01 Nov 2012 09:02:55 +0000
+ -- James Bennet <github@james-bennet.com>  Thu, 01 Nov 2012 09:02:55 +0000
 
 pybit (0.0.40) pybit; urgency=low
 
@@ -94,20 +94,20 @@ pybit (0.0.40) pybit; urgency=low
     processes
   * Move dput_dest into the config file
 
- -- Neil Williams <neilw@toby-churchill.com>  Wed, 31 Oct 2012 16:13:23 +0000
+ -- Neil Williams <codehelp@debian.org>  Wed, 31 Oct 2012 16:13:23 +0000
 
 pybit (0.0.39) pybit; urgency=low
 
   * Controller, web and db settings now loaded by nice common module
     from local files, or etc, and will bail out if not found
 
- -- James Bennet <James.Bennet@toby-churchill.com>  Wed, 31 Oct 2012 14:36:40 +0000
+ -- James Bennet <github@james-bennet.com>  Wed, 31 Oct 2012 14:36:40 +0000
 
 pybit (0.0.38) pybit; urgency=low
 
   * Add a possible cross-build debian client.
 
- -- Neil Williams <neilw@toby-churchill.com>  Wed, 31 Oct 2012 13:37:29 +0000
+ -- Neil Williams <codehelp@debian.org>  Wed, 31 Oct 2012 13:37:29 +0000
 
 pybit (0.0.37) pybit; urgency=low
 
@@ -120,38 +120,38 @@ pybit (0.0.37) pybit; urgency=low
   [ James Bennet ]
   * - i Changed to load settings from config files
 
- -- James Bennet <James.Bennet@toby-churchill.com>  Wed, 31 Oct 2012 09:02:01 +0000
+ -- James Bennet <github@james-bennet.com>  Wed, 31 Oct 2012 09:02:01 +0000
 
 pybit (0.0.36) pybit; urgency=low
 
   * Renamed the overly wordy JobStatusHistoryModel to JobHistory
 
- -- James Bennet <James.Bennet@toby-churchill.com>  Thu, 25 Oct 2012 16:29:31 +0100
+ -- James Bennet <github@james-bennet.com>  Thu, 25 Oct 2012 16:29:31 +0100
 
 pybit (0.0.35) pybit; urgency=low
 
   * Added the ability to see a job's status history in time order
 
- -- James Bennet <James.Bennet@toby-churchill.com>  Thu, 25 Oct 2012 14:34:04 +0100
+ -- James Bennet <github@james-bennet.com>  Thu, 25 Oct 2012 14:34:04 +0100
 
 pybit (0.0.34) pybit; urgency=low
 
   * Attempted to apply singleton pattern so we didnt keep creating db
     and controller instances all around the place
 
- -- James Bennet <James.Bennet@toby-churchill.com>  Thu, 25 Oct 2012 09:11:09 +0100
+ -- James Bennet <github@james-bennet.com>  Thu, 25 Oct 2012 09:11:09 +0100
 
 pybit (0.0.33) pybit; urgency=low
 
   * Improved README
 
- -- James Bennet <James.Bennet@toby-churchill.com>  Wed, 24 Oct 2012 11:57:46 +0100
+ -- James Bennet <github@james-bennet.com>  Wed, 24 Oct 2012 11:57:46 +0100
 
 pybit (0.0.32) pybit; urgency=low
 
   * Changed my code to speak to simon's controller code
 
- -- James Bennet <James.Bennet@toby-churchill.com>  Wed, 24 Oct 2012 10:12:50 +0100
+ -- James Bennet <github@james-bennet.com>  Wed, 24 Oct 2012 10:12:50 +0100
 
 pybit (0.0.31) pybit; urgency=low
 
@@ -159,34 +159,34 @@ pybit (0.0.31) pybit; urgency=low
   * Migrate test client script to work with PackageHandler.
   * Add the is_dry_run compare back to support the test case.
 
- -- Neil Williams <neilw@toby-churchill.com>  Wed, 24 Oct 2012 09:56:39 +0100
+ -- Neil Williams <codehelp@debian.org>  Wed, 24 Oct 2012 09:56:39 +0100
 
 pybit (0.0.30) pybit; urgency=low
 
   * Initial refactor of pybit-client-basic and buildclient and
     subversion.
 
- -- Nick Davidson <nickd@toby-churchill.com>  Tue, 23 Oct 2012 17:06:37 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Tue, 23 Oct 2012 17:06:37 +0100
 
 pybit (0.0.29) pybit; urgency=low
 
   * Build client status reporting added.
 
- -- Nick Davidson <nickd@toby-churchill.com>  Fri, 19 Oct 2012 16:36:39 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Fri, 19 Oct 2012 16:36:39 +0100
 
 pybit (0.0.28) pybit; urgency=low
 
   * Fixed pybit-client-basic to use RESTFUL api to ack requests. Added
     restful API for sending job statuses
 
- -- Nick Davidson <nickd@toby-churchill.com>  Fri, 19 Oct 2012 15:45:57 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Fri, 19 Oct 2012 15:45:57 +0100
 
 pybit (0.0.27) pybit; urgency=low
 
   * Allow the vcs client to clean up what it generated
   * Pass the channel into the clients to allow messages to be sent out.
 
- -- Neil Williams <neilw@toby-churchill.com>  Thu, 18 Oct 2012 16:58:08 +0100
+ -- Neil Williams <codehelp@debian.org>  Thu, 18 Oct 2012 16:58:08 +0100
 
 pybit (0.0.26) pybit; urgency=low
 
@@ -198,102 +198,102 @@ pybit (0.0.26) pybit; urgency=low
     checkbuilddeps doesn't check the available packages, only those
     already installed.
 
- -- Neil Williams <neilw@toby-churchill.com>  Thu, 18 Oct 2012 16:29:51 +0100
+ -- Neil Williams <codehelp@debian.org>  Thu, 18 Oct 2012 16:29:51 +0100
 
 pybit (0.0.25) pybit; urgency=low
 
   * Add jsonpickle to the build-depends.
   * add debug for the current directory
 
- -- Neil Williams <neilw@toby-churchill.com>  Thu, 18 Oct 2012 13:32:05 +0100
+ -- Neil Williams <codehelp@debian.org>  Thu, 18 Oct 2012 13:32:05 +0100
 
 pybit (0.0.24) pybit; urgency=low
 
   * Set a test suite for test builds, to be changed back later.
 
- -- Neil Williams <neilw@toby-churchill.com>  Thu, 18 Oct 2012 13:20:16 +0100
+ -- Neil Williams <codehelp@debian.org>  Thu, 18 Oct 2012 13:20:16 +0100
 
 pybit (0.0.23) development; urgency=low
 
   * Made change to DB so that jobstatus time field was NOT NULL and auto
     set to the current time upon insertion
 
- -- James Bennet <James.Bennet@toby-churchill.com>  Thu, 18 Oct 2012 13:17:33 +0100
+ -- James Bennet <github@james-bennet.com>  Thu, 18 Oct 2012 13:17:33 +0100
 
 pybit (0.0.22) development; urgency=low
 
   * Populate the pybit-web and pybit-common packages.
   * Fix a few typos in the client code.
 
- -- Neil Williams <neilw@toby-churchill.com>  Thu, 18 Oct 2012 12:53:19 +0100
+ -- Neil Williams <codehelp@debian.org>  Thu, 18 Oct 2012 12:53:19 +0100
 
 pybit (0.0.21) development; urgency=low
 
   * Move common code in to pybit and break pacakging thoroughly
 
- -- Nick Davidson <nickd@toby-churchill.com>  Thu, 18 Oct 2012 12:12:34 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Thu, 18 Oct 2012 12:12:34 +0100
 
 pybit (0.0.20) development; urgency=low
 
   * pybit-client-basic has interactive mode.
 
- -- Nick Davidson <nickd@toby-churchill.com>  Thu, 18 Oct 2012 10:12:28 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Thu, 18 Oct 2012 10:12:28 +0100
 
 pybit (0.0.19) development; urgency=low
 
   * Added better accept/reject hanlding.
 
- -- Nick Davidson <nickd@toby-churchill.com>  Thu, 18 Oct 2012 09:29:31 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Thu, 18 Oct 2012 09:29:31 +0100
 
 pybit (0.0.18) development; urgency=low
 
   * Added proper delivery tag to pybit-client-basic.
 
- -- Nick Davidson <nickd@toby-churchill.com>  Wed, 17 Oct 2012 16:49:44 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Wed, 17 Oct 2012 16:49:44 +0100
 
 pybit (0.0.17) development; urgency=low
 
   * Added consumer for pybit client basic.
 
- -- Nick Davidson <nickd@toby-churchill.com>  Wed, 17 Oct 2012 16:26:37 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Wed, 17 Oct 2012 16:26:37 +0100
 
 pybit (0.0.16) development; urgency=low
 
   * Improve build-client to actually build jobs.
 
- -- Nick Davidson <nickd@toby-churchill.com>  Wed, 17 Oct 2012 13:36:53 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Wed, 17 Oct 2012 13:36:53 +0100
 
 pybit (0.0.15) development; urgency=low
 
   * Handle scoping issues after the message has been decoded and handle
     some missing attributes.
 
- -- Neil Williams <neilw@toby-churchill.com>  Mon, 15 Oct 2012 17:01:57 +0100
+ -- Neil Williams <codehelp@debian.org>  Mon, 15 Oct 2012 17:01:57 +0100
 
 pybit (0.0.14) development; urgency=low
 
   * Add a runtime check on the format attribute
 
- -- Neil Williams <neilw@toby-churchill.com>  Mon, 15 Oct 2012 15:16:26 +0100
+ -- Neil Williams <codehelp@debian.org>  Mon, 15 Oct 2012 15:16:26 +0100
 
 pybit (0.0.13) development; urgency=low
 
   * Move location of the client.conf file to the base class and allow
     tests for dry_run being set.
 
- -- Neil Williams <neilw@toby-churchill.com>  Mon, 15 Oct 2012 12:17:17 +0100
+ -- Neil Williams <codehelp@debian.org>  Mon, 15 Oct 2012 12:17:17 +0100
 
 pybit (0.0.12) development; urgency=low
 
   * Fixed accidental altering of connection properties.
 
- -- Nick Davidson <nickd@toby-churchill.com>  Mon, 15 Oct 2012 11:08:18 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Mon, 15 Oct 2012 11:08:18 +0100
 
 pybit (0.0.11) development; urgency=low
 
   * Added back in support for packageinstance reports.
 
- -- Nick Davidson <nickd@toby-churchill.com>  Mon, 15 Oct 2012 11:01:25 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Mon, 15 Oct 2012 11:01:25 +0100
 
 pybit (0.0.10) development; urgency=low
 
@@ -301,59 +301,59 @@ pybit (0.0.10) development; urgency=low
   * Impliment supportedArchitectures and added /report/suitearch/<suite>
     endpoint.
 
- -- Nick Davidson <nickd@toby-churchill.com>  Mon, 15 Oct 2012 10:56:08 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Mon, 15 Oct 2012 10:56:08 +0100
 
 pybit (0.0.9) development; urgency=low
 
   * Support local paths and tests without having the package installed
 
- -- Neil Williams <neilw@toby-churchill.com>  Mon, 15 Oct 2012 10:51:57 +0100
+ -- Neil Williams <codehelp@debian.org>  Mon, 15 Oct 2012 10:51:57 +0100
 
 pybit (0.0.8) development; urgency=low
 
   * Migrate to python2.6 for easier exception handling.
 
- -- Neil Williams <neilw@toby-churchill.com>  Fri, 12 Oct 2012 10:54:13 +0100
+ -- Neil Williams <codehelp@debian.org>  Fri, 12 Oct 2012 10:54:13 +0100
 
 pybit (0.0.7) development; urgency=low
 
   * Add a subversion build client class to fetch the source code.
 
- -- Neil Williams <neilw@toby-churchill.com>  Fri, 12 Oct 2012 10:35:24 +0100
+ -- Neil Williams <codehelp@debian.org>  Fri, 12 Oct 2012 10:35:24 +0100
 
 pybit (0.0.6) development; urgency=low
 
   * Added the concept of suite-arches so we can enable or disable
     architectures on a per suite basis.
 
- -- Nick Davidson <nickd@toby-churchill.com>  Fri, 12 Oct 2012 09:30:26 +0100
+ -- Nick Davidson <nicholas.davidson@gmail.com>  Fri, 12 Oct 2012 09:30:26 +0100
 
 pybit (0.0.5) development; urgency=low
 
   * Rename the pybit-client for use in /usr/bin/
 
- -- Neil Williams <neilw@toby-churchill.com>  Wed, 10 Oct 2012 12:53:21 +0100
+ -- Neil Williams <codehelp@debian.org>  Wed, 10 Oct 2012 12:53:21 +0100
 
 pybit (0.0.4) development; urgency=low
 
   * Package the SQL schema
 
- -- Neil Williams <neilw@toby-churchill.com>  Wed, 10 Oct 2012 12:53:09 +0100
+ -- Neil Williams <codehelp@debian.org>  Wed, 10 Oct 2012 12:53:09 +0100
 
 pybit (0.0.3) development; urgency=low
 
   * Add more content to the package descriptions
 
- -- Neil Williams <neilw@toby-churchill.com>  Wed, 10 Oct 2012 12:29:37 +0100
+ -- Neil Williams <codehelp@debian.org>  Wed, 10 Oct 2012 12:29:37 +0100
 
 pybit (0.0.2) development; urgency=low
 
   * Add an SVN postcommit hook
 
- -- Neil Williams <neilw@toby-churchill.com>  Wed, 10 Oct 2012 12:18:07 +0100
+ -- Neil Williams <codehelp@debian.org>  Wed, 10 Oct 2012 12:18:07 +0100
 
 pybit (0.0.1) development; urgency=low
 
   * Initial packaging
 
- -- Neil Williams <neilw@toby-churchill.com>  Wed, 10 Oct 2012 11:44:47 +0100
+ -- Neil Williams <codehelp@debian.org>  Wed, 10 Oct 2012 11:44:47 +0100
