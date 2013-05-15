@@ -784,3 +784,13 @@ def get_blacklist_app(settings, db):
 			raise Exception('Exception encountered: ' + str(e))
 			return None
 	return app
+
+def get_log_app(settings, db):
+	app = Bottle()
+	app.config={'settings':settings, 'db':db}
+
+	@app.route('/', method='POST')
+	def log():
+		logline ="(" + str(request.remote_addr) + ") : %s - %s - %s - %s" % (request.forms['asctime'],request.forms['name'],request.forms['levelname'],request.forms['msg'])
+		print str(logline) # TODO: Just do this for now
+	return app
