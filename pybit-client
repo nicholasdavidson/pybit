@@ -64,21 +64,25 @@ def run(settings) :
 			else:
 				sys.exit (os.EX_OSERR)
 
-def getDaemonLogger (filePath, format = None) :
-	logger = logging.getLogger()
-	logger.setLevel(logging.DEBUG)
-	watchedHandler = WatchedFileHandler(filePath)
-	watchedHandler.setFormatter(logging.Formatter(format or '%(asctime)s %(msg)s'))
-	logger.addHandler(watchedHandler)
-	
+def getDaemonLogger (filePath, format = None, settings = None) :
+	try:
+		logger = logging.getLogger()
+		logger.setLevel(logging.DEBUG)
+		watchedHandler = WatchedFileHandler(filePath)
+		watchedHandler.setFormatter(logging.Formatter(format or '%(asctime)s %(msg)s'))
+		logger.addHandler(watchedHandler)
+	except Exception as e:
+		logging.raiseExceptions = False 
+		print "Error logging to log file"
+		
 	try:
 		# TODO: This is a work in progress.
 		logging.raiseExceptions = False  # We dont care if server goes away
-		http_handler = logging.handlers.HTTPHandler("localhost:8080",'/log/',method='POST')
+		http_handler = logging.handlers.HTTPHandler(settings['log_host'],settings['log_url'],method='POST')
 		http_handler.setFormatter(logging.Formatter(format or '%(asctime)s - %(name)s - %(levelname)s - %(msg)s'))
 		logger.addHandler(http_handler)
 	except Exception as e:
-		pass # We dont care if server goes away
+		print "Error logging to server"
 	return logger
 
 if __name__ == '__main__':
@@ -141,8 +145,18 @@ if __name__ == '__main__':
 
 	(options, args) = parser.parse_args()
 
+	(settings, opened_path) = pybit.load_settings(options.conf_file)
+
+	settings = pybit.merge_options(settings, groupConfigFile, options)
+	if settings == {}:
+		logging.debug ("No settings found - exiting")
+		sys.exit(os.EX_OSERR)
+	if 'configured'  in settings and settings['configured'] == False:
+		logging.debug ("Please configure your client.")
+		sys.exit(os.EX_OK)
+
 	if options.daemonise :
-		testLogger = getDaemonLogger('/var/log/pybitclient.log')
+		testLogger = getDaemonLogger('/var/log/pybitclient.log',None,settings)
 		context = LoggingDaemonContext()
 		context.loggers_preserve=[testLogger]
 		context.signal_map = {
@@ -154,16 +168,6 @@ if __name__ == '__main__':
 #		FORMAT = format or '%(asctime)s %(msg)s'
 		logging.basicConfig(level=logging.DEBUG)
 		logging.debug ("Not daemonised")
-
-	(settings, opened_path) = pybit.load_settings(options.conf_file)
-
-	settings = pybit.merge_options(settings, groupConfigFile, options)
-	if settings == {}:
-		logging.debug ("No settings found - exiting")
-		sys.exit(os.EX_OSERR)
-	if 'configured'  in settings and settings['configured'] == False:
-		logging.debug ("Please configure your client.")
-		sys.exit(os.EX_OK)
 
 	if options.daemonise:
 		with context :
