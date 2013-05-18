@@ -3,10 +3,10 @@
 #       pybit-web
 #       Copyright 2012:
 #
-#		Nick Davidson <nickd@toby-churchill.com>,
-#		Simon Haswell <simonh@toby-churchill.com>,
-#		Neil Williams <neilw@toby-churchill.com>,
-#		James Bennet <github@james-bennet.com / James.Bennet@toby-churchill.com>
+#		Nick Davidson <nicholas.davidson@gmail.com>,
+#		Simon Haswell <maxcady78@hotmail.co.uk>,
+#		Neil Williams <codehelp@debian.org>,
+#		James Bennet <github@james-bennet.com>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -23,15 +23,11 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
+from bottle import Bottle,response,request
 import jsonpickle
 import logging
-import sys
-from db import Database
-import bottle_basic_auth
 from bottle_basic_auth import requires_auth
-from controller import Controller
-from pybit.models import Transport,JobHistory
+from pybit.models import Transport
 import psycopg2.errorcodes
 
 #NEW: proxy to class method controller.add
@@ -174,10 +170,6 @@ def get_job_app(settings, db, controller) :
 		pkg_format = job.packageinstance.get_format_name()
 		build_environment = job.packageinstance.get_buildenv_name()
 
-		method = transport.method
-		vcs_id = transport.vcs_id
-		uri = transport.uri
-
 		# Pass to controller to queue up - Pass build_environment if any.
 		if app.config['controller'].process_job(dist,arch,package_version,package_name,suite,pkg_format,transport,build_environment):
 			app.log.debug("Retry job processed OK!")
@@ -252,9 +244,9 @@ def get_job_app(settings, db, controller) :
 			elif(retval == False):
 				response.status = "404 Cannot DELETE"
 			elif(retval == "23503"):
-				response.status = "409 " + str(errorcodes.lookup(retval))
+				response.status = "409 " + str(psycopg2.errorcodes.lookup(retval))
 			else:
-				response.status = "500 " + str(errorcodes.lookup(retval))
+				response.status = "500 " + str(psycopg2.errorcodes.lookup(retval))
 
 			return response.status
 		except Exception as e:

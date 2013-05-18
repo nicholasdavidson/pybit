@@ -1,10 +1,10 @@
 #       pybit-web
 #       Copyright 2012:
 #
-#		Nick Davidson <nickd@toby-churchill.com>,
-#		Simon Haswell <simonh@toby-churchill.com>,
-#		Neil Williams <neilw@toby-churchill.com>,
-#		James Bennet <github@james-bennet.com / James.Bennet@toby-churchill.com>
+#		Nick Davidson <nicholas.davidson@gmail.com>,
+#		Simon Haswell <maxcady78@hotmail.co.uk>,
+#		Neil Williams <codehelp@debian.org>,
+#		James Bennet <github@james-bennet.com>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -21,14 +21,9 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
+from bottle import Bottle,response,request
 import jsonpickle
-from db import Database
-from pybit.models import Arch,Dist,Format,Status,Suite,SuiteArch,Blacklist
-import bottle_basic_auth
 from bottle_basic_auth import requires_auth
-import psycopg2
-import psycopg2.errorcodes
 from psycopg2 import errorcodes
 
 def get_arch_app(settings, db):

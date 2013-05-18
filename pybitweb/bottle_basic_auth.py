@@ -2,10 +2,10 @@
 
 #   Copyright 2012:
 #
-#   Nick Davidson <nickd@toby-churchill.com>,
-#   Simon Haswell <simonh@toby-churchill.com>,
-#   Neil Williams <neilw@toby-churchill.com>,
-#   James Bennet <github@james-bennet.com / James.Bennet@toby-churchill.com>
+#   Nick Davidson <nicholas.davidson@gmail.com>,
+#   Simon Haswell <maxcady78@hotmail.co.uk>,
+#   Neil Williams <codehelp@debian.org>,
+#   James Bennet <github@james-bennet.com>
 
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -22,13 +22,9 @@
 #   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #   MA 02110-1301, USA.
 
-import jsonpickle
-import os
-import sys
 import pybit
 
-from os.path import isfile
-from pybitweb.bottle import Bottle,request,response
+from pybitweb.bottle import request,response
 
 # TODO: This is a huge bodge. Query the DB for this!
 def check_auth(username, password):
@@ -54,7 +50,7 @@ def requires_auth(f):
 	def decorated(*args, **kwargs):
 		auth = request.auth
 		if not auth:
-			  return authenticate()
+			return authenticate()
 		elif not check_auth(auth[0],auth[1]):
 			response.status = "401 - Unauthorized"
 			return authenticate()

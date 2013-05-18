@@ -1,9 +1,9 @@
 #       Copyright 2012:
 #
-#       Nick Davidson <nickd@toby-churchill.com>,
-#       Simon Haswell <simonh@toby-churchill.com>,
-#       Neil Williams <neilw@toby-churchill.com>,
-#       James Bennet <github@james-bennet.com / James.Bennet@toby-churchill.com>
+#       Nick Davidson <nicholas.davidson@gmail.com>,
+#       Simon Haswell <maxcady78@hotmail.co.uk>,
+#       Neil Williams <codehelp@debian.org>,
+#       James Bennet <github@james-bennet.com>
 
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -384,7 +384,7 @@ contacted or None if the job doesn't exist
 			self.command_chan.exchange_declare(exchange=pybit.exchange_name, type="direct", durable=True, auto_delete=False)
 
 		except socket.error as e:
-			logging.debug ("Couldn't connect rabbitmq server with: %s" % repr(self.conn_info))
+			logging.debug ("Couldn't connect rabbitmq server with: %s . Error: %s ." % repr(self.conn_info), str(e))
 			return False
 
 		for suite, info in self.listen_list.items():

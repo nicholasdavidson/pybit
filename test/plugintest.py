@@ -26,7 +26,6 @@ import logging
 import sys
 import unittest
 import pybit
-from pybitclient.buildclient import PackageHandler, VersionControlHandler
 
 handler_api = [ 'clean_source', 'fetch_source', 'get_srcdir', 'is_dry_run', 'method' ]
 build_api   = [ 'build_master', 'build_slave', 'update_environment', 'upload' ]

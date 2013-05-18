@@ -34,7 +34,6 @@
 
 import os
 import sys
-from logging import Logger
 import daemon
 
 class FileLikeLogger:
@@ -43,10 +42,10 @@ class FileLikeLogger:
 	def __init__(self, logger):
 		self.logger = logger
 
-	def write(self, str):
-		str = str.rstrip() #get rid of all tailing newlines and white space
-		if str: #don't log emtpy lines
-			for line in str.split('\n'):
+	def write(self, _str):
+		_str = _str.rstrip() #get rid of all tailing newlines and white space
+		if _str: #don't log emtpy lines
+			for line in _str.split('\n'):
 				self.logger.critical(line) #critical to log at any logLevel
 
 	def flush(self):

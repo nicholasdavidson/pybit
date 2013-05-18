@@ -3,10 +3,10 @@
 #       pybit-web
 #       Copyright 2012:
 #
-#		Nick Davidson <nickd@toby-churchill.com>,
-#		Simon Haswell <simonh@toby-churchill.com>,
-#		Neil Williams <neilw@toby-churchill.com>,
-#		James Bennet <github@james-bennet.com / James.Bennet@toby-churchill.com>
+#		Nick Davidson <nicholas.davidson@gmail.com>,
+#		Simon Haswell <maxcady78@hotmail.co.uk>,
+#		Neil Williams <codehelp@debian.org>,
+#		James Bennet <github@james-bennet.com>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -29,9 +29,7 @@ import jsonpickle
 import os
 import pybit
 import logging
-from pybit.models import BuildRequest, CancelRequest, JobHistory, BuildEnv,\
-	BuildEnvSuiteArch, SuiteArch
-from jsonpickle import json
+from pybit.models import BuildRequest, CancelRequest
 
 class Controller(object):
 
@@ -72,7 +70,7 @@ class Controller(object):
 			if self.db.check_blacklist("vcs_uri",transport.uri):
 				return False
 		except Exception as e:
-			print "Exception checking blacklist " + str(e)
+			print(("Exception checking blacklist " + str(e)))
 			return False
 
 		try:
@@ -341,13 +339,13 @@ class Controller(object):
 			return False
 		except amqp.AMQPChannelException as e:
 			if e.amqp_reply_code == 405:
-				print "405 from buildd_command_queue_exists. Returning True."
+				print("405 from buildd_command_queue_exists. Returning True.")
 				return True # Locked i.e. exists
 			elif e.amqp_reply_code == 404:
-				print "404 from buildd_command_queue_exists. Returning False."
+				print("404 from buildd_command_queue_exists. Returning False.")
 				return False # doesnt exist
 			else:
 				return False
 		except Exception as e:
-			print "Error in buildd_command_queue_exists. Returning False." + str(e)
+			print(("Error in buildd_command_queue_exists. Returning False." + str(e)))
 			return False;  # Error

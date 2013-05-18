@@ -1,10 +1,10 @@
 #       pybit-web
 #       Copyright 2012:
 #
-#		Nick Davidson <nickd@toby-churchill.com>,
-#		Simon Haswell <simonh@toby-churchill.com>,
-#		Neil Williams <neilw@toby-churchill.com>,
-#		James Bennet <github@james-bennet.com / James.Bennet@toby-churchill.com>
+#		Nick Davidson <nicholas.davidson@gmail.com>,
+#		Simon Haswell <maxcady78@hotmail.co.uk>,
+#		Neil Williams <codehelp@debian.org>,
+#		James Bennet <github@james-bennet.com>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -21,11 +21,8 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-from bottle import Bottle,route,run,template,debug,HTTPError,response,error,redirect,request
+from bottle import Bottle,response,request
 import jsonpickle
-from db import Database
-from controller import Controller
-import bottle_basic_auth
 from bottle_basic_auth import requires_auth
 import psycopg2.errorcodes
 
@@ -118,9 +115,9 @@ def get_packages_app(settings, db, controller):
 			elif(retval == False):
 				response.status = "404 Cannot DELETE"
 			elif(retval == "23503"):
-				response.status = "409 " + str(errorcodes.lookup(retval))
+				response.status = "409 " + str(psycopg2.errorcodes.lookup(retval))
 			else:
-				response.status = "500 " + str(errorcodes.lookup(retval))
+				response.status = "500 " + str(psycopg2.errorcodes.lookup(retval))
 
 			return response.status
 		except Exception as e:
