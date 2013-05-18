@@ -24,7 +24,7 @@
 
 import pybit
 
-from pybitweb.bottle import request,response
+from bottle import request,response
 
 # TODO: This is a huge bodge. Query the DB for this!
 def check_auth(username, password):

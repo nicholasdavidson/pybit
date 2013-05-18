@@ -27,7 +27,7 @@ from pybitweb.db import Database
 from pybitweb.controller import Controller
 import optparse
 import pybitweb
-from pybitweb import bottle
+import bottle
 import pybit
 import logging
 import sys

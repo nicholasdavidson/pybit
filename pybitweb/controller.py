@@ -23,7 +23,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-from pybitweb.bottle import response
+from bottle import response
 from amqplib import client_0_8 as amqp
 import jsonpickle
 import os
