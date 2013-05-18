@@ -33,6 +33,7 @@ import requests
 import pybit
 import os
 import daemon
+import daemon.pidlockfile
 import time
 import logging
 import lockfile
@@ -162,9 +163,13 @@ if __name__ == '__main__':
 		if ( isinstance( client_logger, Exception ) ):
 			print( "Fatal error creating client_logger: " + str( client_logger ) ) 
 			sys.exit(os.EX_OSERR)
+		lockfile = daemon.pidlockfile.PIDLockFile(settings['pid_file'])
+		if (lockfile.is_locked()):
+			logging.debug("PIDFile %s already locked" % settings['pid_file'])
+			sys.exit(os.EX_OSERR)
 		context = daemon.DaemonContext(
 			working_directory=os.getcwd(),
-			pidfile=lockfile.FileLock(settings['pid_file']),
+			pidfile=lockfile,
 			files_preserve = [ watched_file_handler.stream ],
 			stderr=watched_file_handler.stream,
 			stdout=watched_file_handler.stream)	
