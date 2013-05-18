@@ -33,9 +33,10 @@ import requests
 import pybit
 import os
 import daemon
-from pybit.daemonlogger import LoggingDaemonContext, FileLikeLogger
+import daemon.pidlockfile
 import time
 import logging
+import lockfile
 from logging.handlers import WatchedFileHandler
 from pybitclient import PyBITClient
 from pybitclient.debianclient import DebianBuildClient
@@ -47,121 +48,159 @@ META = "PYBIT_CLIENT_"
 PIDFILE = "/var/run/pybit-client.pid"
 
 def signal_handler(signal, frame):
-    try:
-        print '\nClosing %s' % os.path.basename(__file__)
-        sys.exit (os.EX_OK)
-    except Exception as e:
-        raise Exception('Error in signal handler: ' + str(e))
-        return
+	try:
+		print '\nClosing %s' % os.path.basename(__file__)
+		sys.exit (os.EX_OK)
+	except Exception as e:
+		raise Exception('Error in signal handler: ' + str(e))
+		return
 
 def run(settings) :
-    conn_info = AMQPConnection(pybit.get_client_queue(settings['clientid']),
-                settings['host'], settings['userid'], settings['password'], settings['vhost'])
-    with PyBITClient(settings['host_arch'], settings['distribution'], settings['pkg_format'], settings['suites'], conn_info, settings) as build_client:
-        while True:
-            if build_client is not None:
-                build_client.wait()
-            else:
-                sys.exit (os.EX_OSERR)
+	conn_info = AMQPConnection(pybit.get_client_queue(settings['clientid']),
+				settings['host'], settings['userid'], settings['password'], settings['vhost'])
+	with PyBITClient(settings['host_arch'], settings['distribution'], settings['pkg_format'], settings['suites'], conn_info, settings) as build_client:
+		while True:
+			if build_client is not None:
+				build_client.wait()
+			else:
+				sys.exit (os.EX_OSERR)
 
 def getDaemonLogger (filePath, format = None) :
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-    watchedHandler = WatchedFileHandler(filePath)
-    watchedHandler.setFormatter(logging.Formatter(format or '%(asctime)s %(msg)s'))
-    logger.addHandler(watchedHandler)
-    return logger
+	logger = logging.getLogger()
+	logger.setLevel(logging.DEBUG)
+	try:
+		watchedHandler = WatchedFileHandler(filePath)
+	except Exception as e:
+		return e
+
+	watchedHandler.setFormatter(logging.Formatter(format or '%(asctime)s %(msg)s'))
+	logger.addHandler(watchedHandler)
+	return (logger, watchedHandler)
 
 if __name__ == '__main__':
-    parser = optparse.OptionParser()
-    #options we can override in the config file.
-    groupConfigFile = optparse.OptionGroup(parser,
-        "Config File Defaults","All the options which have defaults read from a config file.")
-    groupConfigFile.add_option("--host_arch", dest="host_arch",
-        help="Architecture to use, defaults to i386", metavar= META + "ARCH")
+	parser = optparse.OptionParser()
+	#options we can override in the config file.
+	groupConfigFile = optparse.OptionGroup(parser,
+		"Config File Defaults","All the options which have defaults read from a config file.")
+	groupConfigFile.add_option("--host_arch", dest="host_arch",
+		help="Architecture to use, defaults to i386", metavar= META + "ARCH")
 
-    groupConfigFile.add_option("--distribution",
-        help="Distribution to use, defaults to Debian",
-        metavar= META +"DIST")
+	groupConfigFile.add_option("--distribution",
+		help="Distribution to use, defaults to Debian",
+		metavar= META +"DIST")
 
-    groupConfigFile.add_option("--pkg_format", dest="pkg_format",
-        help="Package type to use, defaults to deb", metavar= META +"FORMAT")
+	groupConfigFile.add_option("--pkg_format", dest="pkg_format",
+		help="Package type to use, defaults to deb", metavar= META +"FORMAT")
 
-    groupConfigFile.add_option("--suite", dest="suites", action="append",
-        help="Suite to use, defaults to unstable. Can be passed multiple times.", metavar= META +"SUITES")
+	groupConfigFile.add_option("--suite", dest="suites", action="append",
+		help="Suite to use, defaults to unstable. Can be passed multiple times.", metavar= META +"SUITES")
 
-    groupConfigFile.add_option("--host", dest="host",
-        help="host to connect to, defaults to localhost.",
-        metavar=META + "HOST")
+	groupConfigFile.add_option("--host", dest="host",
+		help="host to connect to, defaults to localhost.",
+		metavar=META + "HOST")
 
-    groupConfigFile.add_option("--vhost", dest="vhost",
-        help="vhost to connect to, defaults to localhost.",
-        metavar=META + "VHOST")
+	groupConfigFile.add_option("--vhost", dest="vhost",
+		help="vhost to connect to, defaults to localhost.",
+		metavar=META + "VHOST")
 
-    groupConfigFile.add_option("--userid", dest="userid",
-        help="user id to use for AMQP server, defaults to guest.",
-        metavar=META + "USERID")
+	groupConfigFile.add_option("--userid", dest="userid",
+		help="user id to use for AMQP server, defaults to guest.",
+		metavar=META + "USERID")
 
-    groupConfigFile.add_option("--port", dest="port",
-        help="port to use for AMQP server, defaults to 5672",
-        metavar=META + "PORT")
+	groupConfigFile.add_option("--port", dest="port",
+		help="port to use for AMQP server, defaults to 5672",
+		metavar=META + "PORT")
 
-    groupConfigFile.add_option("--password", dest="password",
-        help="password to use for AMQP server, defaults to guest",
-        metavar=META + "PASSWORD")
+	groupConfigFile.add_option("--password", dest="password",
+		help="password to use for AMQP server, defaults to guest",
+		metavar=META + "PASSWORD")
 
-    groupConfigFile.add_option("--clientid", dest="clientid",
-        help="id to use for build-client control queue, defaults to 1 but is unique per amqp server.",
-        metavar=META + "CLIENTID")
+	groupConfigFile.add_option("--clientid", dest="clientid",
+		help="id to use for build-client control queue, defaults to 1 but is unique per amqp server.",
+		metavar=META + "CLIENTID")
 
-    groupConfigFile.add_option("--poll_time", dest="poll_time",
-        help="interval at which to poll the queue, defaults to 60 s.",
-        metavar=META + "POLL_TIME")
+	groupConfigFile.add_option("--poll_time", dest="poll_time",
+		help="interval at which to poll the queue, defaults to 60 s.",
+		metavar=META + "POLL_TIME")
 
-    parser.add_option_group(groupConfigFile)
+	groupConfigFile.add_option("--log_file", dest="log_file", 
+		help="File to log client information.",
+		metavar=META + "LOG_FILE")
 
-    parser.add_option("--conf_file", dest="conf_file", default="client/client.conf",
-        help="Config file to read settings from, defaults to client.conf which will be read from configs/client.conf and /etc/pybit/client.conf in turn.",
-        metavar=META + "CONF_FILE")
+	groupConfigFile.add_option("--pid_file", dest="pid_file", 
+		help="File to pid client information.",
+		metavar=META + "PID_FILE")
 
-    parser.add_option("-v", dest="verbose", action="store_true", default=False,
-        help="Turn on verbose messages.", metavar=META+"VERBOSE")
 
-    parser.add_option("-d", dest="daemonise", action="store_true", default=False,
-        help="Daemonise with output going to /var/log/pybitclient.log", metavar=META+"DAEMONISE")
 
-    (options, args) = parser.parse_args()
+	parser.add_option_group(groupConfigFile)
 
-    if options.daemonise :
-        testLogger = getDaemonLogger('/var/log/pybitclient.log')
-        context = LoggingDaemonContext()
-        context.loggers_preserve=[testLogger]
-        context.signal_map = {
-            signal.SIGTERM: signal_handler,
-            signal.SIGHUP:  signal_handler
-            }
-        logging.debug ("Daemonised")
-    else :
-#       FORMAT = format or '%(asctime)s %(msg)s'
-        logging.basicConfig(level=logging.DEBUG)
-        logging.debug ("Not daemonised")
+	parser.add_option("--conf_file", dest="conf_file", default="client/client.conf",
+		help="Config file to read settings from, defaults to client.conf which will be read from configs/client.conf and /etc/pybit/client.conf in turn.",
+		metavar=META + "CONF_FILE")
 
-    (settings, opened_path) = pybit.load_settings(options.conf_file)
+	parser.add_option("-v", dest="verbose", action="store_true", default=False,
+		help="Turn on verbose messages.", metavar=META+"VERBOSE")
 
-    settings = pybit.merge_options(settings, groupConfigFile, options)
-    if settings == {}:
-        logging.debug ("No settings found - exiting")
-        sys.exit(os.EX_OSERR)
-    if 'configured'  in settings and settings['configured'] == False:
-        logging.debug ("Please configure your client.")
-        sys.exit(os.EX_OK)
+	parser.add_option("-d", dest="daemonise", action="store_true", default=False,
+		help="Daemonise with output going to /var/log/pybitclient.log by defalt",
+		metavar=META+"DAEMONISE")
 
-    if options.daemonise:
-        with context :
-            pid = str(os.getpid())
-            file(PIDFILE, 'w').write(pid)
-            logging.debug ("I: Running build client.")
-            run(settings)
-    else :
-        print "Hit Ctrl-C to quit."
-        run(settings)
+	(options, args) = parser.parse_args()
+	(settings, opened_path) = pybit.load_settings(options.conf_file)
+	settings = pybit.merge_options(settings, groupConfigFile, options)
+
+#	Add default settings we want to not overwrite files.
+
+	if  ( not 'log_file' in settings ):
+		settings['log_file'] = "/var/log/pybit-client.log"
+
+	if ( not 'pid_file' in settings ):
+		settings['pid_file' ] = PIDFILE
+
+	if options.daemonise :
+		client_logger, watched_file_handler = getDaemonLogger( settings['log_file'] )
+		if ( isinstance( client_logger, Exception ) ):
+			print( "Fatal error creating client_logger: " + str( client_logger ) ) 
+			sys.exit(os.EX_OSERR)
+		lockfile = daemon.pidlockfile.PIDLockFile(settings['pid_file'])
+		if (lockfile.is_locked()):
+			logging.debug("PIDFile %s already locked" % settings['pid_file'])
+			sys.exit(os.EX_OSERR)
+		context = daemon.DaemonContext(
+			working_directory=os.getcwd(),
+			pidfile=lockfile,
+			files_preserve = [ watched_file_handler.stream ],
+			stderr=watched_file_handler.stream,
+			stdout=watched_file_handler.stream)	
+	 
+		context.signal_map = {
+			signal.SIGTERM: signal_handler,
+			signal.SIGHUP:  signal_handler
+			}
+		logging.debug ("Daemonised")
+	else :
+#		FORMAT = format or '%(asctime)s %(msg)s'
+		logging.basicConfig(level=logging.DEBUG)
+		logging.debug ("Not daemonised")
+
+
+	if settings == {}:
+		logging.debug ("No settings found - exiting")
+		sys.exit(os.EX_OSERR)
+	if 'configured'  in settings and settings['configured'] == False:
+		logging.debug ("Please configure your client.")
+		sys.exit(os.EX_OK)
+
+	if options.daemonise:
+#		try:	
+		with context :
+			logging.debug ("I: Running build client.")
+			run(settings)
+#		except Exception as e:
+#			logging.debug( "Failed to daemonise: " + str(e) )
+#			sys.exit(os.EX_OSERR)
+	
+	else :
+		print "Hit Ctrl-C to quit."
+		run(settings)
