@@ -1,6 +1,6 @@
 <VirtualHost *:80>
     WSGIDaemonProcess pybitweb user=pybitweb group=pybitweb processes=1 threads=5
-	WSGIProcessGroup pybitweb
+    WSGIProcessGroup pybitweb
     WSGIScriptAlias / /usr/share/pybit-web/application.wsgi
     WSGIPassAuthorization On
     <Directory /usr/share/pybit-web/static>
