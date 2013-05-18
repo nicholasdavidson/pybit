@@ -1,1 +1,0 @@
-hook/svn-postcommit-debian ./usr/share/pybit/svn/

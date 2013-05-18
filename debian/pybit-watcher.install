@@ -1,3 +1,0 @@
-configs/watcher/watcher.conf ./etc/pybit/watcher/
-pybit-watcher ./usr/bin/
-debian/pybit-watcher.1 ./usr/share/man/man1/
