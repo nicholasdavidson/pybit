@@ -115,5 +115,5 @@ do
 	DATASTR="${DATASTR} --data-urlencode suite=${SUITE}"
 	DATASTR="${DATASTR} --data-urlencode format=deb"
 	DATASTR="${DATASTR} --data-urlencode uri=${ANON_SVN}/${PKGDIR}"
-	echo /usr/bin/curl -i -X POST ${PYBIT_HTTP} ${DATASTR} --user "${USERNAME}:${PASSWORD}"
+	/usr/bin/curl -i -X POST ${PYBIT_HTTP} ${DATASTR} --user "${USERNAME}:${PASSWORD}"
 done
