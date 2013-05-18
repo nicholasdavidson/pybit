@@ -1,0 +1,54 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use vars qw/ $username $password $pybit_http $distro_name
+ $suite $arch $ver $pkg $sep /;
+
+#       changes-debian - Debian-based SVN postcommit hook
+#
+#       Copyright 2012 Neil Williams <codehelp@debian.org>
+#
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
+
+######## Configuration ############
+
+# Network location of the pybit-web server
+$pybit_http="http://localhost/job/vcshook";
+
+# Distribution
+$distro_name="Debian";
+
+$username="admin";
+$password="pass";
+
+####### End Configuration #########
+
+$sep = "--data-urlencode";
+while (<>) {
+	m/^Distribution: (\S+)/m and $suite = $1;
+	m/^Architecture: (source)? ?(\S+)/m and $arch = $2;
+	next if (m/^Version: GnuPG/);
+	m/^Version: (\S+)/m and $ver = $1;
+	m/^Source: (\S+)/m and $pkg = $1;
+}
+exit (0) if (not defined $suite or not defined $arch or not defined $pkg);
+print "/usr/bin/curl -i -X POST $pybit_http ";
+print "$sep method=apt $sep distribution=$distro_name ";
+print "$sep vcs_id= $sep architecture_list=$arch ";
+print "$sep package_version=$ver $sep package=$pkg ";
+print "$sep suite=$suite $sep format=deb $sep uri=";
+print " --user \"$username:$password\"\n";
