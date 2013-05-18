@@ -64,7 +64,7 @@ class SubversionClient(VersionControlHandler):
 			src_chgs = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method,
 				("%s_%s_source.changes" % (buildreq.get_package(), buildreq.get_version() ) ) )
 			if (os.path.exists (src_chgs)):
-				command = "dcmd rm %s" % (src_chgs)
+				command = "dcmd rm -f %s" % (src_chgs)
 				if pybitclient.run_cmd (command, self.settings["dry_run"], None):
 					retval = "source-clean-fail"
 			else :
@@ -72,7 +72,7 @@ class SubversionClient(VersionControlHandler):
 				src_chgs = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method,
 					("%s_%s.dsc" % (buildreq.get_package(), buildreq.get_version() ) ) )
 				if (os.path.exists (src_chgs)):
-					command = "dcmd rm %s" % (src_chgs)
+					command = "dcmd rm -f %s" % (src_chgs)
 					if pybitclient.run_cmd (command, self.settings["dry_run"], None):
 						retval = "source-clean-fail"
 		if not retval :
@@ -84,6 +84,7 @@ class SubversionClient(VersionControlHandler):
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
+		# return the exit value of the process - exit (0) for success.
 		if retval == "success":
 			return 0
 		else :
