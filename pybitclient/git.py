@@ -26,55 +26,55 @@ from pybitclient.buildclient import VersionControlHandler
 import logging
 
 class GitClient(VersionControlHandler):
-	def fetch_source(self, buildreq, conn_data):
-		retval = None
-		if buildreq.transport.method != "git":
-			retval = "wrong_method"
-		if not retval :
-			self.workdir = os.path.join (self.settings["buildroot"],
-				buildreq.get_suite(), buildreq.transport.method, buildreq.get_package())
-			if (buildreq.transport.vcs_id is not None):
-				command = "(git clone %s %s ; cd %s ; git checkout %s)" % (buildreq.transport.uri, self.workdir, self.workdir, buildreq.transport.vcs_id)
-			elif (buildreq.transport.uri is not None):
-				command = "git clone %s %s" % (buildreq.transport.uri, self.workdir)
-			else:
-				logging.warn ("E: Could not fetch source, no method URI found")
-				retval = "unrecognised uri"
-		if not retval :
-			if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
-				retval = "fetch_source"
-		if not retval :
-			retval = "success"
-		pybitclient.send_message (conn_data, retval)
-		if retval == "success":
-			return 0
-		else :
-			return 1
+    def fetch_source(self, buildreq, conn_data):
+        retval = None
+        if buildreq.transport.method != "git":
+            retval = "wrong_method"
+        if not retval :
+            self.workdir = os.path.join (self.settings["buildroot"],
+                buildreq.get_suite(), buildreq.transport.method, buildreq.get_package())
+            if (buildreq.transport.vcs_id is not None):
+                command = "(git clone %s %s ; cd %s ; git checkout %s)" % (buildreq.transport.uri, self.workdir, self.workdir, buildreq.transport.vcs_id)
+            elif (buildreq.transport.uri is not None):
+                command = "git clone %s %s" % (buildreq.transport.uri, self.workdir)
+            else:
+                logging.warn ("E: Could not fetch source, no method URI found")
+                retval = "unrecognised uri"
+        if not retval :
+            if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
+                retval = "fetch_source"
+        if not retval :
+            retval = "success"
+        pybitclient.send_message (conn_data, retval)
+        if retval == "success":
+            return 0
+        else :
+            return 1
 
-	def get_srcdir (self):
-		return self.workdir
+    def get_srcdir (self):
+        return self.workdir
 
-	def clean_source (self, buildreq, conn_data) :
-		retval = None
-		if buildreq.transport.method != "git":
-			retval = "wrong_method"
-		if not retval :
-			self.cleandir = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method,
-				buildreq.get_package())
-			command = "rm -rf %s*" % (self.cleandir)
-			if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
-				retval = "failed_clean"
-		retval = "success"
-		pybitclient.send_message (conn_data, retval)
-		# return the exit value of the process - exit (0) for success.
-		if retval == "success":
-			return 0
-		else :
-			return 1
+    def clean_source (self, buildreq, conn_data) :
+        retval = None
+        if buildreq.transport.method != "git":
+            retval = "wrong_method"
+        if not retval :
+            self.cleandir = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method,
+                buildreq.get_package())
+            command = "rm -rf %s*" % (self.cleandir)
+            if pybitclient.run_cmd (command, self.settings["dry_run"], None) :
+                retval = "failed_clean"
+        retval = "success"
+        pybitclient.send_message (conn_data, retval)
+        # return the exit value of the process - exit (0) for success.
+        if retval == "success":
+            return 0
+        else :
+            return 1
 
-	def __init__(self, settings):
-		VersionControlHandler.__init__(self, settings)
-		self.method = "git"
+    def __init__(self, settings):
+        VersionControlHandler.__init__(self, settings)
+        self.method = "git"
 
 def createPlugin (settings) :
-	return GitClient (settings)
+    return GitClient (settings)

@@ -28,32 +28,32 @@ from bottle import request,response
 
 # TODO: This is a huge bodge. Query the DB for this!
 def check_auth(username, password):
-	# Load from local settings file in configs, or if not, from system settings in etc.
-	(auth_settings,path) = pybit.load_settings("web/web.conf")
-	if not auth_settings:
-		# Cant load settings
-		return False
+    # Load from local settings file in configs, or if not, from system settings in etc.
+    (auth_settings,path) = pybit.load_settings("web/web.conf")
+    if not auth_settings:
+        # Cant load settings
+        return False
 
-	# Check credentials
-	if auth_settings['web']['username'] == username and auth_settings['web']['password'] == password:
-		return True
-	else:
-		return False
+    # Check credentials
+    if auth_settings['web']['username'] == username and auth_settings['web']['password'] == password:
+        return True
+    else:
+        return False
 
 def authenticate():
-	response.content_type = "text/html"
-	response.status = "401 - Unauthorized"
-	response.headers['WWW-Authenticate'] = 'Basic realm="PyBit"'
-	return "401 - Unauthorized"
+    response.content_type = "text/html"
+    response.status = "401 - Unauthorized"
+    response.headers['WWW-Authenticate'] = 'Basic realm="PyBit"'
+    return "401 - Unauthorized"
 
 def requires_auth(f):
-	def decorated(*args, **kwargs):
-		auth = request.auth
-		if not auth:
-			return authenticate()
-		elif not check_auth(auth[0],auth[1]):
-			response.status = "401 - Unauthorized"
-			return authenticate()
-		else:
-			return f(*args, **kwargs)
-	return decorated
+    def decorated(*args, **kwargs):
+        auth = request.auth
+        if not auth:
+            return authenticate()
+        elif not check_auth(auth[0],auth[1]):
+            response.status = "401 - Unauthorized"
+            return authenticate()
+        else:
+            return f(*args, **kwargs)
+    return decorated

@@ -25,68 +25,68 @@ import os
 import optparse
 
 def merge_options(settings, options_group, options):
-	if not isinstance(options_group, optparse.OptionGroup):
-		print("E: options must be an instance of optparse.OptionsGroup.")
-		return {}
-	if settings is None:
-		print("E: can't merge a null settings dictionary.")
-		return {}
-	verbose = False
-	if hasattr(options,'verbose'):
-		verbose = options.verbose
+    if not isinstance(options_group, optparse.OptionGroup):
+        print("E: options must be an instance of optparse.OptionsGroup.")
+        return {}
+    if settings is None:
+        print("E: can't merge a null settings dictionary.")
+        return {}
+    verbose = False
+    if hasattr(options,'verbose'):
+        verbose = options.verbose
 
-	for option in options_group.option_list :
-		value = getattr(options, option.dest)
-		if value is not None and value is not "":
-			settings[option.dest] = value
-			if verbose == True:
-				print(("Setting %s to %s" % (option.dest, value)))
-		else:
-			if verbose == True:
-				if option.dest in settings :
-					print(("Leaving %s as %s" % (option.dest, settings[option.dest])))
-				else:
-					print(("No such value %s" % option.dest))
+    for option in options_group.option_list :
+        value = getattr(options, option.dest)
+        if value is not None and value is not "":
+            settings[option.dest] = value
+            if verbose == True:
+                print(("Setting %s to %s" % (option.dest, value)))
+        else:
+            if verbose == True:
+                if option.dest in settings :
+                    print(("Leaving %s as %s" % (option.dest, settings[option.dest])))
+                else:
+                    print(("No such value %s" % option.dest))
 
 
-	return settings
+    return settings
 
 
 
 def get_client_queue(client_id):
-	return "build_client_%s" % client_id
+    return "build_client_%s" % client_id
 
 def get_build_queue_name(dist, arch, suite, package):
-	return "%s_%s_%s_%s" % (dist, arch, suite, package)
+    return "%s_%s_%s_%s" % (dist, arch, suite, package)
 
 def get_build_route_name(dist, arch, suite, package):
-	return "%s.%s.%s.%s" % (dist, arch, suite, package)
+    return "%s.%s.%s.%s" % (dist, arch, suite, package)
 
 def load_settings(path):
-	opened_file = None
-	opened_path = path
-	settings = {}
-	#try the unmodified path incase we're being passed an absolute path.
-	try:
-		opened_file = open(path)
-	except IOError:
-		opened_path = "./configs/%s" % path
-		try:
-			opened_file = open(opened_path, 'r')
-		except IOError:
-			opened_path = "/etc/pybit/%s" % path
-			try:
-				opened_file = open(opened_path)
-			except IOError:
-				pass
-	if opened_file:
-		encoded_string = opened_file.read()
-		try:
-			settings = jsonpickle.decode(encoded_string ) 
-		except ValueError :
-			print("Couldn't load any settings files.")
-	
-	return (settings, opened_path)
+    opened_file = None
+    opened_path = path
+    settings = {}
+    #try the unmodified path incase we're being passed an absolute path.
+    try:
+        opened_file = open(path)
+    except IOError:
+        opened_path = "./configs/%s" % path
+        try:
+            opened_file = open(opened_path, 'r')
+        except IOError:
+            opened_path = "/etc/pybit/%s" % path
+            try:
+                opened_file = open(opened_path)
+            except IOError:
+                pass
+    if opened_file:
+        encoded_string = opened_file.read()
+        try:
+            settings = jsonpickle.decode(encoded_string )
+        except ValueError :
+            print("Couldn't load any settings files.")
+
+    return (settings, opened_path)
 
 exchange_name="pybit"
 status_route="pybit.control.status"

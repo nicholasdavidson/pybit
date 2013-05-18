@@ -24,16 +24,16 @@
 from setuptools import setup
 
 setup(name='pybit',
-	version='0.5.0',
-	description='PyBit buildd integrated toolkit',
-	license='gpl2',
-	url='https://github.com/nicholasdavidson/pybit.git',
-	packages=['pybit', 'pybitclient', 'pybitweb',],
-	maintainer='PyBit Build System user',
-	maintainer_email='codehelp@debian.org',
-	include_package_data = True,
-	exclude_package_data = { 'pybitclient' : [ 'sbuild-cross.sh' , 'sbuild-orig.sh', 'README'],
-	'pybitweb' : [ 'static/*' ]
-	}
-	)
+    version='0.5.0',
+    description='PyBit buildd integrated toolkit',
+    license='gpl2',
+    url='https://github.com/nicholasdavidson/pybit.git',
+    packages=['pybit', 'pybitclient', 'pybitweb',],
+    maintainer='PyBit Build System user',
+    maintainer_email='codehelp@debian.org',
+    include_package_data = True,
+    exclude_package_data = { 'pybitclient' : [ 'sbuild-cross.sh' , 'sbuild-orig.sh', 'README'],
+    'pybitweb' : [ 'static/*' ]
+    }
+    )
 

@@ -26,20 +26,20 @@ import sys
 import unittest
 
 class TestWeb(unittest.TestCase) :
-	def setUp (self):
-		return
+    def setUp (self):
+        return
 
-	def test_01 (self) :
-		return
+    def test_01 (self) :
+        return
 
 if __name__ == '__main__':
-	FORMAT = '%(msg)s'
-	logging.basicConfig(format=FORMAT)
-	logging.basicConfig( stream=sys.stderr )
-	logging.getLogger( "testCase" ).setLevel( logging.DEBUG )
-	suite = unittest.TestLoader().loadTestsFromTestCase(TestWeb)
-	unittest.TextTestRunner(verbosity=2).run(suite)
-	runner = unittest.TextTestRunner(verbosity=2)
-	res = runner.run(suite)
-	if not res.wasSuccessful() :
-		sys.exit (1)
+    FORMAT = '%(msg)s'
+    logging.basicConfig(format=FORMAT)
+    logging.basicConfig( stream=sys.stderr )
+    logging.getLogger( "testCase" ).setLevel( logging.DEBUG )
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestWeb)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+    runner = unittest.TextTestRunner(verbosity=2)
+    res = runner.run(suite)
+    if not res.wasSuccessful() :
+        sys.exit (1)
