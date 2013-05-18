@@ -1,27 +1,27 @@
 Creating new build environments
 
 mkdir /mnt/pybit
-lvcreate -n schroot-pybit -L1G buildbox
-mke2fs -j /dev/buildbox/schroot-pybit
+lvcreate -n schroot-pybit -L1G buildd
+mke2fs -j /dev/buildd/schroot-pybit
 mount /dev/buildbox/schroot-pybit /mnt
-debootstrap --include=sudo,fakeroot,build-essential,debfoster,apt,vim,mc --variant=buildd --arch=i386 --keyring=/etc/apt/trusted.gpg squeeze /mnt /pybit http://netstore/debian
+debootstrap --include=sudo,fakeroot,build-essential,debfoster,apt,vim --variant=buildd --arch=i386 --keyring=/etc/apt/trusted.gpg wheezy /mnt /pybit http://mirror/debian
 umount /mnt/pybit
 
-Under /etc/schroot/schroot.conf: (After lenny, /etc/schrrot/chroot.d/
+Under /etc/schroot/chroot.d/ :
 
 [squeeze]
 type=lvm-snapshot
-device=/dev/buildbox/schroot-squeeze
-description=Debian squeeze
+device=/dev/buildd/schroot-wheezy
+description=Debian Wheezy
 priority=5
-users=buildd,sbuild,zumbi
-root-users=zumbi,buildd
-source-root-users=root,zumbi,buildd
+users=buildd,sbuild
+root-users=buildd
+source-root-users=root,buildd
 aliases=stable,development,default
 lvm-snapshot-options=--size 2G
 
-Edit LVM chroot sourced packages with schroot -c squeeze-source:
- # schroot -c squeeze-source
- (sid)# echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/50enrico
- (sid)# apt-get install build-essential pbuilder devscripts fakeroot tcl-archive-keyring
+Edit LVM chroot sourced packages with schroot -c wheezy-source:
+ # schroot -c wheezy-source
+ (sid)# echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/50recommends
+ (sid)# apt-get install build-essential pbuilder devscripts fakeroot
  (sid)# apt-get clean

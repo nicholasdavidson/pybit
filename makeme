@@ -1,5 +1,3 @@
 #!/bin/bash
 
 python setup.py sdist
-fakeroot debian/rules sdist-orig
-debuild -uc -us
