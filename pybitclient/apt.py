@@ -21,6 +21,7 @@
 #       MA 02110-1301, USA.
 
 import os
+import logging
 import pybitclient
 from pybitclient.buildclient import VersionControlHandler
 
@@ -42,7 +43,7 @@ class AptClient(VersionControlHandler):
 			pybitclient.mkdir_p (apt_path)
 			apt_path = os.path.join (self.workdir, "sources.list")
 			src_list = os.open (apt_path, os.O_CREAT | os.O_WRONLY)
-			url = "deb-src %s %s main" % (buildreq.transport.uri, buildreq.get_suite())
+			url = "deb-src http://cdn.debian.net/debian %s %s main" % (buildreq.transport.uri, buildreq.get_suite())
 			os.write (src_list, url)
 			cfg_str = "-o Apt::Get::AllowUnauthenticated=true -o Dir=%s -o Dir::State=%s -o Dir::Etc::SourceList=%s/sources.list -o Dir::Cache=%s" % \
 				(self.workdir, self.workdir, self.workdir, self.workdir)
@@ -61,6 +62,7 @@ class AptClient(VersionControlHandler):
 		if not retval :
 			retval = "success"
 		pybitclient.send_message (conn_data, retval)
+		# return the exit value of the process - exit (0) for success.
 		if retval == "success":
 			return 0
 		else :
@@ -76,8 +78,10 @@ class AptClient(VersionControlHandler):
 		if not retval :
 			src_dir = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method)
 			src_changes = "%s/%s_%s.dsc" % (src_dir, buildreq.get_package(), buildreq.get_version() )
-			command = "dcmd rm %s" % (src_changes)
-			if pybitclient.run_cmd (command, self.settings["dry_run"], None):
+			command = "dcmd rm -f %s" % (src_changes)
+			if not os.path.exists (src_changes):
+				retval = "success"
+			elif pybitclient.run_cmd (command, self.settings["dry_run"], None):
 				retval = "source-clean-fail"
 		if not retval :
 			self.cleandir = os.path.join (self.settings["buildroot"], buildreq.get_suite(), buildreq.transport.method,
