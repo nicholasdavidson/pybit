@@ -24,10 +24,10 @@ set -e
 ######## Configuration ############
 
 # Network location of the pybit-web server
-PYBIT_HTTP="http://buildmaster/job/vcshook"
+PYBIT_HTTP="http://localhost/job/vcshook"
 
 # Anonymous SVN URI stub
-ANON_SVN="http://buildmaster.tcl.office/svn/lwdev"
+ANON_SVN="http://localhost/svn"
 
 # Distribution
 DISTRO_NAME="Debian"
