@@ -66,6 +66,7 @@ class GitClient(VersionControlHandler):
 				retval = "failed_clean"
 		retval = "success"
 		pybitclient.send_message (conn_data, retval)
+		# return the exit value of the process - exit (0) for success.
 		if retval == "success":
 			return 0
 		else :
