@@ -9,7 +9,7 @@ The front-end (Static HTML) web GUI queries the back-end (python) HTTP API using
 
 Likewise, the client only speaks to the controller using the queue, and the HTTP API, never the database. By loosely coupling components, we aim to make it easy to extend the system to support a variety of different configurations and scenarios.
 
-We aim to be flexible enough to build any combination of package type (i.e. DEB, RPM) for any arch, for any system (even, say .MSI installers for MS Windows). Currently however, we are mostly concerned with building ARM and i386 packages targeting Debian GNU/Linux 'Squeeze', and above, as this is what we develop on/for internally.
+We aim to be flexible enough to build any combination of package type (i.e. DEB, RPM) for any arch, for any system (even, say .MSI installers for MS Windows). Currently however, we are mostly concerned with building ARM and i386 packages targeting Debian GNU/Linux 'Wheezy', and above.
 
 Data Exchange
 We use a well known interchange format (JSON, with the JSONPickle library). We will present a RESTful HTTP based API. i.e. using the GET verb on http://[server]/job shall return a list of all running build jobs, while http://[server]/job/1 shall return the specific job instance with the ID 1.
@@ -17,7 +17,7 @@ We use a well known interchange format (JSON, with the JSONPickle library). We w
 Note that we proxy POST and PUT, and map /[object]/[id]/delete to DELETE. This is as HTML forms, in most browsers can only do GET and POST (JQuery can do more using its AJAX functions).
 
 Requirements
-Note that bottle.py, although in the debian repos as python-bottle, does not depend on any external libraries. Therefore, we include our own bottle.py from upstream. We need this as the new route rule syntax, amongst other things, was introduced in Bottle 0.10. Debian squeeze has 0.8x.
+Note that bottle.py gained a new route rule syntax, amongst other things, in Bottle 0.10x. However, Debian Squeeze has python-bottle 0.8x in the repository. Therefore, we no longer support Squeeze. This can be worked around by overriding with a copy of bottle from upstream. Drop us a message, if you really want Squeeze support.
 
 python-requests is available from squeeze-backports, as is python-psycopg2. Do NOT use the version of psycopg2 from squeeze/main, if you intend to use a multi-threaded web server, this is unsupported.
 
