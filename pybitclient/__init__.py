@@ -158,7 +158,7 @@ contacted or None if the job doesn't exist
 					if overall_success == True:
 						self.set_status(ClientMessage.done, current_req)
 					elif overall_success == False:
-						if  subprocess_message == 'build-dep-wait':
+						if subprocess_message == 'build-dep-wait':
 							self.set_status(ClientMessage.blocked, current_req)
 							self.republish_job(current_req)
 						else:
@@ -247,7 +247,6 @@ contacted or None if the job doesn't exist
 	def checkout_handler(self, msg, decoded):
 		if isinstance(decoded, TaskComplete) :
 			self.process.join()
-
 			if decoded.success == True:
 				self.move_state("BUILD")
 			else:
@@ -350,7 +349,7 @@ contacted or None if the job doesn't exist
 			self.command_chan.basic_ack(msg.delivery_tag)
 		elif isinstance(cmd_req, CommandRequest) :
 			if isinstance(cmd_req, CancelRequest) :
-				logging.debug ("Received CANCEL request for jobid:", cmd_req.get_job_id())
+				logging.debug ("Received CANCEL request for jobid: %s" % cmd_req.get_job_id())
 				self.set_status(ClientMessage.cancelled, cmd_req)
 				if (self.current_request and
 					self.current_request.get_job_id() == cmd_req.get_job_id() and
