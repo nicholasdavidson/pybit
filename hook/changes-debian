@@ -3,11 +3,11 @@
 use strict;
 use warnings;
 use vars qw/ $username $password $pybit_http $distro_name
- $suite $arch $ver $pkg $sep /;
+ $suite $arch $ver $pkg $sep $curl /;
 
-#       changes-debian - Debian-based SVN postcommit hook
+#       changes-debian - Debian-based procmail handler for changes files
 #
-#       Copyright 2012 Neil Williams <codehelp@debian.org>
+#       Copyright 2013 Neil Williams <codehelp@debian.org>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -46,9 +46,10 @@ while (<>) {
 	m/^Source: (\S+)/m and $pkg = $1;
 }
 exit (0) if (not defined $suite or not defined $arch or not defined $pkg);
-print "/usr/bin/curl -i -X POST $pybit_http ";
-print "$sep method=apt $sep distribution=$distro_name ";
-print "$sep vcs_id= $sep architecture_list=$arch ";
-print "$sep package_version=$ver $sep package=$pkg ";
-print "$sep suite=$suite $sep format=deb $sep uri=";
-print " --user \"$username:$password\"\n";
+$curl = "/usr/bin/curl -i -X POST $pybit_http ";
+$curl .= "$sep method=apt $sep distribution=$distro_name ";
+$curl .= "$sep vcs_id= $sep architecture_list=$arch ";
+$curl .= "$sep package_version=$ver $sep package=$pkg ";
+$curl .= "$sep suite=$suite $sep format=deb $sep uri=";
+$curl .= " --user \"$username:$password\"\n";
+system ($curl);
