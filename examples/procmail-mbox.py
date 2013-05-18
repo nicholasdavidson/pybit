@@ -35,7 +35,8 @@ import mailbox, rfc822
 import sys, os, string, re
 from subprocess import Popen, PIPE, STDOUT
 
-def passthrough_filter (msg, document):
+
+def passthrough_filter(msg, document):
     """If you want to extend this to act as a filter
     on the changes file being parsed, simply return None here.
     msg contains the full email, with headers.
@@ -43,27 +44,29 @@ def passthrough_filter (msg, document):
     """
     return document
 
-def process_mailbox (mailboxname_in, filter_function):
+
+def process_mailbox(mailboxname_in, filter_function):
     """This processes a each message in the 'in' mailbox. Each message
     is passed to the filter_function."""
     # Open the mailbox.
-    mb = mailbox.UnixMailbox (file(mailboxname_in,'r'))
+    mb = mailbox.UnixMailbox(file(mailboxname_in,'r'))
 
     msg = mb.next()
     while msg is not None:
         # Properties of msg cannot be modified, so we pull out the
         # document to handle it separately.
         document = msg.fp.read()
-        document = filter_function (msg, document)
+        document = filter_function(msg, document)
         if document is not None:
             p = Popen(['../hook/changes-debian'], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
             grep_stdout = p.communicate(input=document)[0]
             print grep_stdout
         msg = mb.next()
 
+
 def main():
     mailboxname_in = sys.argv[1]
-    process_mailbox (mailboxname_in, passthrough_filter)
+    process_mailbox(mailboxname_in, passthrough_filter)
     return 0
 
 if __name__ == '__main__':

@@ -22,18 +22,19 @@
 
 import os
 
+
 class VersionControlHandler(object):
     def fetch_source(self):
         pass
 
-    def get_srcdir (self):
+    def get_srcdir(self):
         pass
 
-    def clean_source (self, pkg) :
+    def clean_source(self, pkg):
         pass
 
     # support test cases
-    def is_dry_run (self):
+    def is_dry_run(self):
         return self.settings["dry_run"]
 
     def __init__(self, settings):
@@ -43,6 +44,7 @@ class VersionControlHandler(object):
             self.settings["dry_run"] = True
         if not "buildroot" in self.settings:
             self.settings["buildroot"] = "/tmp/buildd"
+
 
 class PackageHandler(object):
 
@@ -56,31 +58,32 @@ class PackageHandler(object):
         if not "buildroot" in self.settings:
             self.settings["buildroot"] = "/tmp/buildd"
         self.logdir = os.path.join(self.settings["buildroot"], "logs")
-        if not os.path.isdir (self.logdir) and not self.settings["dry_run"] :
-            os.mkdir (self.logdir)
+        if not os.path.isdir(self.logdir) and not self.settings["dry_run"]:
+            os.mkdir(self.logdir)
 
-    def get_buildlog (self, buildroot, buildreq) :
+    def get_buildlog(self, buildroot, buildreq):
         logfile = None
         stamp = buildreq.get_buildstamp()
-        if (stamp is not None) :
-            log = "%s_%s-%s-%s" % (buildreq.get_package(), buildreq.get_version(), buildreq.get_arch(), buildreq.get_buildstamp())
-            logfile = os.path.join (self.logdir, log)
+        if stamp is not None:
+            log = "%s_%s-%s-%s" % (buildreq.get_package(), buildreq.get_version(), buildreq.get_arch(),
+                                   buildreq.get_buildstamp())
+            logfile = os.path.join(self.logdir, log)
         return logfile
 
-    def is_dry_run (self):
+    def is_dry_run(self):
         return self.settings["dry_run"]
 
-    def build_master (self, buildroot):
+    def build_master(self, buildroot):
         pass
 
-    def build_slave (self, buildroot):
+    def build_slave(self, buildroot):
         pass
 
-    def update_environment (self,name,pkg) :
+    def update_environment(self, name, pkg):
         pass
 
-    def upload (self, dirname, changes, pkg) :
+    def upload(self, dirname, changes, pkg):
         pass
 
-    def get_distribution (self):
+    def get_distribution(self):
         pass
