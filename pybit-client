@@ -153,7 +153,7 @@ if __name__ == '__main__':
 #	Add default settings we want to not overwrite files.
 
 	if  ( not 'log_file' in settings ):
-		settings['log_file'] = "/var/log/pybit-client.log"
+		settings['log_file'] = "/var/log/pybitclient.log"
 
 	if ( not 'pid_file' in settings ):
 		settings['pid_file' ] = PIDFILE
