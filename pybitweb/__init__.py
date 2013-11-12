@@ -52,6 +52,7 @@ def get_app(settings, db, controller):
         return template(getStaticResource("/index.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
     # favicons
@@ -87,6 +88,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/index.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
@@ -96,6 +98,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/dashboard.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
@@ -105,6 +108,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/arches.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl'])
 
     # static HTML page listing dists
@@ -113,6 +117,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/dists.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl'])
 
     # static HTML page listing formats
@@ -121,6 +126,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/formats.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl'])
 
     # static HTML page listing statuses
@@ -129,6 +135,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/statuses.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl'])
 
     # static HTML page listing suites
@@ -137,6 +144,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/suites.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl'])
 
     # static HTML page listing buildboxes
@@ -145,6 +153,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/buildd.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
@@ -154,6 +163,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/job.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
@@ -163,6 +173,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/lookups.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
@@ -172,6 +183,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/package.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
@@ -181,6 +193,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/packageinstance.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
@@ -190,6 +203,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/envs.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
@@ -199,6 +213,7 @@ def get_app(settings, db, controller):
             return template(getStaticResource("/blacklist.htm"),
             protocol=settings['web']['protocol'],
             jqueryurl=settings['web']['jqueryurl'],
+            vhost=settings['web']['vhost'],
             jqueryformurl=settings['web']['jqueryformurl']
 )
 
