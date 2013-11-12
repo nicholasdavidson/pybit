@@ -179,7 +179,7 @@
                         $.ajax (
                         {
                             type : "GET" ,
-                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/" + target + "/" + id + "/delete" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}" + target + "/" + id + "/delete" ,
                             statusCode: {
 								409: function() {
 									alert("This distribution cannot be deleted because other things depend on it in the database.");
@@ -210,11 +210,11 @@
                         if ( getUrlVars() [ "dist_page" ] )
                         {
                             dist_page = getUrlVars() [ "dist_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/page/" + dist_page
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}dist/page/" + dist_page
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/page/1"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}dist/page/1"
                         }
                         new_dist_page = parseInt ( dist_page ) + 1;
                         last_dist_page = parseInt ( dist_page ) - 1;
@@ -225,20 +225,20 @@
                             {
                                 $ ( "#tbl_dists" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
                             } );
-var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/count"
+var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}dist/count"
                             $.getJSON ( url2 , function ( json2 )
 							{
 
 							var html_part1 = "";
 							if (dist_page > 0)
 							{
-							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dists.htm?dist_page=" + last_dist_page + "'>Prev</a></li><li><a>" + dist_page + "/" + json2 + "</a></li>";
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}dists.htm?dist_page=" + last_dist_page + "'>Prev</a></li><li><a>" + dist_page + "/" + json2 + "</a></li>";
 							}
 
 							var html_part2 = "";
 							if (dist_page < json2) // Not last page
 							{
-							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dists.htm?dist_page=" + new_dist_page + "'>Next</a></li>";
+							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}dists.htm?dist_page=" + new_dist_page + "'>Next</a></li>";
 							}
 
                             $ ( '#tbl_dists' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );

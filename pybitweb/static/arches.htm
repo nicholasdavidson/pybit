@@ -230,7 +230,7 @@
                         $.ajax (
                         {
                             type : "GET" ,
-                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/" + target + "/" + id + "/delete" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}" + target + "/" + id + "/delete" ,
                             statusCode: {
 								409: function() {
 									alert("This arch cannot be deleted because other things depend on it in the database.");
@@ -263,11 +263,11 @@
                         if ( getUrlVars() [ "arch_page" ] )
                         {
                             arch_page = getUrlVars() [ "arch_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/" + arch_page
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}arch/page/" + arch_page
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/1"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}arch/page/1"
                         }
                         new_arch_page = parseInt ( arch_page ) + 1;
                         last_arch_page = parseInt ( arch_page ) - 1;
@@ -278,20 +278,20 @@
                                 $ ( "#tbl_arches" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
                             } );
 
-                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/count"
+                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}arch/count"
                             $.getJSON ( url2 , function ( json2 )
 							{
 
 							var html_part1 = "";
 							if (arch_page > 0)
 							{
-							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arches.htm?arch_page=" + last_arch_page + "'>Prev</a></li><li><a>" + arch_page + "/" + json2 + "</a></li>";
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}arches.htm?arch_page=" + last_arch_page + "'>Prev</a></li><li><a>" + arch_page + "/" + json2 + "</a></li>";
 							}
 
 							var html_part2 = "";
 							if (arch_page < json2) // Not last page
 							{
-								html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arches.htm?arch_page=" + new_arch_page + "'>Next</a></li>";
+								html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}arches.htm?arch_page=" + new_arch_page + "'>Next</a></li>";
 							}
 
 							 $ ( '#tbl_arches' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );
@@ -311,7 +311,7 @@
                             location.reload ( );
                         } );
 
-                        var suite_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite"
+                        var suite_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}suite"
                         $.getJSON ( suite_names , function ( json )
                         {
                             $.each ( json , function ( i , field )
@@ -320,7 +320,7 @@
                             } );
                         } );
 
-                        var arch_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch"
+                        var arch_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}arch"
                         $.getJSON ( arch_names , function ( json )
                         {
                             $.each ( json , function ( i , field )
@@ -329,7 +329,7 @@
                             } );
                         } );
 
-						var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suitearch"
+						var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}suitearch"
 
                         $.getJSON ( url , function ( json )
                         {

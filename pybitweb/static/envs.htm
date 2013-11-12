@@ -225,7 +225,7 @@
                         $.ajax (
                         {
                             type : "GET" ,
-                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/" + target + "/" + id + "/delete" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}" + target + "/" + id + "/delete" ,
                             statusCode: {
 								409: function() {
 									alert("This build environment cannot be deleted because other things depend on it in the database.");
@@ -258,11 +258,11 @@
                         if ( getUrlVars() [ "env_page" ] )
                         {
                             env_page = getUrlVars() [ "env_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env/page/" + env_page
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}env/page/" + env_page
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env/page/1"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}env/page/1"
                         }
                         new_env_page = parseInt ( env_page ) + 1;
                         last_env_page = parseInt ( env_page ) - 1;
@@ -273,20 +273,20 @@
                                 $ ( "#tbl_envs" ).append ( "<tr><td>" + field.name + "<br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
                             } );
 
-                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env/count"
+                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}env/count"
                             $.getJSON ( url2 , function ( json2 )
 							{
 
 							var html_part1 = "";
 							if (env_page > 0)
 							{
-							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/envs.htm?env_page=" + last_env_page + "'>Prev</a></li><li><a>" + env_page + "/" + json2 + "</a></li>";
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}envs.htm?env_page=" + last_env_page + "'>Prev</a></li><li><a>" + env_page + "/" + json2 + "</a></li>";
 							}
 
 							var html_part2 = "";
 							if (env_page < json2) // Not last page
 							{
-								html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/envs.htm?env_page=" + new_env_page + "'>Next</a></li>";
+								html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}envs.htm?env_page=" + new_env_page + "'>Next</a></li>";
 							}
 
 							 $ ( '#tbl_envs' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );
@@ -298,7 +298,7 @@
 
 					function populateDropdowns()
 					{
-                       var buildenv_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/env"
+                       var buildenv_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}env"
                         $.getJSON ( buildenv_names , function ( json )
                         {
                             $.each ( json , function ( i , field )
@@ -307,7 +307,7 @@
                             } );
                         } );
 
-                        var suitearch_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suitearch"
+                        var suitearch_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}suitearch"
                         $.getJSON ( suitearch_names , function ( json )
                         {
                             $.each ( json , function ( i , field )
@@ -330,7 +330,7 @@
                         } );
 
 							// TODO: Paging
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildenv_suitearch"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}buildenv_suitearch"
 
                         new_buildenv_suitearch_page = parseInt ( buildenv_suitearch_page ) + 1;
                         last_buildenv_suitearch_page = parseInt ( buildenv_suitearch_page ) - 1;

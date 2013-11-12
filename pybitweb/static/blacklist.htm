@@ -181,7 +181,7 @@
                         $.ajax (
                         {
                             type : "GET" ,
-                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/" + target + "/" + id + "/delete" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}" + target + "/" + id + "/delete" ,
                             statusCode: {
 								409: function() {
 									alert("This blacklist cannot be deleted because other things depend on it in the database.");
@@ -212,11 +212,11 @@
                         if ( getUrlVars() [ "blacklist_page" ] )
                         {
                             blacklist_page = getUrlVars() [ "blacklist_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist/page/" + blacklist_page
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}blacklist/page/" + blacklist_page
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist/page/1"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}blacklist/page/1"
                         }
                         new_blacklist_page = parseInt ( blacklist_page ) + 1;
                         last_blacklist_page = parseInt ( blacklist_page ) - 1;
@@ -227,20 +227,20 @@
                             {
                                 $ ( "#tbl_blacklist" ).append ( "<tr><td>" + field.field + "</td><td>" + field.regex + "</td><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
                             } );
-var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist/count"
+var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}blacklist/count"
                             $.getJSON ( url2 , function ( json2 )
 							{
 
 							var html_part1 = "";
 							if (blacklist_page > 0)
 							{
-							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist.htm?blacklist_page=" + last_blacklist_page + "'>Prev</a></li><li><a>" + blacklist_page + "/" + json2 + "</a></li>";
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}blacklist.htm?blacklist_page=" + last_blacklist_page + "'>Prev</a></li><li><a>" + blacklist_page + "/" + json2 + "</a></li>";
 							}
 
 							var html_part2 = "";
 							if (blacklist_page < json2) // Not last page
 							{
-							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/blacklist.htm?blacklist_page=" + new_blacklist_page + "'>Next</a></li>";
+							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}blacklist.htm?blacklist_page=" + new_blacklist_page + "'>Next</a></li>";
 							}
 
                             $ ( '#tbl_blacklist' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );

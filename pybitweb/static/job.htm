@@ -227,7 +227,7 @@
                         $.ajax (
                         {
                             type : "GET" ,
-                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/" + id + "/cancel" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}job/" + id + "/cancel" ,
                             error : function ( data )
                             {
                                 alert ( 'Error cancelling job with id: ' + id + "\n" + data.responseText );
@@ -247,7 +247,7 @@
                         $.ajax (
                         {
                             type : "GET" ,
-                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/" + id + "/retry" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}job/" + id + "/retry" ,
                             error : function ( data )
                             {
                                 alert ( 'Error retrying job with id: ' + id + "\n" + data.responseText );
@@ -275,7 +275,7 @@ function changePackage()
 						{
 						packageName = element.options [ element.selectedIndex ].value;
 
-                        var named_versions = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/details/" + packageName
+                        var named_versions = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}packageinstance/details/" + packageName
 
                         $.getJSON ( named_versions , function ( json2 )
                         {
@@ -305,7 +305,7 @@ function changePackage()
 
                     function show_history ( id )
                     {
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/" + id + "/status"
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}job/" + id + "/status"
                         $.getJSON ( url , function ( json )
                         {
                             $ ( "#history_header" ).empty ( );
@@ -343,7 +343,7 @@ function changePackage()
 
                     function renderTable ( status_query )
                     {
-                        var packageinstances = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance";
+                        var packageinstances = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}packageinstance";
                         $.getJSON ( packageinstances , function ( json )
                         {
                             $.each ( json , function ( i , field )
@@ -354,17 +354,17 @@ function changePackage()
                         var jobstatuses = new Object ( )
                         if ( ! status_query || status_query == "Unfinished" )
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/status"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}job/status"
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/status/" + status_query
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}job/status/" + status_query
                         }
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                var url2 = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/job/" + field.id + "/status";
+                                var url2 = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}job/" + field.id + "/status";
                                 var shortname = "";
                                 $.getJSON ( url2 , function ( json2 )
                                 {
@@ -390,7 +390,7 @@ function changePackage()
                                         _class = get_status_class ( jobstatuses [ field.id ] );
                                         shortname = bname.replace ( "build_client_" , "" );
                                         // TODO: HACKS
-                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + "/" + env_name + " (" + field.packageinstance.arch.name + " " + field.packageinstance.format.name + ")" + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>" + bname + "</a></td><td>" + master + "</td><td><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id + ")'>" + jobstatuses [ field.id ] + "</a></td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel' onclick='cancel_click(" + field.id + ")'></input><br/><input id='retry' class='.btn-small  btn-danger' type='button' value='Retry' onclick='retry_click(" + field.id +")'></input></td></tr>" );
+                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + "/" + env_name + " (" + field.packageinstance.arch.name + " " + field.packageinstance.format.name + ")" + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>" + bname + "</a></td><td>" + master + "</td><td><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id + ")'>" + jobstatuses [ field.id ] + "</a></td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel' onclick='cancel_click(" + field.id + ")'></input><br/><input id='retry' class='.btn-small  btn-danger' type='button' value='Retry' onclick='retry_click(" + field.id +")'></input></td></tr>" );
                                     }
                                     else
                                     {
@@ -399,7 +399,7 @@ function changePackage()
                                         bname = "Unassigned";
                                         shortname = bname.replace ( "build_client_" , "" );
                                         // TODO: HACKS
-                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + "/" + env_name + " (" + field.packageinstance.arch.name + " " + field.packageinstance.format.name + ")" + "</td><td>" + bname + "</td><td>" + master + "</td><td><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id + ")'>" + jobstatuses [ field.id ] + "</a></td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel' onclick='cancel_click(" + field.id + ")'></input><br/><input id='retry' class='.btn-small  btn-danger' type='button' value='Retry' onclick='retry_click(" + field.id +")'></input></td></tr></tr>" );
+                                        $ ( "#tbl_jobs tbody" ).append ( "<tr class='" + _class + "'><td>" + field.id + "</td><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}packageinstance/" + field.packageinstance.id + "'>" + field.packageinstance.id + " - (" + field.packageinstance.package.name + " " + field.packageinstance.package.version + ")</a><br>" + field.packageinstance.distribution.name + "/" + field.packageinstance.suite.name + "/" + env_name + " (" + field.packageinstance.arch.name + " " + field.packageinstance.format.name + ")" + "</td><td>" + bname + "</td><td>" + master + "</td><td><a href='#myModal' role='button' data-toggle='modal' onclick='show_history(" + field.id + ")'>" + jobstatuses [ field.id ] + "</a></td><td><input id='cancel' class='.btn-small  btn-danger' type='button' value='Cancel' onclick='cancel_click(" + field.id + ")'></input><br/><input id='retry' class='.btn-small  btn-danger' type='button' value='Retry' onclick='retry_click(" + field.id +")'></input></td></tr></tr>" );
                                     }
                                 } );
                             } );
@@ -410,7 +410,7 @@ function changePackage()
                     $ ( ).ready ( function ( )
                     {
 
-                        var package_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/package/names"
+                        var package_names = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}package/names"
                         $.getJSON ( package_names , function ( json )
                         {
                             $.each ( json , function ( i , field )
@@ -421,7 +421,7 @@ changePackage();
                         } );
 
                         // Populate dropdown
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status"
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}status"
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )

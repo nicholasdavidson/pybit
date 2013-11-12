@@ -180,7 +180,7 @@
                         $.ajax (
                         {
                             type : "GET" ,
-                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/" + id + "/delete" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}buildd/" + id + "/delete" ,
                             statusCode: {
 								409: function() {
 									alert("This buildd cannot be deleted because other things depend on it in the database.");
@@ -213,11 +213,11 @@
 if ( getUrlVars() [ "buildd_page" ] )
                         {
                             buildd_page = getUrlVars() [ "buildd_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/page/" + buildd_page
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}buildd/page/" + buildd_page
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/page/1"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}buildd/page/1"
                         }
                         new_buildd_page = parseInt ( buildd_page ) + 1;
                         last_buildd_page = parseInt ( buildd_page ) - 1;
@@ -227,7 +227,7 @@ if ( getUrlVars() [ "buildd_page" ] )
                             {
                                 var shortname = field.name.replace ( "build_client_" , "" );
                                 // TODO: HACKS
-                                status_url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/" + field.name + "/status"
+                                status_url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}buildd/" + field.name + "/status"
                                 $.get ( status_url , function ( status )
                                 {
                                     if ( status == "Not Active" )
@@ -239,25 +239,25 @@ if ( getUrlVars() [ "buildd_page" ] )
                                     if ( status == "Active" )
                                     {
                                         _class = "success";
-                                        $ ( "#tbl_buildds" ).append ( "<tr class='" + _class + "'><td>" + shortname + "</td><td>" + status + "</td><td><a  href='" + "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>View Logs</a></td></tr>" );
+                                        $ ( "#tbl_buildds" ).append ( "<tr class='" + _class + "'><td>" + shortname + "</td><td>" + status + "</td><td><a  href='" + "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}buildd/" + field.id + "/jobs'>View Jobs</a><br><a  href='" + window.location.protocol.toString ( ) + "//" + shortname + "/logs/pybitclient.log'>View Logs</a></td></tr>" );
                                     }
                                 } );
                             } );
 
-                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd/count"
+                            var url2= "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}buildd/count"
                             $.getJSON ( url2 , function ( json2 )
 							{
 
 							var html_part1 = "";
 							if (buildd_page > 0)
 							{
-							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd.htm?buildd_page=" + last_buildd_page + "'>Prev</a></li><li><a>" + buildd_page + "/" + json2 + "</a></li>";
+							html_part1 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}buildd.htm?buildd_page=" + last_buildd_page + "'>Prev</a></li><li><a>" + buildd_page + "/" + json2 + "</a></li>";
 							}
 
 							var html_part2 = "";
 							if (buildd_page < json2) // Not last page
 							{
-							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/buildd.htm?buildd_page=" + new_buildd_page + "'>Next</a></li>";
+							html_part2 = "<li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}buildd.htm?buildd_page=" + new_buildd_page + "'>Next</a></li>";
 							}
 
                             $ ( '#tbl_buildds' ).append ( "<div class='pagination'><ul>" + html_part1 + html_part2 + "</ul></div>" );

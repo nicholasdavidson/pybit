@@ -312,7 +312,7 @@
                         $.ajax (
                         {
                             type : "GET" ,
-                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/" + target + "/" + id + "/delete" ,
+                            url : "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}" + target + "/" + id + "/delete" ,
                             statusCode: {
 								409: function() {
 									alert("This  " + target + " cannot be deleted because other things depend on it in the database.");
@@ -364,11 +364,11 @@
                         if ( getUrlVars() [ "arch_page" ] )
                         {
                             arch_page = getUrlVars() [ "arch_page" ]
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/" + arch_page
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}arch/page/" + arch_page
                         }
                         else
                         {
-                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/page/1"
+                            var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}arch/page/1"
                         }
                         new_arch_page = parseInt ( arch_page ) + 1;
                         last_arch_page = parseInt ( arch_page ) - 1;
@@ -376,40 +376,40 @@
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_arches" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
+                                $ ( "#tbl_arches" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}arch/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",1)'></input></td></tr>" );
                             } );
-                            $ ( '#tbl_arches' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/lookups.htm?arch_page=" + last_arch_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/lookups.htm?arch_page=" + new_arch_page + "'>Next</a></li></ul></div>" );
+                            $ ( '#tbl_arches' ).append ( "<div class='pagination'><ul><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}lookups.htm?arch_page=" + last_arch_page + "'>Prev</a></li><li><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}lookups.htm?arch_page=" + new_arch_page + "'>Next</a></li></ul></div>" );
                         } );
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status"
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}status"
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_statuses" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
+                                $ ( "#tbl_statuses" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}status/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",2)'></input></td></tr>" );
                             } );
                         } );
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist"
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}dist"
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_dists" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
+                                $ ( "#tbl_dists" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}dist/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",3)'></input></td></tr>" );
                             } );
                         } );
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format"
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}format"
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_formats" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>" );
+                                $ ( "#tbl_formats" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}format/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",4)'></input></td></tr>" );
                             } );
                         } );
-                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite"
+                        var url = "" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}suite"
                         $.getJSON ( url , function ( json )
                         {
                             $.each ( json , function ( i , field )
                             {
-                                $ ( "#tbl_suites" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "/suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
+                                $ ( "#tbl_suites" ).append ( "<tr><td><a href='" + window.location.protocol.toString ( ) + "//" + window.location.host.toString ( ) + "{{vhost}}suite/" + field.id + "'>" + field.name + "</a><br><input id='delete' class='.btn-small  btn-danger' type='button' value='Delete' onclick='delete_click(" + field.id + ",5)'></input></td></tr>" );
                             } );
                         } );
                     } );
