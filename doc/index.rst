@@ -34,6 +34,27 @@ Installation from git
 Post install setup
 ==================
 
+Adding build chroots
+--------------------
+
+The detailed process of creating chroots suitable for schroot is covered
+in the sbuild documentation (schroot.conf (5)) and amounts to using a
+tool like debootstrap to create a Debian build environment in a
+subdirectory (which may or may not be also the mountpoint of an LVM
+snapshot) and then configuring that chroot to have the relevant apt
+sources and pre-installed packages (e.g. ``build-essential`` and ``dpkg-dev``).
+
+.. note:: when creating a chroot for schroot, remember to use the 
+   ``--variant=buildd`` option to debootstrap and install fakeroot inside
+   the chroot.
+
+Install pbuilder
+^^^^^^^^^^^^^^^^
+
+The pybit :term:`debianclient` uses ``/usr/lib/pbuilder/pbuilder-satisfydepends-classic``
+for the dependency resolution test, so the ``pbuilder`` package needs to
+be installed inside each build chroot.
+
 Adding a suite
 --------------
 
