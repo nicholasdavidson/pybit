@@ -43,3 +43,6 @@ buildd-test.conf
 .pydevproject
 .settings
 .idea
+
+# docs
+doc/_build
