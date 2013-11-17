@@ -31,13 +31,12 @@ should be used instead.
   package format
     The package format is something like ``deb`` which denotes the format
     of the binary packages which the build is expected to create and
-    handle.
-     * deb == Debian, also compatible with Ubuntu and other Debian derivatives.
+    handle. See :ref:`package_formats` for the full list of formats.
 
   debootstrap
     A Debian tool which can be used on multiple operating systems to
     create a minimal Debian system in a clean subdirectory suitable for
-    use with :term:`chroot`. See ``man debootstrap`.
+    use with :term:`chroot`. See ``man debootstrap``.
 
   chroot
     A chroot is a directory containing the set of files and directories
@@ -62,3 +61,10 @@ should be used instead.
     off clean and can be easily cleaned after the build. See ``man schroot``
     or ``man sbuild`` for more information.
 
+  sbuild
+    Debian package which builds Debian packages inside an :term:`schroot`.
+
+  watcher
+    The pybit watcher monitors a declared directory and runs a ``reprepro``
+    rule to process the incoming packages. Other monitoring processes can
+    be created for other repository tools.
