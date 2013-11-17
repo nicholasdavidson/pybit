@@ -14,12 +14,12 @@ Why use pybit?
 To build binary packages from source code. 
 
 Currently, pybit is focused on Debian packaging but other backends can
-be written for the pybit client. Builds start when a hook adds a job to
+be written for the :term:`pybit client`. Builds start when a hook adds a job to
 the queue. Hooks can be any script which provides relevant information
 to the queue, including which backend to use. pybit retains the order
 from the queue, so if the hook is intelligent, pybit doesn't try to
 second-guess the ordering. If the backend is capable of detecting
-failures entirely due to missing build dependencies, pybit can re-queue
+failures entirely due to missing :term:`build dependencies`, pybit can re-queue
 that build to try again later.
 
 Setting up pybit
@@ -34,12 +34,17 @@ Installation from git
 Post install setup
 ==================
 
-Adding build chroots
---------------------
+A lot of the post installation setup is based on Debian tools and Debian
+methods. If someone writes backends which use other formats, the
+documentation can be updated with the backend-specific steps required for
+the :term:`package format` added with that backend.
 
-The detailed process of creating chroots suitable for schroot is covered
-in the sbuild documentation (schroot.conf (5)) and amounts to using a
-tool like debootstrap to create a Debian build environment in a
+Adding Debian build chroots
+---------------------------
+
+The detailed process of creating a :term:`chroot` suitable for :term:`schroot` is covered
+in the :term:`sbuild` documentation (man 5 schroot.conf) and amounts to using a
+tool like :term:`debootstrap` to create a Debian build environment in a
 subdirectory (which may or may not be also the mountpoint of an LVM
 snapshot) and then configuring that chroot to have the relevant apt
 sources and pre-installed packages (e.g. ``build-essential`` and ``dpkg-dev``).
