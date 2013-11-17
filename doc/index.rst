@@ -1,3 +1,5 @@
+.. rst syntax described at http://sphinx-doc.org/rest.html
+
 Pybit Manual
 ############
 
