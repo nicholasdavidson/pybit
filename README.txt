@@ -22,7 +22,7 @@ Note that bottle.py gained a new route rule syntax, amongst other things, in Bot
 python-requests is available from squeeze-backports, as is python-psycopg2. Do NOT use the version of psycopg2 from squeeze/main, if you intend to use a multi-threaded web server, this is unsupported.
 
 Installation
-In /db, there are scripts to create and populate the database manually. However, when installing on Debian or a Debian derivative, we reccomend you use dbconfig-common and debconf, during the package installation process. See the Debian packaging at https://github.com/codehelp/pybit-debian for more information.
+In /db, there are scripts to create and populate the database manually. However, when installing on Debian or a Debian derivative, we recommend you use dbconfig-common and debconf, during the package installation process. See the Debian packaging at https://github.com/codehelp/pybit-debian for more information.
 
 Running the software
 The connection string, hostname, etc.... are stored in /etc/pybit/configs/*. These should be set during the package installation process, but you may edit and configure these as you wish. Then simply start the server first, then the client(s) second. The client will pick up any suitable queued jobs when it comes up.
